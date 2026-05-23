@@ -367,14 +367,14 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
                 // Fingerprint computed by bh_mvsy_rsa:get_fingerprints/0 — keep
                 // in sync with whatever the live cluster reports.
                 serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
-                                              "MIIBCgKCAQEAw3MeemxP1t46Jj1mJg/goMRYh86TbFvXVwjmPtUcE5IOXb1Ib72L\n"
-                                              "wuujV5j7fLK6Mr7aLuOaVODfKIbViKz56BPnE9b8C1B4yuDpvZKTFngl6Elngp1w\n"
-                                              "eOar/DuNNNx7PasN9DjBU3zlBJyvT2j/Nbpwe5AhafBYS52qgE8VBcaCqMQ5QufP\n"
-                                              "9ARtHMMay4jwB9BIocVDwY/JiFn2PGWCn4L+J5abO3f5w9ec/9CkRJOHOZ6pJx/l\n"
-                                              "sE0JyeLO9CT+xRvhiN6AH+++mvdv5oJgIXDACDMncr47YklNhZCGpUhba7/1AP4N\n"
-                                              "vi0QtjnTL5xGKWtcHh8BvetE2XHy3mOKhQIDAQAB\n"
+                                              "MIIBCgKCAQEAvqCL9IFBWxiDU3dFAdFv4vP50Wzv2eXNgH8d7j/ZdzZIMMGbdNgq\n"
+                                              "+jKXStI6yrnkx6IGq1z9ymGmErbocJ5RLwUh+VqJhKZ683hVsHhPka2/s7So/YRV\n"
+                                              "NbMjJj4L15CSFdGNPsQNpFCQrGfI71eGh8q2lNuW2cbe+AafWFhqtmfKglJJdwiM\n"
+                                              "sl+5/FAN2Ks0s5CWNhRNsZmo00eLb4cBxOIh4LVxjlrXgiBQ+b0OKIymqa9/0Hvv\n"
+                                              "veTrPO6qPkNcMjumx79l3AZtasg821gBHafzTh+acLYJyqtEAlCtAQGYGhcl7wSo\n"
+                                              "VJyRJX7reja7fCNc4jpAs79VAF8TNCAWSwIDAQAB\n"
                                               "-----END RSA PUBLIC KEY-----");
-                serverPublicKeysFingerprints.push_back(0x07435f2b6146814fULL);
+                serverPublicKeysFingerprints.push_back(0xDDCF36F8466E4286ULL);
             }
 
             size_t count2 = serverPublicKeysFingerprints.size();
