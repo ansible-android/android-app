@@ -26,10 +26,19 @@ public class BuildVars {
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
     public static String BUILD_VERSION_STRING = BuildConfig.BUILD_VERSION_STRING;
 
-    // BeHappy temp APP_ID / APP_HASH (generated 2026-05-11 for dev/staging).
-    // Replace with permanent pair registered via dev.behappy.rest before production.
-    public static int APP_ID = 5450757;
-    public static String APP_HASH = "f6115debeb07b3f8aa99c5982c735c58";
+    // Ansible Android. Постоянная пара, выдана порталом my.ansible.su 2026-08-14
+    // (реестр: workflow/APP_CREDENTIALS.md). Заменила временную 5450757, которая
+    // была выписана на my.telegram.org 2026-05-11 «до продакшена» — то есть наш
+    // клиент представлялся приложением из ЧУЖОГО реестра, и наш сервер не мог
+    // ни узнать его, ни забанить, ни придушить по api_id.
+    //
+    // Константа в исходнике — это предписанный upstream способ: штатного
+    // параметра сборки у Android нет вовсе (local.properties обслуживает только
+    // APP_CENTER_HASH и BETA_URL), а README upstream прямо требует от форков
+    // «obtain your own api_id» и заменить именно эту константу. Пара секретом
+    // не является: upstream держит здесь же свои APP_ID=4 / 014b35b6…
+    public static int APP_ID = 21000004;
+    public static String APP_HASH = "ff442affb65f4604012d98ab1338e34c";
 
     // SafetyNet key for Google Identity SDK, set it to empty to disable
     public static String SAFETYNET_KEY = "AIzaSyDqt8P-7F7CPCseMkOiVRgb1LY8RN1bvH8";
