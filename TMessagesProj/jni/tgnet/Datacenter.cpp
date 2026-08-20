@@ -1503,14 +1503,19 @@ TL_help_configSimple *Datacenter::decodeSimpleConfig(NativeByteBuffer *buffer) {
         return result;
     }
 
+    // Ansible config-signing key. This intentionally does NOT equal Telegram's
+    // config-signing key, so any Telegram-signed help.configSimple payload that
+    // reaches this fallback path (Firebase remote-config ipconfigv3 / DoH TXT)
+    // fails validation and is dropped — closing the DC-poisoning vector that
+    // would otherwise replace dc1..5 with Telegram's 149.154.* addresses.
     static std::string public_key =
             "-----BEGIN RSA PUBLIC KEY-----\n"
-                    "MIIBCgKCAQEAyr+18Rex2ohtVy8sroGPBwXD3DOoKCSpjDqYoXgCqB7ioln4eDCF\n"
-                    "fOBUlfXUEvM/fnKCpF46VkAftlb4VuPDeQSS/ZxZYEGqHaywlroVnXHIjgqoxiAd\n"
-                    "192xRGreuXIaUKmkwlM9JID9WS2jUsTpzQ91L8MEPLJ/4zrBwZua8W5fECwCCh2c\n"
-                    "9G5IzzBm+otMS/YKwmR1olzRCyEkyAEjXWqBI9Ftv5eG8m0VkBzOG655WIYdyV0H\n"
-                    "fDK/NWcvGqa0w/nriMD6mDjKOryamw0OP9QuYgMN0C9xMW9y8SmP4h92OAWodTYg\n"
-                    "Y1hZCxdv6cs5UnW9+PWvS+WIbkh+GaWYxwIDAQAB\n"
+                    "MIIBCgKCAQEAvqCL9IFBWxiDU3dFAdFv4vP50Wzv2eXNgH8d7j/ZdzZIMMGbdNgq\n"
+                    "+jKXStI6yrnkx6IGq1z9ymGmErbocJ5RLwUh+VqJhKZ683hVsHhPka2/s7So/YRV\n"
+                    "NbMjJj4L15CSFdGNPsQNpFCQrGfI71eGh8q2lNuW2cbe+AafWFhqtmfKglJJdwiM\n"
+                    "sl+5/FAN2Ks0s5CWNhRNsZmo00eLb4cBxOIh4LVxjlrXgiBQ+b0OKIymqa9/0Hvv\n"
+                    "veTrPO6qPkNcMjumx79l3AZtasg821gBHafzTh+acLYJyqtEAlCtAQGYGhcl7wSo\n"
+                    "VJyRJX7reja7fCNc4jpAs79VAF8TNCAWSwIDAQAB\n"
                     "-----END RSA PUBLIC KEY-----";
 
     BIO *keyBio = BIO_new(BIO_s_mem());

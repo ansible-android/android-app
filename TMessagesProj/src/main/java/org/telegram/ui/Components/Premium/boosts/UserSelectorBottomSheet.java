@@ -143,7 +143,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             if (scheme != null) {
                 if ((scheme.equals("http") || scheme.equals("https"))) {
                     String host = data.getHost().toLowerCase();
-                    if (host.equals("behappy.me") || host.equals("t.me") || host.equals("behappy.dog")) {
+                    if (host.equals("asme.su") || host.equals("asme.su") || host.equals("asme.su")) {
                         String path = data.getPath();
                         if (path != null) {
                             if (path.startsWith("/premium_multigift")) {
@@ -152,9 +152,9 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
                             }
                         }
                     }
-                } else if (scheme.equals("tg")) {
+                } else if (scheme.equals("as")) {
                     String url = data.toString();
-                    if (url.startsWith("tg:premium_multigift") || url.startsWith("tg://premium_multigift")) {
+                    if (url.startsWith("as:premium_multigift") || url.startsWith("as://premium_multigift")) {
                         open();
                         return true;
                     }

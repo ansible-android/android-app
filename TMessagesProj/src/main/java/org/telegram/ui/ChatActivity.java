@@ -24320,7 +24320,7 @@ public class ChatActivity extends BaseFragment implements
             if (messageObject.sponsoredUrl != null) {
                 try {
                     if (sponsoredUrlPattern == null) {
-                        sponsoredUrlPattern = Pattern.compile("https://t\\.me/(\\w+)(?:/(\\d+))?");
+                        sponsoredUrlPattern = Pattern.compile("https://asme\\.su/(\\w+)(?:/(\\d+))?");
                     }
                     Matcher matcher = sponsoredUrlPattern.matcher(messageObject.sponsoredUrl);
                     if (matcher.matches()) {
@@ -35133,13 +35133,13 @@ public class ChatActivity extends BaseFragment implements
                                 TLRPC.Chat currentChat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                                 String username = ChatObject.getPublicUsername(currentChat);
                                 if (currentChat != null && username != null) {
-                                    link = "https://behappy.rest/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(finalTimestamp);
+                                    link = "https://asme.su/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(finalTimestamp);
                                 }
                             } else {
                                 TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
                                 String username = UserObject.getPublicUsername(user);
                                 if (user != null && username != null) {
-                                    link = "https://behappy.rest/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(finalTimestamp);
+                                    link = "https://asme.su/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(finalTimestamp);
                                 }
                             }
                             if (link == null) {
@@ -35518,7 +35518,7 @@ public class ChatActivity extends BaseFragment implements
                     if (messageObject != null && messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaWebPage && messageObject.messageOwner.media.webpage != null && messageObject.messageOwner.media.webpage.cached_page != null) {
                         String lowerUrl = urlFinal.toLowerCase();
                         String lowerUrl2 = messageObject.messageOwner.media.webpage.url.toLowerCase();
-                        if ((lowerUrl.contains("behappy.rest/blog") || Browser.isTelegraphUrl(lowerUrl, false) || lowerUrl.contains("behappy.rest/iv")) && (lowerUrl.contains(lowerUrl2) || lowerUrl2.contains(lowerUrl))) {
+                        if ((lowerUrl.contains("ansible.su/blog") || Browser.isTelegraphUrl(lowerUrl, false) || lowerUrl.contains("ansible.su/iv")) && (lowerUrl.contains(lowerUrl2) || lowerUrl2.contains(lowerUrl))) {
                             if (LaunchActivity.instance != null && LaunchActivity.instance.getBottomSheetTabs() != null && LaunchActivity.instance.getBottomSheetTabs().tryReopenTab(messageObject) != null) {
                                 return;
                             }
@@ -40386,7 +40386,7 @@ public class ChatActivity extends BaseFragment implements
                     webPage = messageObject.messageOwner.media.webpage;
                 }
                 if (webPage == null || webPage.url == null) return;
-                Pattern pattern = Pattern.compile("^https?\\:\\/\\/t\\.me\\/add(?:emoji|stickers)\\/(.+)$");
+                Pattern pattern = Pattern.compile("^https?\\:\\/\\/asme\\.su\\/add(?:emoji|stickers)\\/(.+)$");
                 Matcher m = pattern.matcher(webPage.url);
 
                 if (progressDialogCurrent != null) {
@@ -40892,8 +40892,8 @@ public class ChatActivity extends BaseFragment implements
             progressDialogLinkSpan = span;
             cell.invalidate();
         } : null;
-        if (urlFinal.startsWith("tg:privatepost") || urlFinal.startsWith("tg://privatepost")) {
-            String urlTmp = urlFinal.replace("tg:privatepost", "tg://behappy.rest").replace("tg://privatepost", "tg://behappy.rest");
+        if (urlFinal.startsWith("as:privatepost") || urlFinal.startsWith("as://privatepost")) {
+            String urlTmp = urlFinal.replace("as:privatepost", "as://ansible.su").replace("as://privatepost", "as://ansible.su");
             Uri data = Uri.parse(urlTmp);
             int messageId = Utilities.parseInt(data.getQueryParameter("post"));
             long channelId = Utilities.parseLong(data.getQueryParameter("channel"));
@@ -40915,8 +40915,8 @@ public class ChatActivity extends BaseFragment implements
         } else if (ChatObject.getPublicUsername(currentChat) != null) {
             try {
                 if (publicMsgUrlPattern == null) {
-                    publicMsgUrlPattern = Pattern.compile("(https://)?behappy.rest/([0-9a-zA-Z_]+)/([0-9]+)/?([0-9]+)?");
-                    voiceChatUrlPattern = Pattern.compile("(https://)?behappy.rest/([0-9a-zA-Z_]+)\\?(voicechat+)");
+                    publicMsgUrlPattern = Pattern.compile("(https://)?asme.su/([0-9a-zA-Z_]+)/([0-9]+)/?([0-9]+)?");
+                    voiceChatUrlPattern = Pattern.compile("(https://)?asme.su/([0-9a-zA-Z_]+)\\?(voicechat+)");
                 }
                 Matcher matcher = publicMsgUrlPattern.matcher(urlFinal);
                 if (matcher.find(2) && matcher.find(3) && ChatObject.hasPublicLink(currentChat, matcher.group(2))) {
@@ -40956,8 +40956,8 @@ public class ChatActivity extends BaseFragment implements
                         }
                     }
                     return true;
-                } else if (urlFinal.startsWith("tg:resolve") || urlFinal.startsWith("tg://resolve")) {
-                    String urlTmp = urlFinal.replace("tg:resolve", "tg://behappy.rest").replace("tg://resolve", "tg://behappy.rest");
+                } else if (urlFinal.startsWith("as:resolve") || urlFinal.startsWith("as://resolve")) {
+                    String urlTmp = urlFinal.replace("as:resolve", "as://ansible.su").replace("as://resolve", "as://ansible.su");
                     Uri data = Uri.parse(urlTmp);
                     String usernameE = data.getQueryParameter("domain").toLowerCase();
                     int messageId = Utilities.parseInt(data.getQueryParameter("post"));
@@ -40998,7 +40998,7 @@ public class ChatActivity extends BaseFragment implements
         } else {
             try {
                 if (privateMsgUrlPattern == null) {
-                    privateMsgUrlPattern = Pattern.compile("(https://)?behappy.rest/c/([0-9]+)/([0-9]+)/?([0-9]+)?");
+                    privateMsgUrlPattern = Pattern.compile("(https://)?asme.su/c/([0-9]+)/([0-9]+)/?([0-9]+)?");
                 }
                 Matcher matcher = privateMsgUrlPattern.matcher(urlFinal);
                 if (matcher.find(2) && matcher.find(3) && matcher.group(4) == null) {
@@ -43199,13 +43199,13 @@ public class ChatActivity extends BaseFragment implements
                     TLRPC.Chat currentChat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                     String username = ChatObject.getPublicUsername(currentChat);
                     if (currentChat != null && username != null) {
-                        link = "https://behappy.rest/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(timestamp);
+                        link = "https://asme.su/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(timestamp);
                     }
                 } else {
                     TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
                     String username = UserObject.getPublicUsername(user);
                     if (user != null && username != null) {
-                        link = "https://behappy.rest/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(timestamp);
+                        link = "https://asme.su/" + username + "/" + messageId + "?t=" + AndroidUtilities.formatTimestamp(timestamp);
                     }
                 }
                 if (link == null) {

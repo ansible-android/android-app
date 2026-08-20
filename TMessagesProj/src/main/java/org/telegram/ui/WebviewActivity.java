@@ -241,10 +241,10 @@ public class WebviewActivity extends BaseFragment {
                     return false;
                 }
                 Uri uri = Uri.parse(url);
-                if ("tg".equals(uri.getScheme())) {
+                if ("as".equals(uri.getScheme())) {
                     if (type == TYPE_STAT) {
                         try {
-                            uri = Uri.parse(url.replace("tg:statsrefresh", "tg://behappy.rest"));
+                            uri = Uri.parse(url.replace("as:statsrefresh", "as://ansible.su"));
                             reloadStats(uri.getQueryParameter("params"));
                         } catch (Throwable e) {
                             FileLog.e(e);
@@ -375,7 +375,7 @@ public class WebviewActivity extends BaseFragment {
             SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("botshare", Activity.MODE_PRIVATE);
             String existing = sharedPreferences.getString("" + messageObject.getId(), null);
             StringBuilder hash = new StringBuilder(existing != null ? existing : "");
-            StringBuilder addHash = new StringBuilder("tgShareScoreUrl=" + URLEncoder.encode("tgb://share_game_score?hash=", "UTF-8"));
+            StringBuilder addHash = new StringBuilder("tgShareScoreUrl=" + URLEncoder.encode("asb://share_game_score?hash=", "UTF-8"));
             if (existing == null) {
                 final char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
                 for (int i = 0; i < 20; i++) {

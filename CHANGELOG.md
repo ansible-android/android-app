@@ -1,34 +1,98 @@
 # Changelog
 
-All notable changes to BeHappy for Android will be documented in this
+All notable changes to Ansible for Android will be documented in this
 file.
 
 Changes inherited from upstream Telegram for Android are not repeated
-here. This changelog covers only modifications made by the BeHappy
+here. This changelog covers only modifications made by the Ansible
 Android Authors.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
-
-### Added
-- Initial fork from upstream Telegram for Android.
-- MVSy 1.0 protocol layer (replaces MTProto 2.0).
-- Connection to BeHappy backend (`mvsy.behappy.rest`).
-- BeHappy branding: app name, icon, splash screen, color scheme.
-
-### Removed
-- Telegram-specific branding (name, logo, About text).
-- Telegram Premium UI surfaces.
-- Telegram Stars integration.
-- Fragment / TON wallet integration.
-- Sponsored messages.
-- Telegram-specific deep links (`tg://`, `t.me`).
+## [0.1.1] - 2026-08-21
 
 ### Changed
-- Default DC list points to BeHappy servers.
-- App package id renamed to `rest.behappy.android`.
-- Help and support links point to BeHappy resources.
+- **Datacenter bootstrap** now points at the live production LB
+  `85.193.80.91:10443` (SPB). The dead seeds `144.31.238.115` /
+  `144.31.221.5` are removed. Host/port matches the desktop client and
+  the `help.getConfig` the cluster serves (`this_dc=1`, dc1..5 →
+  `85.193.80.91:10443`); the CDN datacenter (`195.133.31.208:5222`) is
+  discovered at runtime via `help.getConfig`.
+- **Deep-link domain** unified to `asme.su` (the messenger short-link
+  domain). Link recognition (`t.me`, `behappy.me`, `behappy.dog`),
+  generation (usernames, invites `+`, `joinchat`, `addstickers`,
+  `addemoji`, `giftcode`, `folder`, `boost`, `call`, `c/`, `m/`,
+  `BotFather`, `spambot`, `premiumbot`, `proxy`, `socks`) and the
+  `PREFIX` handle-subdomain pattern all resolve to `asme.su`. Website
+  links (`blog`, `tour`, `iv`, `faq`, `privacy`, `embed`, `dl`,
+  `instant-view.`, `core.`, `messenger.`) stay on `ansible.su`.
+- **URI scheme** changed from `tg://` to `as://` (and `tgb` → `asb`),
+  matching the desktop client and backend (`mvsy_link_page_handler`
+  emits `as://…`). Manifest `BROWSABLE` filters register `asme.su`,
+  `*.asme.su`, and the `as` / `asb` schemes.
+- **App name** is now "Ansible" (was "Telegram" in the built-in string
+  fallbacks; server language packs remain authoritative at runtime).
+- **App icon** replaced with the Ansible brand mark across the default,
+  standalone (`_sa`) and alternate icon sets (legacy, adaptive
+  foreground, and round). Telegram-blue adaptive backgrounds and the
+  Telegram paper-plane monochrome layer are removed.
+- Version bumped to `0.1.1` (`versionName 0.1.1`, `versionCode 3001001`,
+  matching the cross-client scheme `3000000 + minor*1000 + patch`).
 
-[Unreleased]: https://github.com/behappy-android/Telegram/compare/v0.0.0...HEAD
+### Fixed
+- Deep-link parser was dead after the scheme migration: the `switch
+  (scheme)` cases in `LaunchActivity` and `LinkManager.isWebAppLink`
+  were still labelled `case "tg"`, so every `as://` link (usernames,
+  invites, stickers, QR login, bot buttons, in-app settings links) was
+  silently dropped. Relabelled to `case "as"`.
+- `Browser.extractUsername` used the old Telegram `substring` offsets
+  after the host string was rebranded, corrupting extracted usernames;
+  offsets now match `asme.su/` (8 / 15 / 16).
+- Story, boost, premium/star invoice and NFT-gift links were still built
+  on `ansible.su` (opened the website in a browser instead of the in-app
+  flow); now `asme.su`.
+- `Browser.isInternalUri` had a dead duplicated host branch and forced
+  usernames starting with `blog`/`faq` to the external browser; instant-
+  view (`/iv`) recognition disagreed between call sites. Cleaned up.
+- Google Assistant App Actions (`shortcuts.xml`) and localized app-name
+  overrides still emitted `tg://` / "Telegram"; both migrated.
+
+### Rebrand (icon & name)
+- App name is "Ansible" in the default and all nine localized string
+  fallbacks (previously the launcher label showed "Telegram" on ru/de/
+  es/it/nl/pt/uk/ar/ko devices).
+- Replaced the Telegram wordmark shown on the chats screen and stories
+  header (`telegram_logo_2`) and the first-run intro (`telegram_logo`,
+  `intro_tg_plane`) with the Ansible mark, and every notification's
+  status-bar icon (`notification.png`) with a white Ansible glyph.
+- Rebranded gallery/download folder names, system-contacts action
+  labels, service-notification user names and support e-mail addresses
+  (`*@stel.com` → `*@ansible.su`).
+
+### Security / MTProto
+- Neutralised the Telegram ipconfig fallback that could poison the DC
+  list: the `help.configSimple` trusted key in `Datacenter.cpp` is now
+  an Ansible-owned key (Telegram-signed fallback payloads from the
+  Firebase remote-config / DoH path are rejected fail-closed), and the
+  `dcDomainName` DoH defaults point at `apv3.ansible.su` instead of
+  `apv3.stel.com`.
+- Payment-webview `BLACKLISTED_PROTOCOLS` now blocks `as` (and `tg`), so
+  a third-party payment page cannot launch app deep links mid-payment.
+- Internal-URL host check tightened from `endsWith("ansible.su")` to an
+  exact/subdomain match (no `evilansible.su` false positive).
+- Built-in server RSA public key stays the rotated key
+  (`MIIBCgKCAQEAvqCL9IFB…`, fingerprint `0xDDCF36F8466E4286`), the only
+  key the live cluster holds the private half for. No legacy key/
+  fingerprint is shipped, so `selectPublicKey` cannot pick a stale key.
+
+### Known follow-ups (not blocking 0.1.1)
+- `google-services.json` still carries Telegram's Firebase project; its
+  remote-config payload is now rejected (above), but installs still phone
+  home to Telegram's Firebase until an Ansible project config is dropped in.
+- The round-video watermark Lottie (`raw/plane_logo_plain.json`) is still
+  the Telegram plane; replace with an Ansible logo Lottie or disable it.
+- Stars-transaction detail links still point at `fragment.com`.
+
+[0.1.1]: https://github.com/behappy-android/Telegram/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/behappy-android/Telegram/releases/tag/v0.1.0

@@ -1009,7 +1009,7 @@ public class GroupStickersActivity extends BaseFragment implements NotificationC
             TextView textView = new TextView(context);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-            textView.setText("behappy.rest/addemoji/");
+            textView.setText("asme.su/addemoji/");
             editText = new EditTextCaption(context, null);
             editText.setLines(1);
             editText.setSingleLine(true);

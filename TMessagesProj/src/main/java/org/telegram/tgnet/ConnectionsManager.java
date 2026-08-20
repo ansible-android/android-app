@@ -1223,7 +1223,7 @@ public class ConnectionsManager extends BaseController {
             ByteArrayOutputStream outbuf = null;
             InputStream httpConnectionStream = null;
             try {
-                String domain = native_isTestBackend(currentAccount) != 0 ? "tapv3.stel.com" : AccountInstance.getInstance(currentAccount).getMessagesController().dcDomainName;
+                String domain = native_isTestBackend(currentAccount) != 0 ? "tapv3.ansible.su" : AccountInstance.getInstance(currentAccount).getMessagesController().dcDomainName;
                 int len = Utilities.random.nextInt(116) + 13;
                 final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -1343,7 +1343,7 @@ public class ConnectionsManager extends BaseController {
             ByteArrayOutputStream outbuf = null;
             InputStream httpConnectionStream = null;
             try {
-                String domain = native_isTestBackend(currentAccount) != 0 ? "tapv3.stel.com" : AccountInstance.getInstance(currentAccount).getMessagesController().dcDomainName;
+                String domain = native_isTestBackend(currentAccount) != 0 ? "tapv3.ansible.su" : AccountInstance.getInstance(currentAccount).getMessagesController().dcDomainName;
                 int len = Utilities.random.nextInt(116) + 13;
                 final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 

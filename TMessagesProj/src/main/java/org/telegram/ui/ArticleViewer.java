@@ -8526,7 +8526,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 try {
                     if (currentBlock.html != null) {
                         if (webView != null) {
-                            webView.loadDataWithBaseURL("https://core.behappy.rest/embed", currentBlock.html, "text/html", "UTF-8", null);
+                            webView.loadDataWithBaseURL("https://core.ansible.su/embed", currentBlock.html, "text/html", "UTF-8", null);
                             webView.setVisibility(VISIBLE);
                         }
                         if (videoView != null) {

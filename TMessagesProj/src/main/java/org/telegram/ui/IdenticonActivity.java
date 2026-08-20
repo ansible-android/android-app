@@ -217,7 +217,7 @@ public class IdenticonActivity extends BaseFragment implements NotificationCente
             codeTextView.setText(hash.toString());
             hash.clear();
             hash.append(AndroidUtilities.replaceTags(LocaleController.formatString("EncryptionKeyDescription", R.string.EncryptionKeyDescription, user.first_name, user.first_name)));
-            final String url = "behappy.rest";
+            final String url = "ansible.su";
             int index = hash.toString().indexOf(url);
             if (index != -1) {
                 hash.setSpan(new URLSpanReplacement(LocaleController.getString(R.string.EncryptionKeyLink)), index, index + url.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

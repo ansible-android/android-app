@@ -1160,13 +1160,13 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
                     final MessagesController messagesController = MessagesController.getInstance(account);
                     if (!TextUtils.isEmpty(messagesController.premiumBotUsername)) {
                         launchActivity.setNavigateToPremiumBot(true);
-                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://behappy.rest/" + messagesController.premiumBotUsername + "?start=" + source)), (Browser.Progress) null);
+                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://asme.su/" + messagesController.premiumBotUsername + "?start=" + source)), (Browser.Progress) null);
                     } else if (!TextUtils.isEmpty(messagesController.premiumInvoiceSlug)) {
-                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://behappy.rest/$" + messagesController.premiumInvoiceSlug)), (Browser.Progress) null);
+                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://asme.su/$" + messagesController.premiumInvoiceSlug)), (Browser.Progress) null);
                     }
                 } else {
                     final Uri uri = Uri.parse(selectedTier.subscriptionOption.bot_url);
-                    if (uri.getHost().equals("t.me")) {
+                    if (uri.getHost().equals("asme.su")) {
                         if (!uri.getPath().startsWith("/$") && !uri.getPath().startsWith("/invoice/")) {
                             launchActivity.setNavigateToPremiumBot(true);
                         }

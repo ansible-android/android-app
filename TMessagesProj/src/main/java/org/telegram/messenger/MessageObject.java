@@ -3027,7 +3027,7 @@ public class MessageObject {
             }
         } else if (event.action instanceof TLRPC.TL_channelAdminLogEventActionParticipantJoinByRequest) {
             TLRPC.TL_channelAdminLogEventActionParticipantJoinByRequest action = (TLRPC.TL_channelAdminLogEventActionParticipantJoinByRequest) event.action;
-            if (action.invite instanceof TLRPC.TL_chatInviteExported && "https://behappy.rest/+PublicChat".equals(((TLRPC.TL_chatInviteExported) action.invite).link) ||
+            if (action.invite instanceof TLRPC.TL_chatInviteExported && "https://asme.su/+PublicChat".equals(((TLRPC.TL_chatInviteExported) action.invite).link) ||
                     action.invite instanceof TLRPC.TL_chatInvitePublicJoinRequests) {
                 messageText = replaceWithLink(getString(R.string.JoinedViaRequestApproved), "un1", fromUser);
                 messageText = replaceWithLink(messageText, "un2", MessagesController.getInstance(currentAccount).getUser(action.approved_by));

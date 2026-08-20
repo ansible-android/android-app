@@ -1254,13 +1254,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
                 Intent mailer = new Intent(Intent.ACTION_SENDTO);
                 mailer.setData(Uri.parse("mailto:"));
-                mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{banned ? "recover@behappy.rest" : "login@stel.com"});
+                mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{banned ? "recover@ansible.su" : "login@ansible.su"});
                 if (banned) {
                     mailer.putExtra(Intent.EXTRA_SUBJECT, "Banned phone number: " + phoneNumber);
-                    mailer.putExtra(Intent.EXTRA_TEXT, "I'm trying to use my mobile phone number: " + phoneNumber + "\nBut Telegram says it's banned. Please help.\n\nApp version: " + version + "\nOS version: SDK " + Build.VERSION.SDK_INT + "\nDevice Name: " + Build.MANUFACTURER + Build.MODEL + "\nLocale: " + Locale.getDefault());
+                    mailer.putExtra(Intent.EXTRA_TEXT, "I'm trying to use my mobile phone number: " + phoneNumber + "\nBut Ansible says it's banned. Please help.\n\nApp version: " + version + "\nOS version: SDK " + Build.VERSION.SDK_INT + "\nDevice Name: " + Build.MANUFACTURER + Build.MODEL + "\nLocale: " + Locale.getDefault());
                 } else {
                     mailer.putExtra(Intent.EXTRA_SUBJECT, "Invalid phone number: " + phoneNumber);
-                    mailer.putExtra(Intent.EXTRA_TEXT, "I'm trying to use my mobile phone number: " + phoneNumber + "\nBut Telegram says it's invalid. Please help.\n\nApp version: " + version + "\nOS version: SDK " + Build.VERSION.SDK_INT + "\nDevice Name: " + Build.MANUFACTURER + Build.MODEL + "\nLocale: " + Locale.getDefault());
+                    mailer.putExtra(Intent.EXTRA_TEXT, "I'm trying to use my mobile phone number: " + phoneNumber + "\nBut Ansible says it's invalid. Please help.\n\nApp version: " + version + "\nOS version: SDK " + Build.VERSION.SDK_INT + "\nDevice Name: " + Build.MANUFACTURER + Build.MODEL + "\nLocale: " + Locale.getDefault());
                 }
                 fragment.getParentActivity().startActivity(Intent.createChooser(mailer, "Send email..."));
             } catch (Exception e) {
@@ -3982,7 +3982,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
                                         Intent mailer = new Intent(Intent.ACTION_SENDTO);
                                         mailer.setData(Uri.parse("mailto:"));
-                                        mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{"sms@behappy.rest"});
+                                        mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{"sms@ansible.su"});
                                         mailer.putExtra(Intent.EXTRA_SUBJECT, emailPhone + " Android Registration/Login Issue " + version + (paid ? " #paidauth" : ""));
 
                                         StringBuilder body = new StringBuilder();
@@ -4403,7 +4403,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     confirmTextView.setMovementMethod(new AndroidUtilities.LinkMovementMethodMy());
                     spanned.replace(lastIndex, lastIndex + 1, "");
                     spanned.replace(startIndex, startIndex + 1, "");
-                    spanned.setSpan(new URLSpanNoUnderline("tg://settings/change_number"), startIndex, lastIndex - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spanned.setSpan(new URLSpanNoUnderline("as://settings/change_number"), startIndex, lastIndex - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
                 str = spanned;
             } else {
@@ -9883,7 +9883,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             if (!TextUtils.isEmpty(support_email_email)) {
                                 mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{support_email_email});
                             } else {
-                                mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{"sms@behappy.rest"});
+                                mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{"sms@ansible.su"});
                             }
                             if (!TextUtils.isEmpty(support_email_subject)) {
                                 mailer.putExtra(Intent.EXTRA_SUBJECT, support_email_subject);

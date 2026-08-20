@@ -258,12 +258,10 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="telegram.me" android:scheme="http" />
-                <data android:host="telegram.me" android:scheme="https" />
-                <data android:host="telegram.dog" android:scheme="http" />
-                <data android:host="telegram.dog" android:scheme="https" />
-                <data android:host="t.me" android:scheme="http" />
-                <data android:host="t.me" android:scheme="https" />
+                <data android:host="asme.su" android:scheme="http" />
+                <data android:host="asme.su" android:scheme="https" />
+                <data android:host="*.asme.su" android:scheme="http" />
+                <data android:host="*.asme.su" android:scheme="https" />
             </intent-filter>
             <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
                 <action android:name="android.intent.action.VIEW"/>
@@ -275,7 +273,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="tg" />
+                <data android:scheme="as" />
             </intent-filter>
             <intent-filter>
                 <action android:name="org.telegram.messenger.CREATE_STICKER_PACK"/>
@@ -321,7 +319,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="tgb" />
+                <data android:scheme="asb" />
             </intent-filter>
         </activity>
         <activity

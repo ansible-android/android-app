@@ -834,7 +834,7 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                     linkActionView.setCanEdit(adminId == getAccountInstance().getUserConfig().clientUserId);
                     if (isPublic && adminId == getAccountInstance().getUserConfig().clientUserId) {
                         if (info != null) {
-                            linkActionView.setLink("https://behappy.rest/" + ChatObject.getPublicUsername(currentChat));
+                            linkActionView.setLink("https://asme.su/" + ChatObject.getPublicUsername(currentChat));
                             linkActionView.setUsers(0, null);
                             linkActionView.hideRevokeOption(true);
                         }
@@ -1360,10 +1360,10 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                 SpannableStringBuilder builder = new SpannableStringBuilder(invite.title);
                 Emoji.replaceEmoji(builder, titleView.getPaint().getFontMetricsInt(), false);
                 titleView.setText(builder);
-            } else if (invite.link.startsWith("https://behappy.rest/+")) {
-                titleView.setText(MessagesController.getInstance(currentAccount).linkPrefix + "/" + invite.link.substring("https://behappy.rest/+".length()));
-            } else if (invite.link.startsWith("https://behappy.rest/joinchat/")) {
-                titleView.setText(invite.link.substring("https://behappy.rest/joinchat/".length()));
+            } else if (invite.link.startsWith("https://asme.su/+")) {
+                titleView.setText(MessagesController.getInstance(currentAccount).linkPrefix + "/" + invite.link.substring("https://asme.su/+".length()));
+            } else if (invite.link.startsWith("https://asme.su/joinchat/")) {
+                titleView.setText(invite.link.substring("https://asme.su/joinchat/".length()));
             } else if (invite.link.startsWith("https://")) {
                 titleView.setText(invite.link.substring("https://".length()));
             } else {

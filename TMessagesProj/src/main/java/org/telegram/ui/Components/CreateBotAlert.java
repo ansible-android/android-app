@@ -318,7 +318,7 @@ public class CreateBotAlert {
                                     ),
                                     () -> {
                                         sheet.dismiss();
-                                        Browser.openUrl(context, "https://behappy.rest/BotFather?start=deletebot");
+                                        Browser.openUrl(context, "https://asme.su/BotFather?start=deletebot");
                                     },
                                     resourcesProvider
                                 )

@@ -449,7 +449,7 @@ public class EmbedBottomSheet extends BottomSheet {
                 }
                 videoView.loadVideo(null, null, null, null, false);
                 HashMap<String, String> args = new HashMap<>();
-                args.put("Referer", "messenger.behappy.rest");
+                args.put("Referer", "messenger.ansible.su");
                 try {
                     webView.loadUrl(embedUrl, args);
                 } catch (Exception e) {
@@ -911,7 +911,7 @@ public class EmbedBottomSheet extends BottomSheet {
                     }
                     videoView.loadVideo(null, null, null, null, false);
                     HashMap<String, String> args = new HashMap<>();
-                    args.put("Referer", "messenger.behappy.rest");
+                    args.put("Referer", "messenger.ansible.su");
                     try {
                         String currentYoutubeId = videoView.getYoutubeId();
                         if (currentYoutubeId != null) {
@@ -943,7 +943,7 @@ public class EmbedBottomSheet extends BottomSheet {
                                     FileLog.e(e);
                                 }
                             }
-                            webView.loadDataWithBaseURL("https://messenger.behappy.rest/", String.format(Locale.US, youtubeFrame, currentYoutubeId, seekToTime), "text/html", "UTF-8", "https://youtube.com");
+                            webView.loadDataWithBaseURL("https://messenger.ansible.su/", String.format(Locale.US, youtubeFrame, currentYoutubeId, seekToTime), "text/html", "UTF-8", "https://youtube.com");
                         } else {
                             webView.loadUrl(embedUrl, args);
                         }

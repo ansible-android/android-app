@@ -5771,7 +5771,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                                 "&name=" + URLEncoder.encode(FileLoader.getDocumentFileName(document), "UTF-8") +
                                 "&reference=" + Utilities.bytesToHex(document.file_reference != null ? document.file_reference : new byte[0]) +
                                 "&sid=" + storyItem.id + "&did=" + storyItem.dialogId;
-                        uriesToPrepare.add(Uri.parse("tg://" + FileLoader.getAttachFileName(document) + params));
+                        uriesToPrepare.add(Uri.parse("as://" + FileLoader.getAttachFileName(document) + params));
                         documentsToPrepare.add(document);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
@@ -6004,7 +6004,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                                 "&name=" + URLEncoder.encode(FileLoader.getDocumentFileName(document), "UTF-8") +
                                 "&reference=" + Utilities.bytesToHex(document.file_reference != null ? document.file_reference : new byte[0]) +
                                 "&sid=" + currentStory.storyItem.id + "&did=" + currentStory.storyItem.dialogId;
-                        uri = Uri.parse("tg://" + FileLoader.getAttachFileName(document) + params);
+                        uri = Uri.parse("as://" + FileLoader.getAttachFileName(document) + params);
                         FileLog.d("StoryViewer requestVideoPlayer(" + t + "): playing from " + uri);
                         videoDuration = (long) (MessageObject.getDocumentDuration(document) * 1000);
                     } catch (Exception exception) {
@@ -7075,18 +7075,18 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     return null;
                 }
                 if (currentStory.isLive) {
-                    return String.format(Locale.US, "https://behappy.rest/%1$s/s/live", UserObject.getPublicUsername(user));
+                    return String.format(Locale.US, "https://asme.su/%1$s/s/live", UserObject.getPublicUsername(user));
                 }
-                return String.format(Locale.US, "https://behappy.rest/%1$s/s/%2$s", UserObject.getPublicUsername(user), currentStory.storyItem.id);
+                return String.format(Locale.US, "https://asme.su/%1$s/s/%2$s", UserObject.getPublicUsername(user), currentStory.storyItem.id);
             } else {
                 TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                 if (ChatObject.getPublicUsername(chat) == null) {
                     return null;
                 }
                 if (currentStory.isLive) {
-                    return String.format(Locale.US, "https://behappy.rest/%1$s/s/live", ChatObject.getPublicUsername(chat));
+                    return String.format(Locale.US, "https://asme.su/%1$s/s/live", ChatObject.getPublicUsername(chat));
                 }
-                return String.format(Locale.US, "https://behappy.rest/%1$s/s/%2$s", ChatObject.getPublicUsername(chat), currentStory.storyItem.id);
+                return String.format(Locale.US, "https://asme.su/%1$s/s/%2$s", ChatObject.getPublicUsername(chat), currentStory.storyItem.id);
             }
         }
 

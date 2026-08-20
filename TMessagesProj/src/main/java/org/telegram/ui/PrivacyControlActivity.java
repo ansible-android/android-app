@@ -2004,7 +2004,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                                 privacyCell.setText(LocaleController.getString(R.string.PrivacyPhoneInfo3));
                             } else {
                                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-                                String phoneLinkStr = String.format(Locale.ENGLISH, "https://behappy.rest/+%s", getUserConfig().getClientPhone());
+                                String phoneLinkStr = String.format(Locale.ENGLISH, "https://asme.su/+%s", getUserConfig().getClientPhone());
                                 SpannableString phoneLink = new SpannableString(phoneLinkStr);
                                 phoneLink.setSpan(new ClickableSpan() {
                                     @Override

@@ -43,7 +43,7 @@ public class URLSpanNoUnderline extends URLSpan {
     public void onClick(View widget) {
         String url = getURL();
         if (url.startsWith("@")) {
-            Uri uri = Uri.parse("https://behappy.rest/" + url.substring(1));
+            Uri uri = Uri.parse("https://asme.su/" + url.substring(1));
             Browser.openUrl(widget.getContext(), uri);
         } else {
             Browser.openUrl(widget.getContext(), url);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="AppName">تيليجرام</string>
-    <string name="AppNameBeta">(Beta) تيليجرام</string>
+    <string name="AppName">Ansible</string>
+    <string name="AppNameBeta">Ansible Beta</string>
     <string name="LanguageName">العربية</string>
     <string name="English">الإنجليزية</string>
     <string name="LanguageNameInEnglish">Arabic</string>
@@ -405,21 +405,21 @@
     <string name="LanguageUnsupportedError">تعذر العثور على اللغة.</string>
     <string name="LanguageSame">أنت تستخدم حزمة اللغة (**%1$s**) بالفعل، يمكنك تغيير لغتك في أي وقت عبر الإعدادات.</string>
     <string name="LanguageUnknownCustomAlert">للأسف، لا تحتوي حزمة اللغة المخصصةُ هذه (**%1$s **) على بيانات لتيليجرام للأندرويد.</string>
-    <string name="AskAQuestionInfo">الدعم الفني في تيليجرام يقوم به متطوعون يحاولون الرد سريعًا قدر الإمكان، لكن ذلك قد يستغرق بعض الوقت.\n\nيرجى الاطلاع على<![CDATA[<a href=\"https://core.behappy.rest/faq/ar#a\"> الأسئلة الشائعة عن تيليجرام</a>]]> فهي تحوي إجابات لمعظم الأسئلة  <![CDATA[<a href=\"https://core.behappy.rest/faq/ar#j\">وحلولًا للعديد من المشاكل.</a>]]></string>
+    <string name="AskAQuestionInfo">الدعم الفني في تيليجرام يقوم به متطوعون يحاولون الرد سريعًا قدر الإمكان، لكن ذلك قد يستغرق بعض الوقت.\n\nيرجى الاطلاع على<![CDATA[<a href=\"https://core.ansible.su/faq/ar#a\"> الأسئلة الشائعة عن تيليجرام</a>]]> فهي تحوي إجابات لمعظم الأسئلة  <![CDATA[<a href=\"https://core.ansible.su/faq/ar#j\">وحلولًا للعديد من المشاكل.</a>]]></string>
     <string name="AskButton">اسأل متطوعًا</string>
     <string name="TelegramFAQ">الأسئلة الشائعة</string>
     <string name="TelegramFaq">الأسئلة الشائعة</string>
     <string name="TelegramFeatures">ميزات تيليجرام</string>
-    <string name="TelegramFeaturesUrl">https://behappy.rest/TelegramTipsAR/128</string>
+    <string name="TelegramFeaturesUrl">https://asme.su/AnsibleTipsAR/128</string>
     <string name="AddAccount">إضافة حساب</string>
     <string name="SelectAccount">اختيار حساب</string>
-    <string name="TelegramFaqUrl">https://core.behappy.rest/faq/ar</string>
+    <string name="TelegramFaqUrl">https://core.ansible.su/faq/ar</string>
     <string name="PrivacyPolicy">سياسة الخصوصية</string>
     <string name="TermsOfService">شروط الخدمة</string>
     <string name="TermsOfServiceLogin">تسجيلك يعني موافقتك\nعلى *شروط الخدمة*.</string>
-    <string name="PrivacyPolicyUrl">https://core.behappy.rest/faq/ar#a10</string>
-    <string name="TermsOfServiceUrl">https://core.behappy.rest/tos</string>
-    <string name="WebAppDisclaimerUrl">https://core.behappy.rest/tos/mini-apps</string>
+    <string name="PrivacyPolicyUrl">https://core.ansible.su/faq/ar#a10</string>
+    <string name="TermsOfServiceUrl">https://core.ansible.su/tos</string>
+    <string name="WebAppDisclaimerUrl">https://core.ansible.su/tos/mini-apps</string>
     <string name="DeleteLocalizationTitle">حذف حزمة اللغة</string>
     <string name="DeleteLocalizationText">هل ترغب حقًا في حذف حزمة اللغة **%1$s**؟</string>
     <string name="IncorrectLocalization">ملف الترجمة غير صالح</string>
@@ -658,9 +658,9 @@
     <string name="AuthAnotherClientScan">مسح رمز QR</string>
     <string name="AuthAnotherClientNotFound">لم يتم العثور على رمز مصادقة</string>
     <string name="AuthAnotherClientOk">تمّت المصادقة بنجاح</string>
-    <string name="AuthAnotherClientDownloadClientUrl">https://desktop.behappy.rest</string>
-    <string name="AuthAnotherWebClientUrl">https://web.behappy.rest/</string>
-    <string name="AuthAnotherClientInfo1">قم بتنزيل تيليجرام على حاسوبك من *desktop.behappy.rest*.</string>
+    <string name="AuthAnotherClientDownloadClientUrl">https://desktop.ansible.su</string>
+    <string name="AuthAnotherWebClientUrl">https://web.ansible.su/</string>
+    <string name="AuthAnotherClientInfo1">قم بتنزيل تيليجرام على حاسوبك من *desktop.ansible.su*.</string>
     <string name="AuthAnotherClientInfo2">يرجى فتح تيليجرام على سطح المكتب للحصول على رمز QR.</string>
     <string name="AuthAnotherClientInfo3">امسح رمز الـ QR لربط حسابك.</string>
     <string name="AuthAnotherClientUrl">يمكن استخدام هذا الرمز للسماح لشخص ما بتسجيل الدخول إلى حسابك في تيليجرام.\n\nلتأكيد عملية تسجيل الدخول؛ يرجى الذهاب إلى الإعدادات &gt; الأجهزة &gt; مسح QR وامسح الرمز.</string>
@@ -703,7 +703,7 @@
     <string name="ChannelDescriptionChanged">تم تحديث وصف القناة.</string>
     <string name="CheckPhoneNumber">هل لا يزال %1$s رقمك؟</string>
     <string name="CheckPhoneNumberInfo">يرجى إبقاء رقم هاتفك محدّثًا؛ لضمان قدرتك على تسجيل الدخول إلى تيليجرام. **معرفة المزيد**</string>
-    <string name="CheckPhoneNumberLearnMoreUrl">https://core.behappy.rest/faq/ar#g2</string>
+    <string name="CheckPhoneNumberLearnMoreUrl">https://core.ansible.su/faq/ar#g2</string>
     <string name="CheckPhoneNumberYes">نعم</string>
     <string name="CheckPhoneNumberNo">لا</string>
     <!--permissions-->
@@ -1060,7 +1060,7 @@
     <string name="InvalidLastName">المعذرة، لا يمكن استخدام اسم العائلة هذا.</string>
     <string name="Loading">يتم التحميل...</string>
     <string name="NoPlayerInstalled">لا تملك أي مشغل للمقاطع المرئية على جهازك، يرجى تنزيل واحد للمتابعة</string>
-    <string name="NoMailInstalled">يرجى إرسال بريد إلكتروني على reports@stel.com لإخبارنا بمشكلتك.</string>
+    <string name="NoMailInstalled">يرجى إرسال بريد إلكتروني على sms@ansible.su لإخبارنا بمشكلتك.</string>
     <string name="NoHandleAppInstalled">لا تملك تطبيقًا يمكنه فتح صيغة الملفات \'%1$s\'، يرجى تنزيل تطبيق مناسب للاستمرار</string>
     <string name="InviteUser">هذا المستخدم ليس لديه تيليجرام بعد، هل تريد دعوته؟</string>
     <string name="AreYouSure">هل أنت متأكد؟</string>

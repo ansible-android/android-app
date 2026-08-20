@@ -507,6 +507,6 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
     }
 
     public void onGiftClick(Gift gift) {
-        Browser.openUrl(getContext(), "https://behappy.rest/nft/" + gift.slug);
+        Browser.openUrl(getContext(), "https://asme.su/nft/" + gift.slug);
     }
 }

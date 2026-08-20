@@ -517,13 +517,13 @@ public class ProxySettingsActivity extends BaseFragment {
                     params.append("port=").append(URLEncoder.encode(port, "UTF-8"));
                 }
                 if (currentType == 1) {
-                    url = "https://behappy.rest/proxy?";
+                    url = "https://asme.su/proxy?";
                     if (params.length() != 0) {
                         params.append("&");
                     }
                     params.append("secret=").append(URLEncoder.encode(secret, "UTF-8"));
                 } else {
-                    url = "https://behappy.rest/socks?";
+                    url = "https://asme.su/socks?";
                     if (!TextUtils.isEmpty(user)) {
                         if (params.length() != 0) {
                             params.append("&");
@@ -594,7 +594,7 @@ public class ProxySettingsActivity extends BaseFragment {
         if (clipText != null) {
             String[] params = null;
 
-            final String[] socksStrings = {"behappy.rest/socks?", "tg://socks?"};
+            final String[] socksStrings = {"asme.su/socks?", "as://socks?"};
             for (int i = 0; i < socksStrings.length; i++) {
                 final int index = clipText.indexOf(socksStrings[i]);
                 if (index >= 0) {
@@ -605,7 +605,7 @@ public class ProxySettingsActivity extends BaseFragment {
             }
 
             if (params == null) {
-                final String[] proxyStrings = {"behappy.rest/proxy?", "tg://proxy?"};
+                final String[] proxyStrings = {"asme.su/proxy?", "as://proxy?"};
                 for (int i = 0; i < proxyStrings.length; i++) {
                     final int index = clipText.indexOf(proxyStrings[i]);
                     if (index >= 0) {

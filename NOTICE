@@ -1,4 +1,4 @@
-BeHappy for Android
+Ansible for Android
 ====================
 
 This product is a derivative work of Telegram for Android
@@ -14,11 +14,11 @@ Copyright Notices
 Original Telegram for Android:
     Copyright (c) 2013-2026 Nikolai Kudashov and Telegram FZ-LLC
 
-BeHappy Android modifications:
-    Copyright (c) 2026 The BeHappy Android Authors
+Ansible Android modifications:
+    Copyright (c) 2026 The Ansible Android Authors
 
 Both copyrights apply to this software. Modifications made by the
-BeHappy Android Authors are also licensed under GPL v2 (or later),
+Ansible Android Authors are also licensed under GPL v2 (or later),
 as required by the upstream license.
 
 ------------------------------------------------------------------------
@@ -26,15 +26,15 @@ Source Code Availability (GPL §3 compliance)
 ------------------------------------------------------------------------
 
 The complete corresponding source code of this software, including any
-modifications made by the BeHappy Android Authors, is publicly available
+modifications made by the Ansible Android Authors, is publicly available
 at:
 
     https://github.com/behappy-android/Telegram
 
-If you received a binary distribution of BeHappy for Android and the
+If you received a binary distribution of Ansible for Android and the
 source code is no longer available at the URL above, please contact:
 
-    legal@behappy.rest
+    legal@ansible.su
 
 You are entitled to receive the full source code corresponding to the
 binary you received, at no additional charge beyond the cost of physical
@@ -50,20 +50,20 @@ This project:
   - Is NOT affiliated with, endorsed by, or sponsored by Telegram FZ-LLC.
   - Does NOT use the Telegram name, logo, or other Telegram trademarks
     in its branding, user-visible interface, or marketing.
-  - Connects to BeHappy backend servers, NOT to Telegram servers.
+  - Connects to Ansible backend servers, NOT to Telegram servers.
     It cannot be used to access Telegram accounts.
 
-"BeHappy" name, logo, and visual identity are the property of the
-BeHappy Android Authors.
+"Ansible" name, logo, and visual identity are the property of the
+Ansible Android Authors.
 
 ------------------------------------------------------------------------
 Compliance with Upstream README Requirements
 ------------------------------------------------------------------------
 
 The upstream Telegram-Android README requests the following from forks:
-  1. Use your own api_id — N/A, BeHappy uses its own protocol (MVSy 1.0).
-  2. Do not use the Telegram name — complied (rebranded to BeHappy).
-  3. Do not use the Telegram logo — complied (BeHappy uses its own logo).
+  1. Use your own api_id — N/A, Ansible uses its own protocol (MVSy 1.0).
+  2. Do not use the Telegram name — complied (rebranded to Ansible).
+  3. Do not use the Telegram logo — complied (Ansible uses its own logo).
   4. Follow security guidelines — adopted from upstream.
   5. Publish your code — complied (this repository is public).
 

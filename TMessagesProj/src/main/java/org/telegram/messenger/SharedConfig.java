@@ -407,7 +407,7 @@ public class SharedConfig {
         }
 
         public String getLink() {
-            StringBuilder url = new StringBuilder(!TextUtils.isEmpty(secret) ? "https://behappy.rest/proxy?" : "https://behappy.rest/socks?");
+            StringBuilder url = new StringBuilder(!TextUtils.isEmpty(secret) ? "https://asme.su/proxy?" : "https://asme.su/socks?");
             try {
                 url.append("server=").append(URLEncoder.encode(address, "UTF-8")).append("&").append("port=").append(port);
                 if (!TextUtils.isEmpty(username)) {
@@ -1572,10 +1572,10 @@ public class SharedConfig {
     public static void checkSaveToGalleryFiles() {
         Utilities.globalQueue.postRunnable(() -> {
             try {
-                File telegramPath = new File(Environment.getExternalStorageDirectory(), "Telegram");
-                File imagePath = new File(telegramPath, "Telegram Images");
+                File telegramPath = new File(Environment.getExternalStorageDirectory(), "Ansible");
+                File imagePath = new File(telegramPath, "Ansible Images");
                 imagePath.mkdir();
-                File videoPath = new File(telegramPath, "Telegram Video");
+                File videoPath = new File(telegramPath, "Ansible Video");
                 videoPath.mkdir();
 
                 if (!BuildVars.NO_SCOPED_STORAGE) {
