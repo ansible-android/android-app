@@ -81,7 +81,11 @@ private:
     TLObject *getCurrentHandshakeRequest(bool media);
     ByteArray *getAuthKey(ConnectionType connectionType, bool perm, int64_t *authKeyId, int32_t allowPendingKey);
 
-    const int32_t *defaultPorts = new int32_t[4] {-1, 443, 5222, -1};
+    // Ansible: always use the configured address port (10443). Do not port-hop
+    // to 443/5222 — presenting high-entropy obfuscated2 on 443 (where DPI expects
+    // TLS) and on the legacy Telegram port 5222 is a DPI block trigger in RU, and
+    // the server only listens on 10443 anyway.
+    const int32_t *defaultPorts = new int32_t[4] {-1, -1, -1, -1};
 
     int32_t instanceNum;
     uint32_t datacenterId;

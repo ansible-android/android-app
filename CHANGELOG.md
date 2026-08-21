@@ -10,6 +10,35 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.4] - 2026-08-21
+
+### Fixed (works in Russia without VPN)
+- **Removed the Telegram DPI-evasion backup cascade** that got the app blocked
+  by RU DPI. The primary obfuscated2 stream to 85.193.80.91:10443 is identical
+  to the desktop client (which is not blocked), so the differentiator was the
+  Android-only auxiliary traffic: `onRequestNewServerIpAndPort` fired
+  `FirebaseTask` (ipconfig from Telegram's Firebase project), `GoogleDnsLoadTask`
+  / `MozillaDnsLoadTask` (DoH), and a `ResolveHostByNameTask` that fronted DNS
+  over `https://www.google.com/resolve` with a forged `Host: dns.google.com`
+  header. That mix (Google/Mozilla DoH + SNI≠Host fronting), which fires
+  aggressively once `clientBlocked` drops the retry threshold to 5s, is a
+  TSPU-visible circumvention fingerprint. `onRequestNewServerIpAndPort` is now a
+  no-op (the seed DC is a fixed IP; `help.getConfig` supplies the real
+  dc_options after handshake), and `ResolveHostByNameTask` uses plain system DNS
+  — matching what the desktop fork already did.
+- **Stopped port-hopping to 443 / 5222.** `Datacenter.h defaultPorts` was
+  `{-1,443,5222,-1}`, so on connection trouble the client presented high-entropy
+  obfuscated2 on 443 (where DPI expects TLS) and on the legacy Telegram port
+  5222 — a second block trigger. Now `{-1,-1,-1,-1}` (always the configured
+  10443, like desktop).
+- Version 0.1.4 (`versionName 0.1.4`, `versionCode 3001004`).
+
+### Known follow-up
+- `google-services.json` is still Telegram's Firebase project (`tmessages2`);
+  startup FCM registration binds the device to Telegram's project (a data leak,
+  not the DPI block, and push is already broken because the backend can't push
+  to those tokens). Replace with the Ansible Firebase project.
+
 ## [0.1.3] - 2026-08-21
 
 ### Changed
@@ -136,6 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   the Telegram plane; replace with an Ansible logo Lottie or disable it.
 - Stars-transaction detail links still point at `fragment.com`.
 
+[0.1.4]: https://github.com/behappy-android/Telegram/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/behappy-android/Telegram/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/behappy-android/Telegram/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/behappy-android/Telegram/compare/v0.1.0...v0.1.1
