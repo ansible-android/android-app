@@ -58,7 +58,9 @@ jobs:
           restore-keys: gradle-${{ runner.os }}-
 
       - name: Build AppStandalone debug APK
-        run: ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone --no-daemon --stacktrace
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone --no-daemon --stacktrace
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/21.4.7075529
 
