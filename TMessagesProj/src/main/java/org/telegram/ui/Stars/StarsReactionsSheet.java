@@ -626,7 +626,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
 
         setCustomView(layout);
 
-        icon3dView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR) {
+        icon3dView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND) {
             @Override
             protected void startIdleAnimation() {}
         };
@@ -1056,7 +1056,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
             super(context);
             this.resourcesProvider = resourcesProvider;
 
-            counterImage = context.getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
+            counterImage = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз вместо звезды
             counterImage.setColorFilter(new PorterDuffColorFilter(0xFFFFFFFF, PorterDuff.Mode.SRC_IN));
 
             counterText.setTextColor(0xFFFFFFFF);

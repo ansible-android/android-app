@@ -286,7 +286,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 //        yOffset = dp(16);
         aboveTitleView = new FrameLayout(context);
         aboveTitleView.setClickable(true);
-        iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
+        iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
         iconTextureView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconTextureView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconTextureView.mRenderer.updateColors();
@@ -2941,7 +2941,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 particlesView = makeParticlesView(context, 70, 0);
                 topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-                iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
+                iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
                 iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
                 iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
                 iconView.mRenderer.updateColors();
@@ -3294,7 +3294,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (cache != null && cache[0] != null) {
             span = cache[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.ton : R.drawable.msg_premium_liststar);
+            span = new ColoredImageSpan(ton ? R.drawable.ton : R.drawable.diamond);
             if (cache != null) {
                 cache[0] = span;
             }
@@ -3304,7 +3304,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (ton) {
             span.setScale(scale * 0.2f, scale * 0.2f);
         } else {
-            span.setScale(scale, scale);
+            // Ansible: валюта Stars рисуется полноцветным алмазом (а не перекрашенной звездой).
+            span.recolorDrawable = false;
+            span.setScale(scale * 0.8f, scale * 0.8f);
         }
         spacedStar.setSpan(span, 0, spacedStar.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         AndroidUtilities.replaceMultipleCharSequence("⭐️", ssb, "⭐");
@@ -3370,8 +3372,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (spanRef != null && spanRef[0] != null) {
             span = spanRef[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.ton : R.drawable.msg_premium_liststar);
-            span.setScale(ton ? 0.222f : 1.13f, ton ? 0.222f : 1.13f);
+            span = new ColoredImageSpan(ton ? R.drawable.ton : R.drawable.diamond);
+            span.setScale(ton ? 0.222f : 0.9f, ton ? 0.222f : 0.9f);
+            if (!ton) span.recolorDrawable = false; // Ansible: полноцветный алмаз вместо звезды
         }
         if (spanRef != null) {
             spanRef[0] = span;
@@ -3409,7 +3412,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             ssb = (SpannableStringBuilder) cs;
         }
         final String symbol = ton ? "TON" : "⭐";
-        final int resId = ton ? R.drawable.ton : R.drawable.star_small_inner;
+        final int resId = ton ? R.drawable.ton : R.drawable.diamond; // Ansible: алмаз вместо звезды
         SpannableString spacedStar = new SpannableString(symbol + " ");
         ColoredImageSpan span;
         if (spanArr != null && spanArr[0] != null) {
@@ -4953,7 +4956,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         final StarParticlesView particlesView = makeParticlesView(context, 70, 0);
         topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        final GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
+        final GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
         iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconView.mRenderer.updateColors();
