@@ -799,7 +799,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
         builder.setTitle(getString(R.string.Gift2AuctionPlaceACustomBid));
         builder.setMessage(formatString(R.string.Gift2AuctionPlaceACustomBidHint, auction.gift.gifts_per_round));
 
-        Drawable drawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
+        Drawable drawable = context.getResources().getDrawable(R.drawable.diamond).mutate();
 
         EditTextCaption editText = new EditTextCaption(context, resourcesProvider) {
             @Override

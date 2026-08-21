@@ -1485,7 +1485,7 @@ public class StarsController {
 
                 final boolean media = messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaPaidMedia;
                 if (media) {
-                    Drawable starDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
+                    Drawable starDrawable = context.getResources().getDrawable(R.drawable.diamond).mutate();
                     b.createSimpleBulletin(starDrawable, getString(R.string.StarsMediaPurchaseCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsMediaPurchaseCompletedInfo", (int) stars, bot))).show();
                 } else if (subscription_period > 0) {
                     b.createSimpleBulletin(R.raw.stars_send, getString(R.string.StarsBotSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsBotSubscriptionCompletedInfo", (int) stars, product, bot))).show();

@@ -790,8 +790,8 @@ public class ThemeColors {
         defaultColors[key_premiumGradientBottomSheet3] = 0xffE794BE;
         defaultColors[key_topics_unreadCounter] = 0xff4ecc5e;
         defaultColors[key_topics_unreadCounterMuted] = 0xff8b8d8f;
-        defaultColors[key_starsGradient1] = 0xffFEC846;
-        defaultColors[key_starsGradient2] = 0xffEC920A;
+        defaultColors[key_starsGradient1] = 0xff76D7FE; // Ansible: алмаз (был золотой 0xffFEC846)
+        defaultColors[key_starsGradient2] = 0xff1BA4ED; // Ansible: алмаз (был золотой 0xffEC920A)
 
         defaultColors[key_stories_circle1] = 0xFF2C9EFC; // 0xFF39DF3C;
         defaultColors[key_stories_circle2] = 0xFF2fc183; // 0xFF4DBBFF;

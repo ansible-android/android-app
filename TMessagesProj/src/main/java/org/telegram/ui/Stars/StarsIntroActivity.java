@@ -629,7 +629,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 paints = new Paint[20];
                 for (int i = 0; i < paints.length; ++i) {
                     paints[i] = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFFFA5416, 0xFFFFC837, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN));
+                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFF1BA4ED, 0xFF76D7FE, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN)); // Ansible: синие партиклы (были золотые 0xFFFA5416→0xFFFFC837)
                 }
                 drawable.getPaint = i -> paints[i % paints.length];
                 drawable.size1 = 17;
@@ -801,7 +801,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             headerTextView.setTypeface(AndroidUtilities.bold());
             addView(headerTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT));
 
-            Drawable starDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
+            Drawable starDrawable = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз (баланс)
             amountTextView = new AnimatedTextView(context) {
                 @Override
                 protected void dispatchDraw(Canvas canvas) {
@@ -1552,7 +1552,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             addView(amountTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 8, 0, 20, 0));
 
             star = new SpannableString("⭐️");
-            Drawable drawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
+            Drawable drawable = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз (транзакции)
             drawable.setBounds(0, 0, dp(21), dp(21));
             star.setSpan(new ImageSpan(drawable), 0, star.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -2148,7 +2148,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             priceView.setTextColor(0xFFFFFFFF);
             priceView.setText(replaceStars("XTR " + LocaleController.formatNumber((int) stars, ','), .85f));
             priceView.setPadding(dp(5.33f), 0, dp(5.33f), 0);
-            priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFFEEB402));
+            priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFF37A7F6)); // Ansible: синий (был золотой 0xFFEEB402)
             FrameLayout backgroundLayout = new FrameLayout(context);
             backgroundLayout.setBackground(Theme.createRoundRectDrawable(dp(20), Theme.getColor(Theme.key_dialogBackground, resourcesProvider)));
             backgroundLayout.setPadding(dp(1.33f), dp(1.33f), dp(1.33f), dp(1.33f));
@@ -5109,7 +5109,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.star_small_inner);
+        starImage.setImageResource(R.drawable.diamond); // Ansible: алмаз (поле цены)
         editTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         editTextLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         editTextContainer.attachEditText(editText);
@@ -5330,7 +5330,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.star_small_inner);
+        starImage.setImageResource(R.drawable.diamond); // Ansible: алмаз (поле цены)
         editTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         editTextLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         editTextContainer.attachEditText(editText);

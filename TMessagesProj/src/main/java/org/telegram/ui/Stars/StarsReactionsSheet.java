@@ -374,7 +374,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         if (withTopSenders) {
             if (!liveStories) {
                 separatorView = new View(context) {
-                    private final LinearGradient gradient = new LinearGradient(0, 0, 255, 0, new int[]{0xFFEEAC0D, 0xFFF9D316}, new float[]{0, 1}, Shader.TileMode.CLAMP);
+                    private final LinearGradient gradient = new LinearGradient(0, 0, 255, 0, new int[]{0xFF1BA4ED, 0xFF76D7FE}, new float[]{0, 1}, Shader.TileMode.CLAMP); // Ansible: синий
                     private final Matrix gradientMatrix = new Matrix();
                     private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                     private final Paint separatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -1032,7 +1032,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         private final Particles sliderParticles = new Particles(Particles.TYPE_RIGHT, 300);
         private final Particles textParticles = new Particles(Particles.TYPE_RADIAL_INSIDE, 30);
 
-        private int gradientColor1 = 0xFFEEAC0D, gradientColor2 = 0xFFF9D316;
+        private int gradientColor1 = 0xFF1BA4ED, gradientColor2 = 0xFF76D7FE; // Ansible: синий слайдер (был золотой)
         private ValueAnimator gradientAnimator;
         private int toGradientColor1 = gradientColor1, toGradientColor2 = gradientColor2;
         private LinearGradient gradient = new LinearGradient(0, 0, 255, 0, new int[] {gradientColor1, gradientColor2}, new float[] {0, 1}, Shader.TileMode.CLAMP);
@@ -1215,7 +1215,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
 
             sliderInnerRect.set(pad, top, w - pad, top + dp(24));
 
-            sliderPaint.setColor(0xFFEFAD0D);
+            sliderPaint.setColor(0xFF37A7F6); // Ansible: синий (был золотой 0xFFEFAD0D)
             sliderCirclePaint.setColor(0xFFFFFFFF);
         }
 
@@ -2120,7 +2120,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
                     paint.setShader(gradient);
                 } else {
                     paint.setShader(null);
-                    paint.setColor(currentColor = 0xFFF0B302);
+                    paint.setColor(currentColor = 0xFF1BA4ED); // Ansible: синий (был золотой 0xFFF0B302)
                 }
                 if (crown != null) {
                     crown.setColorFilter(new PorterDuffColorFilter(currentColor, PorterDuff.Mode.SRC_IN));

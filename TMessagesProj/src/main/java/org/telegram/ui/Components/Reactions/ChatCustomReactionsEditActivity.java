@@ -940,7 +940,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
                 AnimatedEmojiSpan span = new AnimatedEmojiSpan(-1, null) {
                     private final Bitmap bitmap = Bitmap.createBitmap(dp(24), dp(24), Bitmap.Config.ARGB_8888);
                     {
-                        final Drawable drawable = getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate();
+                        final Drawable drawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
                         drawable.setBounds(0, 0, dp(24), dp(24));
                         drawable.draw(new Canvas(bitmap));
                     }

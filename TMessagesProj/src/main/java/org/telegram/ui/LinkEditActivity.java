@@ -440,7 +440,7 @@ public class LinkEditActivity extends BaseFragment {
                 subEditPriceCell.hideKeyboardOnEnter();
                 subEditPriceCell.addView(subPriceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 0, 0, 19, 0));
 
-                ImageView star = subEditPriceCell.setLeftDrawable(getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate());
+                ImageView star = subEditPriceCell.setLeftDrawable(getContext().getResources().getDrawable(R.drawable.diamond).mutate());
                 star.setScaleX(.83f);
                 star.setScaleY(.83f);
                 star.setTranslationY(dp(-1));

@@ -378,7 +378,8 @@ public class PhotoAttachPhotoCell extends FrameLayout {
                 s = new SpannableStringBuilder();
                 if (star == null) {
                     star = new SpannableString("⭐");
-                    ColoredImageSpan span = new ColoredImageSpan(R.drawable.star_small_inner);
+                    ColoredImageSpan span = new ColoredImageSpan(R.drawable.diamond); // Ansible: алмаз (цена платного медиа)
+                    span.recolorDrawable = false; // полноцвет, не перекрашивать в цвет текста
                     span.setScale(.7f, .7f);
                     star.setSpan(span, 0, star.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }

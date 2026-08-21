@@ -1039,10 +1039,10 @@ public class ReactionsLayoutInBubble {
 
             if (choosen) {
                 if (paid) {
-                    backgroundColor = 0xFFE8AB02;
+                    backgroundColor = 0xFF37A7F6; // Ansible: синий бейдж алмаза (был золотой)
                     textColor = 0xFFFFFFFF;
                     serviceTextColor = 0xFFFFFFFF;
-                    serviceBackgroundColor = 0xFFE8AB02;
+                    serviceBackgroundColor = 0xFF37A7F6; // Ansible: синий
                 } else {
                     backgroundColor = Theme.getColor(isOutOwner() ? Theme.key_chat_outReactionButtonBackground : Theme.key_chat_inReactionButtonBackground, resourcesProvider);
                     textColor = Theme.getColor(isOutOwner() ? Theme.key_chat_outReactionButtonTextSelected : Theme.key_chat_inReactionButtonTextSelected, resourcesProvider);
@@ -1056,8 +1056,8 @@ public class ReactionsLayoutInBubble {
                 }
             } else {
                 if (paid) {
-                    textColor = 0xFFE8AB02;
-                    backgroundColor = 0x40E8AB02;
+                    textColor = 0xFF1BA4ED; // Ansible: синий текст/обводка бейджа (был золотой)
+                    backgroundColor = 0x4037A7F6; // Ansible: синяя полупрозр. заливка
                     serviceTextColor = 0xFFFFFFFF;
                     serviceBackgroundColor = Color.TRANSPARENT;
                 } else {
