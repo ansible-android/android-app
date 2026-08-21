@@ -10,6 +10,19 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.3] - 2026-08-21
+
+### Changed
+- **Only two languages (English + Russian).** The language settings listed ~10
+  because `LocaleController` hard-codes a built-in `LocaleInfo` list independent
+  of the server's `langpack.getLanguages` (which already returns just en/ru).
+  Removed the eight non-en/ru built-in entries (it, es, de, nl, ar, pt-BR, ko,
+  uk) and deleted their bundled `values-*` string resources; the config-qualifier
+  dirs (night, sw600dp, v21…) and `values-ru` stay. A device set to a dropped
+  locale now falls back to English (both supported languages come from the server
+  langpack: full English, ~73% Russian).
+- Version 0.1.3 (`versionName 0.1.3`, `versionCode 3001003`).
+
 ## [0.1.2] - 2026-08-21
 
 ### Changed
@@ -123,6 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   the Telegram plane; replace with an Ansible logo Lottie or disable it.
 - Stars-transaction detail links still point at `fragment.com`.
 
+[0.1.3]: https://github.com/behappy-android/Telegram/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/behappy-android/Telegram/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/behappy-android/Telegram/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/behappy-android/Telegram/releases/tag/v0.1.0
