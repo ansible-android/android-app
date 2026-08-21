@@ -2437,7 +2437,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 });
                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundGray, 0.3f);
                 imageReceiver.setAutoRepeat(0);
-                imageReceiver.setImage(ImageLocation.getForDocument(document), String.format(Locale.US, "%d_%d_nr", 160, 160), svgThumb, "tgs", set, 1);
+                imageReceiver.setImage(ImageLocation.getForDocument(document), String.format(Locale.US, "%d_%d_nr", 160, 160), svgThumb, "ass", set, 1);
             } else {
                 MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(packName, false, set == null);
             }

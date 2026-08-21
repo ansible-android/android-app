@@ -984,7 +984,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                         setBigReactionAnimatedEmoji(null);
                         TLRPC.TL_availableReaction reaction = MediaDataController.getInstance(currentAccount).getReactionsMap().get(selectedReactionView.reaction.emojicon);
                         if (reaction != null) {
-                            bigReactionImageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, null, 0, "tgs", selectedReactionView.reaction, 0);
+                            bigReactionImageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, null, 0, "ass", selectedReactionView.reaction, 0);
                         }
                     } else {
                         setBigReactionAnimatedEmoji(new AnimatedEmojiDrawable(AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_LARGE, currentAccount, selectedReactionView.span.documentId));
@@ -2236,7 +2236,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                 ImageViewEmoji imageView = (ImageViewEmoji) holder.itemView;
                 imageView.createImageReceiver(emojiSearchGridView);
                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
-                imageView.imageReceiver.setImage(ImageLocation.getForDocument(document), "100_100_firstframe", null, null, svgThumb, 0, "tgs", document, 0);
+                imageView.imageReceiver.setImage(ImageLocation.getForDocument(document), "100_100_firstframe", null, null, svgThumb, 0, "ass", document, 0);
                 imageView.isStaticIcon = true;
                 imageView.document = document;
                 imageView.span = null;
@@ -2271,9 +2271,9 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     if (reaction != null) {
                         SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(reaction.activate_animation, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
                         if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS)) {
-                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), "60_60_firstframe", null, null, svgThumb, 0, "tgs", currentReaction, 0);
+                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), "60_60_firstframe", null, null, svgThumb, 0, "ass", currentReaction, 0);
                         } else {
-                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, ImageLocation.getForDocument(reaction.select_animation), "30_30_firstframe", null, null, svgThumb, 0, "tgs", currentReaction, 0);
+                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, ImageLocation.getForDocument(reaction.select_animation), "30_30_firstframe", null, null, svgThumb, 0, "ass", currentReaction, 0);
                         }
                         MediaDataController.getInstance(currentAccount).preloadImage(imageView.preloadEffectImageReceiver, ImageLocation.getForDocument(reaction.around_animation), ReactionsEffectOverlay.getFilterForAroundAnimation());
                     } else {
@@ -2662,9 +2662,9 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     if (reaction != null) {
                         SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(reaction.activate_animation, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
                         if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS)) {
-                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), "60_60_firstframe", null, null, svgThumb, 0, "tgs", currentReaction, 0);
+                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), "60_60_firstframe", null, null, svgThumb, 0, "ass", currentReaction, 0);
                         } else {
-                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, ImageLocation.getForDocument(reaction.select_animation), "30_30_firstframe", null, null, svgThumb, 0, "tgs", currentReaction, 0);
+                            imageView.imageReceiver.setImage(ImageLocation.getForDocument(reaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, ImageLocation.getForDocument(reaction.select_animation), "30_30_firstframe", null, null, svgThumb, 0, "ass", currentReaction, 0);
                         }
                         MediaDataController.getInstance(currentAccount).preloadImage(imageView.preloadEffectImageReceiver, ImageLocation.getForDocument(reaction.around_animation), ReactionsEffectOverlay.getFilterForAroundAnimation());
                     } else {
@@ -3457,7 +3457,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
             if (type == TYPE_CHAT_REACTIONS) {
                 imageReceiver.setImage(ImageLocation.getForDocument(document), !LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_KEYBOARD) ? "34_34_firstframe" : "34_34", null, null, thumb, document.size, null, document, 0);
             } else {
-                imageReceiver.setImage(ImageLocation.getForDocument(document), "100_100_firstframe", null, null, thumb, 0, "tgs", document, 0);
+                imageReceiver.setImage(ImageLocation.getForDocument(document), "100_100_firstframe", null, null, thumb, 0, "ass", document, 0);
             }
             isStaticIcon = true;
             span = null;

@@ -86,7 +86,7 @@ public class CreateTopicEmptyView extends LinearLayout {
             }
 
             ImageLocation imageLocation = ImageLocation.getForDocument(document);
-            backupImageView.setImage(imageLocation, imageFilter, "tgs", svgThumb, set);
+            backupImageView.setImage(imageLocation, imageFilter, "ass", svgThumb, set);
         }
     }
 }

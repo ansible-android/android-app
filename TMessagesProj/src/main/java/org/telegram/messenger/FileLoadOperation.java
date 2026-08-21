@@ -438,7 +438,7 @@ public class FileLoadOperation {
                     }
                 }
             }
-            ungzip = "application/x-tgsticker".equals(documentLocation.mime_type) || "application/x-tgwallpattern".equals(documentLocation.mime_type);
+            ungzip = "application/x-ansible-sticker".equals(documentLocation.mime_type) || "application/x-tgwallpattern".equals(documentLocation.mime_type);
             totalBytesCount = documentLocation.size;
             if (key != null) {
                 int toAdd = 0;

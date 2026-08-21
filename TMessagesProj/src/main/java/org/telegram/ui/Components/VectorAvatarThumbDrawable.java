@@ -100,9 +100,9 @@ public class VectorAvatarThumbDrawable extends Drawable implements AnimatedEmoji
                         thumb = document;
                     }
                     SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
-                    imageReceiver.setImage(ImageLocation.getForDocument(document), filter, ImageLocation.getForDocument(thumb), thumbFilter, null, null, svgThumb, 0, "tgs", document, 0);
+                    imageReceiver.setImage(ImageLocation.getForDocument(document), filter, ImageLocation.getForDocument(thumb), thumbFilter, null, null, svgThumb, 0, "ass", document, 0);
                     if (type == TYPE_STATIC) {
-                        stickerPreloadImageReceiver.setImage(ImageLocation.getForDocument(document), "100_100", null, null, null, 0, "tgs", document, 0);
+                        stickerPreloadImageReceiver.setImage(ImageLocation.getForDocument(document), "100_100", null, null, null, 0, "ass", document, 0);
                     }
                     break;
                 }

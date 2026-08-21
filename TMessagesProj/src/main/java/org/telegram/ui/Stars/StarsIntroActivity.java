@@ -3706,7 +3706,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     ImageLocation.getForDocument(document), "160_160_nr",
                     ImageLocation.getForDocument(thumb, document), "160_160",
                     svgThumb,
-                    document.size, "tgs",
+                    document.size, "ass",
                     set,
                     1
                 );

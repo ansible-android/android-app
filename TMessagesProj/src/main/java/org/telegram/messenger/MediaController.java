@@ -5575,7 +5575,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                     return "png";
                 }
                 if (header[0] == 0x1f && header[1] == (byte) 0x8b) {
-                    return "tgs";
+                    return "ass";
                 }
                 String str = new String(header);
                 if (str != null) {

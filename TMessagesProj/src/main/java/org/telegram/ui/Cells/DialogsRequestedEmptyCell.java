@@ -166,7 +166,7 @@ public class DialogsRequestedEmptyCell extends LinearLayout implements Notificat
             }
 
             ImageLocation imageLocation = ImageLocation.getForDocument(document);
-            stickerView.setImage(imageLocation, "130_130", "tgs", svgThumb, set);
+            stickerView.setImage(imageLocation, "130_130", "ass", svgThumb, set);
             stickerView.getImageReceiver().setAutoRepeat(2);
         } else {
             MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME, false, set == null);

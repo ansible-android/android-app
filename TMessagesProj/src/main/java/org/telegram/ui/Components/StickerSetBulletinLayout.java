@@ -117,7 +117,7 @@ public class StickerSetBulletinLayout extends Bulletin.TwoLineLayout {
             if (object instanceof TLRPC.Document && (MessageObject.isAnimatedStickerDocument(sticker, true) || MessageObject.isVideoSticker(sticker) || MessageObject.isGifDocument(sticker))) {
                 imageView.setImage(ImageLocation.getForDocument(sticker), "50_50", imageLocation, null, 0, setObject);
             } else if (imageLocation != null && imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE) {
-                imageView.setImage(imageLocation, "50_50", "tgs", null, setObject);
+                imageView.setImage(imageLocation, "50_50", "ass", null, setObject);
             } else {
                 imageView.setImage(imageLocation, "50_50", "webp", null, setObject);
             }

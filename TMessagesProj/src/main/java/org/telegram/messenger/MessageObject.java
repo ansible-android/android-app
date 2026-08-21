@@ -9751,7 +9751,7 @@ public class MessageObject {
     }
 
     public static boolean isAnimatedStickerDocument(TLRPC.Document document, boolean allowWithoutSet) {
-        if (document != null && ("application/x-tgsticker".equals(document.mime_type) && !document.thumbs.isEmpty() || "application/x-tgsdice".equals(document.mime_type))) {
+        if (document != null && ("application/x-ansible-sticker".equals(document.mime_type) && !document.thumbs.isEmpty() || "application/x-tgsdice".equals(document.mime_type))) {
             if (allowWithoutSet) {
                 return true;
             }

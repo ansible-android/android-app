@@ -1107,7 +1107,7 @@ public class SessionsActivity extends BaseFragment implements NotificationCenter
 
             if (document != null) {
                 ImageLocation imageLocation = ImageLocation.getForDocument(document);
-                imageView.setImage(imageLocation, imageFilter, "tgs", svgThumb, set);
+                imageView.setImage(imageLocation, imageFilter, "ass", svgThumb, set);
                 imageView.getImageReceiver().setAutoRepeat(2);
             } else {
                 MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME, false, set == null);

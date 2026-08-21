@@ -557,7 +557,7 @@ public class AvatarConstructorFragment extends BaseFragment {
         if (docId == 0) {
             previewView.backupImageView.setAnimatedEmojiDrawable(null);
             SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
-            previewView.backupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "100_100", null, null, svgThumb, 0, "tgs", document, 0);
+            previewView.backupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "100_100", null, null, svgThumb, 0, "ass", document, 0);
         } else {
             previewView.backupImageView.setAnimatedEmojiDrawable(new AnimatedEmojiDrawable(AnimatedEmojiDrawable.CACHE_TYPE_AVATAR_CONSTRUCTOR_PREVIEW, currentAccount, docId));
             previewView.backupImageView.getImageReceiver().clearImage();

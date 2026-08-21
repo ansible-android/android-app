@@ -3125,7 +3125,7 @@ public class ImageLoader {
                                 String trueExt = getHttpUrlExtension(location, "jpg");
                                 if (trueExt.equalsIgnoreCase("webm") || trueExt.equalsIgnoreCase("mp4") || trueExt.equalsIgnoreCase("gif")) {
                                     img.imageType = FileLoader.IMAGE_TYPE_ANIMATION;
-                                } else if ("tgs".equals(ext)) {
+                                } else if ("ass".equals(ext)) {
                                     img.imageType = FileLoader.IMAGE_TYPE_LOTTIE;
                                 }
                             }
@@ -3157,7 +3157,7 @@ public class ImageLoader {
                                 } else if ("application/x-tgsdice".equals(imageLocation.document.mime_type)) {
                                     img.imageType = FileLoader.IMAGE_TYPE_LOTTIE;
                                     onlyCache = true;
-                                } else if ("application/x-tgsticker".equals(imageLocation.document.mime_type)) {
+                                } else if ("application/x-ansible-sticker".equals(imageLocation.document.mime_type)) {
                                     img.imageType = FileLoader.IMAGE_TYPE_LOTTIE;
                                 } else if ("application/x-tgwallpattern".equals(imageLocation.document.mime_type)) {
                                     img.imageType = FileLoader.IMAGE_TYPE_SVG;
@@ -3189,7 +3189,7 @@ public class ImageLoader {
                             } else if ("application/x-tgsdice".equals(imageLocation.document.mime_type)) {
                                 img.imageType = FileLoader.IMAGE_TYPE_LOTTIE;
                                 onlyCache = true;
-                            } else if ("application/x-tgsticker".equals(document.mime_type)) {
+                            } else if ("application/x-ansible-sticker".equals(document.mime_type)) {
                                 img.imageType = FileLoader.IMAGE_TYPE_LOTTIE;
                             } else if ("application/x-tgwallpattern".equals(document.mime_type)) {
                                 img.imageType = FileLoader.IMAGE_TYPE_SVG;

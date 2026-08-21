@@ -1872,7 +1872,7 @@ public class ContentPreviewViewer {
                     centerImage.setImage(ImageLocation.getForDocument(document), null, ImageLocation.getForDocument(thumb, document), null, "webp", currentStickerSet, 1);
                     if (MessageObject.isPremiumSticker(document)) {
                         drawEffect = true;
-                        effectImage.setImage(ImageLocation.getForDocument(MessageObject.getPremiumStickerAnimation(document), document), null, null, null, "tgs", currentStickerSet, 1);
+                        effectImage.setImage(ImageLocation.getForDocument(MessageObject.getPremiumStickerAnimation(document), document), null, null, null, "ass", currentStickerSet, 1);
                     }
                 }
                 if (MessageObject.isTextColorEmoji(document)) {
@@ -1893,7 +1893,7 @@ public class ContentPreviewViewer {
                     }
                 }
             } else if (sticker != null) {
-                centerImage.setImage(sticker.path, null, null, sticker.animated ? "tgs" : null, 0);
+                centerImage.setImage(sticker.path, null, null, sticker.animated ? "ass" : null, 0);
                 if (sticker.videoEditedInfo != null) {
                     if (paintingOverlay == null) {
                         paintingOverlay = new PaintingOverlay(containerView.getContext());

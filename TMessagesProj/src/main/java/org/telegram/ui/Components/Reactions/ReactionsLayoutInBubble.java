@@ -1634,7 +1634,7 @@ public class ReactionsLayoutInBubble {
             imageReceiver.setUniqKeyPrefix(Integer.toString(animationUniq++));
             TLRPC.TL_availableReaction r = MediaDataController.getInstance(currentAccount).getReactionsMap().get(reaction.emojicon);
             if (r != null) {
-                imageReceiver.setImage(ImageLocation.getForDocument(r.center_icon), "40_40_nolimit", null, "tgs", r, 1);
+                imageReceiver.setImage(ImageLocation.getForDocument(r.center_icon), "40_40_nolimit", null, "ass", r, 1);
             }
             imageReceiver.setAutoRepeat(0);
             imageReceiver.onAttachedToWindow();

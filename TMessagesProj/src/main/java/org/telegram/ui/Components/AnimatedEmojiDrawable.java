@@ -623,7 +623,7 @@ public class AnimatedEmojiDrawable extends Drawable {
             mediaFilter = filter + "_" + ImageLoader.AUTOPLAY_FILTER;
             SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document.thumbs, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f, true);
             thumbDrawable = svgThumb;
-        } else if ("application/x-tgsticker".equals(document.mime_type)) {
+        } else if ("application/x-ansible-sticker".equals(document.mime_type)) {
             String probableCacheKey = (cacheType != 0 ? cacheType + "_" : "") + documentId + "@" + filter;
             if (SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_LOW || ((cacheType == CACHE_TYPE_KEYBOARD || cacheType == CACHE_TYPE_TOGGLEABLE_EDIT) || cacheType == CACHE_TYPE_FORUM_TOPIC_PULL_DOWN || !ImageLoader.getInstance().hasLottieMemCache(probableCacheKey))) {
                 float thumbAlpha = cacheType == CACHE_TYPE_FORUM_TOPIC_PULL_DOWN ? 0.8f : 0.2f;

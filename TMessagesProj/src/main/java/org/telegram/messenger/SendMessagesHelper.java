@@ -438,7 +438,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             item.emoji = emoji != null ? emoji : "";
                             mimeType = mediaDocument.document.mime_type;
                         } else if (animated) {
-                            mimeType = "application/x-bad-tgsticker";
+                            mimeType = "application/x-bad-sticker";
                         }
                         onFinish.run();
                     });

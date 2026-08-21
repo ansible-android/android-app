@@ -65,7 +65,7 @@ public class ReactionImageHolder {
             TLRPC.TL_availableReaction defaultReaction = MediaDataController.getInstance(currentAccount).getReactionsMap().get(currentReaction.emojicon);
             if (defaultReaction != null) {
                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(defaultReaction.select_animation, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
-                imageReceiver.setImage(ImageLocation.getForDocument(defaultReaction.select_animation), filter, null, null, svgThumb, 0, "tgs", currentReaction, 0);
+                imageReceiver.setImage(ImageLocation.getForDocument(defaultReaction.select_animation), filter, null, null, svgThumb, 0, "ass", currentReaction, 0);
 //                imageReceiver.setAllowStartAnimation(false);
 //                imageReceiver.setAutoRepeatCount(1);
             }

@@ -92,7 +92,7 @@ public class AvailableReactionCell extends FrameLayout {
         this.react = react;
         textView.setText(react.title);
         SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(react.static_icon, Theme.key_windowBackgroundGray, 1.0f);
-        imageView.setImage(ImageLocation.getForDocument(react.activate_animation), ReactionsUtils.ACTIVATE_ANIMATION_FILTER, "tgs", svgThumb, react);
+        imageView.setImage(ImageLocation.getForDocument(react.activate_animation), ReactionsUtils.ACTIVATE_ANIMATION_FILTER, "ass", svgThumb, react);
 
         locked = canLock && react.premium && !UserConfig.getInstance(currentAccount).isPremium();
         if (locked) {

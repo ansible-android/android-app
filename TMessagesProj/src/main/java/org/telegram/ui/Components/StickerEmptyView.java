@@ -307,7 +307,7 @@ public class StickerEmptyView extends FrameLayout implements NotificationCenter.
             }
 
             ImageLocation imageLocation = ImageLocation.getForDocument(document);
-            stickerView.setImage(imageLocation, imageFilter, "tgs", svgThumb, set);
+            stickerView.setImage(imageLocation, imageFilter, "ass", svgThumb, set);
             if (stickerType == 9 || stickerType == STICKER_TYPE_NO_CONTACTS) {
                 stickerView.getImageReceiver().setAutoRepeat(1);
             } else {

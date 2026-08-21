@@ -206,7 +206,7 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                 TLRPC.Document document = set.documents.get(3);
                 ImageLocation imageLocation = ImageLocation.getForDocument(document);
                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundGray, 1.0f);
-                stickerView.setImage(imageLocation, "104_104", "tgs", svgThumb, set);
+                stickerView.setImage(imageLocation, "104_104", "ass", svgThumb, set);
             } else {
                 MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(stickerSetName, false, set == null);
             }

@@ -319,7 +319,7 @@ public class PremiumStickersPreviewRecycler extends RecyclerListView implements 
                         SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundGray, 0.5f);
                         centerImage.setImage(ImageLocation.getForDocument(document), null, svgThumb, "webp", null, 1);
                         if (MessageObject.isPremiumSticker(document)) {
-                            effectImage.setImage(ImageLocation.getForDocument(MessageObject.getPremiumStickerAnimation(document), document), "140_140", null, null, "tgs", null, 1);
+                            effectImage.setImage(ImageLocation.getForDocument(MessageObject.getPremiumStickerAnimation(document), document), "140_140", null, null, "ass", null, 1);
                         }
                     }
 

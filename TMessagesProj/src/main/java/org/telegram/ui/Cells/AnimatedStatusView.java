@@ -142,7 +142,7 @@ public class AnimatedStatusView extends View {
             ImageReceiver imageReceiver = new ImageReceiver();
             imageReceiver.setParentView(this);
             imageReceiver.setUniqKeyPrefix(Integer.toString(animationUniq++));
-            imageReceiver.setImage(ImageLocation.getForDocument(r.around_animation), effectsSize + "_" + effectsSize + "_nolimit", null, "tgs", r, 1);
+            imageReceiver.setImage(ImageLocation.getForDocument(r.around_animation), effectsSize + "_" + effectsSize + "_nolimit", null, "ass", r, 1);
             imageReceiver.setAutoRepeat(0);
             imageReceiver.onAttachedToWindow();
             animations.add(imageReceiver);

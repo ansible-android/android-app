@@ -80,7 +80,7 @@ public class StickerImageView extends BackupImageView implements NotificationCen
 
         if (document != null) {
             ImageLocation imageLocation = ImageLocation.getForDocument(document);
-            setImage(imageLocation, imageFilter, "tgs", svgThumb, set);
+            setImage(imageLocation, imageFilter, "ass", svgThumb, set);
         } else {
             imageReceiver.clearImage();
             MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(stickerPackName, false, set == null);

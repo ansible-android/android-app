@@ -2040,9 +2040,9 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                 TLRPC.Document document = MessagesController.getInstance(currentAccount).getEffectDocument(currentReaction.documentId);
                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
 //                if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS)) {
-                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
+                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
 //                } else {
-//                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
+//                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
 //                }
             } else if (currentReaction.emojicon != null) {
                 TLRPC.TL_availableReaction defaultReaction = MediaDataController.getInstance(currentAccount).getReactionsMap().get(currentReaction.emojicon);
@@ -2050,19 +2050,19 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                     SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(defaultReaction.activate_animation, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
                     if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS) || type == TYPE_STICKER_SET_EMOJI) {
                         if (SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_LOW || type == TYPE_STICKER_SET_EMOJI) {
-                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
+                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
                         } else {
-                            enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "tgs", react, 0);
-                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
+                            enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "ass", react, 0);
+                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
                         }
                     } else {
-                        enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "tgs", react, 0);
-                        loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
+                        enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "ass", react, 0);
+                        loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
                     }
                     if (enterImageView.getImageReceiver().getLottieAnimation() != null) {
                         enterImageView.getImageReceiver().getLottieAnimation().setCurrentFrame(0, false, true);
                     }
-                    pressedBackupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, svgThumb, 0, "tgs", react, 0);
+                    pressedBackupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, svgThumb, 0, "ass", react, 0);
 
                     preloadImageReceiver.setAllowStartLottieAnimation(false);
                     MediaDataController.getInstance(currentAccount).preloadImage(preloadImageReceiver, ImageLocation.getForDocument(defaultReaction.around_animation), ReactionsEffectOverlay.getFilterForAroundAnimation());

@@ -691,7 +691,7 @@ public class ScrollSlidingTabStrip extends HorizontalScrollView {
                             imageView.setImage(imageLocation, imageFilter, imageLocation, null, 0, parentObject);
                         }
                     } else if (imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE) {
-                        imageView.setImage(imageLocation, imageFilter, "tgs", svgThumb, parentObject);
+                        imageView.setImage(imageLocation, imageFilter, "ass", svgThumb, parentObject);
                     } else {
                         imageView.setImage(imageLocation, imageFilter, "webp", svgThumb, parentObject);
                     }

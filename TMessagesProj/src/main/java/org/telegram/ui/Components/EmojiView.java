@@ -6471,7 +6471,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                     imageView.setImage(ImageLocation.getForDocument(document), filter, imageLocation, null, 0, set);
                 }
             } else if (imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE) {
-                imageView.setImage(imageLocation, filter, "tgs", svgThumb, set);
+                imageView.setImage(imageLocation, filter, "ass", svgThumb, set);
             } else {
                 imageView.setImage(imageLocation, null, "webp", svgThumb, set);
             }

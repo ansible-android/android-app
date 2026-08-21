@@ -527,7 +527,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
             drawingObject.imageReceiver.setUniqKeyPrefix(currentIndex + "_" + drawingObject.messageId + "_");
         }
         drawingObject.document = document;
-        drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w, null, "tgs", set, 1);
+        drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w, null, "ass", set, 1);
 
         drawingObject.imageReceiver.setLayerNum(Integer.MAX_VALUE);
         drawingObject.imageReceiver.setAutoRepeat(0);
@@ -739,7 +739,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
                     ImageLocation imageLocation = ImageLocation.getForDocument(document);
                     drawingObject.imageReceiver.setUniqKeyPrefix(currentIndex + "_" + drawingObject.messageId + "_");
 
-                    drawingObject.imageReceiver.setImage(imageLocation, w + "_" + w + "_pcache", null, "tgs", set, 1);
+                    drawingObject.imageReceiver.setImage(imageLocation, w + "_" + w + "_pcache", null, "ass", set, 1);
                     drawingObject.imageReceiver.setDelegate(new ImageReceiver.ImageReceiverDelegate() {
                         @Override
                         public void didSetImage(ImageReceiver imageReceiver, boolean set, boolean thumb, boolean memCache) {
@@ -769,7 +769,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
                         drawingObject.imageReceiver.setUniqKeyPrefix(currentIndex + "_" + drawingObject.messageId + "_");
                     }
                     drawingObject.document = document;
-                    drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w, null, "tgs", set, 1);
+                    drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w, null, "ass", set, 1);
                 }
 
                 drawingObject.imageReceiver.setLayerNum(Integer.MAX_VALUE);
@@ -1098,9 +1098,9 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
             }
             if (fileName == null) {
                 if (location.document != null) {
-                    fileName = FileLoader.getAttachFileName(location.document, "tgs");
+                    fileName = FileLoader.getAttachFileName(location.document, "ass");
                 } else {
-                    fileName = FileLoader.getAttachFileName(location.location, "tgs");
+                    fileName = FileLoader.getAttachFileName(location.location, "ass");
                 }
             }
             if (fileName == null) {

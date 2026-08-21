@@ -368,7 +368,7 @@ public class StickerSetCell extends FrameLayout {
                     imageView.setColorFilter(Theme.getAnimatedEmojiColorFilter(null));
                 }
             } else if (imageLocation != null && imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE) {
-                imageView.setImage(imageLocation, filter, "tgs", svgThumb, set);
+                imageView.setImage(imageLocation, filter, "ass", svgThumb, set);
             } else {
                 imageView.setImage(imageLocation, filter, "webp", svgThumb, set);
             }

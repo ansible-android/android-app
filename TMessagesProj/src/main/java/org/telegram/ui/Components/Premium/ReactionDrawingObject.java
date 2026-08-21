@@ -40,7 +40,7 @@ public class ReactionDrawingObject extends CarouselView.DrawingObject {
             imageReceiver.setLayerNum(Integer.MAX_VALUE);
 
             SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(reaction.activate_animation, Theme.key_windowBackgroundGray, 0.5f);
-//            imageReceiver.setImage(ImageLocation.getForDocument(reaction.appear_animation), "60_60_nolimit", null, null, svgThumb, 0, "tgs", reaction, 0);
+//            imageReceiver.setImage(ImageLocation.getForDocument(reaction.appear_animation), "60_60_nolimit", null, null, svgThumb, 0, "ass", reaction, 0);
 //            imageReceiver.setAutoRepeat(0);
 //            if (imageReceiver.getLottieAnimation() != null) {
 //                imageReceiver.getLottieAnimation().setCurrentFrame(0, false);
@@ -53,7 +53,7 @@ public class ReactionDrawingObject extends CarouselView.DrawingObject {
             actionReceiver.setLayerNum(Integer.MAX_VALUE);
 
             actionReceiver.setAllowStartLottieAnimation(false);
-            actionReceiver.setImage(ImageLocation.getForDocument(reaction.activate_animation), "50_50_nolimit", null, null, svgThumb, 0, "tgs", reaction, 0);
+            actionReceiver.setImage(ImageLocation.getForDocument(reaction.activate_animation), "50_50_nolimit", null, null, svgThumb, 0, "ass", reaction, 0);
             actionReceiver.setAutoRepeat(0);
             if (actionReceiver.getLottieAnimation() != null) {
                 actionReceiver.getLottieAnimation().setCurrentFrame(0, false);
@@ -66,7 +66,7 @@ public class ReactionDrawingObject extends CarouselView.DrawingObject {
 
             effectImageReceiver.setAllowStartLottieAnimation(false);
             int size = ReactionsEffectOverlay.sizeForBigReaction();
-            effectImageReceiver.setImage(ImageLocation.getForDocument(reaction.around_animation), size + "_" + size, null, null, null, 0, "tgs", reaction, 0);
+            effectImageReceiver.setImage(ImageLocation.getForDocument(reaction.around_animation), size + "_" + size, null, null, null, 0, "ass", reaction, 0);
             effectImageReceiver.setAutoRepeat(0);
             if (effectImageReceiver.getLottieAnimation() != null) {
                 effectImageReceiver.getLottieAnimation().setCurrentFrame(0, false);

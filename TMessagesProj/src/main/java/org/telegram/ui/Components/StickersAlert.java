@@ -513,7 +513,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     if (ext == null) {
                         continue;
                     }
-                    boolean animated = "tgs".equals(ext);
+                    boolean animated = "ass".equals(ext);
                     if (isAnimated == null) {
                         isAnimated = animated;
                     } else if (isAnimated != animated) {
@@ -536,7 +536,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                         importingSticker.mimeType = "image/" + ext;
                         importingSticker.validated = true;
                     } else {
-                        importingSticker.mimeType = "application/x-tgsticker";
+                        importingSticker.mimeType = "application/x-ansible-sticker";
                     }
                     if (emoji != null && emoji.size() == N && emoji.get(a) instanceof String) {
                         importingSticker.emoji = emoji.get(a);
@@ -1048,7 +1048,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     return;
                 }
                 stickerEmojiTextView.setText(Emoji.replaceEmoji(selectedStickerPath.emoji, stickerEmojiTextView.getPaint().getFontMetricsInt(), false));
-                stickerImageView.setImage(ImageLocation.getForPath(selectedStickerPath.path), null, null, null, null, null, selectedStickerPath.animated ? "tgs" : null, 0, null);
+                stickerImageView.setImage(ImageLocation.getForPath(selectedStickerPath.path), null, null, null, null, null, selectedStickerPath.animated ? "ass" : null, 0, null);
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) stickerPreviewLayout.getLayoutParams();
                 layoutParams.topMargin = scrollOffsetY;
                 stickerPreviewLayout.setLayoutParams(layoutParams);
@@ -2047,7 +2047,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                         return;
                     }
                     uploadImportStickers.remove(location);
-                    if (!"application/x-tgsticker".equals(sticker.mimeType)) {
+                    if (!"application/x-ansible-sticker".equals(sticker.mimeType)) {
                         removeSticker(sticker);
                     } else {
                         sticker.validated = true;

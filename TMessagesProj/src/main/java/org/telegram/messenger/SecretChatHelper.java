@@ -1011,8 +1011,8 @@ public class SecretChatHelper extends BaseController {
                     newMessage.media.document.iv = decryptedMessage.media.iv;
                     if (newMessage.media.document.mime_type == null) {
                         newMessage.media.document.mime_type = "";
-                    } else if ("application/x-tgsticker".equals(newMessage.media.document.mime_type) || "application/x-tgsdice".equals(newMessage.media.document.mime_type)) {
-                        newMessage.media.document.mime_type = "application/x-bad_tgsticker";
+                    } else if ("application/x-ansible-sticker".equals(newMessage.media.document.mime_type) || "application/x-tgsdice".equals(newMessage.media.document.mime_type)) {
+                        newMessage.media.document.mime_type = "application/x-bad_sticker";
                     }
                     byte[] thumb = ((TLRPC.TL_decryptedMessageMediaDocument) decryptedMessage.media).thumb;
                     TLRPC.PhotoSize photoSize;
