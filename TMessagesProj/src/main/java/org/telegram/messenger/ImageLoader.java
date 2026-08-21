@@ -3154,7 +3154,7 @@ public class ImageLoader {
                                         onlyCache = true;
                                     }
                                     img.imageType = FileLoader.IMAGE_TYPE_THEME_PREVIEW;
-                                } else if ("application/x-tgsdice".equals(imageLocation.document.mime_type)) {
+                                } else if ("application/x-ansible-dice".equals(imageLocation.document.mime_type)) {
                                     img.imageType = FileLoader.IMAGE_TYPE_LOTTIE;
                                     onlyCache = true;
                                 } else if ("application/x-ansible-sticker".equals(imageLocation.document.mime_type)) {
@@ -3186,7 +3186,7 @@ public class ImageLoader {
                                     onlyCache = true;
                                 }
                                 img.imageType = FileLoader.IMAGE_TYPE_THEME_PREVIEW;
-                            } else if ("application/x-tgsdice".equals(imageLocation.document.mime_type)) {
+                            } else if ("application/x-ansible-dice".equals(imageLocation.document.mime_type)) {
                                 img.imageType = FileLoader.IMAGE_TYPE_LOTTIE;
                                 onlyCache = true;
                             } else if ("application/x-ansible-sticker".equals(document.mime_type)) {

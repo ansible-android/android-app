@@ -10,6 +10,35 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.1.2] - 2026-08-21
+
+### Changed
+- **Animated stickers use the brand format only.** The MIME
+  `application/x-tgsticker` and the `.tgs` extension are gone; the client
+  now recognises and produces `application/x-ansible-sticker` / `.ass`
+  exclusively (matching the backend `me`-side output and the desktop
+  client, which accept only the brand MIME). Legacy `tgs` is no longer
+  accepted. The internal Lottie ext hint `tgs` → `ass` across all
+  producers and consumers; the local invalid-marker `x-bad-tgsticker`
+  was rebranded too.
+- **Dice** used a Telegram-internal placeholder MIME
+  `application/x-tgsdice`; rebranded to `application/x-ansible-dice`
+  (a client-only synthetic marker — the dice document is a local
+  placeholder with no server round-trip, so this never touches the
+  wire). Dice-face animations themselves are ordinary
+  `x-ansible-sticker` Lottie, as the backend serves them.
+- Version 0.1.2 (`versionName 0.1.2`, `versionCode 3001002`).
+
+### Notes
+- Left untouched (separate features, backend does not emit them):
+  `x-tgwallpattern` (wallpaper pattern), `x-tgstoryboard(map)` (video
+  seek preview). The `"tgs":1` field inside bundled `res/raw/*.json`
+  Lottie files is a Lottie-format flag, not the sticker MIME, and is
+  intentionally kept.
+- `google-services.json` is still Telegram's Firebase project
+  (`tmessages2`) — to be replaced with the Ansible Firebase config in a
+  follow-up release once that project's config is available.
+
 ## [0.1.1] - 2026-08-21
 
 ### Changed
@@ -94,5 +123,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   the Telegram plane; replace with an Ansible logo Lottie or disable it.
 - Stars-transaction detail links still point at `fragment.com`.
 
+[0.1.2]: https://github.com/behappy-android/Telegram/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/behappy-android/Telegram/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/behappy-android/Telegram/releases/tag/v0.1.0
