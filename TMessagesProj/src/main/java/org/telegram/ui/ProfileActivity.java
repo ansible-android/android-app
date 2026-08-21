@@ -10460,10 +10460,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (getMessagesController().starsPurchaseAvailable()) {
                     starsRow = rowCount++;
                 }
-                StarsController.getInstance(currentAccount, true).getBalance();
-                if (ApplicationLoader.isBetaBuild() || ApplicationLoader.isStandaloneBuild() || ApplicationLoader.isHuaweiStoreBuild() || (StarsController.getInstance(currentAccount, true).balanceAvailable() && (StarsController.getInstance(currentAccount, true).hasTransactions() || StarsController.getInstance(currentAccount, true).getBalance().positive()))) {
-                    tonRow = rowCount++;
-                }
+                // Ansible: TON/«GRAM» вырезан из UI (как на iOS) — строка «Мои GRAM» (tonRow) не показывается.
                 if (!getMessagesController().premiumFeaturesBlocked()) {
                     businessRow = rowCount++;
                 }
