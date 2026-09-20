@@ -10923,7 +10923,7 @@
     <string name="AIEditorStyleCreate">Create</string>
     <string name="AIEditorStyleEdit">Save</string>
     <string name="AIEditorStyleLimitTitle">Limit Reached</string>
-    <string name="AIEditorStyleLimitTextPremium">You can save up to %1$d styles, or subscribe to **Telegram Premium** for %2$d styles.</string>
+    <string name="AIEditorStyleLimitTextPremium">You can save up to %1$d styles, or subscribe to **Ansible Premium** for %2$d styles.</string>
     <string name="AIEditorStyleLimitText">You can save up to %1$d styles.</string>
     <string name="AIEditorStyleSharedTo">Sent AI Style link to **%s**.</string>
     <string name="AIEditorStyleSharedToSavedMessages">Sent AI Style link to **Saved Messages**</string>
@@ -10964,7 +10964,7 @@
 
     <string name="GuestBotFor"> for </string>
 
-    <string name="WearAuthTitle">Use Telegram with WearOS</string>
+    <string name="WearAuthTitle">Use Ansible with WearOS</string>
     <string name="WearAuthText">Connect your account to WatchOS device\nto use it separately from your watch.</string>
     <string name="WearAuthEmojis">Compare emojis on your watch</string>
     <string name="WearAuthEmojisLogIn">Log In</string>
@@ -11157,7 +11157,7 @@
     <string name="ArticleHintCode">Type code here...</string>
     <string name="ArticleHintText">Type something...</string>
     <string name="ArticleConversionTitle">Remove Formatting</string>
-    <string name="ArticleConversionText">This message uses rich formatting, which requires **Telegram Premium**.</string>
+    <string name="ArticleConversionText">This message uses rich formatting, which requires **Ansible Premium**.</string>
     <string name="ArticleConversionSubscribe">Subscribe to Premium</string>
     <string name="ArticleConversionConvert">Remove Formatting</string>
     <string name="ArticleHintQuote">Enter quote</string>
@@ -11217,8 +11217,8 @@
     <string name="GiftMessageAddDescription">You can add a message for **%1$s** or send **%2$s** right away.</string>
 
     <string name="UnsupportedBlockTitle">Unsupported Block</string>
-    <string name="UnsupportedBlockMessage">Update Telegram to view this part of the message</string>
+    <string name="UnsupportedBlockMessage">Update Ansible to view this part of the message</string>
     <string name="UnsupportedMessageTitle">Unsupported Message</string>
-    <string name="UnsupportedMessageMessage">Update Telegram to view this message</string>
+    <string name="UnsupportedMessageMessage">Update Ansible to view this message</string>
     <string name="UnsupportedUpdate">Update</string>
 </resources>
