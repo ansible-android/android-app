@@ -110,7 +110,7 @@ public class SMSJobsNotification extends Service {
             builder.setChannelId(NotificationsController.OTHER_NOTIFICATIONS_CHANNEL);
 
             Intent openIntent = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
-            openIntent.setData(Uri.parse("tg://settings/premium_sms"));
+            openIntent.setData(Uri.parse("as://settings/premium_sms"));
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, openIntent, PendingIntent.FLAG_IMMUTABLE);
             builder.setContentIntent(pendingIntent);
         }
