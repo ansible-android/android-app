@@ -32,9 +32,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.ShareBroadcastReceiver;
-import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.Utilities;
 import org.telegram.messenger.support.customtabs.CustomTabsCallback;
 import org.telegram.messenger.support.customtabs.CustomTabsClient;
 import org.telegram.messenger.support.customtabs.CustomTabsIntent;
@@ -53,7 +51,6 @@ import org.telegram.ui.ActionBar.BottomSheetTabs;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.BubbleActivity;
 import org.telegram.ui.LaunchActivity;
-import org.telegram.ui.web.RestrictedDomainsList;
 
 import java.lang.ref.WeakReference;
 import java.net.IDN;
@@ -109,7 +106,7 @@ public class Browser {
                 @Override
                 public void onServiceConnected(CustomTabsClient client) {
                     customTabsClient = client;
-                    if (SharedConfig.customTabs) {
+                    if (MessagesController.getInstance(UserConfig.selectedAccount).isWebBrowserUseCustomTabs()) {
                         if (customTabsClient != null) {
                             try {
                                 customTabsClient.warmup(0);
@@ -195,9 +192,9 @@ public class Browser {
     }
     public static boolean isTelegraphUrl(String url, boolean equals, boolean forceHttps) {
         if (equals) {
-            return url.equals("instant-view.ansible.su") || url.equals("te.legra.ph") || url.equals("graph.org");
+            return url.equals("telegra.ph") || url.equals("te.legra.ph") || url.equals("graph.org");
         }
-        return url.matches("^(https" + (forceHttps ? "" : "?") + "://)?(te\\.?legra\\.ph|graph\\.org)(/.*|$)"); // instant-view.ansible.su, te.legra.ph, graph.org
+        return url.matches("^(https" + (forceHttps ? "" : "?") + "://)?(te\\.?legra\\.ph|graph\\.org)(/.*|$)"); // telegra.ph, te.legra.ph, graph.org
     }
 
     public static String extractUsername(String link) {
@@ -207,14 +204,14 @@ public class Browser {
         if (link.startsWith("@")) {
             return link.substring(1);
         }
-        if (link.startsWith("asme.su/")) {
-            return link.substring(8);
+        if (link.startsWith("t.me/")) {
+            return link.substring(5);
         }
-        if (link.startsWith("http://asme.su/")) {
-            return link.substring(15);
+        if (link.startsWith("http://t.me/")) {
+            return link.substring(12);
         }
-        if (link.startsWith("https://asme.su/")) {
-            return link.substring(16);
+        if (link.startsWith("https://t.me/")) {
+            return link.substring(13);
         }
         Matcher prefixMatcher = LaunchActivity.PREFIX_T_ME_PATTERN.matcher(link);
         if (prefixMatcher.find()) {
@@ -226,8 +223,8 @@ public class Browser {
     public static boolean urlMustNotHaveConfirmation(String url) {
         return (
             isTelegraphUrl(url, false, true) ||
-            url.matches("^(https://)?ansible\\.su/iv\\??(/.*|$)") || // ansible.su/iv
-            url.matches("^(https://)?ansible\\.su/(blog|tour)(/.*|$)") || // ansible.su/blog, ansible.su/tour
+            url.matches("^(https://)?t\\.me/iv\\??(/.*|$)") || // t.me/iv?
+            url.matches("^(https://)?telegram\\.org/(blog|tour)(/.*|$)") || // telegram.org/blog, telegram.org/tour
             url.matches("^(https://)?fragment\\.com(/.*|$)") // fragment.com
         );
     }
@@ -307,7 +304,7 @@ public class Browser {
         if (tryTelegraph) {
             try {
                 String host = AndroidUtilities.getHostAuthority(uri);
-                if (UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser() != null && (isTelegraphUrl(host, true) || "ansible.su".equalsIgnoreCase(host) && (uri.toString().toLowerCase().contains("ansible.su/faq") || uri.toString().toLowerCase().contains("ansible.su/privacy") || uri.toString().toLowerCase().contains("ansible.su/blog")))) {
+                if (UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser() != null && (isTelegraphUrl(host, true) || "telegram.org".equalsIgnoreCase(host) && (uri.toString().toLowerCase().contains("telegram.org/faq") || uri.toString().toLowerCase().contains("telegram.org/privacy") || uri.toString().toLowerCase().contains("telegram.org/blog")))) {
                     final AlertDialog[] progressDialog = new AlertDialog[] {
                         new AlertDialog(context, AlertDialog.ALERT_TYPE_SPINNER)
                     };
@@ -379,7 +376,7 @@ public class Browser {
                     .appendQueryParameter("autologin_token", autologin_token)
                     .build();
             }
-            if (allowCustom && !SharedConfig.inappBrowser && SharedConfig.customTabs && !internalUri && !scheme.equals("tel") && !isTonsite(uri.toString())) {
+            if (allowCustom && !(uri != null && MessagesController.getInstance(currentAccount).isWebBrowserOpenInApp(uri.toString()) || isInstantViewOpen()) && MessagesController.getInstance(currentAccount).isWebBrowserUseCustomTabs() && !internalUri && !scheme.equals("tel") && !isTonsite(uri.toString())) {
                 if (forceBrowser[0] || !openInExternalApp(context, uri.toString(), false) || !hasAppToOpen(context, uri.toString())) {
                     if (MessagesController.getInstance(currentAccount).authDomains.contains(host)) {
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -411,11 +408,12 @@ public class Browser {
             FileLog.e(e);
         }
         try {
+
+
             final boolean inappBrowser = (
                 allowInAppBrowser && BubbleActivity.instance == null &&
-                SharedConfig.inappBrowser &&
+                (uri != null && MessagesController.getInstance(currentAccount).isWebBrowserOpenInApp(uri.toString()) || isInstantViewOpen()) &&
                 TextUtils.isEmpty(browserPackage) &&
-                !RestrictedDomainsList.getInstance().isRestricted(AndroidUtilities.getHostAuthority(uri, true)) &&
                 (uri.getScheme() == null || "https".equals(uri.getScheme()) || "http".equals(uri.getScheme()) || "tonsite".equals(uri.getScheme()))
                 ||
                 isTonsite(uri.toString())
@@ -475,6 +473,16 @@ public class Browser {
         return true;
     }
 
+    public static boolean isInstantViewOpen() {
+        BaseFragment fragment = LaunchActivity.getSafeLastFragment();
+        if (fragment != null && fragment.getParentLayout() instanceof ActionBarLayout) {
+            BaseFragment sheetFragment = ((ActionBarLayout) fragment.getParentLayout()).getSheetFragment();
+            if (sheetFragment != null && sheetFragment.getArticleViewer() != null)
+                return true;
+        }
+        return fragment != null && fragment.getArticleViewer() != null;
+    }
+
     public static boolean openInTelegramBrowser(Context context, String url, Browser.Progress progress) {
         if (LaunchActivity.instance != null) {
             BottomSheetTabs tabs = LaunchActivity.instance.getBottomSheetTabs();
@@ -483,12 +491,14 @@ public class Browser {
             }
         }
         BaseFragment fragment = LaunchActivity.getSafeLastFragment();
+        if (fragment != null && fragment.getArticleViewer() != null) {
+            fragment.getArticleViewer().open(url, progress);
+            return true;
+        }
         if (fragment != null && fragment.getParentLayout() instanceof ActionBarLayout) {
             fragment = ((ActionBarLayout) fragment.getParentLayout()).getSheetFragment();
         }
-        if (fragment == null) {
-            return false;
-        }
+        if (fragment == null) return false;
         fragment.createArticleViewer(false).open(url, progress);
         return true;
     }
@@ -644,7 +654,7 @@ public class Browser {
         }
         try {
             url = url.toLowerCase();
-            if (url.startsWith("as:passport") || url.startsWith("as://passport") || url.startsWith("as:secureid") || url.contains("resolve") && url.contains("domain=telegrampassport")) {
+            if (url.startsWith("tg:passport") || url.startsWith("tg://passport") || url.startsWith("tg:secureid") || url.contains("resolve") && url.contains("domain=telegrampassport")) {
                 return true;
             }
         } catch (Throwable ignore) {
@@ -680,7 +690,7 @@ public class Browser {
 
         Matcher prefixMatcher = LaunchActivity.PREFIX_T_ME_PATTERN.matcher(host);
         if (prefixMatcher.find()) {
-            uri = Uri.parse("https://asme.su/" + prefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : "/" + uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
+            uri = Uri.parse("https://t.me/" + prefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : "/" + uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
 
             host = uri.getHost();
             host = host != null ? host.toLowerCase() : "";
@@ -697,9 +707,24 @@ public class Browser {
 
             }
             return true;
-        } else if ("as".equals(uri.getScheme())) {
+        } else if ("tg".equals(uri.getScheme())) {
             return true;
-        } else if ("asme.su".equals(host)) {
+        } else if ("telegram.dog".equals(host)) {
+            String path = uri.getPath();
+            if (path != null && path.length() > 1) {
+                if (all) {
+                    return true;
+                }
+                path = path.substring(1).toLowerCase();
+                if (path.startsWith("blog") || path.equals("iv") || path.startsWith("faq") || path.equals("apps") || path.startsWith("s/")) {
+                    if (forceBrowser != null) {
+                        forceBrowser[0] = true;
+                    }
+                    return false;
+                }
+                return true;
+            }
+        } else if ("telegram.me".equals(host) || "t.me".equals(host)) {
             String path = uri.getPath();
             if (path != null && path.length() > 1) {
                 if (all) {
@@ -714,10 +739,10 @@ public class Browser {
                 }
                 return true;
             }
-        } else if ("ansible.su".equals(host) && uri != null && uri.getPath() != null && uri.getPath().startsWith("/blog/")) {
+        } else if ("telegram.org".equals(host) && uri != null && uri.getPath() != null && uri.getPath().startsWith("/blog/")) {
             return true;
         } else if (all) {
-            if (host.equals("ansible.su") || host.endsWith(".ansible.su")) {
+            if (host.endsWith("telegram.org") || host.endsWith("telegra.ph") || host.endsWith("telesco.pe")) {
                 return true;
             }
         }

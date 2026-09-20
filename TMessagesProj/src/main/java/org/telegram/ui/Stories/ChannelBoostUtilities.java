@@ -11,9 +11,9 @@ public class ChannelBoostUtilities {
         TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
         String username = ChatObject.getPublicUsername(chat);
         if (!TextUtils.isEmpty(username)) {
-            return "https://asme.su/boost/" + ChatObject.getPublicUsername(chat);
+            return "https://t.me/boost/" + ChatObject.getPublicUsername(chat);
         } else {
-            return "https://asme.su/boost/?c=" + -dialogId;
+            return "https://t.me/boost/?c=" + -dialogId;
         }
     }
 }

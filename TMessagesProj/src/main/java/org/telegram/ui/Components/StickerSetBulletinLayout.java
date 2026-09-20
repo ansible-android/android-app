@@ -66,7 +66,7 @@ public class StickerSetBulletinLayout extends Bulletin.TwoLineLayout {
             if (documents != null && !documents.isEmpty()) {
                 sticker = documents.get(0);
             } else {
-                sticker = null;
+                // sticker = null;
             }
         } else if (setObject instanceof TLRPC.StickerSetCovered) {
             final TLRPC.StickerSetCovered obj = (TLRPC.StickerSetCovered) setObject;
@@ -75,8 +75,15 @@ public class StickerSetBulletinLayout extends Bulletin.TwoLineLayout {
                 sticker = obj.cover;
             } else if (!obj.covers.isEmpty()) {
                 sticker = obj.covers.get(0);
+            } else if (obj instanceof TLRPC.TL_stickerSetFullCovered) {
+                TLRPC.TL_stickerSetFullCovered covered = (TLRPC.TL_stickerSetFullCovered) obj;
+                if (covered.documents != null && !covered.documents.isEmpty()) {
+                    sticker = covered.documents.get(0);
+                } else {
+                    // sticker = null;
+                }
             } else {
-                sticker = null;
+                // sticker = null;
             }
         } else {
             if (sticker == null && setObject != null && BuildVars.DEBUG_VERSION) {
@@ -117,7 +124,7 @@ public class StickerSetBulletinLayout extends Bulletin.TwoLineLayout {
             if (object instanceof TLRPC.Document && (MessageObject.isAnimatedStickerDocument(sticker, true) || MessageObject.isVideoSticker(sticker) || MessageObject.isGifDocument(sticker))) {
                 imageView.setImage(ImageLocation.getForDocument(sticker), "50_50", imageLocation, null, 0, setObject);
             } else if (imageLocation != null && imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE) {
-                imageView.setImage(imageLocation, "50_50", "ass", null, setObject);
+                imageView.setImage(imageLocation, "50_50", "tgs", null, setObject);
             } else {
                 imageView.setImage(imageLocation, "50_50", "webp", null, setObject);
             }

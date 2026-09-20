@@ -124,7 +124,7 @@ public class PermanentLinkBottomSheet extends BottomSheet {
 
         TLRPC.Chat chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(chatId);
         if (chat != null && ChatObject.isPublic(chat)) {
-            linkActionView.setLink("https://asme.su/" + ChatObject.getPublicUsername(chat));
+            linkActionView.setLink("https://t.me/" + ChatObject.getPublicUsername(chat));
             manage.setVisibility(View.GONE);
         } else if (info != null && info.exported_invite != null) {
             linkActionView.setLink(info.exported_invite.link);
@@ -193,9 +193,9 @@ public class PermanentLinkBottomSheet extends BottomSheet {
         imageView.setBackground(Theme.createCircleDrawable(AndroidUtilities.dp(90), Theme.getColor(Theme.key_featuredStickers_addButton)));
         manage.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(8), Color.TRANSPARENT, ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_featuredStickers_addButton), 120)));
         int color = Theme.getColor(Theme.key_featuredStickers_buttonText);
-        linkIcon.setLayerColor("Top.**", color);
-        linkIcon.setLayerColor("Bottom.**", color);
-        linkIcon.setLayerColor("Center.**", color);
+        linkIcon.setLayerColor("Top", color);
+        linkIcon.setLayerColor("Bottom", color);
+        linkIcon.setLayerColor("Center", color);
         linkActionView.updateColors();
         setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));
     }

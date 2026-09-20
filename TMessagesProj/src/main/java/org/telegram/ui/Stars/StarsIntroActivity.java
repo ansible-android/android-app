@@ -97,6 +97,7 @@ import org.telegram.tgnet.tl.TL_stars;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.SimpleTextView;
@@ -265,11 +266,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 int firstViewHeight;
                 if (StarsIntroActivity.this.isLandscapeMode) {
-                    firstViewHeight = StarsIntroActivity.this.statusBarHeight + actionBar.getMeasuredHeight() - AndroidUtilities.dp(16);
+                    firstViewHeight = StarsIntroActivity.this.statusBarHeight + actionBar.getMeasuredHeight() - dp(16);
                 } else {
-                    int h = AndroidUtilities.dp(140) + statusBarHeight;
-                    if (backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24) > h) {
-                        h = backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24);
+                    int h = dp(140) + statusBarHeight;
+                    if (backgroundView.getMeasuredHeight() + dp(24) > h) {
+                        h = backgroundView.getMeasuredHeight() + dp(24);
                     }
                     firstViewHeight = h;
                 }
@@ -279,14 +280,13 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         };
 
         super.createView(context);
+        if (parentLayout != null && parentLayout.isRightLayout()) {
+            actionBar.setBackButtonImage(R.drawable.ic_ab_close);
+        }
 
-//        balanceView = new StarsBalanceView(context, currentAccount);
-//        actionBar.addView(balanceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT | Gravity.BOTTOM));
-
-//        yOffset = dp(16);
         aboveTitleView = new FrameLayout(context);
         aboveTitleView.setClickable(true);
-        iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
+        iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
         iconTextureView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconTextureView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconTextureView.mRenderer.updateColors();
@@ -629,7 +629,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 paints = new Paint[20];
                 for (int i = 0; i < paints.length; ++i) {
                     paints[i] = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFF1BA4ED, 0xFF76D7FE, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN)); // Ansible: синие партиклы (были золотые 0xFFFA5416→0xFFFFC837)
+                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFFFA5416, 0xFFFFC837, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN));
                 }
                 drawable.getPaint = i -> paints[i % paints.length];
                 drawable.size1 = 17;
@@ -801,7 +801,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             headerTextView.setTypeface(AndroidUtilities.bold());
             addView(headerTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT));
 
-            Drawable starDrawable = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз (баланс)
+            Drawable starDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
             amountTextView = new AnimatedTextView(context) {
                 @Override
                 protected void dispatchDraw(Canvas canvas) {
@@ -1552,12 +1552,12 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             addView(amountTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 8, 0, 20, 0));
 
             star = new SpannableString("⭐️");
-            Drawable drawable = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз (транзакции)
+            Drawable drawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
             drawable.setBounds(0, 0, dp(21), dp(21));
             star.setSpan(new ImageSpan(drawable), 0, star.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             ton = new SpannableString("TON");
-            drawable = context.getResources().getDrawable(R.drawable.ton).mutate();
+            drawable = context.getResources().getDrawable(R.drawable.mini_gram_72).mutate();
             ColoredImageSpan span = new ColoredImageSpan(drawable);
             span.setSize(dp(18));
             span.setTranslateY(dp(.5f));
@@ -1650,7 +1650,16 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     spanString.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     setGiftImage(span.imageReceiver, transaction.stargift, 16);
                     titleTextView.setText(username);
-                    if (transaction.stargift_resale) {
+                    if (transaction.offer) {
+                        final SpannableStringBuilder sb = new SpannableStringBuilder("x ");
+                        sb.setSpan(new AnimatedEmojiSpan(transaction.stargift.getDocument(), subtitleTextView.getPaint().getFontMetricsInt()), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        if (!transaction.amount.negative()) {
+                            sb.append(getString(transaction.refund ? R.string.StarGiftTransactionGiftOfferRefund : R.string.StarGiftTransactionGiftSale));
+                        } else {
+                            sb.append(getString(transaction.refund ? R.string.StarGiftTransactionGiftSaleRefund : R.string.StarGiftTransactionGiftOffer));
+                        }
+                        subtitleTextView.setText(sb);
+                    } else if (transaction.stargift_resale) {
                         final SpannableStringBuilder sb = new SpannableStringBuilder("x ");
                         sb.setSpan(new AnimatedEmojiSpan(transaction.stargift.getDocument(), subtitleTextView.getPaint().getFontMetricsInt()), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         if (!transaction.amount.negative()) {
@@ -2148,7 +2157,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             priceView.setTextColor(0xFFFFFFFF);
             priceView.setText(replaceStars("XTR " + LocaleController.formatNumber((int) stars, ','), .85f));
             priceView.setPadding(dp(5.33f), 0, dp(5.33f), 0);
-            priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFF37A7F6)); // Ansible: синий (был золотой 0xFFEEB402)
+            priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFFEEB402));
             FrameLayout backgroundLayout = new FrameLayout(context);
             backgroundLayout.setBackground(Theme.createRoundRectDrawable(dp(20), Theme.getColor(Theme.key_dialogBackground, resourcesProvider)));
             backgroundLayout.setPadding(dp(1.33f), dp(1.33f), dp(1.33f), dp(1.33f));
@@ -2628,6 +2637,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         private final FireworksOverlay fireworksOverlay;
         private Runnable whenPurchased;
         private final TLRPC.InputPeer purposePeer;
+        private final boolean canBuy;
 
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
@@ -2652,6 +2662,15 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         @Override
         public void show() {
+            if (!canBuy) {
+                BulletinFactory.of(Bulletin.BulletinWindow.make(getContext()), resourcesProvider)
+                    .createSimpleBulletin(R.raw.stars_topup,
+                        getString(R.string.PaymentInvoiceDisabledStarsText)
+                    ).show();
+                return;
+            }
+
+
             long balance = StarsController.getInstance(currentAccount).getBalance().amount;
             if (balance >= starsNeeded) {
                 if (whenPurchased != null) {
@@ -2712,6 +2731,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
             this.whenPurchased = whenPurchased;
             this.purposePeer = purposePeerDialogId == 0 ? null : MessagesController.getInstance(currentAccount).getInputPeer(purposePeerDialogId);
+            this.canBuy = StarsController.getInstance(currentAccount).canBuy(purposePeer);
 
             fixNavigationBar();
             recyclerListView.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
@@ -2721,6 +2741,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 if (item == null) return;
                 onItemClick(item, adapter);
             });
+            recyclerListView.setSections();
             DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
             itemAnimator.setSupportsChangeAnimations(false);
             itemAnimator.setDelayAnimations(false);
@@ -2793,9 +2814,13 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
             footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
             footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-            footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTOS), () -> {
-                Browser.openUrl(getContext(), getString(R.string.StarsTOSLink));
-            }));
+            if (canBuy) {
+                footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTOS), () -> {
+                    Browser.openUrl(getContext(), getString(R.string.StarsTOSLink));
+                }));
+            } else {
+                footerTextView.setText(AndroidUtilities.replaceTags(getString(R.string.StarsPurchaseUnavailable)));
+            }
             footerTextView.setGravity(Gravity.CENTER);
             footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
             footerView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
@@ -2825,11 +2850,16 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         private final int BUTTON_EXPAND = -1;
 
         public void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-            items.add(UItem.asCustom(headerView));
-            items.add(UItem.asHeader(getString(R.string.TelegramStarsChoose)));
+            items.add(UItem.asCustomShadow(headerView));
+            if (canBuy) {
+                items.add(UItem.asHeader(getString(R.string.TelegramStarsChoose)));
+            }
             int stars = 1;
             ArrayList<TL_stars.TL_starsTopupOption> options = StarsController.getInstance(currentAccount).getOptions();
-            if (options != null && !options.isEmpty()) {
+
+            if (!canBuy) {
+
+            } else if (options != null && !options.isEmpty()) {
                 int count = 0;
                 int hidden = 0;
                 boolean shownNearest = false;
@@ -2941,7 +2971,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 particlesView = makeParticlesView(context, 70, 0);
                 topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-                iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
+                iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
                 iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
                 iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
                 iconView.mRenderer.updateColors();
@@ -3294,7 +3324,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (cache != null && cache[0] != null) {
             span = cache[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.ton : R.drawable.diamond);
+            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.msg_premium_liststar);
             if (cache != null) {
                 cache[0] = span;
             }
@@ -3304,9 +3334,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (ton) {
             span.setScale(scale * 0.2f, scale * 0.2f);
         } else {
-            // Ansible: валюта Stars рисуется полноцветным алмазом (а не перекрашенной звездой).
-            span.recolorDrawable = false;
-            span.setScale(scale * 0.8f, scale * 0.8f);
+            span.setScale(scale, scale);
         }
         spacedStar.setSpan(span, 0, spacedStar.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         AndroidUtilities.replaceMultipleCharSequence("⭐️", ssb, "⭐");
@@ -3372,9 +3400,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (spanRef != null && spanRef[0] != null) {
             span = spanRef[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.ton : R.drawable.diamond);
-            span.setScale(ton ? 0.222f : 0.9f, ton ? 0.222f : 0.9f);
-            if (!ton) span.recolorDrawable = false; // Ansible: полноцветный алмаз вместо звезды
+            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.msg_premium_liststar);
+            span.setScale(ton ? 0.222f : 1.13f, ton ? 0.222f : 1.13f);
         }
         if (spanRef != null) {
             spanRef[0] = span;
@@ -3412,7 +3439,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             ssb = (SpannableStringBuilder) cs;
         }
         final String symbol = ton ? "TON" : "⭐";
-        final int resId = ton ? R.drawable.ton : R.drawable.diamond; // Ansible: алмаз вместо звезды
+        final int resId = ton ? R.drawable.mini_gram_72 : R.drawable.star_small_inner;
         SpannableString spacedStar = new SpannableString(symbol + " ");
         ColoredImageSpan span;
         if (spanArr != null && spanArr[0] != null) {
@@ -3709,7 +3736,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     ImageLocation.getForDocument(document), "160_160_nr",
                     ImageLocation.getForDocument(thumb, document), "160_160",
                     svgThumb,
-                    document.size, "ass",
+                    document.size, "tgs",
                     set,
                     1
                 );
@@ -4110,7 +4137,17 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 final TL_stars.TL_starsTransactionPeer peer = (TL_stars.TL_starsTransactionPeer) transaction.peer;
                 final long peerId = DialogObject.getPeerDialogId(peer.peer);
                 long from_id, to_id;
-                if (transaction.stargift_resale) {
+                if (transaction.offer) {
+                    if (!negative) {
+                        tableView.addRow(getString(R.string.StarGiftReason), getString(transaction.refund ? R.string.StarGiftReasonOfferRefund : R.string.StarGiftReasonSale));
+                        to_id = selfId;
+                        from_id = peerId;
+                    } else {
+                        tableView.addRow(getString(R.string.StarGiftReason), getString(transaction.refund ? R.string.StarGiftReasonSale : R.string.StarGiftReasonOffer));
+                        to_id = peerId;
+                        from_id = selfId;
+                    }
+                } else if (transaction.stargift_resale) {
                     if (!negative) {
                         tableView.addRow(getString(R.string.StarGiftReason), getString(transaction.refund ? R.string.StarGiftReasonPurchase : R.string.StarGiftReasonSale));
                         to_id = selfId;
@@ -4908,7 +4945,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                         }));
                     } else if (subscription.invoice_slug != null) {
                         maybeCloseAfterUpdate[0] = true;
-                        Browser.openUrl(context, Uri.parse("https://asme.su/$" + subscription.invoice_slug), true, false, false, new Browser.Progress() {
+                        Browser.openUrl(context, Uri.parse("https://t.me/$" + subscription.invoice_slug), true, false, false, new Browser.Progress() {
                             @Override
                             public void end() {
                                 button.setLoading(false);
@@ -4956,7 +4993,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         final StarParticlesView particlesView = makeParticlesView(context, 70, 0);
         topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        final GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
+        final GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
         iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconView.mRenderer.updateColors();
@@ -5109,7 +5146,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.diamond); // Ansible: алмаз (поле цены)
+        starImage.setImageResource(R.drawable.star_small_inner);
         editTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         editTextLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         editTextContainer.attachEditText(editText);
@@ -5130,13 +5167,13 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         infoView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
         linearLayout.addView(infoView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 14, 3, 14, 24));
 
-        ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider);
+        ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider).setRound();
         button.setText(getString(stars > 0 ? R.string.PaidContentUpdateButton : R.string.PaidContentButton), false);
         linearLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
 
         final ButtonWithCounterView clearButton;
         if (stars > 0 && allowClear) {
-            clearButton = new ButtonWithCounterView(context, false, resourcesProvider);
+            clearButton = new ButtonWithCounterView(context, false, resourcesProvider).setRound();
             clearButton.setText(getString(R.string.PaidContentClearButton), false, false);
             linearLayout.addView(clearButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 0, 4, 0, 0));
         } else {
@@ -5330,7 +5367,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.diamond); // Ansible: алмаз (поле цены)
+        starImage.setImageResource(R.drawable.star_small_inner);
         editTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         editTextLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         editTextContainer.attachEditText(editText);

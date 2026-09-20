@@ -28,7 +28,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.InputType;
@@ -380,7 +379,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     File stickerFile = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
                     if (stickerFile != null) {
                         try {
-                            entry.averageDuration = (long) (RLottieDrawable.getDuration(stickerFile.getAbsolutePath(), null) * 1000L);
+                            entry.averageDuration = (long) (RLottieNative.getDuration(stickerFile.getAbsolutePath(), null) * 1000L);
                         } catch (Exception e) {
                             FileLog.e(e);
                         }
@@ -513,7 +512,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     if (ext == null) {
                         continue;
                     }
-                    boolean animated = "ass".equals(ext);
+                    boolean animated = "tgs".equals(ext);
                     if (isAnimated == null) {
                         isAnimated = animated;
                     } else if (isAnimated != animated) {
@@ -536,7 +535,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                         importingSticker.mimeType = "image/" + ext;
                         importingSticker.validated = true;
                     } else {
-                        importingSticker.mimeType = "application/x-ansible-sticker";
+                        importingSticker.mimeType = "application/x-tgsticker";
                     }
                     if (emoji != null && emoji.size() == N && emoji.get(a) instanceof String) {
                         importingSticker.emoji = emoji.get(a);
@@ -611,43 +610,41 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                     reqId = 0;
                     if (error == null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            Transition addTarget = new Transition() {
+                        Transition addTarget = new Transition() {
 
-                                @Override
-                                public void captureStartValues(TransitionValues transitionValues) {
-                                    transitionValues.values.put("start", true);
-                                    transitionValues.values.put("offset", containerView.getTop() + scrollOffsetY);
-                                }
+                            @Override
+                            public void captureStartValues(TransitionValues transitionValues) {
+                                transitionValues.values.put("start", true);
+                                transitionValues.values.put("offset", containerView.getTop() + scrollOffsetY);
+                            }
 
-                                @Override
-                                public void captureEndValues(TransitionValues transitionValues) {
-                                    transitionValues.values.put("start", false);
-                                    transitionValues.values.put("offset", containerView.getTop() + scrollOffsetY);
-                                }
+                            @Override
+                            public void captureEndValues(TransitionValues transitionValues) {
+                                transitionValues.values.put("start", false);
+                                transitionValues.values.put("offset", containerView.getTop() + scrollOffsetY);
+                            }
 
-                                @Override
-                                public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues) {
-                                    int scrollOffsetY = StickersAlert.this.scrollOffsetY;
-                                    int startValue = (int) startValues.values.get("offset") - (int) endValues.values.get("offset");
-                                    final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-                                    animator.setDuration(250);
-                                    animator.addUpdateListener(a -> {
-                                        float fraction = a.getAnimatedFraction();
-                                        gridView.setAlpha(fraction);
-                                        titleTextView.setAlpha(fraction);
-                                        if (startValue != 0) {
-                                            int value = (int) (startValue * (1f - fraction));
-                                            setScrollOffsetY(scrollOffsetY + value);
-                                            gridView.setTranslationY(value);
-                                        }
-                                    });
-                                    return animator;
-                                }
-                            };
-                            addTarget.addTarget(containerView);
-                            TransitionManager.beginDelayedTransition(container, addTarget);
-                        }
+                            @Override
+                            public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues) {
+                                int scrollOffsetY = StickersAlert.this.scrollOffsetY;
+                                int startValue = (int) startValues.values.get("offset") - (int) endValues.values.get("offset");
+                                final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
+                                animator.setDuration(250);
+                                animator.addUpdateListener(a -> {
+                                    float fraction = a.getAnimatedFraction();
+                                    gridView.setAlpha(fraction);
+                                    titleTextView.setAlpha(fraction);
+                                    if (startValue != 0) {
+                                        int value = (int) (startValue * (1f - fraction));
+                                        setScrollOffsetY(scrollOffsetY + value);
+                                        gridView.setTranslationY(value);
+                                    }
+                                });
+                                return animator;
+                            }
+                        };
+                        addTarget.addTarget(containerView);
+                        TransitionManager.beginDelayedTransition(container, addTarget);
                         optionsButton.setVisibility(View.VISIBLE);
                         stickerSet = (TLRPC.TL_messages_stickerSet) response;
                         mediaDataController.putStickerSet(stickerSet, false);
@@ -735,11 +732,9 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 int height = MeasureSpec.getSize(heightMeasureSpec);
-                if (Build.VERSION.SDK_INT >= 21) {
-                    ignoreLayout = true;
-                    setPadding(backgroundPaddingLeft, AndroidUtilities.statusBarHeight, backgroundPaddingLeft, 0);
-                    ignoreLayout = false;
-                }
+                ignoreLayout = true;
+                setPadding(backgroundPaddingLeft, AndroidUtilities.statusBarHeight, backgroundPaddingLeft, 0);
+                ignoreLayout = false;
                 if (isEmoji()) {
                     int width = gridView.getMeasuredWidth();
                     if (width == 0) {
@@ -830,19 +825,17 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 int top = scrollOffsetY - backgroundPaddingTop - AndroidUtilities.dp(13);
                 int statusBarHeight = 0;
                 float radProgress = 1.0f;
-                if (Build.VERSION.SDK_INT >= 21) {
-                    top += AndroidUtilities.statusBarHeight;
-                    y += AndroidUtilities.statusBarHeight;
+                top += AndroidUtilities.statusBarHeight;
+                y += AndroidUtilities.statusBarHeight;
 
-                    if (fullHeight) {
-                        if (top + backgroundPaddingTop < AndroidUtilities.statusBarHeight * 2) {
-                            int diff = Math.min(AndroidUtilities.statusBarHeight, AndroidUtilities.statusBarHeight * 2 - top - backgroundPaddingTop);
-                            top -= diff;
-                            radProgress = 1.0f - Math.min(1.0f, (diff * 2) / (float) AndroidUtilities.statusBarHeight);
-                        }
-                        if (top + backgroundPaddingTop < AndroidUtilities.statusBarHeight) {
-                            statusBarHeight = Math.min(AndroidUtilities.statusBarHeight, AndroidUtilities.statusBarHeight - top - backgroundPaddingTop);
-                        }
+                if (fullHeight) {
+                    if (top + backgroundPaddingTop < AndroidUtilities.statusBarHeight * 2) {
+                        int diff = Math.min(AndroidUtilities.statusBarHeight, AndroidUtilities.statusBarHeight * 2 - top - backgroundPaddingTop);
+                        top -= diff;
+                        radProgress = 1.0f - Math.min(1.0f, (diff * 2) / (float) AndroidUtilities.statusBarHeight);
+                    }
+                    if (top + backgroundPaddingTop < AndroidUtilities.statusBarHeight) {
+                        statusBarHeight = Math.min(AndroidUtilities.statusBarHeight, AndroidUtilities.statusBarHeight - top - backgroundPaddingTop);
                     }
                 }
 
@@ -1048,7 +1041,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     return;
                 }
                 stickerEmojiTextView.setText(Emoji.replaceEmoji(selectedStickerPath.emoji, stickerEmojiTextView.getPaint().getFontMetricsInt(), false));
-                stickerImageView.setImage(ImageLocation.getForPath(selectedStickerPath.path), null, null, null, null, null, selectedStickerPath.animated ? "ass" : null, 0, null);
+                stickerImageView.setImage(ImageLocation.getForPath(selectedStickerPath.path), null, null, null, null, null, selectedStickerPath.animated ? "tgs" : null, 0, null);
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) stickerPreviewLayout.getLayoutParams();
                 layoutParams.topMargin = scrollOffsetY;
                 stickerPreviewLayout.setLayoutParams(layoutParams);
@@ -1671,7 +1664,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         textView.setTextColor(getThemedColor(Theme.key_dialogTextHint));
         textView.setMaxLines(1);
         textView.setLines(1);
-        textView.setText("asme.su/addstickers/");
+        textView.setText("t.me/addstickers/");
         textView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         textView.setGravity(Gravity.LEFT | Gravity.TOP);
         textView.setSingleLine(true);
@@ -2047,7 +2040,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                         return;
                     }
                     uploadImportStickers.remove(location);
-                    if (!"application/x-ansible-sticker".equals(sticker.mimeType)) {
+                    if (!"application/x-tgsticker".equals(sticker.mimeType)) {
                         removeSticker(sticker);
                     } else {
                         sticker.validated = true;

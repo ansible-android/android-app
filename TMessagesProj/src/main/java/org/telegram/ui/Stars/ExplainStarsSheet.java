@@ -60,7 +60,7 @@ public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
         StarParticlesView particlesView = StarsIntroActivity.makeParticlesView(context, 70, 0);
         topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
+        GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
         iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconView.mRenderer.updateColors();
@@ -166,6 +166,14 @@ public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
         public void set(int iconResId, CharSequence title, CharSequence text) {
             imageView.setImageResource(iconResId);
             titleView.setText(title);
+            subtitleView.setText(text);
+        }
+
+        public void setTitle(CharSequence text) {
+            titleView.setText(text);
+        }
+
+        public void setSubtitle(CharSequence text) {
             subtitleView.setText(text);
         }
 

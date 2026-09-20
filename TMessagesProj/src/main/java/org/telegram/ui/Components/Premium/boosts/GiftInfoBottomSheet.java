@@ -85,7 +85,7 @@ public class GiftInfoBottomSheet extends BottomSheetWithRecyclerListView {
             if (scheme != null) {
                 if ((scheme.equals("http") || scheme.equals("https"))) {
                     String host = data.getHost().toLowerCase();
-                    if (host.equals("asme.su") || host.equals("asme.su") || host.equals("asme.su")) {
+                    if (host.equals("telegram.me") || host.equals("t.me") || host.equals("telegram.dog")) {
                         String path = data.getPath();
                         if (path != null) {
                             String lastPathSegment = data.getLastPathSegment();
@@ -95,10 +95,10 @@ public class GiftInfoBottomSheet extends BottomSheetWithRecyclerListView {
                             }
                         }
                     }
-                } else if (scheme.equals("as")) {
+                } else if (scheme.equals("tg")) {
                     String url = data.toString();
                     String lastPathSegment = data.getLastPathSegment();
-                    if (url.startsWith("as:giftcode") || url.startsWith("as://giftcode")) {
+                    if (url.startsWith("tg:giftcode") || url.startsWith("tg://giftcode")) {
                         if (lastPathSegment != null) {
                             show(LaunchActivity.getLastFragment(), lastPathSegment, progress);
                             return true;

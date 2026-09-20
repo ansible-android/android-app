@@ -478,7 +478,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             ContactsController.getInstance(currentAccount).loadPrivacySettings();
         }
         if (rulesType == PRIVACY_RULES_TYPE_PHOTO) {
-            imageUpdater = new ImageUpdater(false, ImageUpdater.FOR_TYPE_USER, true);
+            imageUpdater = new ImageUpdater(true, ImageUpdater.FOR_TYPE_USER, true);
             imageUpdater.parentFragment = this;
             imageUpdater.setDelegate(this);
             TLRPC.UserFull userFull = getMessagesController().getUserFull(getUserConfig().clientUserId);
@@ -2004,7 +2004,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                                 privacyCell.setText(LocaleController.getString(R.string.PrivacyPhoneInfo3));
                             } else {
                                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-                                String phoneLinkStr = String.format(Locale.ENGLISH, "https://asme.su/+%s", getUserConfig().getClientPhone());
+                                String phoneLinkStr = String.format(Locale.ENGLISH, "https://t.me/+%s", getUserConfig().getClientPhone());
                                 SpannableString phoneLink = new SpannableString(phoneLinkStr);
                                 phoneLink.setSpan(new ClickableSpan() {
                                     @Override

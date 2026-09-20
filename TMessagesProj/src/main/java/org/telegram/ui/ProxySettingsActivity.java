@@ -198,7 +198,7 @@ public class ProxySettingsActivity extends BaseFragment {
         actionBar.setTitle(LocaleController.getString(R.string.ProxyDetails));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(false);
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
 
@@ -517,13 +517,13 @@ public class ProxySettingsActivity extends BaseFragment {
                     params.append("port=").append(URLEncoder.encode(port, "UTF-8"));
                 }
                 if (currentType == 1) {
-                    url = "https://asme.su/proxy?";
+                    url = "https://t.me/proxy?";
                     if (params.length() != 0) {
                         params.append("&");
                     }
                     params.append("secret=").append(URLEncoder.encode(secret, "UTF-8"));
                 } else {
-                    url = "https://asme.su/socks?";
+                    url = "https://t.me/socks?";
                     if (!TextUtils.isEmpty(user)) {
                         if (params.length() != 0) {
                             params.append("&");
@@ -594,7 +594,7 @@ public class ProxySettingsActivity extends BaseFragment {
         if (clipText != null) {
             String[] params = null;
 
-            final String[] socksStrings = {"asme.su/socks?", "as://socks?"};
+            final String[] socksStrings = {"t.me/socks?", "tg://socks?"};
             for (int i = 0; i < socksStrings.length; i++) {
                 final int index = clipText.indexOf(socksStrings[i]);
                 if (index >= 0) {
@@ -605,7 +605,7 @@ public class ProxySettingsActivity extends BaseFragment {
             }
 
             if (params == null) {
-                final String[] proxyStrings = {"asme.su/proxy?", "as://proxy?"};
+                final String[] proxyStrings = {"t.me/proxy?", "tg://proxy?"};
                 for (int i = 0; i < proxyStrings.length; i++) {
                     final int index = clipText.indexOf(proxyStrings[i]);
                     if (index >= 0) {

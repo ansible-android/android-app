@@ -31,12 +31,14 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
+import org.telegram.tgnet.tl.TL_aicompose;
 import org.telegram.tgnet.tl.TL_phone;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.INavigationLayout;
+import org.telegram.ui.Components.AIEditorAlert;
 import org.telegram.ui.Components.AlertsCreator;
-import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CreateBotAlert;
 import org.telegram.ui.Components.Premium.boosts.UserSelectorBottomSheet;
@@ -86,7 +88,7 @@ public class LinkManager {
         if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))
             return handleHttp(uri);
 
-        if ("as".equalsIgnoreCase(scheme))
+        if ("tg".equalsIgnoreCase(scheme))
             return handleTg(uri);
 
         return false;
@@ -102,11 +104,11 @@ public class LinkManager {
         if (host == null) return false;
         final Matcher prefixMatcher = LaunchActivity.PREFIX_T_ME_PATTERN.matcher(host.toLowerCase());
         final boolean isPrefix = prefixMatcher.find();
-        if (!"asme.su".equalsIgnoreCase(host) && !"asme.su".equalsIgnoreCase(host) && !"asme.su".equalsIgnoreCase(host) && !isPrefix)
+        if (!"telegram.me".equalsIgnoreCase(host) && !"t.me".equalsIgnoreCase(host) && !"telegram.dog".equalsIgnoreCase(host) && !isPrefix)
             return false;
 
         if (isPrefix) {
-            uri = Uri.parse("https://asme.su/" + prefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
+            uri = Uri.parse("https://t.me/" + prefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
         }
 
         String path = uri.getPath();
@@ -123,6 +125,9 @@ public class LinkManager {
             return handleInvoiceSlug(path.substring(1));
         if ("invoice".equalsIgnoreCase(first))
             return handleInvoiceSlug(second);
+
+        if ("addstyle".equalsIgnoreCase(first))
+            return handleAiStyle(second);
 
         if ("oauth".equalsIgnoreCase(first))
             return handleOAuth(uri, uri.getQueryParameter("startapp"));
@@ -252,10 +257,13 @@ public class LinkManager {
             return true;
         }
 
+        if ("addstyle".equalsIgnoreCase(first))
+            return handleAiStyle(uri.getQueryParameter("slug"));
+
         return false;
     }
 
-    // as://resolve
+    // tg://resolve
     private boolean handleTgResolve(Uri uri) {
         final List<String> _segments = uri.getPathSegments();
         if (_segments == null) return false;
@@ -275,7 +283,7 @@ public class LinkManager {
         return false;
     }
 
-    // as://settings/*
+    // tg://settings/*
     private boolean handleSettings(final List<String> segments) {
         if (segments == null) return false;
         if (segments.isEmpty()) {
@@ -427,7 +435,7 @@ public class LinkManager {
                                     MessagesController.getInstance(currentAccount).putChats(updates.chats, false);
 
                                     TLRPC.GroupCall groupCall = null;
-                                    for (TLRPC.TL_updateGroupCall u : findUpdatesAndRemove(updates, TLRPC.TL_updateGroupCall.class)) {
+                                    for (TL_update.TL_updateGroupCall u : findUpdatesAndRemove(updates, TL_update.TL_updateGroupCall.class)) {
                                         groupCall = u.call;
                                     }
 
@@ -1374,6 +1382,40 @@ public class LinkManager {
         return true;
     }
 
+    private boolean handleAiStyle(String slug) {
+        if (TextUtils.isEmpty(slug)) return false;
+        final TL_aicompose.getTone req = new TL_aicompose.getTone();
+        final TL_aicompose.inputAiComposeToneSlug input = new TL_aicompose.inputAiComposeToneSlug();
+        input.slug = slug;
+        req.tone = input;
+        init();
+        ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (tones, err) -> {
+            done();
+
+            if (tones instanceof TL_aicompose.TL_tones) {
+                final TL_aicompose.TL_tones t = (TL_aicompose.TL_tones) tones;
+                MessagesController.getInstance(currentAccount).putUsers(t.users, false);
+
+                final BaseFragment fragment = LaunchActivity.getSafeLastFragment();
+                if (fragment == null) return;
+                if (t.tones.isEmpty()) return;
+                final TL_aicompose.AiComposeTone tone = t.tones.get(0);
+
+                new AIEditorAlert.AiStyleAlert(fragment.getContext(), tone, fragment.getResourceProvider())
+                    .show();
+            } else if (err != null) {
+                if ("AICOMPOSE_TONE_SLUG_INVALID".equalsIgnoreCase(err.text)) {
+                    getBulletinFactory()
+                        .createSimpleBulletin(R.raw.error, getString(R.string.AIEditorStyleNotFound))
+                        .show();
+                } else {
+                    getBulletinFactory().showForError(err);
+                }
+            }
+        });
+        return true;
+    }
+
     private void setRequestId(int requestId) {
         currentRequestId = requestId;
     }
@@ -1473,7 +1515,7 @@ public class LinkManager {
                     String host = uri.getHost().toLowerCase();
                     Matcher prefixMatcher = LaunchActivity.PREFIX_T_ME_PATTERN.matcher(host);
                     boolean isPrefix = prefixMatcher.find();
-                    if (host.equals("asme.su") || host.equals("asme.su") || host.equals("asme.su") || isPrefix) {
+                    if (host.equals("telegram.me") || host.equals("t.me") || host.equals("telegram.dog") || isPrefix) {
                         ArrayList<String> segments = new ArrayList<>(uri.getPathSegments());
                         if (segments.size() > 0 && segments.get(0).equals("s")) {
                             segments.remove(0);
@@ -1512,8 +1554,8 @@ public class LinkManager {
                     }
                     break;
                 }
-                case "as": {
-                    if (url.startsWith("as:resolve") || url.startsWith("as://resolve")) {
+                case "tg": {
+                    if (url.startsWith("tg:resolve") || url.startsWith("tg://resolve")) {
                         return !TextUtils.isEmpty(uri.getQueryParameter("appname"));
                     }
                     break;

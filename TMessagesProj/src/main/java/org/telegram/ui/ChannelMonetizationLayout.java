@@ -354,7 +354,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
         balanceEditTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.diamond);
+        starImage.setImageResource(R.drawable.star_small_inner);
         balanceEditTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         balanceEditTextLayout.addView(starsBalanceEditText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         starsBalanceEditTextContainer.attachEditText(starsBalanceEditText);
@@ -385,7 +385,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
             }
 
             if (starsBalanceEditTextValue < MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin) {
-                Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
+                Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate();
                 BulletinFactory.of(fragment).createSimpleBulletin(starDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotStarsWithdrawMinLimit", (int) MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin), () -> {
                     Bulletin.hideVisible();
                     if (starsBalance.amount < MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin) {
@@ -1038,14 +1038,14 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
         if (tonString == null) {
             tonString = new SpannableString("T");
             if (large) {
-                ColoredImageSpan span = new ColoredImageSpan(R.drawable.ton);
+                ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_gram_72);
                 span.setScale(scale, scale);
                 span.setColorKey(Theme.key_windowBackgroundWhiteBlueText2);
                 span.setRelativeSize(textPaint.getFontMetricsInt());
                 span.spaceScaleX = .9f;
                 tonString.setSpan(span, 0, tonString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
-                ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_ton);
+                ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_gram_16);
                 span.setScale(scale, scale);
                 span.setTranslateY(translateY);
                 span.spaceScaleX = .95f;
@@ -1586,7 +1586,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
         textView.setTypeface(AndroidUtilities.bold());
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         SpannableString animatedDiamond = new SpannableString("💎");
-        ColoredImageSpan span = new ColoredImageSpan(R.drawable.ton);
+        ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_gram_72);
         span.setScale(.9f, .9f);
         span.setColorKey(Theme.key_windowBackgroundWhiteBlueText2);
         span.setRelativeSize(textView.getPaint().getFontMetricsInt());

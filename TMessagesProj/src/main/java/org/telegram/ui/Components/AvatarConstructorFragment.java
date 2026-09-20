@@ -5,6 +5,7 @@ import static org.telegram.messenger.AndroidUtilities.lerp;
 import static org.telegram.messenger.AndroidUtilities.premiumText;
 import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.Components.ImageUpdater.FOR_TYPE_CHANNEL;
+import static org.telegram.ui.Components.ImageUpdater.FOR_TYPE_COMMUNITY;
 import static org.telegram.ui.Components.ImageUpdater.FOR_TYPE_GROUP;
 import static org.telegram.ui.Components.ImageUpdater.TYPE_SUGGEST_PHOTO_FOR_USER;
 
@@ -499,6 +500,8 @@ public class AvatarConstructorFragment extends BaseFragment {
         button.text.setHacks(false, true, false);
         if (imageUpdater.setForType == FOR_TYPE_CHANNEL) {
             buttonText = getString(R.string.SetChannelPhoto);
+        } else if (imageUpdater.setForType == FOR_TYPE_COMMUNITY) {
+            buttonText = getString(R.string.SetCommunityPhoto);
         } else if (imageUpdater.setForType == FOR_TYPE_GROUP) {
             buttonText = getString(R.string.SetGroupPhoto);
         } else if (avatarFor != null && avatarFor.type == TYPE_SUGGEST_PHOTO_FOR_USER) {
@@ -557,7 +560,7 @@ public class AvatarConstructorFragment extends BaseFragment {
         if (docId == 0) {
             previewView.backupImageView.setAnimatedEmojiDrawable(null);
             SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
-            previewView.backupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "100_100", null, null, svgThumb, 0, "ass", document, 0);
+            previewView.backupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "100_100", null, null, svgThumb, 0, "tgs", document, 0);
         } else {
             previewView.backupImageView.setAnimatedEmojiDrawable(new AnimatedEmojiDrawable(AnimatedEmojiDrawable.CACHE_TYPE_AVATAR_CONSTRUCTOR_PREVIEW, currentAccount, docId));
             previewView.backupImageView.getImageReceiver().clearImage();
@@ -1484,7 +1487,7 @@ public class AvatarConstructorFragment extends BaseFragment {
             }
         }
         if (bottomSheet != null) {
-            AndroidUtilities.setLightStatusBar(bottomSheet.getWindow(), isLight);
+            AndroidUtilities.setLightStatusBar(bottomSheet, isLight);
         }
         return isLight;
     }

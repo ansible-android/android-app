@@ -67,8 +67,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class StickerSetCell extends FrameLayout {
-    private final static String LINK_PREFIX = "asme.su/addstickers/";
-    private final static String LINK_PREFIX_EMOJI = "asme.su/addemoji/";
+    private final static String LINK_PREFIX = "t.me/addstickers/";
+    private final static String LINK_PREFIX_EMOJI = "t.me/addemoji/";
 
     private final int option;
 
@@ -368,7 +368,7 @@ public class StickerSetCell extends FrameLayout {
                     imageView.setColorFilter(Theme.getAnimatedEmojiColorFilter(null));
                 }
             } else if (imageLocation != null && imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE) {
-                imageView.setImage(imageLocation, filter, "ass", svgThumb, set);
+                imageView.setImage(imageLocation, filter, "tgs", svgThumb, set);
             } else {
                 imageView.setImage(imageLocation, filter, "webp", svgThumb, set);
             }

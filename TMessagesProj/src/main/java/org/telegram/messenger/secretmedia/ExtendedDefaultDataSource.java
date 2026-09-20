@@ -185,7 +185,7 @@ public final class ExtendedDefaultDataSource implements DataSource {
                     dataSource = getFileDataSource();
                 }
             }
-        } else if ("as".equals(scheme)) {
+        } else if ("tg".equals(scheme)) {
             dataSource = getStreamDataSource();
         } else if (SCHEME_ASSET.equals(scheme)) {
             dataSource = getAssetDataSource();

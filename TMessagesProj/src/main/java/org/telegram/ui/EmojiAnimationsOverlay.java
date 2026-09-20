@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.EmojiData;
 import org.telegram.messenger.FileLoader;
@@ -527,7 +528,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
             drawingObject.imageReceiver.setUniqKeyPrefix(currentIndex + "_" + drawingObject.messageId + "_");
         }
         drawingObject.document = document;
-        drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w, null, "ass", set, 1);
+        drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w, null, "tgs", set, 1);
 
         drawingObject.imageReceiver.setLayerNum(Integer.MAX_VALUE);
         drawingObject.imageReceiver.setAutoRepeat(0);
@@ -728,6 +729,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
                 drawingObject.isOut = isOutOwner;
                 drawingObject.imageReceiver.setAllowStartAnimation(true);
                 drawingObject.imageReceiver.setAllowLottieVibration(sendTap);
+                final boolean pcache = SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_AVERAGE || !BuildVars.DEBUG_VERSION;
                 int w;
                 if (videoSize == null) {
                     w = getFilterWidth();
@@ -739,7 +741,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
                     ImageLocation imageLocation = ImageLocation.getForDocument(document);
                     drawingObject.imageReceiver.setUniqKeyPrefix(currentIndex + "_" + drawingObject.messageId + "_");
 
-                    drawingObject.imageReceiver.setImage(imageLocation, w + "_" + w + "_pcache", null, "ass", set, 1);
+                    drawingObject.imageReceiver.setImage(imageLocation, w + "_" + w + (pcache ? "_pcache" : ""), null, "tgs", set, 1);
                     drawingObject.imageReceiver.setDelegate(new ImageReceiver.ImageReceiverDelegate() {
                         @Override
                         public void didSetImage(ImageReceiver imageReceiver, boolean set, boolean thumb, boolean memCache) {
@@ -769,7 +771,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
                         drawingObject.imageReceiver.setUniqKeyPrefix(currentIndex + "_" + drawingObject.messageId + "_");
                     }
                     drawingObject.document = document;
-                    drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w, null, "ass", set, 1);
+                    drawingObject.imageReceiver.setImage(ImageLocation.getForDocument(videoSize, document), w + "_" + w + (pcache ? "_pcache" : ""), null, "tgs", set, 1);
                 }
 
                 drawingObject.imageReceiver.setLayerNum(Integer.MAX_VALUE);
@@ -1098,9 +1100,9 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
             }
             if (fileName == null) {
                 if (location.document != null) {
-                    fileName = FileLoader.getAttachFileName(location.document, "ass");
+                    fileName = FileLoader.getAttachFileName(location.document, "tgs");
                 } else {
-                    fileName = FileLoader.getAttachFileName(location.location, "ass");
+                    fileName = FileLoader.getAttachFileName(location.location, "tgs");
                 }
             }
             if (fileName == null) {

@@ -81,6 +81,9 @@ import org.telegram.ui.Components.Reactions.HwEmojis;
 import org.telegram.ui.Components.Reactions.ReactionsEffectOverlay;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Components.Reactions.ReactionsUtils;
+import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
+import org.telegram.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
+import org.telegram.ui.Components.blur3.drawable.color.BlurredBackgroundProvider;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.SelectAnimatedEmojiDialog;
 import org.telegram.ui.Stars.StarsReactionsSheet;
@@ -505,6 +508,9 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
             return;
         }
         reactionsWindow = new CustomEmojiReactionsWindow(type, fragment, allReactionsList, selectedReactions, this, resourcesProvider, forceAttachToParent);
+        if (backgroundFactory != null) {
+            reactionsWindow.setBackgroundFactory(backgroundFactory, backgroundColorProvider);
+        }
         reactionsWindow.setLongPressEnabled(delegate == null || delegate.allowLongPress());
         invalidateLoopViews();
         reactionsWindow.onDismissListener(() -> {
@@ -612,6 +618,32 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         listAdapter.updateItems(animated);
     }
 
+    private BlurredBackgroundDrawable blurredBackgroundDrawable;
+    private BlurredBackgroundDrawable blurredBackgroundDrawable1;
+    private BlurredBackgroundDrawable blurredBackgroundDrawable2;
+
+    private BlurredBackgroundDrawableViewFactory backgroundFactory;
+    private BlurredBackgroundProvider backgroundColorProvider;
+
+    public void setBackgroundFactory(BlurredBackgroundDrawableViewFactory backgroundFactory, BlurredBackgroundProvider backgroundColorProvider) {
+        this.backgroundFactory = backgroundFactory;
+        this.backgroundColorProvider = backgroundColorProvider;
+        this.blurredBackgroundDrawable = backgroundFactory.create(this, true)
+            .setColorProvider(backgroundColorProvider)
+            .setRadius(dp(24))
+            .setPadding(dp(8));
+        this.blurredBackgroundDrawable1 = backgroundFactory.create(this, true)
+            .setColorProvider(backgroundColorProvider)
+            .setRadius(dp(8))
+            .setPadding(dp(8));
+        this.blurredBackgroundDrawable2 = backgroundFactory.create(this, true)
+            .setColorProvider(backgroundColorProvider)
+            .setRadius(dp(4))
+            .setPadding(dp(8));
+    }
+
+
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         long dt = Math.min(16, System.currentTimeMillis() - lastUpdate);
@@ -686,7 +718,9 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         if (type != TYPE_STORY) {
             shadow.setAlpha((int) (Utilities.clamp(1f - (customEmojiReactionsEnterProgress / 0.05f), 1f, 0f) * 255));
             shadow.setBounds((int) (getPaddingLeft() + (getWidth() - getPaddingRight() + shadowPad.right) * lt - shadowPad.left), getPaddingTop() - shadowPad.top - (int) expandSize, (int) ((getWidth() - getPaddingRight() + shadowPad.right) * rt), getHeight() - getPaddingBottom() + shadowPad.bottom + (int) expandSize);
-            shadow.draw(canvas);
+            if (blurredBackgroundDrawable == null) {
+                shadow.draw(canvas);
+            }
         }
 
         canvas.restoreToCount(s);
@@ -700,7 +734,16 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
             if (type == TYPE_STORY || delegate.drawBackground()) {
                 delegate.drawRoundRect(canvas, rect, radius, getX(), getY(), 255, false);
             } else {
-                canvas.drawRoundRect(rect, radius, radius, bgPaint);
+                if (blurredBackgroundDrawable != null) {
+                    rect.round(AndroidUtilities.rectTmp2);
+                    AndroidUtilities.rectTmp2.inset(-dp(8), -dp(8));
+
+                    blurredBackgroundDrawable.setBounds(AndroidUtilities.rectTmp2);
+                    blurredBackgroundDrawable.setAlpha(bgPaint.getAlpha());
+                    blurredBackgroundDrawable.draw(canvas);
+                } else {
+                    canvas.drawRoundRect(rect, radius, radius, bgPaint);
+                }
             }
 
             if (hasStar) {
@@ -885,7 +928,17 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
             rectF.set(cx - br, cy - br, cx + br, cy + br);
             delegate.drawRoundRect(canvas, rectF, br, getX(), getY(), alpha, false);
         } else {
-            canvas.drawCircle(cx, cy, br, bgPaint);
+            if (blurredBackgroundDrawable1 != null) {
+                AndroidUtilities.rectTmp.set(cx - br, cy - br, cx + br, cy + br);
+                AndroidUtilities.rectTmp.round(AndroidUtilities.rectTmp2);
+                AndroidUtilities.rectTmp2.inset(-dp(8), -dp(8));
+
+                blurredBackgroundDrawable1.setBounds(AndroidUtilities.rectTmp2);
+                blurredBackgroundDrawable1.setAlpha(bgPaint.getAlpha());
+                blurredBackgroundDrawable1.draw(canvas);
+            } else {
+                canvas.drawCircle(cx, cy, br, bgPaint);
+            }
         }
 
         cx = LocaleController.isRTL || mirrorX ? bigCircleOffset - bigCircleRadius : getWidth() - bigCircleOffset + bigCircleRadius;
@@ -899,7 +952,17 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
             rectF.set(cx - sr, cy - sr, cx + sr, cy + sr);
             delegate.drawRoundRect(canvas, rectF, sr, getX(), getY(), alpha, false);
         } else {
-            canvas.drawCircle(cx, cy, sr, bgPaint);
+            if (blurredBackgroundDrawable2 != null) {
+                AndroidUtilities.rectTmp.set(cx - sr, cy - sr, cx + sr, cy + sr);
+                AndroidUtilities.rectTmp.round(AndroidUtilities.rectTmp2);
+                AndroidUtilities.rectTmp2.inset(-dp(8), -dp(8));
+
+                blurredBackgroundDrawable2.setBounds(AndroidUtilities.rectTmp2);
+                blurredBackgroundDrawable2.setAlpha(bgPaint.getAlpha());
+                blurredBackgroundDrawable2.draw(canvas);
+            } else {
+                canvas.drawCircle(cx, cy, sr, bgPaint);
+            }
         }
         canvas.restore();
 
@@ -2040,9 +2103,9 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                 TLRPC.Document document = MessagesController.getInstance(currentAccount).getEffectDocument(currentReaction.documentId);
                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
 //                if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS)) {
-                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
+                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
 //                } else {
-//                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
+//                    loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(document), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
 //                }
             } else if (currentReaction.emojicon != null) {
                 TLRPC.TL_availableReaction defaultReaction = MediaDataController.getInstance(currentAccount).getReactionsMap().get(currentReaction.emojicon);
@@ -2050,19 +2113,19 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                     SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(defaultReaction.activate_animation, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
                     if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS) || type == TYPE_STICKER_SET_EMOJI) {
                         if (SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_LOW || type == TYPE_STICKER_SET_EMOJI) {
-                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
+                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
                         } else {
-                            enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "ass", react, 0);
-                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
+                            enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "tgs", react, 0);
+                            loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
                         }
                     } else {
-                        enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "ass", react, 0);
-                        loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "ass", currentReaction, 0);
+                        enterImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.appear_animation), ReactionsUtils.APPEAR_ANIMATION_FILTER, null, null, svgThumb, 0, "tgs", react, 0);
+                        loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
                     }
                     if (enterImageView.getImageReceiver().getLottieAnimation() != null) {
                         enterImageView.getImageReceiver().getLottieAnimation().setCurrentFrame(0, false, true);
                     }
-                    pressedBackupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, svgThumb, 0, "ass", react, 0);
+                    pressedBackupImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), ReactionsUtils.SELECT_ANIMATION_FILTER, null, null, svgThumb, 0, "tgs", react, 0);
 
                     preloadImageReceiver.setAllowStartLottieAnimation(false);
                     MediaDataController.getInstance(currentAccount).preloadImage(preloadImageReceiver, ImageLocation.getForDocument(defaultReaction.around_animation), ReactionsEffectOverlay.getFilterForAroundAnimation());

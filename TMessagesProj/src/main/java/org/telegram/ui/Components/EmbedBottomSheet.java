@@ -268,9 +268,7 @@ public class EmbedBottomSheet extends BottomSheet {
         fullscreenVideoContainer = new FrameLayout(context);
         fullscreenVideoContainer.setKeepScreenOn(true);
         fullscreenVideoContainer.setBackgroundColor(0xff000000);
-        if (Build.VERSION.SDK_INT >= 21) {
-            fullscreenVideoContainer.setFitsSystemWindows(true);
-        }
+        fullscreenVideoContainer.setFitsSystemWindows(true);
         fullscreenVideoContainer.setOnTouchListener((v, event) -> true);
         container.addView(fullscreenVideoContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         fullscreenVideoContainer.setVisibility(View.INVISIBLE);
@@ -338,15 +336,11 @@ public class EmbedBottomSheet extends BottomSheet {
         };
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
-        if (Build.VERSION.SDK_INT >= 17) {
-            webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        }
+        webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-            CookieManager cookieManager = CookieManager.getInstance();
-            cookieManager.setAcceptThirdPartyCookies(webView, true);
-        }
+        webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptThirdPartyCookies(webView, true);
 
         webView.setWebChromeClient(new WebChromeClient() {
 
@@ -414,7 +408,7 @@ public class EmbedBottomSheet extends BottomSheet {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                if (!isYouTube || Build.VERSION.SDK_INT < 17) {
+                if (!isYouTube) {
                     progressBar.setVisibility(View.INVISIBLE);
                     progressBarBlackBackground.setVisibility(View.INVISIBLE);
                     pipButton.setEnabled(true);
@@ -449,7 +443,7 @@ public class EmbedBottomSheet extends BottomSheet {
                 }
                 videoView.loadVideo(null, null, null, null, false);
                 HashMap<String, String> args = new HashMap<>();
-                args.put("Referer", "messenger.ansible.su");
+                args.put("Referer", "messenger.telegram.org");
                 try {
                     webView.loadUrl(embedUrl, args);
                 } catch (Exception e) {
@@ -536,7 +530,7 @@ public class EmbedBottomSheet extends BottomSheet {
                         View controlsView = videoView.getControlsView();
                         ImageView textureImageView = videoView.getTextureImageView();
 
-                        Rect rect = PipVideoOverlay.getPipRect(true, aspectRatio);
+                        RectOld rect = PipVideoOverlay.getPipRect(true, aspectRatio);
 
                         float scale = rect.width / textureView.getWidth();
 
@@ -587,7 +581,7 @@ public class EmbedBottomSheet extends BottomSheet {
 
                     if (animated && PipVideoOverlay.IS_TRANSITION_ANIMATION_SUPPORTED) {
                         setOnShowListener(onShowListener);
-                        Rect rect = PipVideoOverlay.getPipRect(false, aspectRatio);
+                        RectOld rect = PipVideoOverlay.getPipRect(false, aspectRatio);
 
                         TextureView textureView = videoView.getTextureView();
                         ImageView textureImageView = videoView.getTextureImageView();
@@ -911,15 +905,13 @@ public class EmbedBottomSheet extends BottomSheet {
                     }
                     videoView.loadVideo(null, null, null, null, false);
                     HashMap<String, String> args = new HashMap<>();
-                    args.put("Referer", "messenger.ansible.su");
+                    args.put("Referer", "messenger.telegram.org");
                     try {
                         String currentYoutubeId = videoView.getYoutubeId();
                         if (currentYoutubeId != null) {
                             progressBarBlackBackground.setVisibility(View.VISIBLE);
                             isYouTube = true;
-                            if (Build.VERSION.SDK_INT >= 17) {
-                                webView.addJavascriptInterface(new YoutubeProxy(), "YoutubeProxy");
-                            }
+                            webView.addJavascriptInterface(new YoutubeProxy(), "YoutubeProxy");
                             int seekToTime = 0;
                             if (openUrl != null) {
                                 try {
@@ -943,7 +935,7 @@ public class EmbedBottomSheet extends BottomSheet {
                                     FileLog.e(e);
                                 }
                             }
-                            webView.loadDataWithBaseURL("https://messenger.ansible.su/", String.format(Locale.US, youtubeFrame, currentYoutubeId, seekToTime), "text/html", "UTF-8", "https://youtube.com");
+                            webView.loadDataWithBaseURL("https://messenger.telegram.org/", String.format(Locale.US, youtubeFrame, currentYoutubeId, seekToTime), "text/html", "UTF-8", "https://youtube.com");
                         } else {
                             webView.loadUrl(embedUrl, args);
                         }
@@ -1017,15 +1009,7 @@ public class EmbedBottomSheet extends BottomSheet {
     }
 
     private void runJsCode(String code) {
-        if (Build.VERSION.SDK_INT >= 21) {
-            webView.evaluateJavascript(code, null);
-        } else {
-            try {
-                webView.loadUrl("javascript:" + code);
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
-        }
+        webView.evaluateJavascript(code, null);
     }
 
     public boolean checkInlinePermissions() {

@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.math.MathUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;
@@ -288,7 +289,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
         infoCell2.setText(AndroidUtilities.replaceSingleTag(
                 getString(R.string.ReactionCreateOwnPack),
                 Theme.key_chat_messageLinkIn, 0,
-                () -> Browser.openUrl(getContext(), "https://ansible.su/stickers"),
+                () -> Browser.openUrl(getContext(), "https://t.me/stickers"),
                 getResourceProvider()
         ));
         switchLayout.addView(infoCell2, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
@@ -342,6 +343,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
         actionButtonContainer.addView(actionButtonContainerGradient, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
         actionButton = new UpdateReactionsButton(context, getResourceProvider());
+        actionButton.setRound();
         actionButton.setDefaultState();
         actionButton.setOnClickListener(v -> {
             if (actionButton.isLoading()) {
@@ -519,7 +521,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
                         AnimatedEmojiSpan span = createAnimatedEmojiSpan(document, documentId, editText.getFontMetricsInt());
                         span.cacheType = AnimatedEmojiDrawable.getCacheTypeForEnterView();
                         span.setAdded();
-                        selectedEmojisIds.add(selectionEnd, documentId);
+                        selectedEmojisIds.add(MathUtils.clamp(selectionEnd, 0, selectedEmojisIds.size()), documentId);
                         selectedEmojisMap.put(documentId, span);
                         spannable.setSpan(span, 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         editText.getText().insert(selectionEnd, spannable);
@@ -940,7 +942,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
                 AnimatedEmojiSpan span = new AnimatedEmojiSpan(-1, null) {
                     private final Bitmap bitmap = Bitmap.createBitmap(dp(24), dp(24), Bitmap.Config.ARGB_8888);
                     {
-                        final Drawable drawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
+                        final Drawable drawable = getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate();
                         drawable.setBounds(0, 0, dp(24), dp(24));
                         drawable.draw(new Canvas(bitmap));
                     }
