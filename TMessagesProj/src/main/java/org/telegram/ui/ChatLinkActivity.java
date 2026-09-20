@@ -136,7 +136,7 @@ public class ChatLinkActivity extends BaseFragment implements NotificationCenter
             if (set != null && set.documents.size() >= 3) {
                 TLRPC.Document document = set.documents.get(2);
                 ImageLocation imageLocation = ImageLocation.getForDocument(document);
-                stickerView.setImage(imageLocation, "104_104", "tgs", drawable, set);
+                stickerView.setImage(imageLocation, "104_104", "ass", drawable, set);
             } else {
                 MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(stickerSetName, false, set == null);
                 stickerView.setImageDrawable(drawable);

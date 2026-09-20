@@ -3340,7 +3340,7 @@ public class MediaDataController extends BaseController {
     private void loadStickerSetThumbInternal(TLRPC.PhotoSize thumb, Object parentObject, TLRPC.Document sticker, int thumbVersion) {
         ImageLocation imageLocation = ImageLocation.getForSticker(thumb, sticker, thumbVersion);
         if (imageLocation != null) {
-            String ext = imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE ? "tgs" : "webp";
+            String ext = imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE ? "ass" : "webp";
             getFileLoader().loadFile(imageLocation, parentObject, ext, FileLoader.PRIORITY_HIGH, 1);
         }
     }
@@ -8585,7 +8585,7 @@ public class MediaDataController extends BaseController {
 
                     imageReceiver = new ImageReceiver();
                     imageReceiver.setAllowLoadingOnAttachedOnly(false);
-                    imageReceiver.setImage(ImageLocation.getForDocument(MessageObject.getPremiumStickerAnimation(document), document), null, null, null, "tgs", null, 1);
+                    imageReceiver.setImage(ImageLocation.getForDocument(MessageObject.getPremiumStickerAnimation(document), document), null, null, null, "ass", null, 1);
                     ImageLoader.getInstance().loadImageForImageReceiver(imageReceiver);
                 }
             }

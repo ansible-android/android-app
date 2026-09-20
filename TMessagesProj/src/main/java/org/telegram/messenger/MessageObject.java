@@ -3095,7 +3095,7 @@ public class MessageObject {
             }
         } else if (event.action instanceof TLRPC.TL_channelAdminLogEventActionParticipantJoinByRequest) {
             TLRPC.TL_channelAdminLogEventActionParticipantJoinByRequest action = (TLRPC.TL_channelAdminLogEventActionParticipantJoinByRequest) event.action;
-            if (action.invite instanceof TLRPC.TL_chatInviteExported && "https://t.me/+PublicChat".equals(((TLRPC.TL_chatInviteExported) action.invite).link) ||
+            if (action.invite instanceof TLRPC.TL_chatInviteExported && "https://asme.su/+PublicChat".equals(((TLRPC.TL_chatInviteExported) action.invite).link) ||
                     action.invite instanceof TLRPC.TL_chatInvitePublicJoinRequests) {
                 messageText = replaceWithLink(getString(R.string.JoinedViaRequestApproved), "un1", fromUser);
                 messageText = replaceWithLink(messageText, "un2", MessagesController.getInstance(currentAccount).getUser(action.approved_by));
@@ -6643,7 +6643,7 @@ public class MessageObject {
                 if (getMedia(messageOwner).document == null) {
                     getMedia(messageOwner).document = new TLRPC.TL_document();
                     getMedia(messageOwner).document.file_reference = new byte[0];
-                    getMedia(messageOwner).document.mime_type = "application/x-tgsdice";
+                    getMedia(messageOwner).document.mime_type = "application/x-ansible-dice";
                     getMedia(messageOwner).document.dc_id = Integer.MIN_VALUE;
                     getMedia(messageOwner).document.id = Integer.MIN_VALUE;
                     TLRPC.TL_documentAttributeImageSize attributeImageSize = new TLRPC.TL_documentAttributeImageSize();
@@ -10260,7 +10260,7 @@ public class MessageObject {
     }
 
     public static boolean isAnimatedStickerDocument(TLRPC.Document document, boolean allowWithoutSet) {
-        if (document != null && ("application/x-tgsticker".equals(document.mime_type) && !document.thumbs.isEmpty() || "application/x-tgsdice".equals(document.mime_type))) {
+        if (document != null && ("application/x-ansible-sticker".equals(document.mime_type) && !document.thumbs.isEmpty() || "application/x-ansible-dice".equals(document.mime_type))) {
             if (allowWithoutSet) {
                 return true;
             }

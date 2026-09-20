@@ -861,7 +861,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 if (docType > 0 && name.length() >= 4) {
                     String namelc = name.toLowerCase();
                     boolean isMusic = namelc.endsWith(".mp3") || namelc.endsWith(".m4a");
-                    boolean isEmoji = namelc.endsWith(".tgs") || namelc.endsWith(".webm");
+                    boolean isEmoji = namelc.endsWith(".ass") || namelc.endsWith(".webm");
                     boolean isTemp = namelc.endsWith(".tmp") || namelc.endsWith(".temp") || namelc.endsWith(".preload");
 
                     if (
@@ -905,7 +905,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 if (docType > 0 && name.length() >= 4) {
                     String namelc = name.toLowerCase();
                     boolean isMusic = namelc.endsWith(".mp3") || namelc.endsWith(".m4a");
-                    boolean isEmoji = namelc.endsWith(".tgs") || namelc.endsWith(".webm");
+                    boolean isEmoji = namelc.endsWith(".ass") || namelc.endsWith(".webm");
                     boolean isTemp = namelc.endsWith(".tmp") || namelc.endsWith(".temp") || namelc.endsWith(".preload");
 
                     if (

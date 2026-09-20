@@ -206,7 +206,7 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                 TLRPC.Document document = set.documents.get(3);
                 ImageLocation imageLocation = ImageLocation.getForDocument(document);
                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(document, Theme.key_windowBackgroundGray, 1.0f);
-                stickerView.setImage(imageLocation, "104_104", "tgs", svgThumb, set);
+                stickerView.setImage(imageLocation, "104_104", "ass", svgThumb, set);
             } else {
                 MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(stickerSetName, false, set == null);
             }
@@ -834,7 +834,7 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                     linkActionView.setCanEdit(adminId == getAccountInstance().getUserConfig().clientUserId);
                     if (isPublic && adminId == getAccountInstance().getUserConfig().clientUserId) {
                         if (info != null) {
-                            linkActionView.setLink("https://t.me/" + ChatObject.getPublicUsername(currentChat));
+                            linkActionView.setLink("https://asme.su/" + ChatObject.getPublicUsername(currentChat));
                             linkActionView.setUsers(0, null);
                             linkActionView.hideRevokeOption(true);
                         }
@@ -1359,10 +1359,10 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                 SpannableStringBuilder builder = new SpannableStringBuilder(invite.title);
                 Emoji.replaceEmoji(builder, titleView.getPaint().getFontMetricsInt(), false);
                 titleView.setText(builder);
-            } else if (invite.link.startsWith("https://t.me/+")) {
-                titleView.setText(MessagesController.getInstance(currentAccount).linkPrefix + "/" + invite.link.substring("https://t.me/+".length()));
-            } else if (invite.link.startsWith("https://t.me/joinchat/")) {
-                titleView.setText(invite.link.substring("https://t.me/joinchat/".length()));
+            } else if (invite.link.startsWith("https://asme.su/+")) {
+                titleView.setText(MessagesController.getInstance(currentAccount).linkPrefix + "/" + invite.link.substring("https://asme.su/+".length()));
+            } else if (invite.link.startsWith("https://asme.su/joinchat/")) {
+                titleView.setText(invite.link.substring("https://asme.su/joinchat/".length()));
             } else if (invite.link.startsWith("https://")) {
                 titleView.setText(invite.link.substring("https://".length()));
             } else {

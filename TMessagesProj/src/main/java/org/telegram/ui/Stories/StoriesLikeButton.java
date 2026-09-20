@@ -127,7 +127,7 @@ public class StoriesLikeButton extends View {
         if (reaction.documentId == 0) {
             TLRPC.TL_availableReaction r = MediaDataController.getInstance(UserConfig.selectedAccount).getReactionsMap().get(reaction.emojicon);
             if (r != null) {
-                animateReactionImageReceiver.setImage(ImageLocation.getForDocument(r.center_icon), "40_40_nolimit", null, "tgs", r, 1);
+                animateReactionImageReceiver.setImage(ImageLocation.getForDocument(r.center_icon), "40_40_nolimit", null, "ass", r, 1);
                 animateReactionImageReceiver.setAutoRepeat(0);
 
             }

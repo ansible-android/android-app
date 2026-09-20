@@ -1208,7 +1208,7 @@ public class SessionsActivity extends BaseFragment implements NotificationCenter
 
             if (document != null) {
                 ImageLocation imageLocation = ImageLocation.getForDocument(document);
-                imageView.setImage(imageLocation, imageFilter, "tgs", svgThumb, set);
+                imageView.setImage(imageLocation, imageFilter, "ass", svgThumb, set);
                 imageView.getImageReceiver().setAutoRepeat(2);
             } else {
                 MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME, false, set == null);
@@ -1255,7 +1255,7 @@ public class SessionsActivity extends BaseFragment implements NotificationCenter
                 this.error = null;
                 AndroidUtilities.runOnUIThread(() -> {
                     try {
-                        String code = link.substring("tg://login?token=".length());
+                        String code = link.substring("as://login?token=".length());
                         code = code.replaceAll("\\/", "_");
                         code = code.replaceAll("\\+", "-");
                         byte[] token = Base64.decode(code, Base64.URL_SAFE);

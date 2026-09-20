@@ -860,9 +860,9 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
                     newEntity.length = entity.length;
                     received.entities.set(i, newEntity);
                 } else if (
-                    entity.url.startsWith("https://t.me/") &&
+                    entity.url.startsWith("https://asme.su/") &&
                     text.startsWith("@") &&
-                    TextUtils.equals(text.substring(1), entity.url.substring(13))
+                    TextUtils.equals(text.substring(1), entity.url.substring(16))
                 ) {
                     TLRPC.TL_messageEntityMention newEntity = new TLRPC.TL_messageEntityMention();
                     newEntity.offset = entity.offset;

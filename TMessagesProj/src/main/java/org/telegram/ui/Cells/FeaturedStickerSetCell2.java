@@ -280,7 +280,7 @@ public class FeaturedStickerSetCell2 extends FrameLayout implements Notification
                         imageView.setImage(ImageLocation.getForDocument(sticker), "50_50", imageLocation, null, 0, set);
                     }
                 } else if (imageLocation != null && imageLocation.imageType == FileLoader.IMAGE_TYPE_LOTTIE) {
-                    imageView.setImage(imageLocation, "50_50", "tgs", svgThumb, set);
+                    imageView.setImage(imageLocation, "50_50", "ass", svgThumb, set);
                 } else {
                     imageView.setImage(imageLocation, "50_50", "webp", svgThumb, set);
                 }

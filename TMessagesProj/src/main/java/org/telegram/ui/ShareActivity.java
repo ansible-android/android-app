@@ -53,7 +53,7 @@ public class ShareActivity extends Activity {
         String scheme = data.getScheme();
         String url = data.toString();
         String hash = data.getQueryParameter("hash");
-        if (!"tgb".equals(scheme) || !url.toLowerCase().startsWith("tgb://share_game_score") || TextUtils.isEmpty(hash)) {
+        if (!"asb".equals(scheme) || !url.toLowerCase().startsWith("asb://share_game_score") || TextUtils.isEmpty(hash)) {
             finish();
             return;
         }

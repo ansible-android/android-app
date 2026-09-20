@@ -294,7 +294,7 @@ public class PaidReactionButton extends View {
                 }
 
 //                backgroundPaint.setColor(getTierOption(totalStars, TIER_COLOR1));
-                backgroundPaint.setColor(0xFFEEAC0D);
+                backgroundPaint.setColor(0xFF37A7F6); // Ansible: синий (был золотой 0xFFEEAC0D)
 
                 final SpannableStringBuilder sb = new SpannableStringBuilder("⭐️");
                 final ColoredImageSpan span = new ColoredImageSpan(R.drawable.star);

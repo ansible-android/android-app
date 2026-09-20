@@ -1,0 +1,76 @@
+Ansible for Android
+====================
+
+This product is a derivative work of Telegram for Android
+(https://github.com/DrKLO/Telegram) and is licensed under the same
+terms: GNU General Public License v2 (or any later version).
+
+See the LICENSE file for the full license text.
+
+------------------------------------------------------------------------
+Copyright Notices
+------------------------------------------------------------------------
+
+Original Telegram for Android:
+    Copyright (c) 2013-2026 Nikolai Kudashov and Telegram FZ-LLC
+
+Ansible Android modifications:
+    Copyright (c) 2026 The Ansible Android Authors
+
+Both copyrights apply to this software. Modifications made by the
+Ansible Android Authors are also licensed under GPL v2 (or later),
+as required by the upstream license.
+
+------------------------------------------------------------------------
+Source Code Availability (GPL §3 compliance)
+------------------------------------------------------------------------
+
+The complete corresponding source code of this software, including any
+modifications made by the Ansible Android Authors, is publicly available
+at:
+
+    https://github.com/behappy-android/Telegram
+
+If you received a binary distribution of Ansible for Android and the
+source code is no longer available at the URL above, please contact:
+
+    legal@ansible.su
+
+You are entitled to receive the full source code corresponding to the
+binary you received, at no additional charge beyond the cost of physical
+distribution (if any).
+
+------------------------------------------------------------------------
+Trademark Notice
+------------------------------------------------------------------------
+
+"Telegram" is a registered trademark of Telegram FZ-LLC.
+
+This project:
+  - Is NOT affiliated with, endorsed by, or sponsored by Telegram FZ-LLC.
+  - Does NOT use the Telegram name, logo, or other Telegram trademarks
+    in its branding, user-visible interface, or marketing.
+  - Connects to Ansible backend servers, NOT to Telegram servers.
+    It cannot be used to access Telegram accounts.
+
+"Ansible" name, logo, and visual identity are the property of the
+Ansible Android Authors.
+
+------------------------------------------------------------------------
+Compliance with Upstream README Requirements
+------------------------------------------------------------------------
+
+The upstream Telegram-Android README requests the following from forks:
+  1. Use your own api_id — N/A, Ansible uses its own protocol (MVSy 1.0).
+  2. Do not use the Telegram name — complied (rebranded to Ansible).
+  3. Do not use the Telegram logo — complied (Ansible uses its own logo).
+  4. Follow security guidelines — adopted from upstream.
+  5. Publish your code — complied (this repository is public).
+
+------------------------------------------------------------------------
+Third-Party Components
+------------------------------------------------------------------------
+
+This project uses the same third-party libraries as Telegram for Android,
+each licensed under its own terms. See the source tree and gradle build
+files for the complete list.

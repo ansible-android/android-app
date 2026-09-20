@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ansible: white diamond silhouette for the Settings "Diamonds" row (white glyph on a coloured square, like settings_stars). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M435.257 229.483L463.347 194.076L434.092 144.499L434.082 144.512L405.923 93.56L366.312 80.8114L318.386 64.2383L254.995 65.6799L184.534 66.6222L108.603 99.8967L86.2512 146.12L60.6172 201.786L259.184 447.979L435.211 229.433L435.257 229.483Z" />
+</vector>

@@ -354,7 +354,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
         balanceEditTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.star_small_inner);
+        starImage.setImageResource(R.drawable.diamond);
         balanceEditTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         balanceEditTextLayout.addView(starsBalanceEditText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         starsBalanceEditTextContainer.attachEditText(starsBalanceEditText);
@@ -385,7 +385,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
             }
 
             if (starsBalanceEditTextValue < MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin) {
-                Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate();
+                Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
                 BulletinFactory.of(fragment).createSimpleBulletin(starDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotStarsWithdrawMinLimit", (int) MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin), () -> {
                     Bulletin.hideVisible();
                     if (starsBalance.amount < MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin) {

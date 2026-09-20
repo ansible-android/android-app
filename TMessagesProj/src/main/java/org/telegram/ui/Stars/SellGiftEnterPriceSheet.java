@@ -130,7 +130,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
             bodyLayout.addView(starsCountEditOutline, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 18, 0, 18, 0));
 
             iconStars = new ImageView(context);
-            iconStars.setImageResource(R.drawable.star_small_inner);
+            iconStars.setImageResource(R.drawable.diamond);
             starsCountEditOutline.addView(iconStars, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
             iconTon = new ImageView(context);
@@ -163,6 +163,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
             });
 
             bodyLayout.addView(radioButtonCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 16, 0, 16));
+            radioButtonCell.setVisibility(android.view.View.GONE); // Ansible: TON/«GRAM» убран из UI (тумблер «Принимать только GRAM»)
         }
 
         /* Footer */

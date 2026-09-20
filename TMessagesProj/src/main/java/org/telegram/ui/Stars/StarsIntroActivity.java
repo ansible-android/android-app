@@ -286,7 +286,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         aboveTitleView = new FrameLayout(context);
         aboveTitleView.setClickable(true);
-        iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
+        iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
         iconTextureView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconTextureView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconTextureView.mRenderer.updateColors();
@@ -629,7 +629,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 paints = new Paint[20];
                 for (int i = 0; i < paints.length; ++i) {
                     paints[i] = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFFFA5416, 0xFFFFC837, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN));
+                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFF1BA4ED, 0xFF76D7FE, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN)); // Ansible: синие партиклы (были золотые 0xFFFA5416→0xFFFFC837)
                 }
                 drawable.getPaint = i -> paints[i % paints.length];
                 drawable.size1 = 17;
@@ -801,7 +801,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             headerTextView.setTypeface(AndroidUtilities.bold());
             addView(headerTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT));
 
-            Drawable starDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
+            Drawable starDrawable = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз (баланс)
             amountTextView = new AnimatedTextView(context) {
                 @Override
                 protected void dispatchDraw(Canvas canvas) {
@@ -1552,7 +1552,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             addView(amountTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 8, 0, 20, 0));
 
             star = new SpannableString("⭐️");
-            Drawable drawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
+            Drawable drawable = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз (транзакции)
             drawable.setBounds(0, 0, dp(21), dp(21));
             star.setSpan(new ImageSpan(drawable), 0, star.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -2157,7 +2157,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             priceView.setTextColor(0xFFFFFFFF);
             priceView.setText(replaceStars("XTR " + LocaleController.formatNumber((int) stars, ','), .85f));
             priceView.setPadding(dp(5.33f), 0, dp(5.33f), 0);
-            priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFFEEB402));
+            priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFF37A7F6)); // Ansible: синий (был золотой 0xFFEEB402)
             FrameLayout backgroundLayout = new FrameLayout(context);
             backgroundLayout.setBackground(Theme.createRoundRectDrawable(dp(20), Theme.getColor(Theme.key_dialogBackground, resourcesProvider)));
             backgroundLayout.setPadding(dp(1.33f), dp(1.33f), dp(1.33f), dp(1.33f));
@@ -2971,7 +2971,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 particlesView = makeParticlesView(context, 70, 0);
                 topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-                iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
+                iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
                 iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
                 iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
                 iconView.mRenderer.updateColors();
@@ -3324,7 +3324,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (cache != null && cache[0] != null) {
             span = cache[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.msg_premium_liststar);
+            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.diamond);
             if (cache != null) {
                 cache[0] = span;
             }
@@ -3334,7 +3334,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (ton) {
             span.setScale(scale * 0.2f, scale * 0.2f);
         } else {
-            span.setScale(scale, scale);
+            // Ansible: валюта Stars рисуется полноцветным алмазом (а не перекрашенной звездой).
+            span.recolorDrawable = false;
+            span.setScale(scale * 0.8f, scale * 0.8f);
         }
         spacedStar.setSpan(span, 0, spacedStar.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         AndroidUtilities.replaceMultipleCharSequence("⭐️", ssb, "⭐");
@@ -3400,8 +3402,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (spanRef != null && spanRef[0] != null) {
             span = spanRef[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.msg_premium_liststar);
-            span.setScale(ton ? 0.222f : 1.13f, ton ? 0.222f : 1.13f);
+            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.diamond);
+            span.setScale(ton ? 0.222f : 0.9f, ton ? 0.222f : 0.9f);
+            if (!ton) span.recolorDrawable = false; // Ansible: полноцветный алмаз вместо звезды
         }
         if (spanRef != null) {
             spanRef[0] = span;
@@ -3439,7 +3442,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             ssb = (SpannableStringBuilder) cs;
         }
         final String symbol = ton ? "TON" : "⭐";
-        final int resId = ton ? R.drawable.mini_gram_72 : R.drawable.star_small_inner;
+        final int resId = ton ? R.drawable.mini_gram_72 : R.drawable.diamond; // Ansible: алмаз вместо звезды
         SpannableString spacedStar = new SpannableString(symbol + " ");
         ColoredImageSpan span;
         if (spanArr != null && spanArr[0] != null) {
@@ -3736,7 +3739,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     ImageLocation.getForDocument(document), "160_160_nr",
                     ImageLocation.getForDocument(thumb, document), "160_160",
                     svgThumb,
-                    document.size, "tgs",
+                    document.size, "ass",
                     set,
                     1
                 );
@@ -4945,7 +4948,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                         }));
                     } else if (subscription.invoice_slug != null) {
                         maybeCloseAfterUpdate[0] = true;
-                        Browser.openUrl(context, Uri.parse("https://t.me/$" + subscription.invoice_slug), true, false, false, new Browser.Progress() {
+                        Browser.openUrl(context, Uri.parse("https://asme.su/$" + subscription.invoice_slug), true, false, false, new Browser.Progress() {
                             @Override
                             public void end() {
                                 button.setLoading(false);
@@ -4993,7 +4996,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         final StarParticlesView particlesView = makeParticlesView(context, 70, 0);
         topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        final GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);
+        final GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
         iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconView.mRenderer.updateColors();
@@ -5146,7 +5149,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.star_small_inner);
+        starImage.setImageResource(R.drawable.diamond); // Ansible: алмаз (поле цены)
         editTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         editTextLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         editTextContainer.attachEditText(editText);
@@ -5367,7 +5370,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editTextLayout.setOrientation(LinearLayout.HORIZONTAL);
         ImageView starImage = new ImageView(context);
         starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.star_small_inner);
+        starImage.setImageResource(R.drawable.diamond); // Ansible: алмаз (поле цены)
         editTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         editTextLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         editTextContainer.attachEditText(editText);

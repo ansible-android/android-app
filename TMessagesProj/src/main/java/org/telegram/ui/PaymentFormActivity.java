@@ -172,8 +172,8 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
             "http",
             "https"
     );
-    private final static List<String> BLACKLISTED_PROTOCOLS = Collections.singletonList(
-            "tg"
+    private final static List<String> BLACKLISTED_PROTOCOLS = Arrays.asList(
+            "as", "tg"
     );
 
     private final static int STEP_SHIPPING_INFORMATION = 0,
@@ -1254,7 +1254,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         shouldNavigateBack = !url.equals(webViewUrl);
                         try {
                             Uri uri = Uri.parse(url);
-                            if ("t.me".equals(uri.getHost())) {
+                            if ("asme.su".equals(uri.getHost())) {
                                 goToNextStep();
                                 return true;
                             }
@@ -2536,7 +2536,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         public boolean shouldOverrideUrlLoading(WebView view, String url) {
                             try {
                                 Uri uri = Uri.parse(url);
-                                if ("t.me".equals(uri.getHost())) {
+                                if ("asme.su".equals(uri.getHost())) {
                                     goToNextStep();
                                     return true;
                                 }

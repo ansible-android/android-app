@@ -761,7 +761,7 @@ public class GiveawayMessageCell {
             if (svgThumb != null) {
                 svgThumb.overrideWidthAndHeight(512, 512);
             }
-            giftReceiver.setImage(ImageLocation.getForDocument(document), "160_160_firstframe", svgThumb, "tgs", set, 1);
+            giftReceiver.setImage(ImageLocation.getForDocument(document), "160_160_firstframe", svgThumb, "ass", set, 1);
         } else {
             MediaDataController.getInstance(UserConfig.selectedAccount).loadStickersByEmojiOrName(packName, false, set == null);
         }
