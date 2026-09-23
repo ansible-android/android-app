@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **The SMS-jobs notification did nothing when tapped** in the standalone
   build. It carried a `tg://` deep link, which no longer parses after the
   scheme rebrand — `LaunchActivity` only knows `as://`. The 0.1.1 sweep covered
-  `TMessagesProj` but not the `TMessagesProj_App*` modules.
+  `Ansible` but not the `Ansible_App*` modules.
 
 ## [0.1.4] - 2026-08-21
 

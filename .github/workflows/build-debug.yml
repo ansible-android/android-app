@@ -52,14 +52,14 @@ jobs:
       - name: Build AppStandalone debug APK
         run: |
           chmod +x ./gradlew
-          ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone --no-daemon --stacktrace
+          ./gradlew :Ansible_AppStandalone:assembleAfatStandalone --no-daemon --stacktrace
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.2.12479018
 
       - name: Locate APK
         id: apk
         run: |
-          APK_PATH=$(find TMessagesProj_AppStandalone/build/outputs/apk -name '*.apk' | head -1)
+          APK_PATH=$(find Ansible_AppStandalone/build/outputs/apk -name '*.apk' | head -1)
           echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
           echo "name=ansible-android-$(date +%Y%m%d)-$(git rev-parse --short HEAD).apk" >> "$GITHUB_OUTPUT"
           ls -la "$APK_PATH"

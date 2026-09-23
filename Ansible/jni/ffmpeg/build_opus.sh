@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build a static libopus (fixed-point, NEON on ARM, no debug info) matching the
-# in-tree opus configuration in TMessagesProj/jni/CMakeLists.txt. Sources live in
+# in-tree opus configuration in Ansible/jni/CMakeLists.txt. Sources live in
 # third_party/xiph/opus. Produces libopus.a per ABI; not wired into the main
 # build yet.
 #

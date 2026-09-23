@@ -1,4 +1,8 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+}
 
 repositories {
     mavenCentral()
@@ -15,9 +19,18 @@ configurations.all {
 }
 
 dependencies {
-    implementation project(':TMessagesProj')
+    implementation project(':Ansible')
+    implementation 'androidx.fragment:fragment:1.8.9'
+    implementation 'androidx.core:core:1.16.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
-    implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
+    implementation files('../Ansible/libs/libgsaverification-client.aar')
+
+    implementation "com.microsoft.appcenter:appcenter-distribute:3.3.1"
+    implementation "com.microsoft.appcenter:appcenter-crashes:3.3.1"
+    implementation "com.microsoft.appcenter:appcenter-analytics:3.3.1"
+
+    implementation platform("com.google.firebase:firebase-bom:32.7.0")
+    implementation "com.google.firebase:firebase-crashlytics:18.6.0"
 }
 
 android {
@@ -26,7 +39,7 @@ android {
 
     defaultConfig.applicationId = APP_PACKAGE
 
-    sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
+    sourceSets.main.jniLibs.srcDirs = ['../Ansible/jni/']
 
     lintOptions {
         disable 'MissingTranslation'
@@ -41,16 +54,20 @@ android {
         coreLibraryDesugaringEnabled true
     }
 
+    androidResources {
+        localeFilters += ["en", "ar", "de", "es", "it", "ko", "nl", "pt-rBR", "ru", "uk"]
+    }
+
     signingConfigs {
         debug {
-            storeFile file("../TMessagesProj/config/release.keystore")
+            storeFile file("../Ansible/config/release.keystore")
             storePassword RELEASE_STORE_PASSWORD
             keyAlias RELEASE_KEY_ALIAS
             keyPassword RELEASE_KEY_PASSWORD
         }
 
         release {
-            storeFile file("../TMessagesProj/config/release.keystore")
+            storeFile file("../Ansible/config/release.keystore")
             storePassword RELEASE_STORE_PASSWORD
             keyAlias RELEASE_KEY_ALIAS
             keyPassword RELEASE_KEY_PASSWORD
@@ -58,52 +75,49 @@ android {
     }
 
     buildTypes {
-        debug {
-            debuggable true
-            jniDebuggable true
+        HA_private {
+            matchingFallbacks = ['release']
+            debuggable false
+            jniDebuggable false
             signingConfig signingConfigs.debug
             applicationIdSuffix ".beta"
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro', '../TMessagesProj/proguard-rules-beta.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../Ansible/proguard-rules.pro', '../Ansible/proguard-rules-beta.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
-
-        standalone {
+        HA_public {
+            matchingFallbacks = ['release']
             debuggable false
             jniDebuggable false
-            signingConfig signingConfigs.release
-            applicationIdSuffix ".web"
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".beta"
             minifyEnabled true
-            shrinkResources false
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../Ansible/proguard-rules.pro', '../Ansible/proguard-rules-beta.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
-
-        release {
+        HA_hardcore {
+            matchingFallbacks = ['release']
             debuggable false
             jniDebuggable false
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".beta"
             minifyEnabled true
-            shrinkResources false
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../Ansible/proguard-rules.pro', '../Ansible/proguard-rules-beta.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
     }
 
-    sourceSets.debug {
-        manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest.xml'
+    sourceSets.HA_private {
+        manifest.srcFile '../Ansible/config/debug/AndroidManifest.xml'
     }
-
-    sourceSets.standalone {
-        manifest.srcFile '../TMessagesProj/config/release/AndroidManifest.xml'
+    sourceSets.HA_public {
+        manifest.srcFile '../Ansible/config/debug/AndroidManifest.xml'
     }
-
-    sourceSets.release {
-        manifest.srcFile '../TMessagesProj/config/release/AndroidManifest.xml'
+    sourceSets.HA_hardcore {
+        manifest.srcFile '../Ansible/config/debug/AndroidManifest.xml'
     }
 
     flavorDimensions "minApi"
@@ -116,41 +130,23 @@ android {
             ext {
                 abiVersionCode = 1
             }
-            buildConfigField "boolean", "BUNDLE", "true"
         }
         bundleAfat_SDK23 {
             ndk {
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
-            sourceSets.debug {
-                manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile '../TMessagesProj/config/release/AndroidManifest_SDK23.xml'
-            }
             minSdkVersion 23
             ext {
                 abiVersionCode = 2
             }
-            buildConfigField "boolean", "BUNDLE", "true"
         }
         afat {
             ndk {
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
-            sourceSets.debug {
-                manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile '../TMessagesProj/config/release/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.standalone {
-                manifest.srcFile '../TMessagesProj/config/release/AndroidManifest_standalone.xml'
-            }
             ext {
                 abiVersionCode = 9
             }
-            buildConfigField "boolean", "BUNDLE", "false"
         }
     }
 
@@ -158,7 +154,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            outputFileName = "app.apk"
+            outputFileName = "Telegram-Beta.apk"
             output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
         }
     }
@@ -198,5 +194,3 @@ android {
         checkReleaseBuilds false
     }
 }
-
-apply plugin: 'com.google.gms.google-services'

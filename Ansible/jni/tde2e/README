@@ -1,0 +1,12 @@
+git clone https://github.com/tdlib/td
+cd td/example/android
+# copy build-tdlib.sh and CMakeLists.txt into this folder
+./fetch-sdk.sh
+# copy boringssl from Ansible/jni/boringssl into td/example/android/third-party/openssl with such structure:
+# third-party/
+#   openssl/
+#     $ARCH/
+#       include/ <- Ansible/jni/boringssl/include
+#       lib/ <- Ansible/jni/boringssl/lib/$ARCH
+./build-tdlib.sh
+# gather libtde2e.a and libtdutils.a into Ansible/jni/tde2e/$ARCH
