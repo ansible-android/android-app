@@ -2,7 +2,7 @@ name: Build debug APK
 
 on:
   push:
-    branches: [master]
+    branches: [master, '12.10.1']
     tags: ['v*']
   pull_request:
   workflow_dispatch:
@@ -35,18 +35,10 @@ jobs:
           set -e
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager --install \
-            "platforms;android-35" \
-            "build-tools;35.0.0" \
-            "build-tools;30.0.3" \
-            "ndk;21.4.7075529" \
+            "platforms;android-36" \
+            "build-tools;36.0.0" \
+            "ndk;27.2.12479018" \
             "cmake;3.22.1"
-
-      - name: Patch dx for build-tools 35.0.0
-        run: |
-          if [ -f "$ANDROID_HOME/build-tools/30.0.3/dx" ]; then
-            cp $ANDROID_HOME/build-tools/30.0.3/dx $ANDROID_HOME/build-tools/35.0.0/dx
-            cp $ANDROID_HOME/build-tools/30.0.3/lib/dx.jar $ANDROID_HOME/build-tools/35.0.0/lib/dx.jar
-          fi
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -62,14 +54,14 @@ jobs:
           chmod +x ./gradlew
           ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone --no-daemon --stacktrace
         env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/21.4.7075529
+          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.2.12479018
 
       - name: Locate APK
         id: apk
         run: |
           APK_PATH=$(find TMessagesProj_AppStandalone/build/outputs/apk -name '*.apk' | head -1)
           echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
-          echo "name=behappy-android-$(date +%Y%m%d)-$(git rev-parse --short HEAD).apk" >> "$GITHUB_OUTPUT"
+          echo "name=ansible-android-$(date +%Y%m%d)-$(git rev-parse --short HEAD).apk" >> "$GITHUB_OUTPUT"
           ls -la "$APK_PATH"
 
       - name: Upload APK artifact

@@ -10,6 +10,35 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-09-21
+
+### Changed
+- **Rebased onto upstream Telegram for Android 12.10.1** (build 7038, MTProto
+  LAYER 229), up from 12.6.4 (6666, LAYER 224). The branch is upstream
+  `DrKLO/Telegram@62b56a07` as-is, with the fork's own settings re-applied on
+  top; it is not a merge. Upstream had rewritten 77 of the 140 source files the
+  fork touches, so replaying the delta was the only way to keep our changes and
+  upstream's side by side.
+- **Native dependencies are vendored in-tree at upstream's own submodule pins.**
+  12.10.1 moved libyuv, xiph ogg/opus/opusfile, tlottie and jlatexmath out into
+  git submodules; this repository keeps them as ordinary files so a plain clone
+  still builds. ffmpeg, libvpx, dav1d and openh264 are not vendored — their
+  build output already ships as prebuilt `.a` archives.
+- **CI toolchain follows upstream:** Android SDK 36, build-tools 36.0.0,
+  NDK 27.2.12479018, Gradle 8.11.1, AGP 8.10.1. The `dx` workaround for
+  build-tools 35.0.0 is gone, as it is upstream.
+
+### Added
+- Ansible deep links on the surfaces 12.10.1 introduced: the AI editor's
+  "share style" link, the connected-chat-bots list on the sessions screen, and
+  the new WearOS sign-in sheet.
+
+### Fixed
+- **The SMS-jobs notification did nothing when tapped** in the standalone
+  build. It carried a `tg://` deep link, which no longer parses after the
+  scheme rebrand — `LaunchActivity` only knows `as://`. The 0.1.1 sweep covered
+  `TMessagesProj` but not the `TMessagesProj_App*` modules.
+
 ## [0.1.4] - 2026-08-21
 
 ### Fixed (works in Russia without VPN)

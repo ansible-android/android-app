@@ -43,8 +43,8 @@ The complete list of changes from upstream is tracked in
 | Protocol | MTProto 2.0 | MVSy 1.0 |
 | Trademarks | Telegram | Ansible |
 | Account compatibility | Telegram accounts | Ansible accounts (separate system) |
-| Source repository | [DrKLO/Telegram](https://github.com/DrKLO/Telegram) | [behappy-android/Telegram](https://github.com/behappy-android/Telegram) |
-| Package id | `org.telegram.messenger` | `rest.behappy.android` |
+| Source repository | [DrKLO/Telegram](https://github.com/DrKLO/Telegram) | [ansible-android/android-app](https://github.com/ansible-android/android-app) |
+| Package id | `org.telegram.messenger` | `org.telegram.messenger` (see `gradle.properties`) |
 
 We do **not** merge updates from upstream automatically. The fork is
 independently maintained.
@@ -66,7 +66,7 @@ The upstream Telegram-Android README requests the following:
 The latest Ansible for Android builds are available at:
 
 - Direct APK: <https://ansible.su/android>
-- Source release archives: <https://github.com/behappy-android/Telegram/releases>
+- Source release archives: <https://github.com/ansible-android/android-app/releases>
 
 For Telegram for Android (the upstream project) please visit
 [the upstream repository](https://github.com/DrKLO/Telegram).
