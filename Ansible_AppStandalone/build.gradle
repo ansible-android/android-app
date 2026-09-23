@@ -148,7 +148,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace 'org.telegram.messenger.web'
+    namespace 'org.ansible.messenger.web'
 
     lintOptions {
         checkReleaseBuilds false

@@ -44,7 +44,7 @@ The complete list of changes from upstream is tracked in
 | Trademarks | Telegram | Ansible |
 | Account compatibility | Telegram accounts | Ansible accounts (separate system) |
 | Source repository | [DrKLO/Telegram](https://github.com/DrKLO/Telegram) | [ansible-android/android-app](https://github.com/ansible-android/android-app) |
-| Package id | `org.telegram.messenger` | `org.telegram.messenger` (see `gradle.properties`) |
+| Package id | `org.ansible.messenger` | `org.ansible.messenger` (see `gradle.properties`) |
 
 We do **not** merge updates from upstream automatically. The fork is
 independently maintained.

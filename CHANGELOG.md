@@ -163,8 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   fallbacks (previously the launcher label showed "Telegram" on ru/de/
   es/it/nl/pt/uk/ar/ko devices).
 - Replaced the Telegram wordmark shown on the chats screen and stories
-  header (`telegram_logo_2`) and the first-run intro (`telegram_logo`,
-  `intro_tg_plane`) with the Ansible mark, and every notification's
+  header (`ansible_logo_2`) and the first-run intro (`ansible_logo`,
+  `intro_plane`) with the Ansible mark, and every notification's
   status-bar icon (`notification.png`) with a white Ansible glyph.
 - Rebranded gallery/download folder names, system-contacts action
   labels, service-notification user names and support e-mail addresses

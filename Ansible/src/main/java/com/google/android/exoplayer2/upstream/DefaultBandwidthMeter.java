@@ -31,8 +31,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
-import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.FileLog;
+import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 
 import java.util.HashMap;
 import java.util.Map;

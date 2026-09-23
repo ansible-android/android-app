@@ -157,7 +157,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace 'org.telegram.messenger.huawei'
+    namespace 'org.ansible.messenger.huawei'
 
     lintOptions {
         checkReleaseBuilds false

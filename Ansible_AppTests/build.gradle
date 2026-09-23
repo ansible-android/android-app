@@ -161,7 +161,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
-    namespace 'org.telegram.messenger.test'
+    namespace 'org.ansible.messenger.test'
 
     lintOptions {
         checkReleaseBuilds false
