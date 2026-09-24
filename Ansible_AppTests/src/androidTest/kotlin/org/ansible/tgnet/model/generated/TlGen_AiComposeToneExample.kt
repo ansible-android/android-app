@@ -1,0 +1,23 @@
+package org.ansible.asnet.model.generated
+
+import kotlin.UInt
+import org.ansible.asnet.OutputSerializedData
+import org.ansible.asnet.model.TlGen_Object
+import org.ansible.asnet.model.TlGen_Vector
+
+public sealed class TlGen_AiComposeToneExample : TlGen_Object {
+  public data class TL_aiComposeToneExample(
+    public val from: TlGen_TextWithEntities,
+    public val to: TlGen_TextWithEntities,
+  ) : TlGen_AiComposeToneExample() {
+    public override fun serializeToStream(stream: OutputSerializedData) {
+      stream.writeInt32(MAGIC.toInt())
+      from.serializeToStream(stream)
+      to.serializeToStream(stream)
+    }
+
+    public companion object {
+      public const val MAGIC: UInt = 0xF1D628ECU
+    }
+  }
+}

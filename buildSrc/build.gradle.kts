@@ -6,8 +6,8 @@ plugins {
 gradlePlugin {
     plugins {
         register("lottiePreParser") {
-            id = "org.telegram.lottie-meta"
-            implementationClass = "org.telegram.lottie.LottieMetaPlugin"
+            id = "org.ansible.lottie-meta"
+            implementationClass = "org.ansible.lottie.LottieMetaPlugin"
         }
         register("testGenerator") {
             id = "test-generator"
