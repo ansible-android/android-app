@@ -95,6 +95,15 @@ dependencies {
     }
     implementation 'com.google.android.recaptcha:recaptcha:18.7.1'
 
+    // Отчёты о падениях уходят на наш GlitchTip — см. CrashReporter.
+    // Берём sentry-android-core, а не сборку sentry-android: последняя тянет
+    // ещё и NDK-часть, которая ставит свои обработчики сигналов рядом с нашим
+    // нативным кодом и кладёт по .so на каждую ABI. Java-падения и ANR ядро
+    // ловит само, нативные отложены до отдельной задачи.
+    // Ветка 7.x взята сознательно: 8.x поднимает требования к сборке, а здесь
+    // sourceCompatibility 1.8 и minSdk 21.
+    implementation 'io.sentry:sentry-android-core:7.22.6'
+
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 
