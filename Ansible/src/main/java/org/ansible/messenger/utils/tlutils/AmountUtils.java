@@ -94,7 +94,7 @@ public class AmountUtils {
             } else {
                 switch (currency) {
                     case STARS:
-                        return LocaleController.formatString(R.string.StarsCountX, asDecimalString());
+                        return LocaleController.formatString(R.string.DiamondsCountX, asDecimalString());
                     case TON:
                         return LocaleController.formatString(R.string.TonCountX, asDecimalString());
                 }

@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -4763,7 +4763,7 @@ public class AndroidUtilities {
             }
         }));
         if (!TextUtils.isEmpty(secret)) {
-            final TableView.TableRowFullContent tableRow = tableView.addFullRow(getString(R.string.UseProxyTelegramInfo2));
+            final TableView.TableRowFullContent tableRow = tableView.addFullRow(getString(R.string.UseProxyAnsibleInfo2));
             tableRow.setFilled(true);
             final SpoilersTextView textView = (SpoilersTextView) tableRow.getChildAt(0);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
@@ -6716,7 +6716,7 @@ public class AndroidUtilities {
                     }
                     break;
             }
-            return formatString("TelegramVersion", R.string.TelegramVersion, String.format(Locale.US, "v%s (%d) %s", pInfo.versionName, code, abi));
+            return formatString("AnsibleVersion", R.string.AnsibleVersion, String.format(Locale.US, "v%s (%d) %s", pInfo.versionName, code, abi));
         } catch (Exception e) {
             FileLog.e(e);
         }

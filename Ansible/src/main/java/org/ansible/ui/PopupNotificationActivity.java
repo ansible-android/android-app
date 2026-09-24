@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -1274,7 +1274,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
             intent.putExtra("chatId", -dialogId);
         }
         intent.putExtra("currentAccount", currentMessageObject.currentAccount);
-        intent.setAction("com.tmessages.openchat" + Math.random() + Integer.MAX_VALUE);
+        intent.setAction("su.ansible.openchat" + Math.random() + Integer.MAX_VALUE);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         onFinish();

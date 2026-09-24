@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 7.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -40,13 +40,23 @@ public class BuildVars {
     public static int APP_ID = 21000004;
     public static String APP_HASH = "ff442affb65f4604012d98ab1338e34c";
 
-    // SafetyNet key for Google Identity SDK, set it to empty to disable
-    public static String SAFETYNET_KEY = "AIzaSyDqt8P-7F7CPCseMkOiVRgb1LY8RN1bvH8";
-    public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=org.ansible.messenger";
-    public static String HUAWEI_STORE_URL = "https://appgallery.huawei.com/app/C101184875";
-    public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-81kmi3pi84p11ub8hp9a1funsv0rn2p9.apps.googleusercontent.com";
+    // TODO(release): SafetyNet key - our own, see workflow/RELEASE_BLOCKERS_ANDROID.md
+    // Was Telegram's own key. Empty disables the check (LoginActivity:3083).
+    public static String SAFETYNET_KEY = "";
 
-    public static String HUAWEI_APP_ID = "101184875";
+    public static String PLAYSTORE_APP_URL = "https://ansible.su/android";
+
+    // TODO(release): Huawei AppGallery listing - ours, or drop the Huawei module, see workflow/RELEASE_BLOCKERS_ANDROID.md
+    // Was Telegram's listing C101184875.
+    public static String HUAWEI_STORE_URL = "";
+
+    // TODO(release): Google OAuth client id from OUR Firebase project, see workflow/RELEASE_BLOCKERS_ANDROID.md
+    // Was Telegram's client of project 760348033671. The server may override it
+    // via appConfig googleAuthClientId (MessagesController:1825).
+    public static String GOOGLE_AUTH_CLIENT_ID = "";
+
+    // TODO(release): Huawei app id - ours, see workflow/RELEASE_BLOCKERS_ANDROID.md
+    public static String HUAWEI_APP_ID = "";
 
     // You can use this flag to disable Google Play Billing (If you're making fork and want it to be in Google Play)
     public static boolean IS_BILLING_UNAVAILABLE = false;
@@ -93,7 +103,7 @@ public class BuildVars {
     private static Boolean betaApp;
     public static boolean isBetaApp() {
         if (betaApp == null) {
-            betaApp = ApplicationLoader.applicationContext != null && "org.telegram.messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
+            betaApp = ApplicationLoader.applicationContext != null && "su.ansible.messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
         }
         return betaApp;
     }
@@ -103,7 +113,11 @@ public class BuildVars {
         return ApplicationLoader.isHuaweiStoreBuild();
     }
 
+    // TODO(release): SMS Retriever hashes for OUR signing certificate, see workflow/RELEASE_BLOCKERS_ANDROID.md
+    // The hash is derived from applicationId + signing cert fingerprint; both
+    // changed, so Telegram's old values are dead weight. Empty just means the
+    // code is not auto-filled from the SMS.
     public static String getSmsHash() {
-        return ApplicationLoader.isStandaloneBuild() ? "w0lkcmTZkKh" : (DEBUG_VERSION ? "O2P2z+/jBpJ" : "oLeq9AcOZkT");
+        return "";
     }
 }

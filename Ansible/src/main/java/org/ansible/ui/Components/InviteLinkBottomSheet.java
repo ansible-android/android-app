@@ -1201,7 +1201,7 @@ public class InviteLinkBottomSheet extends BottomSheet {
                 setRightPadding(0, true, true);
             } else {
                 final CharSequence amountText = StarsIntroActivity.replaceStarsWithPlain("⭐️" + pricing.amount, .7f);
-                final CharSequence periodText = pricing.period == StarsController.PERIOD_MONTHLY ? LocaleController.getString(R.string.StarsParticipantSubscriptionPerMonth) : (pricing.period == StarsController.PERIOD_5MINUTES ? "per 5 minutes" : "per each minute");
+                final CharSequence periodText = pricing.period == StarsController.PERIOD_MONTHLY ? LocaleController.getString(R.string.DiamondsParticipantSubscriptionPerMonth) : (pricing.period == StarsController.PERIOD_5MINUTES ? "per 5 minutes" : "per each minute");
                 priceView.setText(amountText);
                 periodView.setText(periodText);
                 setRightPadding(
@@ -1322,7 +1322,7 @@ public class InviteLinkBottomSheet extends BottomSheet {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
-        textView.setText(getString(R.string.StarsSubscriptionTitle));
+        textView.setText(getString(R.string.DiamondsSubscriptionTitle));
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 4));
 
         textView = new TextView(context);
@@ -1330,7 +1330,7 @@ public class InviteLinkBottomSheet extends BottomSheet {
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
         if (pricing.period == StarsController.PERIOD_MONTHLY) {
-            textView.setText(StarsIntroActivity.replaceStarsWithPlain(formatString(R.string.StarsSubscriptionPrice, pricing.amount), .8f));
+            textView.setText(StarsIntroActivity.replaceStarsWithPlain(formatString(R.string.DiamondsSubscriptionPrice, pricing.amount), .8f));
         } else {
             final String period = pricing.period == StarsController.PERIOD_5MINUTES ? "5min" : "min";
             textView.setText(StarsIntroActivity.replaceStarsWithPlain(String.format(Locale.US, "⭐%1$d/%2$s", pricing.amount, period), .8f));
@@ -1342,7 +1342,7 @@ public class InviteLinkBottomSheet extends BottomSheet {
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
         if (pricing.period == StarsController.PERIOD_MONTHLY) {
-            textView.setText(formatString(R.string.StarsParticipantSubscriptionApproxMonth, BillingController.getInstance().formatCurrency((int) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000), "USD")));
+            textView.setText(formatString(R.string.DiamondsParticipantSubscriptionApproxMonth, BillingController.getInstance().formatCurrency((int) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000), "USD")));
         } else {
             final String period = pricing.period == StarsController.PERIOD_5MINUTES ? "5min" : "min";
             textView.setText(String.format(Locale.US, "appx. %1$s per %2$s", BillingController.getInstance().formatCurrency((int) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000), "USD"), period));
@@ -1384,17 +1384,17 @@ public class InviteLinkBottomSheet extends BottomSheet {
         }, 3, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         textView.setText(ssb);
         if (!deleted) {
-            tableView.addRowUnpadded(getString(R.string.StarsParticipantSubscription), textView);
+            tableView.addRowUnpadded(getString(R.string.DiamondsParticipantSubscription), textView);
         }
 
         tableView.addRow(
-            getString(R.string.StarsParticipantSubscriptionStart),
+            getString(R.string.DiamondsParticipantSubscriptionStart),
             LocaleController.formatString(R.string.formatDateAtTime, LocaleController.getInstance().getFormatterGiveawayCard().format(new Date(importer.date * 1000L)), LocaleController.getInstance().getFormatterDay().format(new Date(importer.date * 1000L)))
         );
         final int now = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
         if (participant != null) {
             tableView.addRow(
-                getString(participant.subscription_until_date > now ? R.string.StarsParticipantSubscriptionRenews : R.string.StarsParticipantSubscriptionExpired),
+                getString(participant.subscription_until_date > now ? R.string.DiamondsParticipantSubscriptionRenews : R.string.DiamondsParticipantSubscriptionExpired),
                 LocaleController.formatString(R.string.formatDateAtTime, LocaleController.getInstance().getFormatterGiveawayCard().format(new Date(participant.subscription_until_date * 1000L)), LocaleController.getInstance().getFormatterDay().format(new Date(participant.subscription_until_date * 1000L)))
             );
         }
@@ -1404,8 +1404,8 @@ public class InviteLinkBottomSheet extends BottomSheet {
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
         textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTransactionTOS), () -> {
-            Browser.openUrl(context, getString(R.string.StarsTOSLink));
+        textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTransactionTOS), () -> {
+            Browser.openUrl(context, getString(R.string.DiamondsTOSLink));
         }));
         textView.setGravity(Gravity.CENTER);
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 14, 15, 14, 15));

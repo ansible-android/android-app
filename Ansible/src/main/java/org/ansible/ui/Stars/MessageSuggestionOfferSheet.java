@@ -184,7 +184,7 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
         if (allowTON) {
             currencyTabsView = new HorizontalRoundTabsLayout(context, resourcesProvider);
             ArrayList<CharSequence> tabs = new ArrayList<>();
-            tabs.add(getString(R.string.SuggestedOfferStars));
+            tabs.add(getString(R.string.SuggestedOfferDiamonds));
             tabs.add(getString(R.string.SuggestedOfferTON));
             currencyTabsView.setTabs(tabs, x -> {
                 final AmountUtils.Currency currency = x == 0 ?
@@ -455,7 +455,7 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
             currencyTabsView.setSelectedIndex(inputAmount.currency == AmountUtils.Currency.STARS ? 0 : 1, animated);
         }
         if (inputAmount.currency == AmountUtils.Currency.STARS) {
-            starsCountEditHint.setText(getString(R.string.PostSuggestionsOfferSubtitleStars));
+            starsCountEditHint.setText(getString(R.string.PostSuggestionsOfferSubtitleDiamonds));
             starsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
             starsCountEditField.setFilters(new InputFilter[]{
                 new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length())
@@ -528,7 +528,7 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
             if (!inputAmount.isZero()) {
                 final boolean isTon = inputAmount.currency == AmountUtils.Currency.TON;
                 buttonView.setText(StarsIntroActivity.replaceStars(isTon,
-                    LocaleController.formatString(R.string.PostSuggestionsOfferStars, isTon ? inputAmount.asDecimalString() :
+                    LocaleController.formatString(R.string.PostSuggestionsOfferDiamonds, isTon ? inputAmount.asDecimalString() :
                         LocaleController.formatNumber(inputAmount.asDecimal(), ',')),
                     isTon ? spanRefTon: spanRefStars
                 ), animated);
@@ -560,7 +560,7 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
             starsCountEditOutline.setText(LocaleController.formatString(R.string.SuggestAPostTooSmall, getInputAmountMin().formatAsDecimalSpaced()));
         } else {
             final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
-                R.string.PostSuggestionsOfferTitlePriceStars:
+                R.string.PostSuggestionsOfferTitlePriceDiamonds:
                 R.string.PostSuggestionsOfferTitlePriceTON;
 
             starsCountEditOutline.setText(getString(key));

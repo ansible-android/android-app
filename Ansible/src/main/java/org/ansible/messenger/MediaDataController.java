@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -5108,7 +5108,7 @@ public class MediaDataController extends BaseController {
                     }
 
                     shortcutIntent.putExtra("currentAccount", currentAccount);
-                    shortcutIntent.setAction("com.tmessages.openchat" + peerId);
+                    shortcutIntent.setAction("su.ansible.openchat" + peerId);
                     shortcutIntent.putExtra("dialogId", peerId);
                     shortcutIntent.putExtra("hash", SharedConfig.directShareHash);
                     shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -5653,7 +5653,7 @@ public class MediaDataController extends BaseController {
             return null;
         }
         shortcutIntent.putExtra("currentAccount", currentAccount);
-        shortcutIntent.setAction("com.tmessages.openchat" + dialogId);
+        shortcutIntent.setAction("su.ansible.openchat" + dialogId);
         shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return shortcutIntent;
     }

@@ -113,7 +113,7 @@ public class GiftedUserCell extends UserCell {
 
             final String date = LocaleController.getInstance().getFormatterBoostExpired().format(new Date(boost.expires * 1000L));
             if (boost.stars > 0) {
-                statusTextView.setText(LocaleController.formatString(R.string.BoostingStarsExpires, date));
+                statusTextView.setText(LocaleController.formatString(R.string.BoostingDiamondsExpires, date));
             } else {
                 statusTextView.setText(LocaleController.formatString(R.string.BoostingExpires, date));
             }

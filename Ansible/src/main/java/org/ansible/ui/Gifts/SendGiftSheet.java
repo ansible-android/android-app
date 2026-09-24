@@ -660,7 +660,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
             }
         } else if (premiumTier != null) {
             if (useStars) {
-                button.setText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.Gift2SendPremiumStars, LocaleController.formatNumber(premiumTier.getStarsPrice(), ',')), 1.0f, cachedStarSpan), animated);
+                button.setText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.Gift2SendPremiumDiamonds, LocaleController.formatNumber(premiumTier.getStarsPrice(), ',')), 1.0f, cachedStarSpan), animated);
                 cachedStarSpan[0].spaceScaleX = .85f;
             } else {
                 button.setText(new SpannableStringBuilder(LocaleController.formatString(R.string.Gift2SendPremium, premiumTier.getFormattedPrice())), animated);
@@ -956,14 +956,14 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 items.add(UItem.asShadow(-3, formatString(R.string.Gift2MessagePremiumInfo, name)));
             }
             if (premiumTier != null && premiumTier.isStarsPaymentAvailable()) {
-                items.add(UItem.asCheck(3, StarsIntroActivity.replaceStarsWithPlain(formatString(R.string.Gift2MessageStars, (int) premiumTier.getStarsPrice()), .78f)).setChecked(useStars));
+                items.add(UItem.asCheck(3, StarsIntroActivity.replaceStarsWithPlain(formatString(R.string.Gift2MessageDiamonds, (int) premiumTier.getStarsPrice()), .78f)).setChecked(useStars));
                 final long balance = StarsController.getInstance(currentAccount).getBalance().amount;
                 SpannableStringBuilder boldBalance = new SpannableStringBuilder(LocaleController.formatNumber(balance, ','));
                 boldBalance.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, boldBalance.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 items.add(UItem.asShadow(-7, TextUtils.concat(
-                    StarsIntroActivity.replaceStarsWithPlain(formatSpannable(R.string.Gift2MessageStarsInfo, boldBalance), .66f),
+                    StarsIntroActivity.replaceStarsWithPlain(formatSpannable(R.string.Gift2MessageDiamondsInfo, boldBalance), .66f),
                     " ",
-                    AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2MessageStarsInfoLink), () -> {
+                    AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2MessageDiamondsInfoLink), () -> {
                         new StarsIntroActivity.StarsOptionsSheet(getContext(), resourcesProvider).show();
                     }), true, dp(8f / 3f), dp(1))
                 )));

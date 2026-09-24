@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 6.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -156,7 +156,7 @@ public class BubbleActivity extends BasePermissionsActivity implements INavigati
             return false;
         }
         BaseFragment chatActivity = null;
-        if (intent.getAction() != null && intent.getAction().startsWith("com.tmessages.openchat")) {
+        if (intent.getAction() != null && intent.getAction().startsWith("su.ansible.openchat")) {
             long chatId = intent.getLongExtra("chatId", 0);
             long userId = intent.getLongExtra("userId", 0);
             Bundle args = new Bundle();

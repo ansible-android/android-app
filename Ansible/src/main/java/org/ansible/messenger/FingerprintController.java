@@ -21,7 +21,7 @@ import javax.crypto.Cipher;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class FingerprintController {
-    private final static String KEY_ALIAS = "tmessages_passcode";
+    private final static String KEY_ALIAS = "ansible_passcode";
 
     private static KeyStore keyStore;
     private static KeyPairGenerator keyPairGenerator;

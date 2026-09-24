@@ -344,7 +344,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         subtitleLayout.addView(subtitleStarsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 26, 0, 26, 0));
         subtitleLayout.addView(subtitleCollectiblesStarsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 26, 0, 26, 0));
 
-        titleStarsView.setText(getString(dialogId < 0 ? R.string.Gift2StarsChannel : self ? R.string.Gift2StarsSelf : R.string.Gift2Stars));
+        titleStarsView.setText(getString(dialogId < 0 ? R.string.Gift2DiamondsChannel : self ? R.string.Gift2DiamondsSelf : R.string.Gift2Diamonds));
         if (self) {
             starsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 4));
 
@@ -355,12 +355,12 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             subtitleStarsView2.setGravity(Gravity.CENTER);
             starsHeaderView.addView(subtitleStarsView2, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 26, 4, 26, 6));
 
-            subtitleStarsView.setText(getString(R.string.Gift2StarsSelfInfo1));
-            subtitleStarsView2.setText(getString(R.string.Gift2StarsSelfInfo2));
+            subtitleStarsView.setText(getString(R.string.Gift2DiamondsSelfInfo1));
+            subtitleStarsView2.setText(getString(R.string.Gift2DiamondsSelfInfo2));
         } else if (dialogId < 0) {
             starsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 4));
             NotificationCenter.listenEmojiLoading(subtitleStarsView);
-            subtitleStarsView.setText(Emoji.replaceEmoji(AndroidUtilities.replaceTags(formatString(R.string.Gift2StarsChannelInfo, name)), subtitleStarsView.getPaint().getFontMetricsInt(), false));
+            subtitleStarsView.setText(Emoji.replaceEmoji(AndroidUtilities.replaceTags(formatString(R.string.Gift2DiamondsChannelInfo, name)), subtitleStarsView.getPaint().getFontMetricsInt(), false));
         } else {
             starsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 6));
 
@@ -368,7 +368,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             final Runnable setSubtitle = () -> {
                 for (int a = 0; a < 2; ++a) {
                     final SpannableStringBuilder subtitle = new SpannableStringBuilder();
-                    subtitle.append(AndroidUtilities.replaceTags(a == 1 ? getString(R.string.Gift2StarsCollectibleInfo) : formatString(R.string.Gift2StarsInfo, name)));
+                    subtitle.append(AndroidUtilities.replaceTags(a == 1 ? getString(R.string.Gift2DiamondsCollectibleInfo) : formatString(R.string.Gift2DiamondsInfo, name)));
                     subtitle.append(" ");
                     final HashSet<Long> emojiDocumentIds = new HashSet<>();
                     final HashSet<TLRPC.Document> emojiDocuments = new HashSet<>();
@@ -384,7 +384,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                     }
                     if (emojiDocuments.size() > 0) {
                         final SpannableStringBuilder link = new SpannableStringBuilder();
-                        link.append(formatString(R.string.Gift2StarsInfoProfileLink, DialogObject.getShortName(dialogId)).replaceAll(" ", " "));
+                        link.append(formatString(R.string.Gift2DiamondsInfoProfileLink, DialogObject.getShortName(dialogId)).replaceAll(" ", " "));
                         link.append(" ");
                         for (final TLRPC.Document document : emojiDocuments) {
                             link.append("\u2060e");
@@ -404,7 +404,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                             lastFragment.presentFragment(new ProfileActivity(args));
                         }), true));
                     } else {
-                        subtitle.append(AndroidUtilities.replaceArrows(AndroidUtilities.makeClickable(getString(R.string.Gift2StarsInfoLink), () -> {
+                        subtitle.append(AndroidUtilities.replaceArrows(AndroidUtilities.makeClickable(getString(R.string.Gift2DiamondsInfoLink), () -> {
                             new ExplainStarsSheet(context).show();
                         }), true));
                     }
@@ -1527,7 +1527,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             cardBackground.setPattern(null);
             cardBackground.setStrokeColors(null);
             titleView.setText(LocaleController.formatPluralString("Gift2Months", months));
-            subtitleView.setText(getString(R.string.TelegramPremiumShort));
+            subtitleView.setText(getString(R.string.AnsiblePremiumShort));
             titleView.setVisibility(View.VISIBLE);
             subtitleView.setVisibility(View.VISIBLE);
             imageView.setTranslationY(-dp(8));
@@ -1539,7 +1539,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 final SpannableStringBuilder starsPrice = new SpannableStringBuilder("" + LocaleController.formatNumber(tier.getStarsPrice(), ','));
                 starsPrice.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, starsPrice.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 final ColoredImageSpan[] span = new ColoredImageSpan[1];
-                starsPriceView.setText(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatSpannable(R.string.PremiumOrStarsPrice, starsPrice), .48f, span));
+                starsPriceView.setText(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatSpannable(R.string.PremiumOrDiamondsPrice, starsPrice), .48f, span));
                 span[0].spaceScaleX = .8f;
             } else {
                 starsPriceView.setVisibility(View.GONE);

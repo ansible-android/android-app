@@ -575,13 +575,13 @@ public class PushListenerController {
                                         }
                                         case "MESSAGE_UNIQUE_STARGIFT": {
                                             userName = args[0];
-                                            messageText = LocaleController.formatString(R.string.NotificationMessageUniqueStarGift, args[0]);
+                                            messageText = LocaleController.formatString(R.string.NotificationMessageUniqueDiamondGift, args[0]);
                                             message1 = getString(R.string.Gift2UniqueNotification);
                                             break;
                                         }
                                         case "MESSAGE_STARGIFT_UPGRADE": {
                                             userName = args[0];
-                                            messageText = LocaleController.formatString(R.string.NotificationMessageUniqueStarGiftUpgrade, args[0]);
+                                            messageText = LocaleController.formatString(R.string.NotificationMessageUniqueDiamondGiftUpgrade, args[0]);
                                             message1 = getString(R.string.Gift2UniqueUpgradeNotification);
                                             break;
                                         }
@@ -593,7 +593,7 @@ public class PushListenerController {
                                         }
                                         case "MESSAGE_STARGIFT_UNPACK_UPGRADE": {
                                             userName = args[0];
-                                            messageText = LocaleController.formatString(R.string.NotificationMessageUniqueStarGiftUnpackUpgrade, args[0]);
+                                            messageText = LocaleController.formatString(R.string.NotificationMessageUniqueDiamondGiftUnpackUpgrade, args[0]);
                                             message1 = getString(R.string.Gift2UniqueUnpackUpgradeNotification);
                                             break;
                                         }
@@ -781,7 +781,7 @@ public class PushListenerController {
                                             try {
                                                 winners = Integer.parseInt(args[1]);
                                             } catch (Exception ignore) {}
-                                            messageText = LocaleController.formatString(R.string.NotificationMessageStarsGiveaway2, args[0], LocaleController.formatPluralString("AmongWinners", winners), args[2]);
+                                            messageText = LocaleController.formatString(R.string.NotificationMessageDiamondsGiveaway2, args[0], LocaleController.formatPluralString("AmongWinners", winners), args[2]);
                                             localMessage = true;
                                             break;
                                         }
@@ -804,7 +804,7 @@ public class PushListenerController {
                                             try {
                                                 winners = Integer.parseInt(args[1]);
                                             } catch (Exception ignore) {}
-                                            messageText = LocaleController.formatString(R.string.NotificationMessageChannelStarsGiveaway2, args[0], LocaleController.formatPluralString("AmongWinners", winners), args[2]);
+                                            messageText = LocaleController.formatString(R.string.NotificationMessageChannelDiamondsGiveaway2, args[0], LocaleController.formatPluralString("AmongWinners", winners), args[2]);
                                             message1 = getString(R.string.BoostingGiveaway);
                                             break;
                                         }
@@ -941,7 +941,7 @@ public class PushListenerController {
                                             try {
                                                 winners = Integer.parseInt(args[2]);
                                             } catch (Exception ignore) {}
-                                            messageText = LocaleController.formatString(R.string.NotificationMessageChatStarsGiveaway2, args[0], args[1], LocaleController.formatPluralString("AmongWinners", winners), args[3]);
+                                            messageText = LocaleController.formatString(R.string.NotificationMessageChatDiamondsGiveaway2, args[0], args[1], LocaleController.formatPluralString("AmongWinners", winners), args[3]);
                                             message1 = getString(R.string.BoostingGiveaway);
                                             break;
                                         }

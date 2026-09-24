@@ -4687,7 +4687,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
                     new GiftSheet(getContext(), currentAccount, fromId, this::dismiss).show();
                 });
             }
-            tableView.addRow(getString(R.string.StarsTransactionDate), LocaleController.formatString(R.string.formatDateAtTime, LocaleController.getInstance().getFormatterGiveawayCard().format(new Date(savedStarGift.date * 1000L)), LocaleController.getInstance().getFormatterDay().format(new Date(savedStarGift.date * 1000L))));
+            tableView.addRow(getString(R.string.DiamondsTransactionDate), LocaleController.formatString(R.string.formatDateAtTime, LocaleController.getInstance().getFormatterGiveawayCard().format(new Date(savedStarGift.date * 1000L)), LocaleController.getInstance().getFormatterDay().format(new Date(savedStarGift.date * 1000L))));
             tableView.addRow(getString(R.string.Gift2Value), replaceStarsWithPlain(TextUtils.concat("⭐️ " + LocaleController.formatNumber(savedStarGift.gift.stars + savedStarGift.upgrade_stars, ','), " ", canConvert() && !refunded ? ButtonSpan.make(formatPluralStringComma("Gift2ButtonSell", (int) savedStarGift.convert_stars), this::convert, resourcesProvider) : ""), .8f));
             if (savedStarGift.gift.limited && !refunded) {
                 addAvailabilityRow(tableView, currentAccount, savedStarGift.gift, resourcesProvider);
@@ -5041,7 +5041,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
                     });
                 }
             }
-            tableView.addRowDateTime(getString(R.string.StarsTransactionDate), date);
+            tableView.addRowDateTime(getString(R.string.DiamondsTransactionDate), date);
             if (stargift.stars > 0) {
                 tableView.addRow(getString(R.string.Gift2Value), replaceStarsWithPlain(TextUtils.concat("⭐️ " + LocaleController.formatNumber(stargift.stars + upgrade_stars, ','), " ", canConvert() && !refunded ? ButtonSpan.make(formatPluralStringComma("Gift2ButtonSell", (int) convert_stars), this::convert, resourcesProvider) : ""), .8f));
             }
@@ -5452,7 +5452,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
         final int withinDays = Math.max(1, within / (60 * 60 * 24));
         new AlertDialog.Builder(getContext(), resourcesProvider)
             .setTitle(getString(R.string.Gift2ConvertTitle))
-            .setMessage(AndroidUtilities.replaceTags(formatPluralString("Gift2ConvertText2", withinDays, UserObject.isService(fromId) || fromId == UserObject.ANONYMOUS ? getString(R.string.StarsTransactionHidden) : DialogObject.getShortName(fromId), formatPluralStringComma("Gift2ConvertStars", (int) convert_stars))))
+            .setMessage(AndroidUtilities.replaceTags(formatPluralString("Gift2ConvertText2", withinDays, UserObject.isService(fromId) || fromId == UserObject.ANONYMOUS ? getString(R.string.DiamondsTransactionHidden) : DialogObject.getShortName(fromId), formatPluralStringComma("Gift2ConvertStars", (int) convert_stars))))
             .setPositiveButton(getString(R.string.Gift2ConvertButton), (di, w) -> {
                 final AlertDialog progressDialog = new AlertDialog(ApplicationLoader.applicationContext, AlertDialog.ALERT_TYPE_SPINNER);
                 progressDialog.showDelayed(500);
@@ -6301,9 +6301,9 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
                                     BulletinFactory.of(chatActivity)
                                         .createSimpleBulletin(
                                                 R.raw.gift,
-                                                getString(R.string.StarsGiftUpgradeCompleted),
-                                                AndroidUtilities.replaceTags(formatString(R.string.StarsGiftUpgradeCompletedText, DialogObject.getShortName(dialogId))),
-                                                getString(R.string.StarsGiftUpgradeCompletedMoreButton), () -> {
+                                                getString(R.string.DiamondsGiftUpgradeCompleted),
+                                                AndroidUtilities.replaceTags(formatString(R.string.DiamondsGiftUpgradeCompletedText, DialogObject.getShortName(dialogId))),
+                                                getString(R.string.DiamondsGiftUpgradeCompletedMoreButton), () -> {
                                                     final Bundle args = new Bundle();
                                                     if (dialogId >= 0) {
                                                         args.putLong("user_id", dialogId);
@@ -6324,7 +6324,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
                             } else {
                                 chatActivity = (ChatActivity) fragment;
                                 BulletinFactory.of(chatActivity)
-                                    .createSimpleBulletin(R.raw.gift, getString(R.string.StarsGiftUpgradeCompleted), AndroidUtilities.replaceTags(formatString(R.string.StarsGiftUpgradeCompletedText, DialogObject.getShortName(dialogId))))
+                                    .createSimpleBulletin(R.raw.gift, getString(R.string.DiamondsGiftUpgradeCompleted), AndroidUtilities.replaceTags(formatString(R.string.DiamondsGiftUpgradeCompletedText, DialogObject.getShortName(dialogId))))
                                     .show(true);
                             }
 
@@ -7885,7 +7885,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
             if (!isTonOnly) {
                 currencyTabsView = new HorizontalRoundTabsLayout(context, resourcesProvider);
                 ArrayList<CharSequence> tabs = new ArrayList<>();
-                tabs.add(getString(R.string.Gift2BuyInStars));
+                tabs.add(getString(R.string.Gift2BuyInDiamonds));
                 tabs.add(getString(R.string.Gift2BuyInTON));
                 currencyTabsView.setTabs(tabs, x -> {
                     selectedCurrency = x == 0 ?
@@ -8093,7 +8093,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
                 } else if (info.last_sale_on_fragment) {
                     textView.setText(AndroidUtilities.replaceTags(formatString(R.string.GiftValueLastFragment, giftName)));
                 } else {
-                    textView.setText(AndroidUtilities.replaceTags(formatString(R.string.GiftValueLastTelegram, giftName)));
+                    textView.setText(AndroidUtilities.replaceTags(formatString(R.string.GiftValueLastAnsible, giftName)));
                 }
 
                 final FrameLayout tableLayout = new FrameLayout(getContext());
@@ -8172,7 +8172,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
                     sb.append("e");
                     sb.setSpan(new AnimatedEmojiSpan(sticker, 1.5f, button1.getTextPaint().getFontMetricsInt()), sb.length() - 1, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     sb.append(" ");
-                    sb.append(getString(R.string.GiftValueOnSaleTelegram));
+                    sb.append(getString(R.string.GiftValueOnSaleAnsible));
                     button1.setText(AndroidUtilities.replaceArrows(sb, false, dp(2), dp(1)), false);
                     button1.setOnClickListener(v -> {
                         final BaseFragment lastFragment = LaunchActivity.getLastFragment();

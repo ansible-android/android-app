@@ -75,19 +75,19 @@ public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         titleView.setGravity(Gravity.CENTER);
-        titleView.setText(getString(R.string.ExplainStarsTitle));
+        titleView.setText(getString(R.string.ExplainDiamondsTitle));
         headerView.addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 2, 0, 0));
 
         TextView subtitleView = new TextView(context);
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         subtitleView.setGravity(Gravity.CENTER);
-        subtitleView.setText(getString(R.string.ExplainStarsTitle2));
+        subtitleView.setText(getString(R.string.ExplainDiamondsTitle2));
         headerView.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT/*(int) Math.ceil(HintView2.cutInFancyHalf(subtitleView.getText(), subtitleView.getPaint()) / AndroidUtilities.density)*/, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 16, 9, 16, 18));
 
         buttonContainer = new FrameLayout(context);
         ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider);
-        button.setText(getString(R.string.ExplainStarsButton), false);
+        button.setText(getString(R.string.ExplainDiamondsButton), false);
         button.setOnClickListener(v -> dismiss());
         buttonContainer.addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL, 10, 10, 10, 10));
         buttonContainer.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
@@ -99,7 +99,7 @@ public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
 
     @Override
     protected CharSequence getTitle() {
-        return getString(R.string.ExplainStarsTitle);
+        return getString(R.string.ExplainDiamondsTitle);
     }
 
     @Override
@@ -114,12 +114,12 @@ public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
 
     public void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asCustom(headerView));
-        items.add(FeatureCell.Factory.of(R.drawable.msg_gift_premium, getString(R.string.ExplainStarsFeature1Title), getString(R.string.ExplainStarsFeature1Text)));
-        items.add(FeatureCell.Factory.of(R.drawable.msg_bot, getString(R.string.ExplainStarsFeature2Title), AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.ExplainStarsFeature2Text), () -> {
+        items.add(FeatureCell.Factory.of(R.drawable.msg_gift_premium, getString(R.string.ExplainDiamondsFeature1Title), getString(R.string.ExplainDiamondsFeature1Text)));
+        items.add(FeatureCell.Factory.of(R.drawable.msg_bot, getString(R.string.ExplainDiamondsFeature2Title), AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.ExplainDiamondsFeature2Text), () -> {
             new StarAppsSheet(getContext()).show();
         }), true)));
-        items.add(FeatureCell.Factory.of(R.drawable.menu_unlock, getString(R.string.ExplainStarsFeature3Title), getString(R.string.ExplainStarsFeature3Text)));
-        items.add(FeatureCell.Factory.of(R.drawable.menu_feature_paid, getString(R.string.ExplainStarsFeature4Title), getString(R.string.ExplainStarsFeature4Text)));
+        items.add(FeatureCell.Factory.of(R.drawable.menu_unlock, getString(R.string.ExplainDiamondsFeature3Title), getString(R.string.ExplainDiamondsFeature3Text)));
+        items.add(FeatureCell.Factory.of(R.drawable.menu_feature_paid, getString(R.string.ExplainDiamondsFeature4Title), getString(R.string.ExplainDiamondsFeature4Text)));
         items.add(UItem.asSpace(dp(10 + 48 + 10)));
     }
 

@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -6802,7 +6802,7 @@ public class ChatActivityEnterView extends FrameLayout implements
             }
         } else if (isPostSuggestions) {
             final CharSequence hint = paidMessagesStarsPrice > 0 ?
-                StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.SuggestPostForStars, LocaleController.formatNumber((int) paidMessagesStarsPrice, ','), spans)):
+                StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.SuggestPostForDiamonds, LocaleController.formatNumber((int) paidMessagesStarsPrice, ','), spans)):
                 LocaleController.formatString(R.string.SuggestPostForFree);
             messageEditText.setHintText(hint);
             if (spans[0] != null) {
@@ -6815,7 +6815,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         } else if (editingMessageObject != null) {
             messageEditText.setHintText(editingCaption ? getString(R.string.Caption) : getString(R.string.TypeMessage));
         } else if (paidMessagesStarsPrice > 0) {
-            messageEditText.setHintText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.TypeMessageForStars, LocaleController.formatNumber((int) paidMessagesStarsPrice, ',')), spans));
+            messageEditText.setHintText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.TypeMessageForDiamonds, LocaleController.formatNumber((int) paidMessagesStarsPrice, ',')), spans));
             if (spans[0] != null) {
                 spans[0].spaceScaleX = 0.9f;
             }

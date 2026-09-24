@@ -240,7 +240,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
             public void onValueChanged(int value) {
                 updateSenders(value);
                 if (buttonView != null) {
-                    buttonView.setText(StarsIntroActivity.replaceStars(formatString(R.string.StarsReactionSend, LocaleController.formatNumber(value, ',')), starRef), true);
+                    buttonView.setText(StarsIntroActivity.replaceStars(formatString(R.string.DiamondsReactionSend, LocaleController.formatNumber(value, ',')), starRef), true);
                 }
                 if (liveStories) {
                     commentMessage.stars = value;
@@ -324,7 +324,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setGravity(Gravity.CENTER);
-        titleView.setText(getString(R.string.StarsReactionTitle2));
+        titleView.setText(getString(R.string.DiamondsReactionTitle2));
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setEllipsize(TextUtils.TruncateAt.END);
 //        toptopLayout.addView(beforeTitleSpace = new Space(context), LayoutHelper.createLinear(0, 0, 1, Gravity.FILL));
@@ -366,7 +366,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         statusView.setGravity(Gravity.CENTER);
         statusView.setSingleLine(false);
         statusView.setMaxLines(3);
-        statusView.setText(Emoji.replaceEmoji(AndroidUtilities.replaceTags(me != null ? LocaleController.formatPluralStringComma("StarsReactionTextSent", me.count) : formatString(R.string.StarsReactionText, chat == null ? "" : chat.title)), statusView.getPaint().getFontMetricsInt(), false));
+        statusView.setText(Emoji.replaceEmoji(AndroidUtilities.replaceTags(me != null ? LocaleController.formatPluralStringComma("StarsReactionTextSent", me.count) : formatString(R.string.DiamondsReactionText, chat == null ? "" : chat.title)), statusView.getPaint().getFontMetricsInt(), false));
         if (sendEnabled && !liveStories) {
             topLayoutTextLayout.addView(statusView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 40,  0, 40, 0));
         }
@@ -378,7 +378,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
                     private final Matrix gradientMatrix = new Matrix();
                     private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                     private final Paint separatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    private final Text text = new Text(getString(R.string.StarsReactionTopSenders), 14.16f, AndroidUtilities.bold());
+                    private final Text text = new Text(getString(R.string.DiamondsReactionTopSenders), 14.16f, AndroidUtilities.bold());
 
                     @Override
                     public void dispatchDraw(Canvas canvas) {
@@ -486,7 +486,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         checkTextView = new TextView(context);
         checkTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         checkTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        checkTextView.setText(LocaleController.getString(R.string.StarsReactionShowMeInTopSenders));
+        checkTextView.setText(LocaleController.getString(R.string.DiamondsReactionShowMeInTopSenders));
 
         checkLayout = new LinearLayout(context);
         checkLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -518,7 +518,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
             layout.addView(buttonView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 14, 0, 14, 0));
         }
         updateSenders(0);
-        buttonView.setText(StarsIntroActivity.replaceStars(formatString(R.string.StarsReactionSend, LocaleController.formatNumber(50, ',')), starRef), true);
+        buttonView.setText(StarsIntroActivity.replaceStars(formatString(R.string.DiamondsReactionSend, LocaleController.formatNumber(50, ',')), starRef), true);
         if (sendEnabled) {
             buttonView.setOnClickListener(v -> {
                 if (sending) return;
@@ -615,8 +615,8 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         if (liveStories && !sendEnabled) {
             termsView.setText(getString(R.string.LiveStoryReactAdminCant));
         } else {
-            termsView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsReactionTerms), () -> {
-                Browser.openUrl(context, getString(R.string.StarsReactionTermsLink));
+            termsView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsReactionTerms), () -> {
+                Browser.openUrl(context, getString(R.string.DiamondsReactionTermsLink));
             }));
         }
         termsView.setGravity(Gravity.CENTER);
@@ -820,7 +820,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         slider.setValue(value);
         updateSenders(value);
         if (buttonView != null) {
-            buttonView.setText(StarsIntroActivity.replaceStars(formatString(R.string.StarsReactionSend, LocaleController.formatNumber(value, ',')), starRef), true);
+            buttonView.setText(StarsIntroActivity.replaceStars(formatString(R.string.DiamondsReactionSend, LocaleController.formatNumber(value, ',')), starRef), true);
         }
         if (liveStories) {
             commentMessage.stars = value;
@@ -1047,7 +1047,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
         private final ColoredImageSpan[] starRef = new ColoredImageSpan[1];
 
         private final Paint topPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final Text topText = new Text(getString(R.string.StarsReactionTop), 14, AndroidUtilities.getTypeface("fonts/rcondensedbold.ttf"));
+        private final Text topText = new Text(getString(R.string.DiamondsReactionTop), 14, AndroidUtilities.getTypeface("fonts/rcondensedbold.ttf"));
         private final AnimatedFloat overTop = new AnimatedFloat(this, 0, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
         private final AnimatedFloat overTopText = new AnimatedFloat(this, 0, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
 
@@ -2074,7 +2074,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
                     this.anonymous = anonymous;
                     final String name;
                     if (anonymous) {
-                        name = LocaleController.getString(R.string.StarsReactionAnonymous);
+                        name = LocaleController.getString(R.string.DiamondsReactionAnonymous);
                     } else {
                         name = DialogObject.getShortName(did);
                     }
@@ -2091,7 +2091,7 @@ public class StarsReactionsSheet extends BottomSheet implements NotificationCent
 
                     String name;
                     if (anonymous) {
-                        name = LocaleController.getString(R.string.StarsReactionAnonymous);
+                        name = LocaleController.getString(R.string.DiamondsReactionAnonymous);
                     } else if (did >= 0) {
                         TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(did);
                         name = UserObject.getForcedFirstName(user);

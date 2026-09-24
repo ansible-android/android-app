@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -2871,7 +2871,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     open_settings = 1;
                 } else if (intent.getAction().equals("new_dialog")) {
                     open_new_dialog = 1;
-                } else if (intent.getAction().startsWith("com.tmessages.openchat")) {
+                } else if (intent.getAction().startsWith("su.ansible.openchat")) {
 //                    Integer chatIdInt = intent.getIntExtra("chatId", 0);
                     long chatId = intent.getLongExtra("chatId", 0);
 //                    Integer userIdInt = intent.getIntExtra("userId", 0);
@@ -2944,9 +2944,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     if (botId != 0) {
                         openBot = true;
                     }
-                } else if (intent.getAction().equals("com.tmessages.openplayer")) {
+                } else if (intent.getAction().equals("su.ansible.openplayer")) {
                     showPlayer = true;
-                } else if (intent.getAction().equals("org.tmessages.openlocations")) {
+                } else if (intent.getAction().equals("su.ansible.openlocations")) {
                     showLocations = true;
                 } else if (action.equals("voip_chat")) {
                     showGroupVoip = true;
@@ -4948,7 +4948,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                                             if (chat != null) {
                                                 AndroidUtilities.runOnUIThread(() -> {
-                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, LocaleController.getString(R.string.StarsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsSubscriptionCompletedText", (int) stars, chat.title))).show(true);
+                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, LocaleController.getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsSubscriptionCompletedText", (int) stars, chat.title))).show(true);
                                                 }, 250);
                                             }
                                         });
@@ -7246,14 +7246,14 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     builder.setPositiveButton(LocaleController.getString(R.string.Cancel), null);
                     builder.setNegativeButton(LocaleController.getString(R.string.LogOut), (dialog, which) -> MessagesController.getInstance(currentAccount).performLogout(2));
                 } else if (type.startsWith("PREMIUM_")) {
-                    builder.setTitle(LocaleController.getString(R.string.TelegramPremium));
+                    builder.setTitle(LocaleController.getString(R.string.AnsiblePremium));
                     builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                 } else {
                     builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                 }
             } else if (reason == 3) {
                 builder.setTitle(LocaleController.getString(R.string.Proxy));
-                builder.setMessage(LocaleController.getString(R.string.UseProxyTelegramError));
+                builder.setMessage(LocaleController.getString(R.string.UseProxyAnsibleError));
                 builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                 proxyErrorDialog = showAlertDialog(builder);
                 return;

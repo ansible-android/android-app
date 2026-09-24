@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -59,7 +59,7 @@ public class MusicBrowserService extends MediaBrowserService {
     public void onLoadChildren(String parentMediaId, Result<List<MediaBrowser.MediaItem>> result) {
         AnsibleMediaSession holder = AnsibleMediaSession.getInstance(this);
         if (holder.isPasscodeLocked()) {
-            Toast.makeText(getApplicationContext(), LocaleController.getString(R.string.EnterYourTelegramPasscode), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), LocaleController.getString(R.string.EnterYourAnsiblePasscode), Toast.LENGTH_LONG).show();
             stopSelf();
             result.detach();
             return;

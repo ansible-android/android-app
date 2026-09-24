@@ -276,7 +276,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
         final TextView checkboxTextView = new TextView(context);
         checkboxTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourceProvider));
         checkboxTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        checkboxTextView.setText(LocaleController.getString(R.string.GiftResaleStarsOnly));
+        checkboxTextView.setText(LocaleController.getString(R.string.GiftResaleDiamondsOnly));
         checkboxLayout.addView(checkboxTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 9, 0, 0, 0));
         checkboxLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(18), 0, Theme.blendOver(getThemedColor(Theme.key_windowBackgroundWhite), Theme.multAlpha(getThemedColor(Theme.key_featuredStickers_addButton), 0.10f))));
 
@@ -356,7 +356,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                         list.reload();
                     }
                 })
-                .addChecked(list.starsOnly, getString(R.string.GiftResaleFilterForStarsOnly), () -> {
+                .addChecked(list.starsOnly, getString(R.string.GiftResaleFilterForDiamondsOnly), () -> {
                     if (!list.starsOnly) {
                         list.starsOnly = true;
                         checkbox.setChecked(true, true);

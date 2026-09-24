@@ -206,7 +206,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         if (allowTON) {
             currencyTabsView = new HorizontalRoundTabsLayout(context, resourcesProvider);
             ArrayList<CharSequence> tabs = new ArrayList<>();
-            tabs.add(getString(R.string.SuggestedOfferStars));
+            tabs.add(getString(R.string.SuggestedOfferDiamonds));
             tabs.add(getString(R.string.SuggestedOfferTON));
             currencyTabsView.setTabs(tabs, x -> {
                 final AmountUtils.Currency currency = x == 0 ?
@@ -467,7 +467,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
         final String userName = DialogObject.getShortName(dialogId);
         if (inputAmount.currency == AmountUtils.Currency.STARS) {
-            publishingTimeHint.setText(replaceTags(formatString(R.string.GiftOfferDurationInfoStars, userName)));
+            publishingTimeHint.setText(replaceTags(formatString(R.string.GiftOfferDurationInfoDiamonds, userName)));
 
             starsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
             starsCountEditField.setFilters(new InputFilter[]{
@@ -540,7 +540,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     private void checkButtonOfferText(boolean animated) {
         final boolean isTon = inputAmount.currency == AmountUtils.Currency.TON;
         buttonView.setText(StarsIntroActivity.replaceStars(isTon,
-            LocaleController.formatString(R.string.GiftOfferButtonStars, isTon ? inputAmount.asDecimalString() :
+            LocaleController.formatString(R.string.GiftOfferButtonDiamonds, isTon ? inputAmount.asDecimalString() :
                 LocaleController.formatNumber(inputAmount.asDecimal(), ',')),
             isTon ? spanRefTon: spanRefStars
         ), animated);
@@ -561,7 +561,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
     private void checkAmountInputText(boolean ignoredAnimated) {
         final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferStarsToOffer :
+                R.string.GiftOfferDiamondsToOffer :
                 R.string.GiftOfferTONToOffer;
 
         starsCountEditOutline.setText(getString(key));
@@ -572,19 +572,19 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
         if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_BIG) != 0) {
             final int key = currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferStarsToOfferInfoIsHigh :
+                R.string.GiftOfferDiamondsToOfferInfoIsHigh :
                 R.string.GiftOfferTONToOfferInfoIsHigh;
             starsCountEditHint.setText(replaceTags(formatString(key,
                 inputAmountLimits.getMax(currency).asFormatString(), giftName)));
         } else if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_SMALL) != 0) {
             final int key = currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferStarsToOfferInfoIsLow :
+                R.string.GiftOfferDiamondsToOfferInfoIsLow :
                 R.string.GiftOfferTONToOfferInfoIsLow;
             starsCountEditHint.setText(replaceTags(formatString(key,
                 inputAmountLimits.getMin(currency).asFormatString(), giftName)));
         } else {
             final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferStarsToOfferInfo :
+                R.string.GiftOfferDiamondsToOfferInfo :
                 R.string.GiftOfferTONToOfferInfo;
 
             starsCountEditHint.setText(replaceTags(formatString(key, giftName)));
@@ -657,7 +657,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setText(AndroidUtilities.replaceTags(inputAmount.currency == AmountUtils.Currency.STARS ?
-            formatString(R.string.GiftOfferTransferInfoTextStars, amountFmt, DialogObject.getShortName(dialogId), giftName) :
+            formatString(R.string.GiftOfferTransferInfoTextDiamonds, amountFmt, DialogObject.getShortName(dialogId), giftName) :
             formatString(R.string.GiftOfferTransferInfoTextTON, amountFmt, DialogObject.getShortName(dialogId), giftName)
         ));
         topView.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 24, 4, 24, 4));
@@ -787,7 +787,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setText(AndroidUtilities.replaceTags(amount.currency == AmountUtils.Currency.STARS ?
-                formatString(R.string.GiftOfferTransferInfoTextSellStars, amountFmt, DialogObject.getShortName(dialogId), giftName, amountMinusFeeFmt) :
+                formatString(R.string.GiftOfferTransferInfoTextSellDiamonds, amountFmt, DialogObject.getShortName(dialogId), giftName, amountMinusFeeFmt) :
                 formatString(R.string.GiftOfferTransferInfoTextSellTON, amountFmt, DialogObject.getShortName(dialogId), giftName, amountMinusFeeFmt)
         ));
         topView.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 24, 4, 24, 4));

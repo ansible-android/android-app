@@ -1134,12 +1134,12 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             case TYPE_CALL:
                 return getString(R.string.VoipConferenceAddPeople);
             case TYPE_STARS:
-                return getString(R.string.GiftStarsTitle);
+                return getString(R.string.GiftDiamondsTitle);
             case TYPE_STAR_GIFT:
             case TYPE_PREMIUM:
-                return getString(R.string.GiftTelegramPremiumOrStarsTitle);
+                return getString(R.string.GiftAnsiblePremiumOrDiamondsTitle);
         }
-        return getString(R.string.GiftTelegramPremiumTitle);
+        return getString(R.string.GiftAnsiblePremiumTitle);
     }
 
     @Override

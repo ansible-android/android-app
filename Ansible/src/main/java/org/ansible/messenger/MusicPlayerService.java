@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -356,7 +356,7 @@ public class MusicPlayerService extends Service implements NotificationCenter.No
         AudioInfo audioInfo = MediaController.getInstance().getAudioInfo();
         Intent intent = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
         if (messageObject.isMusic()) {
-            intent.setAction("com.tmessages.openplayer");
+            intent.setAction("su.ansible.openplayer");
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
         } else if (messageObject.isVoice() || messageObject.isRoundVideo()) {
             intent.setAction(Intent.ACTION_VIEW);

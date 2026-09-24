@@ -263,7 +263,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                                         final ChatActivity chatActivity = ChatActivity.of(dialogId);
                                         chatActivity.whenFullyVisible(() -> {
                                             BulletinFactory.of(chatActivity)
-                                                .createSimpleBulletin(R.raw.stars_topup, getString(R.string.StarsGiveawaySentPopup), AndroidUtilities.replaceTags(LocaleController.formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) stars)))
+                                                .createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsGiveawaySentPopup), AndroidUtilities.replaceTags(LocaleController.formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) stars)))
                                                 .show(true);
                                         });
                                         lastFragment.presentFragment(chatActivity);
@@ -313,7 +313,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                                 BulletinFactory.of(chatActivity)
                                 .createSimpleBulletin(
                                     R.raw.stars_send,
-                                    getString(R.string.StarsGiveawaySentPopup),
+                                    getString(R.string.DiamondsGiveawaySentPopup),
                                     AndroidUtilities.replaceTags(formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) option.stars))
                                 )
                                 .setDuration(Bulletin.DURATION_PROLONG)
@@ -576,7 +576,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         boolean isChannel = ChatObject.isChannelAndNotMegaGroup(currentChat);
         if (selectedBoostType == BoostTypeCell.TYPE_STARS) {
             if (!isPreparedGiveaway()) {
-                BoostAdapter.Item header = Item.asSubTitleWithCounter(getString(R.string.BoostingStarsOptions), getSelectedSliderValueWithBoosts());
+                BoostAdapter.Item header = Item.asSubTitleWithCounter(getString(R.string.BoostingDiamondsOptions), getSelectedSliderValueWithBoosts());
                 items.add(header);
                 final List<Long> starOptions = getStarsOptions();
                 int optionsCount = 0;
@@ -600,14 +600,14 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                     items.add(Item.asOption(null, 2, 1, false, false));
                 }
                 header.intValue = getSelectedSliderValueWithBoosts();
-                items.add(Item.asDivider(getString(R.string.BoostingStarsOptionsInfo), false));
+                items.add(Item.asDivider(getString(R.string.BoostingDiamondsOptionsInfo), false));
 
                 final List<Integer> values = getSliderValues();
                 if (selectedStarsSliderIndex < 0 || selectedStarsSliderIndex >= values.size()) selectedStarsSliderIndex = 0;
                 if (values.size() > 1) {
-                    items.add(Item.asSubTitle(getString(R.string.BoostingStarsQuantityPrizes)));
+                    items.add(Item.asSubTitle(getString(R.string.BoostingDiamondsQuantityPrizes)));
                     items.add(Item.asSlider(getSliderValues(), selectedStarsSliderIndex));
-                    items.add(Item.asDivider(getString(R.string.BoostingStarsQuantityPrizesInfo), false));
+                    items.add(Item.asDivider(getString(R.string.BoostingDiamondsQuantityPrizesInfo), false));
                 }
             } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
                 selectedStars = ((TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway).stars;
@@ -717,7 +717,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                     }
                 }
             } else {
-                items.add(Item.asDivider(getString(selectedBoostType == BoostTypeCell.TYPE_STARS ? R.string.BoostingStarsGiveawayAdditionPrizeHint : R.string.BoostingGiveawayAdditionPrizeHint), false));
+                items.add(Item.asDivider(getString(selectedBoostType == BoostTypeCell.TYPE_STARS ? R.string.BoostingDiamondsGiveawayAdditionPrizeHint : R.string.BoostingGiveawayAdditionPrizeHint), false));
             }
 
             items.add(Item.asSubTitle(getString(R.string.BoostingDateWhenGiveawayEnds)));

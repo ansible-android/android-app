@@ -1,5 +1,5 @@
 /*
- * This is the source code of Telegram for Android v. 5.x.x.
+ * This is the source code of Ansible for Android.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
  *
@@ -5045,15 +5045,15 @@ public class MessageObject {
                         }
                     } else if (UserObject.isService(getDialogId()) && action.from_id == null) {
                         messageText = AndroidUtilities.replaceTags(getString(action.auction_acquired ? R.string.ActionGiftAuctionSelf : R.string.ActionGiftSomeone));
-                        messageTextShort = getString(R.string.ActionStarGift);
+                        messageTextShort = getString(R.string.ActionDiamondGift);
                     } else if (isForChannel) {
                         messageText = AndroidUtilities.replaceTags(formatPluralStringComma("ActionGiftChannel", stars));
                         messageText = replaceWithLink(messageText, "un1", obj);
                         messageText = replaceWithLink(messageText, "un2", peerObj);
-                        messageTextShort = getString(R.string.ActionStarGift);
+                        messageTextShort = getString(R.string.ActionDiamondGift);
                     } else if (UserObject.isUserSelf(user)) {
                         messageText = AndroidUtilities.replaceTags(getString(action.auction_acquired ? R.string.ActionGiftAuctionSelf : R.string.ActionGiftSelf));
-                        messageTextShort = getString(R.string.ActionStarGift);
+                        messageTextShort = getString(R.string.ActionDiamondGift);
                     } else if (obj instanceof TLRPC.User && ((TLRPC.User) obj).self && !action.forceIn) {
                         messageText = replaceWithLink(AndroidUtilities.replaceTags(getString(R.string.ActionGiftOutbound)), "un1", user);
                         if (action.message != null && !TextUtils.isEmpty(action.message.text)) {
@@ -5061,10 +5061,10 @@ public class MessageObject {
                             addEntitiesToText(stringBuilder, action.message.entities, isOutOwner(), false, false, false);
                             messageTextShort = stringBuilder;
                         } else {
-                            messageTextShort = getString(R.string.ActionStarGift);
+                            messageTextShort = getString(R.string.ActionDiamondGift);
                         }
                     } else if (obj instanceof TLRPC.User && UserObject.isService(((TLRPC.User) obj).id)) {
-                        messageText = TextUtils.replace(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), new String[] {"un1"}, new CharSequence[]{ getString(R.string.StarsTransactionUnknown) });
+                        messageText = TextUtils.replace(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), new String[] {"un1"}, new CharSequence[]{ getString(R.string.DiamondsTransactionUnknown) });
                     } else {
                         messageText = replaceWithLink(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), "un1", obj);
                         if (action.message != null && !TextUtils.isEmpty(action.message.text)) {
@@ -5072,7 +5072,7 @@ public class MessageObject {
                             addEntitiesToText(stringBuilder, action.message.entities, isOutOwner(), false, false, false);
                             messageTextShort = stringBuilder;
                         } else {
-                            messageTextShort = getString(R.string.ActionStarGift);
+                            messageTextShort = getString(R.string.ActionDiamondGift);
                         }
                     }
                     int i = messageText.toString().indexOf("un2");
@@ -5176,7 +5176,7 @@ public class MessageObject {
                         TLRPC.User user = getUser(users, sUsers, messageOwner.peer_id.user_id);
                         messageText = replaceWithLink(AndroidUtilities.replaceTags(getString(R.string.ActionGiftOutbound)), "un1", user);
                     } else if (fromObject instanceof TLRPC.User && UserObject.isService(((TLRPC.User) fromObject).id)) {
-                        messageText = TextUtils.replace(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), new String[] {"un1"}, new CharSequence[]{ getString(R.string.StarsTransactionUnknown) });
+                        messageText = TextUtils.replace(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), new String[] {"un1"}, new CharSequence[]{ getString(R.string.DiamondsTransactionUnknown) });
                     } else {
                         messageText = replaceWithLink(AndroidUtilities.replaceTags(getString(R.string.ActionGiftInbound)), "un1", fromObject);
                     }
@@ -5844,7 +5844,7 @@ public class MessageObject {
 
                     SpannableStringBuilder ssb = new SpannableStringBuilder();
                     ssb.append(replaceTags(formatString(amount.currency == AmountUtils.Currency.STARS ?
-                                    isOut() ? R.string.GiftOfferOfferedTextStarsOut : R.string.GiftOfferOfferedTextStars2 :
+                                    isOut() ? R.string.GiftOfferOfferedTextDiamondsOut : R.string.GiftOfferOfferedTextDiamonds2 :
                                     isOut() ? R.string.GiftOfferOfferedTextTONOut : R.string.GiftOfferOfferedTextTON2,
                             userName, amount.asFormatString(), giftTitle)));
                     messageText = ssb;
@@ -5872,13 +5872,13 @@ public class MessageObject {
                     final int key;
                     if (action.expired) {
                         if (amount.currency == AmountUtils.Currency.STARS) {
-                            key = isOut() ? R.string.GiftOfferOfferedTextStarsExpiredOut : R.string.GiftOfferOfferedTextStarsExpired;
+                            key = isOut() ? R.string.GiftOfferOfferedTextDiamondsExpiredOut : R.string.GiftOfferOfferedTextDiamondsExpired;
                         } else {
                             key = isOut() ? R.string.GiftOfferOfferedTextTONExpiredOut : R.string.GiftOfferOfferedTextTONExpired;
                         }
                     } else {
                         if (amount.currency == AmountUtils.Currency.STARS) {
-                            key = isOut() ? R.string.GiftOfferOfferedTextStarsRejectedOut : R.string.GiftOfferOfferedTextStarsRejected;
+                            key = isOut() ? R.string.GiftOfferOfferedTextDiamondsRejectedOut : R.string.GiftOfferOfferedTextDiamondsRejected;
                         } else {
                             key = isOut() ? R.string.GiftOfferOfferedTextTONRejectedOut : R.string.GiftOfferOfferedTextTONRejected;
                         }
@@ -13190,7 +13190,7 @@ public class MessageObject {
 
         if (approval.balance_too_low) {
             ssb.append(AndroidUtilities.replaceTags(
-                LocaleController.formatString(R.string.SuggestionAgreementNotEnoughStars,
+                LocaleController.formatString(R.string.SuggestionAgreementNotEnoughDiamonds,
                 userName
             )));
         } else if (approval.rejected) {
@@ -13265,8 +13265,8 @@ public class MessageObject {
                             R.string.SuggestionAgreementReachedUser3TON;
                     } else {
                         key = isAdmin ?
-                            R.string.SuggestionAgreementReachedAdmin3Stars:
-                            R.string.SuggestionAgreementReachedUser3Stars;
+                            R.string.SuggestionAgreementReachedAdmin3Diamonds:
+                            R.string.SuggestionAgreementReachedUser3Diamonds;
                     }
 
                     ssb.append("\n\n");
@@ -13281,8 +13281,8 @@ public class MessageObject {
                             R.string.SuggestionAgreementReachedUser4TON;
                     } else {
                         key = isAdmin ?
-                            R.string.SuggestionAgreementReachedAdmin4Stars:
-                            R.string.SuggestionAgreementReachedUser4Stars;
+                            R.string.SuggestionAgreementReachedAdmin4Diamonds:
+                            R.string.SuggestionAgreementReachedUser4Diamonds;
                     }
 
                     ssb.append("\n\n");
