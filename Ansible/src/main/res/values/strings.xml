@@ -6059,7 +6059,7 @@
     <string name="PhotoEditorClearAll">Clear All</string>
     <string name="PaintRectangle">Rectangle</string>
     <string name="PaintCircle">Circle</string>
-    <string name="PaintDiamond">Star</string>
+    <string name="PaintDiamond">Diamond</string>
     <string name="PaintBubble">Bubble</string>
     <string name="PhotoEditorTypefaceRoboto">Roboto</string>
     <string name="PhotoEditorTypefaceCondensed">Condensed</string>
