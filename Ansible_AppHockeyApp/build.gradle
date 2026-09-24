@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
 }
 
 repositories {
@@ -25,12 +24,8 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation files('../Ansible/libs/libgsaverification-client.aar')
 
-    implementation "com.microsoft.appcenter:appcenter-distribute:3.3.1"
-    implementation "com.microsoft.appcenter:appcenter-crashes:3.3.1"
-    implementation "com.microsoft.appcenter:appcenter-analytics:3.3.1"
-
-    implementation platform("com.google.firebase:firebase-bom:32.7.0")
-    implementation "com.google.firebase:firebase-crashlytics:18.6.0"
+    // App Center и Crashlytics убраны вместе с телеметрией: SDK больше не
+    // попадает в APK, а не просто не инициализируется.
 }
 
 android {
