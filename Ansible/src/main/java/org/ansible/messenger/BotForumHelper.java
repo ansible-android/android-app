@@ -16,11 +16,11 @@ import android.util.SparseIntArray;
 import androidx.annotation.Nullable;
 
 import org.ansible.messenger.utils.tlutils.TlUtils;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_forum;
-import org.ansible.tgnet.tl.TL_iv;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_forum;
+import org.ansible.asnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.TypingDotsDrawable;

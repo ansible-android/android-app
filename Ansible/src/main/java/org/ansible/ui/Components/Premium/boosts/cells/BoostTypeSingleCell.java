@@ -9,7 +9,7 @@ import android.view.Gravity;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.LayoutHelper;

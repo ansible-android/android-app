@@ -40,7 +40,7 @@ import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.browser.Browser;
-import org.ansible.tgnet.tl.TL_account;
+import org.ansible.asnet.tl.TL_account;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.RadioColorCell;

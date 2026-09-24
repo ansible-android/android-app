@@ -10,11 +10,11 @@ import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.InputSerializedData;
-import org.ansible.tgnet.OutputSerializedData;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.InputSerializedData;
+import org.ansible.asnet.OutputSerializedData;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -12,11 +12,11 @@ import org.ansible.messenger.FileLog;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_phone;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_phone;
+import org.ansible.asnet.tl.TL_update;
 
 import java.util.ArrayList;
 import java.util.Arrays;

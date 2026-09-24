@@ -1,7 +1,7 @@
 package org.ansible.messenger;
 
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 
 public class SecureDocument extends TLObject {
 

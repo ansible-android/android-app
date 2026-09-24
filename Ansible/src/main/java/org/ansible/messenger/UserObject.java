@@ -13,8 +13,8 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import org.ansible.PhoneFormat.PhoneFormat;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
 
 public class UserObject {
 

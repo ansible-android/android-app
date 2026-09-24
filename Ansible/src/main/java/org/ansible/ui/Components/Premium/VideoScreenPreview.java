@@ -35,7 +35,7 @@ import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.SvgHelper;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.video.VideoPlayerHolderBase;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.CombinedDrawable;
 import org.ansible.ui.Components.VideoPlayer;

@@ -1,10 +1,10 @@
-package org.ansible.tgnet.model.generated
+package org.ansible.asnet.model.generated
 
 import kotlin.UInt
 import kotlin.collections.List
-import org.ansible.tgnet.OutputSerializedData
-import org.ansible.tgnet.model.TlGen_Object
-import org.ansible.tgnet.model.TlGen_Vector
+import org.ansible.asnet.OutputSerializedData
+import org.ansible.asnet.model.TlGen_Object
+import org.ansible.asnet.model.TlGen_Vector
 
 public sealed class TlGen_channels_SendAsPeers : TlGen_Object {
   public data class TL_channels_sendAsPeers(

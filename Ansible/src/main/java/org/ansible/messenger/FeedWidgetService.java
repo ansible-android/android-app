@@ -16,8 +16,8 @@ import android.widget.RemoteViewsService;
 
 import androidx.core.content.FileProvider;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
 
 import java.io.File;
 import java.util.ArrayList;

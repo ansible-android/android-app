@@ -14,10 +14,10 @@ import android.os.SystemClock;
 import android.util.Base64;
 import android.util.LongSparseArray;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
 
 import java.util.Arrays;
 

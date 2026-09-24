@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.RichMessageLayout;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.tl.TL_iv;
-import org.ansible.tgnet.tl.TL_keyboard;
+import org.ansible.asnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_keyboard;
 import org.ansible.ui.ActionBar.Theme;
 
 /** Atomic inline representation of a {@link TL_iv.textButton} while its text is being edited. */

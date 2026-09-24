@@ -1,7 +1,7 @@
 package org.ansible.ui.Components;
 
 import org.ansible.messenger.ChatObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.Theme;
 

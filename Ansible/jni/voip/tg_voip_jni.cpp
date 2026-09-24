@@ -20,7 +20,7 @@
 #include "libtgvoip/PrivateDefines.h"
 #include "libtgvoip/logging.h"
 #include "../c_utils.h"
-#include "tgnet/FileLog.h"
+#include "asnet/FileLog.h"
 
 #ifdef TGVOIP_HAS_CONFIG
 #include <tgvoip_config.h>

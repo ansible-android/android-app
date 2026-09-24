@@ -27,7 +27,7 @@ import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.AvatarDrawable;

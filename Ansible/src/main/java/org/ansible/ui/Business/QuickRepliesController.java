@@ -15,11 +15,11 @@ import org.ansible.messenger.MessagesStorage;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
+import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.ChatActivity;
 
 import java.util.ArrayList;

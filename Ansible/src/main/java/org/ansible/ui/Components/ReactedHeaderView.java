@@ -24,10 +24,10 @@ import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.Vector;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.Vector;
 import org.ansible.ui.ActionBar.Theme;
 
 import java.util.ArrayList;

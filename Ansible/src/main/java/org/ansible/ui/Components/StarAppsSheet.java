@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 public class StarAppsSheet extends BottomSheetWithRecyclerListView {
 

@@ -24,8 +24,8 @@ import org.ansible.messenger.MediaController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
 

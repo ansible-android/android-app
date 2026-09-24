@@ -3,7 +3,7 @@ package org.ansible.messenger;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.util.Log;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.util.concurrent.CountDownLatch;
 

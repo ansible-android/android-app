@@ -1,6 +1,6 @@
 package org.ansible.ui.Components.Premium.boosts;
 
-import static org.ansible.tgnet.TLRPC.TL_payments_checkedGiftCode.NO_USER_ID;
+import static org.ansible.asnet.TLRPC.TL_payments_checkedGiftCode.NO_USER_ID;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -12,8 +12,8 @@ import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.browser.Browser;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;

@@ -23,10 +23,10 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.MessagesStorage;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.RequestDelegate;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.RequestDelegate;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ChatUsersActivity;
 import org.ansible.ui.Components.ShareAlert;
 

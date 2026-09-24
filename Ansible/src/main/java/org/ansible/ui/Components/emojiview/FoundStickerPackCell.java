@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 
 import org.ansible.messenger.utils.DrawableUtils;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.StickerEmojiCell;
 import org.ansible.ui.Components.CubicBezierInterpolator;

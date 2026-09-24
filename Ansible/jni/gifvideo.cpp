@@ -8,8 +8,8 @@
 #include <asm/fcntl.h>
 #include <fcntl.h>
 #include <libyuv.h>
-#include <tgnet/FileLog.h>
-#include "tgnet/ConnectionsManager.h"
+#include <asnet/FileLog.h>
+#include "asnet/ConnectionsManager.h"
 #include "voip/webrtc/common_video/h264/sps_parser.h"
 #include "voip/webrtc/common_video/h264/h264_common.h"
 #include "c_utils.h"

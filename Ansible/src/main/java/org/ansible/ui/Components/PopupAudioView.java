@@ -25,7 +25,7 @@ import org.ansible.messenger.MediaController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.MessageObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.BaseCell;
 

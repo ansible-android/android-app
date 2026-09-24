@@ -9,12 +9,12 @@ import androidx.collection.LongSparseArray;
 
 import org.ansible.SQLite.SQLiteCursor;
 import org.ansible.messenger.support.LongSparseIntArray;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.RequestDelegate;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_forum;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.RequestDelegate;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_forum;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.Components.Forum.ForumUtilities;

@@ -12,8 +12,8 @@ class TestGeneratorPlugin : Plugin<Project> {
             "generateScheme",
             GenerateSchemeTask::class.java
         ) {
-            tlSourcesDir = File(project.rootDir, "Ansible/src/main/java/org/ansible/tgnet")
-            tlSourcesDirectDir = File(project.rootDir, "Ansible_AppStandalone/src/main/java/org/ansible/tgnet")
+            tlSourcesDir = File(project.rootDir, "Ansible/src/main/java/org/ansible/asnet")
+            tlSourcesDirectDir = File(project.rootDir, "Ansible_AppStandalone/src/main/java/org/ansible/asnet")
             resourcesDir = project.file("tlscheme")
             outputDir = project.file("src/androidTest/kotlin")
         }

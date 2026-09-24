@@ -7,7 +7,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 
 public class GiftMessageView extends View {
 

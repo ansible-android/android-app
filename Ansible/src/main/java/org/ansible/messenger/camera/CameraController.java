@@ -36,7 +36,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.SendMessagesHelper;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.SerializedData;
+import org.ansible.asnet.SerializedData;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

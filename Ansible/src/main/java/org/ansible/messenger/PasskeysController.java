@@ -29,10 +29,10 @@ import androidx.credentials.exceptions.NoCredentialException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.ansible.messenger.browser.Browser;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.LaunchActivity;
 

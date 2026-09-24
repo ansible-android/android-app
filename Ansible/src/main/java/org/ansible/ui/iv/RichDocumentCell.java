@@ -26,7 +26,7 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.TextSelectionHelper;
 import org.ansible.ui.Components.LayoutHelper;

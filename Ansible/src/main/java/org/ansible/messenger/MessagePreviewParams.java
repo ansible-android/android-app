@@ -12,9 +12,9 @@ import android.text.util.Linkify;
 import android.util.LongSparseArray;
 import android.util.SparseBooleanArray;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.MessagePreviewView;
 

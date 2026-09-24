@@ -4,7 +4,7 @@ import android.view.View;
 
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MessageObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.Reactions.ReactionsLayoutInBubble;
 
 public interface IMessageCell {

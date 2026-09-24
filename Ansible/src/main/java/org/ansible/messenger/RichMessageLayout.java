@@ -2,8 +2,8 @@ package org.ansible.messenger;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.dpf2;
-import static org.ansible.tgnet.TLObject.hasFlag;
-import static org.ansible.tgnet.TLObject.setFlag;
+import static org.ansible.asnet.TLObject.hasFlag;
+import static org.ansible.asnet.TLObject.setFlag;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -73,10 +73,10 @@ import androidx.core.content.ContextCompat;
 import org.ansible.PhoneFormat.PhoneFormat;
 import org.ansible.messenger.utils.DrawableUtils;
 import org.ansible.messenger.utils.tlutils.TLKeyboardHelper;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_iv;
-import org.ansible.tgnet.tl.TL_keyboard;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_keyboard;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.ArticleViewer;

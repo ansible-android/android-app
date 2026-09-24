@@ -17,7 +17,7 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.SharedPhotoVideoCell2;

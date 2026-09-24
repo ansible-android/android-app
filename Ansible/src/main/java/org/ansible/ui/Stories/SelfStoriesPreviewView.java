@@ -24,7 +24,7 @@ import androidx.core.graphics.ColorUtils;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.StaticLayoutEx;

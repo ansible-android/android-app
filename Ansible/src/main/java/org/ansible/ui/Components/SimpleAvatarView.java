@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ImageReceiver;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 import org.ansible.ui.ActionBar.Theme;
 
 public class SimpleAvatarView extends View {

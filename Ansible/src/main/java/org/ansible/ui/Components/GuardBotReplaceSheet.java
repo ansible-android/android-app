@@ -16,7 +16,7 @@ import android.widget.TextView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.ProfileActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;

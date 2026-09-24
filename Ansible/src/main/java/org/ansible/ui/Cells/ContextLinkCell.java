@@ -47,7 +47,7 @@ import org.ansible.messenger.SvgHelper;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.WebFile;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimationProperties;
 import org.ansible.ui.Components.ButtonBounce;
 import org.ansible.ui.Components.CheckBox2;

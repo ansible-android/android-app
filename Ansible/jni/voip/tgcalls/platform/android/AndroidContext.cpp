@@ -1,7 +1,7 @@
 #include "AndroidContext.h"
 
 #include "sdk/android/native_api/jni/jvm.h"
-#include "tgnet/FileLog.h"
+#include "asnet/FileLog.h"
 
 namespace tgcalls {
 

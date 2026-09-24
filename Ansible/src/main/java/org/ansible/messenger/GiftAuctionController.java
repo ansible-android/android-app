@@ -9,11 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_payments;
-import org.ansible.tgnet.tl.TL_stars;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_payments;
+import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.Gifts.AuctionBidSheet;
 import org.ansible.ui.Stars.StarsController;
 

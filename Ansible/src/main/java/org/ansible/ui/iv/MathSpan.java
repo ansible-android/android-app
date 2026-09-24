@@ -11,7 +11,7 @@ import org.ansible.messenger.FileLog;
 /**
  * Inline LaTeX span for the rich editor. It renders the equation as a baseline-aligned bitmap (the same way
  * {@code TL_iv.textMath} is drawn in messages) and carries the original {@code source} so the run can be
- * serialized back into a {@link org.ansible.tgnet.tl.TL_iv.textMath} node when the message is sent.
+ * serialized back into a {@link org.ansible.asnet.tl.TL_iv.textMath} node when the message is sent.
  */
 public class MathSpan extends ReplacementSpan {
 

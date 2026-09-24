@@ -37,8 +37,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONObject;
 import org.ansible.messenger.voip.VideoCapturerDevice;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.Components.ForegroundDetector;
 import org.ansible.ui.Components.ItemOptions;

@@ -18,7 +18,7 @@ import android.widget.TextView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ContactsController;
 import org.ansible.messenger.LocaleController;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;

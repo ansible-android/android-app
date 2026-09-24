@@ -1,7 +1,7 @@
 package org.ansible.messenger.voip;
 
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_phone;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_phone;
 
 import java.util.ArrayList;
 

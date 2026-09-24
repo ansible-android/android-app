@@ -49,10 +49,10 @@ import org.ansible.messenger.FileLog;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 import org.ansible.ui.iv.Latex;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_iv;
 
 import java.io.File;
 import java.io.FileInputStream;

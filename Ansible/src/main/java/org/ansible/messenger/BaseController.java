@@ -1,6 +1,6 @@
 package org.ansible.messenger;
 
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 import org.ansible.ui.Components.Paint.PersistColorPalette;
 
 public class BaseController {

@@ -19,7 +19,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.ChatMessageCell;
 import org.ansible.ui.Components.Forum.ForumBubbleDrawable;

@@ -40,8 +40,8 @@ import androidx.core.app.NotificationCompat;
 import com.google.android.exoplayer2.C;
 
 import org.ansible.messenger.audioinfo.AudioInfo;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AudioPlayerAlert;
 import org.ansible.ui.Components.AvatarDrawable;

@@ -9,9 +9,9 @@ import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_phone;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_phone;
 import org.ansible.ui.Components.voip.VoIPHelper;
 
 import java.io.File;

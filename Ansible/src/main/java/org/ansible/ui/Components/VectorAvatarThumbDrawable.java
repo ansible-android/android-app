@@ -20,7 +20,7 @@ import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.SvgHelper;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 import java.util.HashSet;

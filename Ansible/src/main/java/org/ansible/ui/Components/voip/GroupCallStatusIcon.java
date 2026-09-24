@@ -9,7 +9,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.voip.VoIPService;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.RLottieDrawable;
 import org.ansible.ui.Components.RLottieImageView;
 

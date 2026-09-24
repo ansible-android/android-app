@@ -1,7 +1,7 @@
 package org.ansible.ui.iv;
 
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.tl.TL_iv;
 
 import java.util.ArrayList;
 import java.util.Collections;

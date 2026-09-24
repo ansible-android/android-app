@@ -28,9 +28,9 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.pm.ShortcutManagerCompat;
 
 import org.json.JSONObject;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.Components.SwipeGestureSettingsView;

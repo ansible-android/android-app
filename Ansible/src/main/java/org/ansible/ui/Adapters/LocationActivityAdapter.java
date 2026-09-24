@@ -22,7 +22,7 @@ import org.ansible.messenger.LocationController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.HeaderCell;
 import org.ansible.ui.Cells.LocationCell;

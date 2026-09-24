@@ -41,7 +41,7 @@ import org.ansible.messenger.TranslateController;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.browser.Browser;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBarMenuSubItem;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
 import org.ansible.ui.ActionBar.BaseFragment;

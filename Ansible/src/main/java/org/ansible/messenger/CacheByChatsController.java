@@ -3,7 +3,7 @@ package org.ansible.messenger;
 import android.text.TextUtils;
 import android.util.LongSparseArray;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.io.File;
 import java.nio.ByteBuffer;

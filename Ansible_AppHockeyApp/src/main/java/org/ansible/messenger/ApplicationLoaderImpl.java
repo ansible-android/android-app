@@ -19,8 +19,8 @@ import com.microsoft.appcenter.crashes.Crashes;
 import com.microsoft.appcenter.distribute.Distribute;
 
 import org.ansible.messenger.regular.BuildConfig;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AlertsCreator;
 import org.ansible.ui.Components.UpdateAppAlertDialog;
 import org.ansible.ui.Components.UpdateLayout;

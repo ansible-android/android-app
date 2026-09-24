@@ -52,7 +52,7 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.EmojiThemes;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.ActionBar.theme.ThemeKey;

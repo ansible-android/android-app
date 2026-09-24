@@ -12,10 +12,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
-import org.ansible.tgnet.tl.TL_bots;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
+import org.ansible.asnet.tl.TL_bots;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 

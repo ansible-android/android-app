@@ -4,13 +4,13 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLObject;
 
 import org.ansible.messenger.MediaDataController;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_ephemeral;
-import org.ansible.tgnet.tl.TL_stars;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_ephemeral;
+import org.ansible.asnet.tl.TL_stars;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

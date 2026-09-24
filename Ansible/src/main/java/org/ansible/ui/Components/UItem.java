@@ -9,9 +9,9 @@ import android.view.View;
 
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stats;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stats;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Business.BusinessLinksActivity;

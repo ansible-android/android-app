@@ -22,7 +22,7 @@ import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.web.WebInstantView;
 
 import java.util.Locale;

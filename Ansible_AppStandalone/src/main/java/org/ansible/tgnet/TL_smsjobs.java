@@ -1,4 +1,4 @@
-package org.ansible.tgnet;
+package org.ansible.asnet;
 
 public class TL_smsjobs {
 

@@ -29,7 +29,7 @@ import org.ansible.messenger.HashtagSearchController;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;

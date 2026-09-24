@@ -35,7 +35,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.SendMessagesHelper;
 import org.ansible.messenger.WebFile;
 import org.ansible.messenger.utils.DrawableUtils;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.AvatarsListDrawable;

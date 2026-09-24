@@ -2,7 +2,7 @@ package org.ansible.ui.Components.poll;
 
 import android.text.TextUtils;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.util.ArrayList;
 

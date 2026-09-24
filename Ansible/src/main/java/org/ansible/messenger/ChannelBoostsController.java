@@ -2,9 +2,9 @@ package org.ansible.messenger;
 
 import com.google.android.exoplayer2.util.Consumer;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;

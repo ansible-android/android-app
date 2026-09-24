@@ -2,8 +2,8 @@ package org.ansible.messenger;
 
 import androidx.annotation.Nullable;
 
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 
 public class MessageSuggestionParams {

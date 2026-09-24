@@ -40,7 +40,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.browser.Browser;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;

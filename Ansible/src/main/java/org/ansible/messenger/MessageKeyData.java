@@ -8,7 +8,7 @@
 
 package org.ansible.messenger;
 
-import org.ansible.tgnet.SerializedData;
+import org.ansible.asnet.SerializedData;
 
 public class MessageKeyData {
 

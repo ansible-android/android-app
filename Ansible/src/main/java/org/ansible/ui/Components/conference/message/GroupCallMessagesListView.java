@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.voip.GroupCallMessage;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.Reactions.ReactionsLayoutInBubble;
 

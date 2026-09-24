@@ -11,10 +11,10 @@ package org.ansible.messenger;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.LaunchActivity;
 
 import java.io.File;

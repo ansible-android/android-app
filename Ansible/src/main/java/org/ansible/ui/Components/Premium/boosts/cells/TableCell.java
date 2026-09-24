@@ -1,6 +1,6 @@
 package org.ansible.ui.Components.Premium.boosts.cells;
 
-import static org.ansible.tgnet.tl.TL_stories.Boost.NO_USER_ID;
+import static org.ansible.asnet.tl.TL_stories.Boost.NO_USER_ID;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -35,8 +35,8 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;

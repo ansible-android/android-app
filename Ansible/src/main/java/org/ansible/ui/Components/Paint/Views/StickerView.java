@@ -11,7 +11,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimatedFileDrawable;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.CubicBezierInterpolator;

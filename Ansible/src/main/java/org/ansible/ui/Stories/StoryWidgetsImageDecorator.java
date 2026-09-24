@@ -10,7 +10,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.Components.Paint.Views.LocationMarker;
 import org.ansible.ui.Components.Reactions.ReactionImageHolder;
 import org.ansible.ui.Components.Reactions.ReactionsLayoutInBubble;

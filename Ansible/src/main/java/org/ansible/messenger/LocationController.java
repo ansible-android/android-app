@@ -27,11 +27,11 @@ import androidx.collection.LongSparseArray;
 
 import org.ansible.SQLite.SQLiteCursor;
 import org.ansible.SQLite.SQLitePreparedStatement;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.Components.PermissionRequest;
 
 import java.util.ArrayList;

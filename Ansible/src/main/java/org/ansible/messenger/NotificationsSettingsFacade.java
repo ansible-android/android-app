@@ -6,8 +6,8 @@ import static org.ansible.messenger.NotificationsController.TYPE_REACTIONS_STORI
 
 import android.content.SharedPreferences;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.NotificationsSoundActivity;
 
 public class NotificationsSettingsFacade {

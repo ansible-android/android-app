@@ -164,14 +164,14 @@ abstract class GenerateSchemeTask : DefaultTask() {
         constructors: List<TlObjectWithLayer>,
         encrypted: List<TlObjectWithLayer>
     ) {
-        val packageName = "org.ansible.tgnet.model.generated"
+        val packageName = "org.ansible.asnet.model.generated"
         val x = constructors.groupBy { it.tl.key.name.type }
             .filter { it.value.any { c -> c.layerLast == LAYER } }.keys
 
         val sealedClassName = "TlGen_" + type.replace('.', '_')
         val sealedClassBuilder = TypeSpec.classBuilder(sealedClassName)
             .addModifiers(KModifier.SEALED)
-            .addSuperinterface(ClassName("org.ansible.tgnet.model", "TlGen_Object"))
+            .addSuperinterface(ClassName("org.ansible.asnet.model", "TlGen_Object"))
 
         for (constructor in constructors) {
             var needSuper = true
@@ -192,7 +192,7 @@ abstract class GenerateSchemeTask : DefaultTask() {
         }
 
         FileSpec.builder(packageName, sealedClassName)
-            .addImport("org.ansible.tgnet.model", "TlGen_Object", "TlGen_Vector")
+            .addImport("org.ansible.asnet.model", "TlGen_Object", "TlGen_Vector")
             .addType(sealedClassBuilder.build())
             .build()
             .writeTo(outputDir)
@@ -204,7 +204,7 @@ abstract class GenerateSchemeTask : DefaultTask() {
         linkedTypes: Set<Pair<String, SchemeTlClass>>,
         comments: List<Map<String, List<List<String>>>>
     ) {
-        val packageName = "org.ansible.tgnet.test.generated"
+        val packageName = "org.ansible.asnet.test.generated"
 
         val runWithAnnotation = AnnotationSpec.builder(
             ClassName("org.junit.runner", "RunWith")
@@ -214,11 +214,11 @@ abstract class GenerateSchemeTask : DefaultTask() {
         val testAllBuilder = TypeSpec.classBuilder("Test_All")
             .addAnnotation(runWithAnnotation)
         val testActualBuilder = TypeSpec.classBuilder("Test_Actual")
-            .superclass(ClassName("org.ansible.tgnet.test", "BaseSchemeTest"))
+            .superclass(ClassName("org.ansible.asnet.test", "BaseSchemeTest"))
         val testLegacyBuilder = TypeSpec.classBuilder("Test_Legacy")
-            .superclass(ClassName("org.ansible.tgnet.test", "BaseSchemeTest"))
+            .superclass(ClassName("org.ansible.asnet.test", "BaseSchemeTest"))
         val testEncryptedBuilder = TypeSpec.classBuilder("Test_Encrypred")
-            .superclass(ClassName("org.ansible.tgnet.test", "BaseSchemeTest"))
+            .superclass(ClassName("org.ansible.asnet.test", "BaseSchemeTest"))
 
         val lt = linkedTypes.groupBy { it.first }.mapValues { it.value.map { it.second } }
 
@@ -239,7 +239,7 @@ abstract class GenerateSchemeTask : DefaultTask() {
 
             val lines = lt[constructor.tl.key.name.type]?.map { clz ->
                 val clz2 = clz.packageName + "." + clz.fullName
-                "test_TLdeserialize(org.ansible.tgnet.model.generated.TlGen_${type}.${constructor.codegenDataClassName}::class, " +
+                "test_TLdeserialize(org.ansible.asnet.model.generated.TlGen_${type}.${constructor.codegenDataClassName}::class, " +
                         "${clz2}::TLdeserialize, ${if (isLegacy && !isEncrypted) constructor.layerLast.toString() else "null"})"
             } ?: listOf("assumeTrue(\"Test skipped, link error\", false)")
 
@@ -266,7 +266,7 @@ abstract class GenerateSchemeTask : DefaultTask() {
         }
 
         FileSpec.builder(packageName, "Test_All")
-            .addImport("org.ansible.tgnet.model", "TlGen_Object", "TlGen_Vector")
+            .addImport("org.ansible.asnet.model", "TlGen_Object", "TlGen_Vector")
             .addImport("org.junit.Assume", "assumeTrue")
             .addType(
                 testAllBuilder

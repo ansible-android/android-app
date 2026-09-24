@@ -33,7 +33,7 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.SecureDocument;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 
 public class BackupImageView extends View {
 

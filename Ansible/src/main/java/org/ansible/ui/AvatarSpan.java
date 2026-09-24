@@ -16,8 +16,8 @@ import androidx.annotation.Nullable;
 
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MessagesController;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 

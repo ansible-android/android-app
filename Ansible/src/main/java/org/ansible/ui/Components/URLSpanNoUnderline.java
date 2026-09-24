@@ -14,7 +14,7 @@ import android.text.style.URLSpan;
 import android.view.View;
 
 import org.ansible.messenger.browser.Browser;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 
 public class URLSpanNoUnderline extends URLSpan {
 

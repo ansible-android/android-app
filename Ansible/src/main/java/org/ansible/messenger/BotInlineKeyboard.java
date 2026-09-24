@@ -4,8 +4,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_keyboard;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_keyboard;
 
 import java.util.ArrayList;
 

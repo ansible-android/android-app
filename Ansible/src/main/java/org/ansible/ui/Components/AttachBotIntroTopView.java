@@ -17,7 +17,7 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 public class AttachBotIntroTopView extends View {

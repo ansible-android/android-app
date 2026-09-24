@@ -14,8 +14,8 @@ import com.google.android.exoplayer2.util.Log;
 
 import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.FileLog;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLObject;
 
 import java.nio.ByteBuffer;
 

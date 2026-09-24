@@ -20,7 +20,7 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedEmojiSpan;

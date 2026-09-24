@@ -5,7 +5,7 @@ import android.util.Base64;
 import android.util.SparseArray;
 
 import org.ansible.messenger.utils.tlutils.TlUtils;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.poll.attached.PollAttachedMediaLink;
 import org.ansible.ui.Components.poll.attached.PollAttachedMediaLocation;
 import org.ansible.ui.Components.poll.attached.PollAttachedMediaSticker;

@@ -1,7 +1,7 @@
-package org.ansible.tgnet.model
+package org.ansible.asnet.model
 
 import org.ansible.messenger.Utilities
-import org.ansible.tgnet.OutputSerializedData
+import org.ansible.asnet.OutputSerializedData
 
 
 public object TlGen_Vector {

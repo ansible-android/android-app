@@ -22,7 +22,7 @@ import org.ansible.messenger.GiftAuctionController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
-import org.ansible.tgnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_stars;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedEmojiSpan;

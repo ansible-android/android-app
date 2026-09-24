@@ -29,7 +29,7 @@ import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.UserObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.voip.GroupCallMiniTextureView;
 import org.ansible.ui.Components.voip.GroupCallRenderersContainer;

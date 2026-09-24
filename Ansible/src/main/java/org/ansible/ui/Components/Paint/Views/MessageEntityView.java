@@ -36,7 +36,7 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.MessageDrawable;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.ChatActionCell;

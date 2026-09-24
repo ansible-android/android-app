@@ -14,7 +14,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ServiceCompat;
 
 import org.ansible.messenger.web.R;
-import org.ansible.tgnet.TL_smsjobs;
+import org.ansible.asnet.TL_smsjobs;
 import org.ansible.ui.LaunchActivity;
 
 public class SMSJobsNotification extends Service {

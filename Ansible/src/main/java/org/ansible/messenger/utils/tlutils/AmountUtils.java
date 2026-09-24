@@ -9,7 +9,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_stars;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

@@ -51,7 +51,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.SvgHelper;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
 import org.ansible.ui.ActionBar.BaseFragment;

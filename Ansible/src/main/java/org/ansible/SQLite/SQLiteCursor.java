@@ -10,9 +10,9 @@ package org.ansible.SQLite;
 
 import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.FileLog;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.Vector;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.Vector;
 
 public class SQLiteCursor {
 

@@ -5,7 +5,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 
 import org.ansible.messenger.CodeHighlighting;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_iv;
 import org.ansible.ui.Components.QuoteSpan;
 import org.ansible.ui.Components.TextStyleSpan;
 

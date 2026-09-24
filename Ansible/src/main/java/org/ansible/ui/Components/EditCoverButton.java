@@ -24,7 +24,7 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
 
 @SuppressLint("ViewConstructor")

@@ -8,7 +8,7 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.SvgHelper;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 public class StickerImageView extends BackupImageView implements NotificationCenter.NotificationCenterDelegate {

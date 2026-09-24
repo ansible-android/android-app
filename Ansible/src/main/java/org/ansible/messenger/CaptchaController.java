@@ -7,7 +7,7 @@ import com.google.android.recaptcha.Recaptcha;
 import com.google.android.recaptcha.RecaptchaAction;
 import com.google.android.recaptcha.RecaptchaTasksClient;
 
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 import org.ansible.ui.LaunchActivity;
 
 import java.util.ArrayList;

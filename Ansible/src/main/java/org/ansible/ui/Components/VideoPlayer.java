@@ -93,7 +93,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.messenger.chromecast.ChromecastMedia;
 import org.ansible.messenger.chromecast.ChromecastMediaVariations;
 import org.ansible.messenger.secretmedia.ExtendedDefaultDataSourceFactory;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Stories.recorder.StoryEntry;
 
 import java.io.File;

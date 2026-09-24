@@ -16,7 +16,7 @@ import android.text.TextUtils;
 
 import androidx.core.app.RemoteInput;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.util.ArrayList;
 

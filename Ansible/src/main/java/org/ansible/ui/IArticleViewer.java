@@ -7,8 +7,8 @@ import androidx.collection.LongSparseArray;
 
 import org.ansible.messenger.browser.Browser;
 import org.ansible.messenger.video.VideoPlayerHolderBase;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_iv;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;

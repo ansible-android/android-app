@@ -15,7 +15,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;

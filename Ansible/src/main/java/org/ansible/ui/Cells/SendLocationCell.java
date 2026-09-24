@@ -29,7 +29,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.LocationController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;

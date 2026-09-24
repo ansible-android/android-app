@@ -1,7 +1,7 @@
 package org.ansible.ui;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
-import static org.ansible.tgnet.TLRPC.TL_payments_checkedGiftCode.NO_USER_ID;
+import static org.ansible.asnet.TLRPC.TL_payments_checkedGiftCode.NO_USER_ID;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -32,9 +32,9 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.FixedHeightEmptyCell;

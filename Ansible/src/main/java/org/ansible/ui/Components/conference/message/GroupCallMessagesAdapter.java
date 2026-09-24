@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.voip.GroupCallMessage;
 import org.ansible.messenger.voip.GroupCallMessagesController;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.util.ArrayList;
 import java.util.List;

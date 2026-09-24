@@ -8,7 +8,7 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.VideoEditedInfo;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package org.ansible.tgnet.test
+package org.ansible.asnet.test
 
 import org.junit.Test
 import org.ansible.SQLite.SQLiteCursor

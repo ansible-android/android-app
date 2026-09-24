@@ -37,7 +37,7 @@ import org.ansible.messenger.SRPHelper;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.Text;
 import org.ansible.ui.LaunchActivity;
 

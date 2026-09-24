@@ -27,9 +27,9 @@ import com.android.billingclient.api.QueryProductDetailsParams;
 import com.android.billingclient.api.QueryPurchasesParams;
 
 import org.ansible.messenger.utils.BillingUtilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.LaunchActivity;

@@ -58,7 +58,7 @@ import org.ansible.messenger.SecretChatHelper;
 import org.ansible.messenger.SendMessagesHelper;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.utils.LeakDetector;
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 import org.ansible.ui.ArticleViewer;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.Components.BulletinFactory;

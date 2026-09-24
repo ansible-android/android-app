@@ -12,8 +12,8 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.SendMessagesHelper;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
 
 import java.io.File;
 import java.io.FileOutputStream;

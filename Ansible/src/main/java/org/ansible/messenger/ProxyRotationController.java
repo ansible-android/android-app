@@ -3,7 +3,7 @@ package org.ansible.messenger;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
 
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;

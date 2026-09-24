@@ -32,7 +32,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.wallpaper.WallpaperGiftPatternPosition;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.blur3.utils.BitmapChangeTracker;
 
 import java.lang.ref.WeakReference;

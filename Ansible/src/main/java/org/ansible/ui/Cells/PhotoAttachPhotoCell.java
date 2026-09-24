@@ -55,7 +55,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MediaController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.ChatAttachAlertPhotoLayout;

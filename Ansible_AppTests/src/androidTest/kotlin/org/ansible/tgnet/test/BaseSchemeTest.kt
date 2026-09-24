@@ -1,4 +1,4 @@
-package org.ansible.tgnet.test
+package org.ansible.asnet.test
 
 import com.appmattus.kotlinfixture.Fixture
 import com.appmattus.kotlinfixture.config.Configuration
@@ -11,11 +11,11 @@ import com.appmattus.kotlinfixture.decorator.nullability.nullabilityStrategy
 import com.appmattus.kotlinfixture.decorator.recursion.RecursionStrategy
 import com.appmattus.kotlinfixture.decorator.recursion.recursionStrategy
 import org.junit.BeforeClass
-import org.ansible.tgnet.ConnectionsManager
-import org.ansible.tgnet.InputSerializedData
-import org.ansible.tgnet.NativeByteBuffer
-import org.ansible.tgnet.TLObject
-import org.ansible.tgnet.model.TlGen_Object
+import org.ansible.asnet.ConnectionsManager
+import org.ansible.asnet.InputSerializedData
+import org.ansible.asnet.NativeByteBuffer
+import org.ansible.asnet.TLObject
+import org.ansible.asnet.model.TlGen_Object
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties

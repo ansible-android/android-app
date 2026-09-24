@@ -35,7 +35,7 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.SvgHelper;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;

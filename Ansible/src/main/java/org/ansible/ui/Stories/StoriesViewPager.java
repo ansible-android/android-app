@@ -18,7 +18,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 import java.util.ArrayList;

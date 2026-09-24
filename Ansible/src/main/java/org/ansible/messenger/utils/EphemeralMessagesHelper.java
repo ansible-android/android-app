@@ -11,12 +11,12 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_bots;
-import org.ansible.tgnet.tl.TL_ephemeral;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_bots;
+import org.ansible.asnet.tl.TL_ephemeral;
+import org.ansible.asnet.tl.TL_update;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

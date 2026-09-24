@@ -21,7 +21,7 @@ import androidx.customview.widget.ExploreByTouchHelper;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.NotificationCenter;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_iv;
 import org.ansible.ui.ArticleViewer;
 import org.ansible.ui.Cells.TextSelectionHelper;
 

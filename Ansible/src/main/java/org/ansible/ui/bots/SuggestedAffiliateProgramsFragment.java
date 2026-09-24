@@ -9,7 +9,7 @@ import androidx.core.graphics.ColorUtils;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.tl.TL_payments;
+import org.ansible.asnet.tl.TL_payments;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;

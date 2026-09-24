@@ -16,7 +16,7 @@ import android.widget.TextView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.ImageLocation;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 public class WebPagePreviewView extends FrameLayout {

@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "../../logging.h"
 #include "JNIUtilities.h"
-#include "tgnet/FileLog.h"
+#include "asnet/FileLog.h"
 
 extern JavaVM* sharedJVM;
 

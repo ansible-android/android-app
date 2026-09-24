@@ -20,10 +20,10 @@ import org.ansible.messenger.MessagesStorage;
 import org.ansible.messenger.Timer;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.support.LongSparseIntArray;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 
 import java.util.ArrayList;
 import java.util.Collections;

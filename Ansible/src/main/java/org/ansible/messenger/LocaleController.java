@@ -34,12 +34,12 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 
 import org.ansible.messenger.time.FastDateFormat;
-import org.ansible.tgnet.Vector;
+import org.ansible.asnet.Vector;
 import org.ansible.ui.Components.TypefaceSpan;
 import org.ansible.ui.Stars.StarsController;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.RestrictedLanguagesSelectActivity;
 import org.xmlpull.v1.XmlPullParser;
 

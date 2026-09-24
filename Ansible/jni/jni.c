@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-int registerNativeTgNetFunctions(JavaVM *vm, JNIEnv *env);
+int registerNativeAsNetFunctions(JavaVM *vm, JNIEnv *env);
 int videoOnJNILoad(JavaVM *vm, JNIEnv *env);
 int tgvoipOnJNILoad(JavaVM *vm, JNIEnv *env);
 
@@ -27,7 +27,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
         return -1;
     }
 
-    if (registerNativeTgNetFunctions(vm, env) != JNI_TRUE) {
+    if (registerNativeAsNetFunctions(vm, env) != JNI_TRUE) {
         return -1;
     }
 

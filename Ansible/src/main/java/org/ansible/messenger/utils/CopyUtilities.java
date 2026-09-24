@@ -17,7 +17,7 @@ import android.text.style.UnderlineSpan;
 import org.ansible.messenger.CodeHighlighting;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.MediaDataController;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Components.QuoteSpan;
 import org.ansible.ui.Components.URLSpanReplacement;

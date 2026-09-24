@@ -52,7 +52,7 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.FloatingToolbar;

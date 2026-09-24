@@ -21,7 +21,7 @@ import org.ansible.messenger.BillingController;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_stars;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;

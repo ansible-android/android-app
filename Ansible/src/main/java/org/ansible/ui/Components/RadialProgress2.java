@@ -21,7 +21,7 @@ import androidx.annotation.Keep;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.MessageDrawable;
 import org.ansible.ui.ActionBar.Theme;
 

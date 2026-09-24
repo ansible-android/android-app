@@ -12,10 +12,10 @@ import org.ansible.messenger.FileLog;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
 
 import java.io.File;
 import java.util.ArrayList;

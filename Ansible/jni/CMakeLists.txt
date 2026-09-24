@@ -55,36 +55,36 @@ set_target_properties(tde2e PROPERTIES IMPORTED_LOCATION ${CMAKE_HOME_DIRECTORY}
 add_library(tdutils STATIC IMPORTED)
 set_target_properties(tdutils PROPERTIES IMPORTED_LOCATION ${CMAKE_HOME_DIRECTORY}/tde2e/${ANDROID_ABI}/libtdutils.a)
 
-#tgnet
-add_library(tgnet STATIC
-        tgnet/ApiScheme.cpp
-        tgnet/BuffersStorage.cpp
-        tgnet/ByteArray.cpp
-        tgnet/ByteStream.cpp
-        tgnet/Connection.cpp
-        tgnet/ConnectionSession.cpp
-        tgnet/ConnectionsManager.cpp
-        tgnet/ConnectionSocket.cpp
-        tgnet/Datacenter.cpp
-        tgnet/EventObject.cpp
-        tgnet/FileLog.cpp
-        tgnet/MTProtoScheme.cpp
-        tgnet/NativeByteBuffer.cpp
-        tgnet/Request.cpp
-        tgnet/Timer.cpp
-        tgnet/TLObject.cpp
-        tgnet/ProxyCheckInfo.cpp
-        tgnet/Handshake.cpp
-        tgnet/Config.cpp)
-target_compile_options(tgnet PUBLIC
+#asnet
+add_library(asnet STATIC
+        asnet/ApiScheme.cpp
+        asnet/BuffersStorage.cpp
+        asnet/ByteArray.cpp
+        asnet/ByteStream.cpp
+        asnet/Connection.cpp
+        asnet/ConnectionSession.cpp
+        asnet/ConnectionsManager.cpp
+        asnet/ConnectionSocket.cpp
+        asnet/Datacenter.cpp
+        asnet/EventObject.cpp
+        asnet/FileLog.cpp
+        asnet/MTProtoScheme.cpp
+        asnet/NativeByteBuffer.cpp
+        asnet/Request.cpp
+        asnet/Timer.cpp
+        asnet/TLObject.cpp
+        asnet/ProxyCheckInfo.cpp
+        asnet/Handshake.cpp
+        asnet/Config.cpp)
+target_compile_options(asnet PUBLIC
         -Wall -frtti -finline-functions -ffast-math -Oz)
-set_target_properties(tgnet PROPERTIES
+set_target_properties(asnet PROPERTIES
         ANDROID_ARM_MODE arm)
-target_compile_definitions(tgnet PUBLIC
+target_compile_definitions(asnet PUBLIC
         HAVE_PTHREAD)
-target_include_directories(tgnet PUBLIC
+target_include_directories(asnet PUBLIC
         boringssl/include/)
-target_link_libraries(tgnet
+target_link_libraries(asnet
         crypto)
 
 # tlottie (prebuilt Rust static library)
@@ -149,7 +149,7 @@ add_library(${NATIVE_LIB} SHARED
         utilities.cpp
         gifvideo.cpp
         lottie.cpp
-        TgNetWrapper.cpp
+        AsNetWrapper.cpp
         exoplayer/ffmpeg_jni.cc
         fast-edge.cpp
         genann.c
@@ -200,7 +200,7 @@ target_link_libraries(${NATIVE_LIB}
         tgvoip
         tgcalls
         tgcalls_tp
-        tgnet
+        asnet
         tlottie
         sqlite
         swscale

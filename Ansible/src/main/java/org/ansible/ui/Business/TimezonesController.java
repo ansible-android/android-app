@@ -9,10 +9,10 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 
 import java.nio.ByteBuffer;
 import java.time.Instant;

@@ -6,9 +6,9 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ChatActivity;
 
 import java.util.ArrayList;

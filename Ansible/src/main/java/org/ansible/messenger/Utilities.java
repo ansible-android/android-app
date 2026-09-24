@@ -17,7 +17,7 @@ import android.net.Uri;
 
 import com.carrotsearch.randomizedtesting.Xoroshiro128PlusRandom;
 
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 
 import java.io.File;
 import java.io.FileInputStream;

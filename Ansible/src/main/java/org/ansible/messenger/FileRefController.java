@@ -3,15 +3,15 @@ package org.ansible.messenger;
 import android.os.SystemClock;
 import android.util.Pair;
 
-import org.ansible.tgnet.RequestDelegate;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.Vector;
-import org.ansible.tgnet.tl.TL_account;
-import org.ansible.tgnet.tl.TL_bots;
-import org.ansible.tgnet.tl.TL_ephemeral;
-import org.ansible.tgnet.tl.TL_iv;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.RequestDelegate;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.Vector;
+import org.ansible.asnet.tl.TL_account;
+import org.ansible.asnet.tl.TL_bots;
+import org.ansible.asnet.tl.TL_ephemeral;
+import org.ansible.asnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Stories.StoriesController;
 

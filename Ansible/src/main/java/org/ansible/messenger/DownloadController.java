@@ -22,10 +22,10 @@ import androidx.collection.LongSparseArray;
 
 import org.ansible.SQLite.SQLiteCursor;
 import org.ansible.SQLite.SQLitePreparedStatement;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.LaunchActivity;
 

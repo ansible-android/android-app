@@ -16,7 +16,7 @@ import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MessageObject;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_iv;
 
 import java.util.ArrayList;
 import java.util.List;

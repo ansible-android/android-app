@@ -34,7 +34,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.TranslateController;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenu;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;

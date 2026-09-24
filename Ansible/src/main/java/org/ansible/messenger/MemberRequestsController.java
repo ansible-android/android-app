@@ -5,9 +5,9 @@ import android.util.LongSparseArray;
 
 import androidx.annotation.Nullable;
 
-import org.ansible.tgnet.RequestDelegate;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.RequestDelegate;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_update;
 
 public class MemberRequestsController extends BaseController {
 

@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.Reactions.ReactionImageHolder;

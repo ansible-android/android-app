@@ -19,7 +19,7 @@ import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.LiteMode;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.voip.VoIPService;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 import java.util.ArrayList;

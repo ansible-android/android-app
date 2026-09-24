@@ -53,7 +53,7 @@ import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.utils.WindowVisibilityManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
 import org.ansible.ui.ActionBar.BaseFragment;

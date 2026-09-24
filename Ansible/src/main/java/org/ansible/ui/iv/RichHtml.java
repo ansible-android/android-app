@@ -8,9 +8,9 @@ import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 
 import org.ansible.messenger.SharedConfig;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_iv;
-import org.ansible.tgnet.tl.TL_keyboard;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_keyboard;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Components.TextStyleSpan;
 import org.ansible.ui.Components.URLSpanReplacement;

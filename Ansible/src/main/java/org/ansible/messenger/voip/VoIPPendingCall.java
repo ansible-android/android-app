@@ -9,8 +9,8 @@ import org.ansible.messenger.AccountInstance;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.voip.VoIPHelper;
 
 public final class VoIPPendingCall {

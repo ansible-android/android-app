@@ -15,7 +15,7 @@ import androidx.core.graphics.ColorUtils;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_stars;
 import org.ansible.ui.ActionBar.Theme;
 
 public class StarRatingView extends View {

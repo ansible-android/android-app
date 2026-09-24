@@ -30,8 +30,8 @@ import org.ansible.messenger.camera.CameraController;
 import org.ansible.messenger.camera.CameraSession;
 import org.ansible.messenger.camera.CameraSessionWrapper;
 import org.ansible.messenger.camera.CameraView;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 
 import java.util.Arrays;

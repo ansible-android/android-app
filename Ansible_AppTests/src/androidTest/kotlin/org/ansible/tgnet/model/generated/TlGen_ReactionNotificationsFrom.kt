@@ -1,9 +1,9 @@
-package org.ansible.tgnet.model.generated
+package org.ansible.asnet.model.generated
 
 import kotlin.UInt
-import org.ansible.tgnet.OutputSerializedData
-import org.ansible.tgnet.model.TlGen_Object
-import org.ansible.tgnet.model.TlGen_Vector
+import org.ansible.asnet.OutputSerializedData
+import org.ansible.asnet.model.TlGen_Object
+import org.ansible.asnet.model.TlGen_Vector
 
 public sealed class TlGen_ReactionNotificationsFrom : TlGen_Object {
   public data object TL_reactionNotificationsFromContacts : TlGen_ReactionNotificationsFrom() {

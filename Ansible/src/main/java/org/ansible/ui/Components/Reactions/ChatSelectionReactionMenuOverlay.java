@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessageObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Cells.ChatMessageCell;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.CubicBezierInterpolator;

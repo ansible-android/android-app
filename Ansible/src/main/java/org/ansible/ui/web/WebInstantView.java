@@ -40,9 +40,9 @@ import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.SvgHelper;
 import org.ansible.messenger.Timer;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_iv;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.LaunchActivity;
 

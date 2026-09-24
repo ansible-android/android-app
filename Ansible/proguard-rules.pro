@@ -15,10 +15,10 @@
 -keep class org.ansible.messenger.video.* { *; }
 -keep class org.ansible.messenger.voip.* { *; }
 -keep class org.ansible.SQLite.** { *; }
--keep class org.ansible.tgnet.ConnectionsManager { *; }
--keep class org.ansible.tgnet.NativeByteBuffer { *; }
--keep class org.ansible.tgnet.RequestTimeDelegate { *; }
--keep class org.ansible.tgnet.RequestDelegate { *; }
+-keep class org.ansible.asnet.ConnectionsManager { *; }
+-keep class org.ansible.asnet.NativeByteBuffer { *; }
+-keep class org.ansible.asnet.RequestTimeDelegate { *; }
+-keep class org.ansible.asnet.RequestDelegate { *; }
 -keep class com.google.android.exoplayer2.ext.** { *; }
 -keep class com.google.android.exoplayer2.extractor.FlacStreamMetadata { *; }
 -keep class com.google.android.exoplayer2.metadata.flac.PictureFrame { *; }

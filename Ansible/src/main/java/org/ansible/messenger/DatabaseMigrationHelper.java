@@ -3,8 +3,8 @@ package org.ansible.messenger;
 import org.ansible.SQLite.SQLiteCursor;
 import org.ansible.SQLite.SQLiteDatabase;
 import org.ansible.SQLite.SQLitePreparedStatement;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLRPC;
 
 import java.io.File;
 import java.io.IOException;

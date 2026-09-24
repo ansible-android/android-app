@@ -11,8 +11,8 @@ import android.view.Gravity;
 import android.view.ViewGroup;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RectOld;
 

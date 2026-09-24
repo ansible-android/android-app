@@ -15,7 +15,7 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Cells.ChatMessageCell;
 import org.ansible.ui.Components.Bulletin;
 

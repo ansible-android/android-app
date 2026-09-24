@@ -13,12 +13,12 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.json.TLJsonBuilder;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.json.TLJsonParser;
-import org.ansible.tgnet.tl.TL_phone;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.json.TLJsonBuilder;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.json.TLJsonParser;
+import org.ansible.asnet.tl.TL_phone;
+import org.ansible.asnet.tl.TL_update;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

@@ -19,7 +19,7 @@ import androidx.annotation.Nullable;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.Emoji;
 import org.ansible.messenger.LocaleController;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.CheckBox2;

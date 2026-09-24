@@ -19,7 +19,7 @@ import org.ansible.messenger.LiteMode;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.TextDetailCell;
 import org.ansible.ui.Components.CubicBezierInterpolator;

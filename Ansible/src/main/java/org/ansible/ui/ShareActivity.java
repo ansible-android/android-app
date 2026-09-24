@@ -26,8 +26,8 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.ShareAlert;
 
 public class ShareActivity extends Activity {

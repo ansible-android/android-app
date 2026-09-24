@@ -37,7 +37,7 @@ import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.CheckBox2;

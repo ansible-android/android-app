@@ -7,8 +7,8 @@ import androidx.annotation.Nullable;
 
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.SvgHelper;
-import org.ansible.tgnet.InputSerializedData;
-import org.ansible.tgnet.OutputSerializedData;
+import org.ansible.asnet.InputSerializedData;
+import org.ansible.asnet.OutputSerializedData;
 import org.xml.sax.Attributes;
 
 public class WallpaperGiftPatternPosition {

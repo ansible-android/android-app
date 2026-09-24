@@ -6,7 +6,7 @@
 #include "JNIUtilities.h"
 #include "../../logging.h"
 #include "../../PrivateDefines.h"
-#include "tgnet/FileLog.h"
+#include "asnet/FileLog.h"
 
 using namespace tgvoip;
 using namespace tgvoip::video;

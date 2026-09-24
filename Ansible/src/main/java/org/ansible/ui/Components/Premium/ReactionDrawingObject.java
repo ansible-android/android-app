@@ -9,7 +9,7 @@ import org.ansible.messenger.DocumentObject;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.SvgHelper;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.Reactions.ReactionsEffectOverlay;
 

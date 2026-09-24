@@ -3,7 +3,7 @@ package org.ansible.messenger;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.util.HashMap;
 import java.util.Locale;

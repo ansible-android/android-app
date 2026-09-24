@@ -27,7 +27,7 @@ import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Stories.recorder.HintView2;

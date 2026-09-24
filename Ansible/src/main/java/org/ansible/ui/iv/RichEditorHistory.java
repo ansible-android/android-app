@@ -2,10 +2,10 @@ package org.ansible.ui.iv;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.FileLog;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_iv;
-import org.ansible.tgnet.tl.TL_keyboard;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_keyboard;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

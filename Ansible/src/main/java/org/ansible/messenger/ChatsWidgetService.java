@@ -23,7 +23,7 @@ import android.widget.RemoteViewsService;
 
 import androidx.collection.LongSparseArray;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.ForegroundColorSpanThemable;

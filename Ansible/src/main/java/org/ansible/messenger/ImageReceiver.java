@@ -35,8 +35,8 @@ import androidx.annotation.Keep;
 
 import com.google.android.exoplayer2.util.Log;
 
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Components.AnimatedFileDrawable;

@@ -1,11 +1,11 @@
 package org.ansible.messenger;
 
-import org.ansible.tgnet.InputSerializedData;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.OutputSerializedData;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_iv;
+import org.ansible.asnet.InputSerializedData;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.OutputSerializedData;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_iv;
 
 public class MessageCustomParamsHelper {
 

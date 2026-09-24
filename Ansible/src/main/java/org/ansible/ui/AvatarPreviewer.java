@@ -45,7 +45,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.utils.ViewOutlineProviderImpl;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
 import org.ansible.ui.ActionBar.ActionBarMenuSubItem;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;

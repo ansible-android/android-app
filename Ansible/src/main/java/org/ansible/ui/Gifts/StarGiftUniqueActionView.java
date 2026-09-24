@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.NotificationCenter;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stars;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stars;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Stars.StarGiftUniqueActionLayout;
 

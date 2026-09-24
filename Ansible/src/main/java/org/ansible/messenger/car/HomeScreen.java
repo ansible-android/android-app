@@ -49,7 +49,7 @@ import org.ansible.messenger.SendMessagesHelper;
 import org.ansible.messenger.AnsibleMediaSession;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -5,10 +5,10 @@ import androidx.collection.LongSparseArray;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
 
 import java.util.ArrayList;
 import java.util.HashMap;

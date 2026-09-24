@@ -1,10 +1,10 @@
 package org.ansible.ui.Stories;
 
-import org.ansible.tgnet.AbstractSerializedData;
-import org.ansible.tgnet.InputSerializedData;
-import org.ansible.tgnet.OutputSerializedData;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.AbstractSerializedData;
+import org.ansible.asnet.InputSerializedData;
+import org.ansible.asnet.OutputSerializedData;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 
 public class MessageMediaStoryFull_old extends TLRPC.TL_messageMediaStory {
 

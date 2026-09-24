@@ -28,8 +28,8 @@ import androidx.collection.LongSparseArray;
 
 import org.ansible.SQLite.SQLiteCursor;
 import org.ansible.messenger.audioinfo.AudioInfo;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.LaunchActivity;
 
 import java.io.File;

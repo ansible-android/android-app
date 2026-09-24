@@ -1,7 +1,7 @@
 package org.ansible.messenger.voip;
 
 import org.ansible.messenger.MediaDataController;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.Reactions.ReactionsLayoutInBubble;
 
 import java.util.ArrayList;

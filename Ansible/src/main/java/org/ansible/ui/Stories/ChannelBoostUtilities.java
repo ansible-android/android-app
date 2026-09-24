@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.MessagesController;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 public class ChannelBoostUtilities {
     public static String createLink(int currentAccount, long dialogId) {

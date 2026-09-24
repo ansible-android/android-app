@@ -3,7 +3,7 @@ package org.ansible.messenger;
 import android.graphics.Paint;
 import android.graphics.Path;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 import java.util.ArrayList;

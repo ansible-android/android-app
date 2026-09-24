@@ -20,7 +20,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;

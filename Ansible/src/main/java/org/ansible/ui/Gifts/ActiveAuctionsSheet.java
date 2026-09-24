@@ -23,7 +23,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.GiftAuctionController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.utils.CountdownTimer;
-import org.ansible.tgnet.ConnectionsManager;
+import org.ansible.asnet.ConnectionsManager;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;

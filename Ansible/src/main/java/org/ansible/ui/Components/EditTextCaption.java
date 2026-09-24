@@ -54,7 +54,7 @@ import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.utils.CopyUtilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.AlertDialogDecor;
 import org.ansible.ui.ActionBar.BaseFragment;

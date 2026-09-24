@@ -2,9 +2,9 @@ package org.ansible.messenger;
 
 import com.google.android.exoplayer2.util.Util;
 
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.tl.TL_aicompose;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.tl.TL_aicompose;
 
 import java.util.ArrayList;
 import java.util.Base64;

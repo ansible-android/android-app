@@ -22,12 +22,12 @@ import com.google.android.exoplayer2.util.Log;
 import org.ansible.messenger.utils.tlutils.TlUtils;
 import org.ansible.messenger.voip.Instance;
 import org.ansible.messenger.voip.VoIPService;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_account;
-import org.ansible.tgnet.tl.TL_communities;
-import org.ansible.tgnet.tl.TL_phone;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_account;
+import org.ansible.asnet.tl.TL_communities;
+import org.ansible.asnet.tl.TL_phone;
+import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.GroupCallActivity;
 
 import java.lang.annotation.Retention;

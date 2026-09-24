@@ -146,13 +146,13 @@ import org.ansible.messenger.utils.DrawableUtils;
 import org.ansible.messenger.utils.tlutils.TLKeyboardHelper;
 import org.ansible.messenger.utils.tlutils.TlUtils;
 import org.ansible.messenger.video.OldVideoPlayerRewinder;
-import org.ansible.tgnet.ConnectionsManager;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_keyboard;
-import org.ansible.tgnet.tl.TL_iv;
-import org.ansible.tgnet.tl.TL_stars;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.ConnectionsManager;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_keyboard;
+import org.ansible.asnet.tl.TL_iv;
+import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.MessageDrawable;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.AvatarSpan;
@@ -733,7 +733,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         default void didPressInstantButton(ChatMessageCell cell, int type) {
         }
 
-        default boolean openArticlePhoto(ChatMessageCell cell, org.ansible.tgnet.tl.TL_iv.PageBlock block) {
+        default boolean openArticlePhoto(ChatMessageCell cell, org.ansible.asnet.tl.TL_iv.PageBlock block) {
             return false;
         }
 

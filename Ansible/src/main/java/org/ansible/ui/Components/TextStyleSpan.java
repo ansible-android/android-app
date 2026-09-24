@@ -16,7 +16,7 @@ import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 public class TextStyleSpan extends MetricAffectingSpan {

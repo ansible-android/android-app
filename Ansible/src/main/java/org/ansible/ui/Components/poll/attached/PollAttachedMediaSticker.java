@@ -10,7 +10,7 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MediaController;
 import org.ansible.messenger.MessageObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.EmojiView;
 import org.ansible.ui.Components.poll.PollAttachedMedia;

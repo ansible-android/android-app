@@ -12,7 +12,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.PhotoCropView;
 

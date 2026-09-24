@@ -24,7 +24,7 @@ import org.ansible.messenger.ImageLoader;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.MediaController;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.BackgroundGradientDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.MediaActionDrawable;

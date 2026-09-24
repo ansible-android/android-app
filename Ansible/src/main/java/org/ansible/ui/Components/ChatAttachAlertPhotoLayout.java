@@ -95,7 +95,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.messenger.VideoEditedInfo;
 import org.ansible.messenger.camera.CameraController;
 import org.ansible.messenger.camera.CameraView;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenu;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;

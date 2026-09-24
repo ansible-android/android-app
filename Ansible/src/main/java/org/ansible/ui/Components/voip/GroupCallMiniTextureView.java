@@ -55,7 +55,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.messenger.voip.Instance;
 import org.ansible.messenger.voip.VideoCapturerDevice;
 import org.ansible.messenger.voip.VoIPService;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;

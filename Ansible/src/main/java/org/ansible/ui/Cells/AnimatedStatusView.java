@@ -15,7 +15,7 @@ import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.Reactions.AnimatedEmojiEffect;
 import org.ansible.ui.Components.Reactions.ReactionsLayoutInBubble;

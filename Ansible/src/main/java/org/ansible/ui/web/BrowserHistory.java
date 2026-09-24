@@ -6,11 +6,11 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.AbstractSerializedData;
-import org.ansible.tgnet.InputSerializedData;
-import org.ansible.tgnet.OutputSerializedData;
-import org.ansible.tgnet.SerializedData;
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.AbstractSerializedData;
+import org.ansible.asnet.InputSerializedData;
+import org.ansible.asnet.OutputSerializedData;
+import org.ansible.asnet.SerializedData;
+import org.ansible.asnet.TLObject;
 
 import java.io.File;
 import java.io.FileOutputStream;

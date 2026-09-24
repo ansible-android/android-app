@@ -1,1 +1,1 @@
--keep class org.ansible.tgnet.** { *; }
+-keep class org.ansible.asnet.** { *; }

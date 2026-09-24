@@ -20,10 +20,10 @@ import org.ansible.messenger.MessagesStorage;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.VideoEditedInfo;
-import org.ansible.tgnet.AbstractSerializedData;
-import org.ansible.tgnet.NativeByteBuffer;
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.AbstractSerializedData;
+import org.ansible.asnet.NativeByteBuffer;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
 
 import java.io.File;

@@ -23,8 +23,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import org.ansible.tgnet.AbstractSerializedData;
-import org.ansible.tgnet.SerializedData;
+import org.ansible.asnet.AbstractSerializedData;
+import org.ansible.asnet.SerializedData;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.TextStyleSpan;
 

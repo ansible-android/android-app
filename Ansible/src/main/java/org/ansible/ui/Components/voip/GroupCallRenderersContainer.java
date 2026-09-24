@@ -42,7 +42,7 @@ import org.ansible.messenger.UserObject;
 import org.ansible.messenger.pip.utils.PipUtils;
 import org.ansible.messenger.support.LongSparseIntArray;
 import org.ansible.messenger.voip.VoIPService;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.Theme;

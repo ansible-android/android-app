@@ -45,7 +45,7 @@ import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.utils.BitmapsCache;
 import org.ansible.messenger.utils.Choreographer60FpsContent;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.io.File;
 import java.util.ArrayList;

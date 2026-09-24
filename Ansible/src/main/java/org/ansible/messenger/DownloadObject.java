@@ -8,7 +8,7 @@
 
 package org.ansible.messenger;
 
-import org.ansible.tgnet.TLObject;
+import org.ansible.asnet.TLObject;
 
 public class DownloadObject {
     public TLObject object;

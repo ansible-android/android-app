@@ -37,7 +37,7 @@ import org.ansible.messenger.SaveToGallerySettingsHelper;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.StatsController;
 import org.ansible.messenger.voip.Instance;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BackDrawable;

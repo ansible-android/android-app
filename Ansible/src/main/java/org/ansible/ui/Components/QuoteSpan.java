@@ -39,7 +39,7 @@ import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.R;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 
 import java.util.ArrayList;

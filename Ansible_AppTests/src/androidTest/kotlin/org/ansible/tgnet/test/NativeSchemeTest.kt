@@ -1,12 +1,12 @@
-package org.ansible.tgnet.test
+package org.ansible.asnet.test
 
 import com.appmattus.kotlinfixture.config.ConfigurationBuilder
 import org.junit.Test
-import org.ansible.tgnet.ConnectionsManager
-import org.ansible.tgnet.model.generated.TlGen_EmojiStatus
-import org.ansible.tgnet.model.generated.TlGen_MessageEntity
-import org.ansible.tgnet.model.generated.TlGen_PeerColor
-import org.ansible.tgnet.model.generated.TlGen_auth_Authorization
+import org.ansible.asnet.ConnectionsManager
+import org.ansible.asnet.model.generated.TlGen_EmojiStatus
+import org.ansible.asnet.model.generated.TlGen_MessageEntity
+import org.ansible.asnet.model.generated.TlGen_PeerColor
+import org.ansible.asnet.model.generated.TlGen_auth_Authorization
 
 class NativeSchemeTest : BaseSchemeTest() {
     @Test

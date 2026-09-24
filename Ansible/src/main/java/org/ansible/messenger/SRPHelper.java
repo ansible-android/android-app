@@ -1,6 +1,6 @@
 package org.ansible.messenger;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.math.BigInteger;
 

@@ -1,8 +1,8 @@
 #include <cstring>
 #include <jni.h>
 #include "sqlite/sqlite3.h"
-#include "tgnet/NativeByteBuffer.h"
-#include "tgnet/BuffersStorage.h"
+#include "asnet/NativeByteBuffer.h"
+#include "asnet/BuffersStorage.h"
 
 void throw_sqlite3_exception(JNIEnv *env, sqlite3 *handle, int errcode) {
     const char *errmsg = sqlite3_errmsg(handle);

@@ -27,7 +27,7 @@ import org.ansible.messenger.Emoji;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.BackupImageView;

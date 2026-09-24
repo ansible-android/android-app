@@ -25,7 +25,7 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.VideoEditedInfo;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.Paint.Views.EditTextOutline;
 import org.ansible.ui.Components.Paint.Views.PaintTextOptionsView;

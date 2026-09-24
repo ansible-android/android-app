@@ -9,7 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.ansible.messenger.LocaleController;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 import java.util.ArrayList;
 

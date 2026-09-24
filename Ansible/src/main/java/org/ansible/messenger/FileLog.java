@@ -29,8 +29,8 @@ import com.google.gson.stream.JsonWriter;
 
 import org.ansible.messenger.time.FastDateFormat;
 import org.ansible.messenger.video.MediaCodecVideoConvertor;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AnimatedFileDrawable;
 import org.ansible.ui.LaunchActivity;
 
@@ -266,7 +266,7 @@ public class FileLog {
         public JsonElement serialize(TLObject src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObj = new JsonObject();
             String className = src.getClass().getName();
-            final String usualPrefix = "org.ansible.tgnet.";
+            final String usualPrefix = "org.ansible.asnet.";
             if (className.startsWith(usualPrefix)) {
                 className = className.substring(usualPrefix.length());
             }

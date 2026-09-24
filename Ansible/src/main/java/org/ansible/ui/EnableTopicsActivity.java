@@ -20,7 +20,7 @@ import androidx.core.graphics.ColorUtils;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;

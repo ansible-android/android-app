@@ -18,7 +18,7 @@ import org.ansible.messenger.ImageLoader;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.Utilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.MediaActionDrawable;
 import org.ansible.ui.Components.RadialProgress2;

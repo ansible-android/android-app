@@ -11,7 +11,7 @@ import org.ansible.messenger.AccountInstance;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.MessageObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.voip.GroupCallGridCell;
 import org.ansible.ui.Components.voip.GroupCallMiniTextureView;

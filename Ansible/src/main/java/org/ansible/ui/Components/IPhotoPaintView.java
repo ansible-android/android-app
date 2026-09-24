@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.ansible.messenger.VideoEditedInfo;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.Paint.RenderView;
 import org.ansible.ui.PhotoViewer;
 

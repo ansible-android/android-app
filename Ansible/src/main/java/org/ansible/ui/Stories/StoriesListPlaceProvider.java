@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.ChatActionCell;
 import org.ansible.ui.Cells.ChatMessageCell;

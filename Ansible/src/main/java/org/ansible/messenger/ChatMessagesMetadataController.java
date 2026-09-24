@@ -1,8 +1,8 @@
 package org.ansible.messenger;
 
-import org.ansible.tgnet.TLRPC;
-import org.ansible.tgnet.tl.TL_stories;
-import org.ansible.tgnet.tl.TL_update;
+import org.ansible.asnet.TLRPC;
+import org.ansible.asnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Stories.StoriesStorage;
 

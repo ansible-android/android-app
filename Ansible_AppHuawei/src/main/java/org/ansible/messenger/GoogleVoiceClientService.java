@@ -14,7 +14,7 @@ import android.text.TextUtils;
 
 import com.google.android.search.verification.client.SearchActionVerificationClientService;
 
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 public class GoogleVoiceClientService extends SearchActionVerificationClientService {
 

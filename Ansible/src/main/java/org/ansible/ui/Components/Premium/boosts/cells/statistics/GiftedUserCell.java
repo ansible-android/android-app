@@ -1,6 +1,6 @@
 package org.ansible.ui.Components.Premium.boosts.cells.statistics;
 
-import static org.ansible.tgnet.tl.TL_stories.Boost.NO_USER_ID;
+import static org.ansible.asnet.tl.TL_stories.Boost.NO_USER_ID;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,7 +15,7 @@ import android.widget.TextView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
-import org.ansible.tgnet.tl.TL_stories;
+import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.UserCell;
 import org.ansible.ui.Components.AvatarDrawable;

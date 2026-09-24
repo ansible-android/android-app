@@ -25,7 +25,7 @@ import org.ansible.messenger.ImageLoader;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.UserConfig;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.EmojiThemes;
 import org.ansible.ui.Components.BackgroundGradientDrawable;
 import org.ansible.ui.Components.MotionBackgroundDrawable;

@@ -14,7 +14,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLRPC;
 
 public class IdenticonDrawable extends Drawable {
 

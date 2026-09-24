@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.ansible.messenger.FileLog;
-import org.ansible.tgnet.TLObject;
-import org.ansible.tgnet.TLRPC;
+import org.ansible.asnet.TLObject;
+import org.ansible.asnet.TLRPC;
 
 public class WebViewRequestProps {
 
