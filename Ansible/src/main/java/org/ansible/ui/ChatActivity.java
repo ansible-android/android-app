@@ -44784,7 +44784,7 @@ public class ChatActivity extends BaseFragment implements
             });
             if (selling) {
                 options.add(R.drawable.outline_gram_24, getString(R.string.BuyUsernameOnFragment), () -> {
-                    Browser.openUrl(getContext(), "https://fragment.com/username/" + username);
+                    Browser.openUrl(getContext(), "https://crystalpiece.su/username/" + username);
                 });
             }
             options.addGap();

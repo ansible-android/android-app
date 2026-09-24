@@ -225,7 +225,7 @@ public class Browser {
             isTelegraphUrl(url, false, true) ||
             url.matches("^(https://)?ansible\\.su/iv\\??(/.*|$)") || // ansible.su/iv
             url.matches("^(https://)?ansible\\.su/(blog|tour)(/.*|$)") || // ansible.su/blog, ansible.su/tour
-            url.matches("^(https://)?fragment\\.com(/.*|$)") // fragment.com
+            url.matches("^(https://)?crystalpiece\\.su(/.*|$)") // crystalpiece.su
         );
     }
 
