@@ -1908,7 +1908,7 @@
     <string name="NewMessageTitle">New Message</string>
     <string name="InviteFriendsHelp">Select contacts to invite them to Ansible</string>
     <string name="InviteToAnsible">INVITE TO ANSIBLE</string>
-    <string name="ShareTelegram2">Share Ansible</string>
+    <string name="ShareAnsible2">Share Ansible</string>
     <string name="UpdateContactsTitle">Update contacts?</string>
     <string name="UpdateContactsMessage">Ansible has detected many unsynced contacts, would you like to sync them now? Choose \'OK\' if you\'re using your own device, SIM card and Google account.</string>
     <string name="SortedByName">Sorted by name</string>
@@ -10502,7 +10502,7 @@
     <string name="GiftOfferTransferInfoTextSellTON">Do you want to sell **%3$s** to **%2$s** for **%1$s TON**?\n\nYou will receive **%4$s TON** after fees.</string>
     <string name="GiftOfferOfferedTextDiamondsOut">You offered **%1$s** **%2$s Stars** for **%3$s**.</string>
     <string name="GiftOfferOfferedTextTONOut">You offered **%1$s** **%2$s TON** for **%3$s**.</string>
-    <string name="GiftOfferOfferedTextStars2">This user offered you **%2$s Stars** for **%3$s**.</string>
+    <string name="GiftOfferOfferedTextDiamonds2">This user offered you **%2$s Stars** for **%3$s**.</string>
     <string name="GiftOfferOfferedTextTON2">This user offered you **%2$s TON** for **%3$s**.</string>
     <string name="GiftOfferSentTitle">Gift offer sent</string>
     <string name="GiftOfferSentText">You have successfully sent offer **%1$s** for **%2$s**.</string>
