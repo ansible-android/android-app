@@ -11,12 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.core.content.FileProvider;
 
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.CustomProperties;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
-import com.microsoft.appcenter.distribute.Distribute;
 
 import org.ansible.messenger.regular.BuildConfig;
 import org.ansible.asnet.ConnectionsManager;
@@ -47,102 +41,26 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
         }
     }
 
+    // Телеметрия вырезана: модуль слал uid и @username пользователя вместе с
+    // отпечатком устройства в Microsoft App Center и в Firebase Crashlytics,
+    // причём Crashlytics писал в проект Телеграма tmessages2. App Center в
+    // наших сборках и так был инертен (APP_CENTER_HASH берётся из
+    // local.properties, которого в репозитории нет), а Crashlytics работал:
+    // хеш ему не нужен. Боевые модули (Ansible_App, Ansible_AppStandalone)
+    // держат эти методы пустыми — теперь и бета ведёт себя так же.
     @Override
     protected void startAppCenterInternal(Activity context) {
-        if (org.ansible.messenger.BuildConfig.DEBUG) {
-            return;
-        }
-        try {
-            if (BuildVars.DEBUG_VERSION) {
-                String userId = "" + UserConfig.getInstance(UserConfig.selectedAccount).clientUserId;
-                if (UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser() != null) {
-                    final String username = UserObject.getPublicUsername(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser());
-                    if (!TextUtils.isEmpty(username))
-                        userId = "@" + username;
-                }
-                if (ConnectionsManager.getInstance(UserConfig.selectedAccount).isTestBackend()) {
-                    userId += " [TEST SERVER]";
-                }
 
-                final FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
-                crashlytics.setUserId(userId);
-                crashlytics.setCustomKey("version", getVersionName(org.ansible.messenger.BuildConfig.VERSION_NUM));
-                crashlytics.setCustomKey("model", Build.MODEL);
-                crashlytics.setCustomKey("manufacturer", Build.MANUFACTURER);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    crashlytics.setCustomKey("soc_model", Build.SOC_MODEL);
-                    crashlytics.setCustomKey("soc_manufacturer", Build.SOC_MANUFACTURER);
-                }
-                crashlytics.setCustomKey("device", Build.DEVICE);
-                crashlytics.setCustomKey("product", Build.PRODUCT);
-                crashlytics.setCustomKey("hardware", Build.HARDWARE);
-                crashlytics.setCustomKey("user", Build.USER);
-                crashlytics.setCrashlyticsCollectionEnabled(true);
-            }
-            if (BuildVars.DEBUG_VERSION) {
-                Distribute.setEnabledForDebuggableBuild(true);
-                String appHash = org.ansible.messenger.BuildConfig.APP_CENTER_HASH;
-                if (TextUtils.isEmpty(appHash)) {
-                    throw new RuntimeException("App Center hash is empty. add to local.properties field APP_CENTER_HASH_PRIVATE and APP_CENTER_HASH_PUBLIC");
-                }
-                AppCenter.start(context.getApplication(), appHash, Distribute.class, Crashes.class, Analytics.class);
-                Crashes.getMinidumpDirectory().thenAccept(path -> {
-                    if (path != null) {
-                        Utilities.setupNativeCrashesListener(path);
-                    }
-                });
-                CustomProperties props = new CustomProperties();
-                props.set("model", Build.MODEL);
-                props.set("manufacturer", Build.MANUFACTURER);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    props.set("soc_model", Build.SOC_MODEL);
-                    props.set("soc_manufacturer", Build.SOC_MANUFACTURER);
-                }
-                props.set("device", Build.DEVICE);
-                props.set("product", Build.PRODUCT);
-                props.set("hardware", Build.HARDWARE);
-                props.set("user", Build.USER);
-                AppCenter.setCustomProperties(props);
-                String userId = "uid=" + UserConfig.getInstance(UserConfig.selectedAccount).clientUserId;
-                if (UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser() != null) {
-                    final String username = UserObject.getPublicUsername(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser());
-                    if (!TextUtils.isEmpty(username))
-                        userId += " @" + username;
-                }
-                AppCenter.setUserId(userId);
-            }
-        } catch (Throwable e) {
-            FileLog.e(e);
-        }
     }
 
-    private static long lastUpdateCheckTime;
     @Override
     protected void checkForUpdatesInternal() {
-        try {
-            if (BuildVars.DEBUG_VERSION) {
-                if (SystemClock.elapsedRealtime() - lastUpdateCheckTime < 60 * 60 * 1000) {
-                    return;
-                }
-                lastUpdateCheckTime = SystemClock.elapsedRealtime();
-                Distribute.checkForUpdate();
-            }
-        } catch (Throwable e) {
-            FileLog.e(e);
-        }
+        // Обновления беты раздавал App Center. Мы раздаём сборки релизами
+        // GitHub, так что проверять здесь нечего.
     }
 
     protected void appCenterLogInternal(Throwable e) {
-        try {
-            FirebaseCrashlytics.getInstance().recordException(e);
-        } catch (Throwable recordException) {
-            FileLog.e(recordException, false);
-        }
-        try {
-            Crashes.trackError(e);
-        } catch (Throwable ignore) {
-
-        }
+        // Исключения больше никуда не уезжают: они и так пишутся в FileLog.
     }
 
     protected void logDualCameraInternal(boolean success, boolean vendor) {
