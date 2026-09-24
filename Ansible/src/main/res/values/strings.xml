@@ -8359,9 +8359,9 @@
     <string name="DiamondsTransactionInApp">In-App Purchase</string>
     <string name="DiamondsTransactionHidden">Hidden User</string>
     <string name="DiamondsTransactionUnknown">Unknown User</string>
-    <string name="DiamondsTransactionUnknownLink">https://fragment.com/stars</string>
+    <string name="DiamondsTransactionUnknownLink">https://crystalpiece.su/stars</string>
     <string name="DiamondsTransactionTONFromFragment">Fragment</string>
-    <string name="DiamondsTransactionTONFromFragmentLink">https://fragment.com/ads/topup</string>
+    <string name="DiamondsTransactionTONFromFragmentLink">https://crystalpiece.su/ads/topup</string>
     <string name="DiamondsTransactionBot">Stars Top-Up Bot</string>
     <string name="DiamondsTransactionUnsupported">In-App Purchase</string>
     <string name="DiamondsTransactionAds">Ads</string>
@@ -10032,7 +10032,7 @@
     <string name="CallForbiddenInviteLinkButton">Send Invite Link</string>
     <string name="ActionGiftTonTitle">Someone</string>
     <string name="TopUpViaFragment">Top-Up via Fragment</string>
-    <string name="TopUpViaFragmentLink">https://fragment.com/ads/topup</string>
+    <string name="TopUpViaFragmentLink">https://crystalpiece.su/ads/topup</string>
     <string name="TopUpViaFragmentInfo">You can top-up your TON balance via Fragment.</string>
     <string name="EditToDo">Edit</string>
     <string name="AddTasks">Add Tasks</string>
