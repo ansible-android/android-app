@@ -8,7 +8,7 @@ import org.ansible.ui.LaunchActivity;
 
 public class OpenAttachedMenuBotReceiver extends Activity {
 
-    public static String ACTION = "com.tmessages.openshortcutbot";
+    public static String ACTION = "su.ansible.openshortcutbot";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -136,9 +136,9 @@ target_include_directories(breakpad PUBLIC
 #voip
 include(${CMAKE_HOME_DIRECTORY}/voip/CMakeLists.txt)
 
-set(NATIVE_LIB "tmessages.49")
+set(NATIVE_LIB "ansible.49")
 
-#tmessages
+#ansible
 add_library(${NATIVE_LIB} SHARED
         jni.c
         audio.c

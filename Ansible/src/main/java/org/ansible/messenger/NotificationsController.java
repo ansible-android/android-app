@@ -3600,7 +3600,7 @@ public class NotificationsController extends BaseController implements Notificat
             String id = "ndid_" + did;
 
             Intent shortcutIntent = new Intent(ApplicationLoader.applicationContext, OpenChatReceiver.class);
-            shortcutIntent.setAction("com.tmessages.openchat" + Math.random() + Integer.MAX_VALUE);
+            shortcutIntent.setAction("su.ansible.openchat" + Math.random() + Integer.MAX_VALUE);
             if (did > 0) {
                 shortcutIntent.putExtra("userId", did);
             } else {
@@ -3627,7 +3627,7 @@ public class NotificationsController extends BaseController implements Notificat
             ShortcutManagerCompat.pushDynamicShortcut(ApplicationLoader.applicationContext, shortcut);
             builder.setShortcutInfo(shortcut);
             Intent intent = new Intent(ApplicationLoader.applicationContext, BubbleActivity.class);
-            intent.setAction("com.tmessages.openchat" + Math.random() + Integer.MAX_VALUE);
+            intent.setAction("su.ansible.openchat" + Math.random() + Integer.MAX_VALUE);
             if (DialogObject.isUserDialog(did)) {
                 intent.putExtra("userId", did);
             } else {
@@ -4528,7 +4528,7 @@ public class NotificationsController extends BaseController implements Notificat
             }
 
             Intent intent = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
-            intent.setAction("com.tmessages.openchat" + Math.random() + Integer.MAX_VALUE);
+            intent.setAction("su.ansible.openchat" + Math.random() + Integer.MAX_VALUE);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             if (lastMessageObject != null && lastMessageObject.isOauthPush) {
                 intent.putExtra("oauth_url", lastMessageObject.localName);
@@ -5500,7 +5500,7 @@ public class NotificationsController extends BaseController implements Notificat
             }
 
             Intent intent = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
-            intent.setAction("com.tmessages.openchat" + Math.random() + Integer.MAX_VALUE);
+            intent.setAction("su.ansible.openchat" + Math.random() + Integer.MAX_VALUE);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
             if (lastMessageObject != null && lastMessageObject.isOauthPush) {

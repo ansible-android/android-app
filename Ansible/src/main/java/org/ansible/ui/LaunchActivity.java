@@ -2871,7 +2871,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     open_settings = 1;
                 } else if (intent.getAction().equals("new_dialog")) {
                     open_new_dialog = 1;
-                } else if (intent.getAction().startsWith("com.tmessages.openchat")) {
+                } else if (intent.getAction().startsWith("su.ansible.openchat")) {
 //                    Integer chatIdInt = intent.getIntExtra("chatId", 0);
                     long chatId = intent.getLongExtra("chatId", 0);
 //                    Integer userIdInt = intent.getIntExtra("userId", 0);
@@ -2944,9 +2944,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     if (botId != 0) {
                         openBot = true;
                     }
-                } else if (intent.getAction().equals("com.tmessages.openplayer")) {
+                } else if (intent.getAction().equals("su.ansible.openplayer")) {
                     showPlayer = true;
-                } else if (intent.getAction().equals("org.tmessages.openlocations")) {
+                } else if (intent.getAction().equals("su.ansible.openlocations")) {
                     showLocations = true;
                 } else if (action.equals("voip_chat")) {
                     showGroupVoip = true;

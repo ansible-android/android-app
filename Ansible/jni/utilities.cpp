@@ -39,7 +39,7 @@ bool dumpCallback(const google_breakpad::MinidumpDescriptor &descriptor,
                   void *context,
                   bool succeeded) {
 
-    __android_log_print(ANDROID_LOG_DEBUG, "tmessages",
+    __android_log_print(ANDROID_LOG_DEBUG, "ansible",
                         "Wrote breakpad minidump at %s succeeded=%d\n", descriptor.path(),
                         succeeded);
     return false;

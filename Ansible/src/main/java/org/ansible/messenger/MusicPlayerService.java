@@ -356,7 +356,7 @@ public class MusicPlayerService extends Service implements NotificationCenter.No
         AudioInfo audioInfo = MediaController.getInstance().getAudioInfo();
         Intent intent = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
         if (messageObject.isMusic()) {
-            intent.setAction("com.tmessages.openplayer");
+            intent.setAction("su.ansible.openplayer");
             intent.addCategory(Intent.CATEGORY_LAUNCHER);
         } else if (messageObject.isVoice() || messageObject.isRoundVideo()) {
             intent.setAction(Intent.ACTION_VIEW);

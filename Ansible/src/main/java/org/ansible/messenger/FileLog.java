@@ -61,7 +61,7 @@ public class FileLog {
     private OutputStreamWriter tlStreamWriter = null;
     private File tlRequestsFile = null;
 
-    private final static String tag = "tmessages";
+    private final static String tag = "ansible";
     private final static String mtproto_tag = "MTProto";
 
     private static volatile FileLog Instance = null;
@@ -387,11 +387,11 @@ public class FileLog {
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(() -> {
                 try {
-                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: " + message + "\n");
+                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: " + message + "\n");
                     getInstance().streamWriter.write(exception.toString());
                     StackTraceElement[] stack = exception.getStackTrace();
                     for (int a = 0; a < stack.length; a++) {
-                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: \tat " + stack[a] + "\n");
+                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: \tat " + stack[a] + "\n");
                     }
                     getInstance().streamWriter.flush();
                 } catch (Exception e) {
@@ -410,7 +410,7 @@ public class FileLog {
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(() -> {
                 try {
-                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: " + message + "\n");
+                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: " + message + "\n");
                     getInstance().streamWriter.flush();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -450,17 +450,17 @@ public class FileLog {
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(() -> {
                 try {
-                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: " + e + "\n");
+                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: " + e + "\n");
                     StackTraceElement[] stack = e.getStackTrace();
                     for (int a = 0; a < stack.length; a++) {
-                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: \tat " + stack[a] + "\n");
+                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: \tat " + stack[a] + "\n");
                     }
                     Throwable cause = e.getCause();
                     if (cause != null) {
-                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: Caused by " + cause + "\n");
+                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: Caused by " + cause + "\n");
                         stack = cause.getStackTrace();
                         for (int a = 0; a < stack.length; a++) {
-                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: \tat " + stack[a] + "\n");
+                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: \tat " + stack[a] + "\n");
                         }
                     }
                     getInstance().streamWriter.flush();
@@ -522,17 +522,17 @@ public class FileLog {
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(() -> {
                 try {
-                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " FATAL/tmessages: " + e + "\n");
+                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " FATAL/ansible: " + e + "\n");
                     StackTraceElement[] stack = e.getStackTrace();
                     for (int a = 0; a < stack.length; a++) {
-                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " FATAL/tmessages: \tat " + stack[a] + "\n");
+                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " FATAL/ansible: \tat " + stack[a] + "\n");
                     }
                     Throwable cause = e.getCause();
                     if (cause != null) {
-                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: Caused by " + cause + "\n");
+                        getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: Caused by " + cause + "\n");
                         stack = cause.getStackTrace();
                         for (int a = 0; a < stack.length; a++) {
-                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: \tat " + stack[a] + "\n");
+                            getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/ansible: \tat " + stack[a] + "\n");
                         }
                     }
                     getInstance().streamWriter.flush();
@@ -568,7 +568,7 @@ public class FileLog {
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(() -> {
                 try {
-                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " D/tmessages: " + message + "\n");
+                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " D/ansible: " + message + "\n");
                     getInstance().streamWriter.flush();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -589,7 +589,7 @@ public class FileLog {
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(() -> {
                 try {
-                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " W/tmessages: " + message + "\n");
+                    getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " W/ansible: " + message + "\n");
                     getInstance().streamWriter.flush();
                 } catch (Exception e) {
                     e.printStackTrace();
