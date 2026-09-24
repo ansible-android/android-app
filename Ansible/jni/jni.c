@@ -210,6 +210,12 @@ int64_t listdir(const char *fileName, int32_t mode, int32_t docType, int64_t tim
                         ((name[len - 3] == 'm' || name[len - 3] == 'M') && (name[len - 2] == '4') && (name[len - 1] == 'a' || name[len - 1] == 'A'))    // m4a
                 ));
                 int isEmoji = (
+                    // .ass - наши анимированные стикеры (см. x-ansible-sticker).
+                    // Без этой строки они не попадали в категорию стикеров:
+                    // размер показывался в "прочем", кнопка очистки стикеров их
+                    // не трогала, а очистка "прочего" сносила.
+                    name[len - 4] == '.' && (name[len - 3] == 'a' || name[len - 3] == 'A') && (name[len - 2] == 's' || name[len - 2] == 'S') && (name[len - 1] == 's' || name[len - 1] == 'S') || // ass
+                    // .tgs оставлен ради кеша, записанного версиями до 0.1.2
                     name[len - 4] == '.' && (name[len - 3] == 't' || name[len - 3] == 'T') && (name[len - 2] == 'g' || name[len - 2] == 'G') && (name[len - 1] == 's' || name[len - 1] == 'S') || // tgs
                     len > 5 && name[len - 5] == '.' && (name[len - 4] == 'w' || name[len - 4] == 'W') && (name[len - 3] == 'e' || name[len - 3] == 'E') && (name[len - 2] == 'b' || name[len - 2] == 'B') && (name[len - 1] == 'm' || name[len - 1] == 'M') // webm
                 );
