@@ -1820,16 +1820,37 @@ void ConnectionsManager::initDatacenters() {
     // desktop client (mtproto_dc_options.cpp) and the Vault prod seed
     // (as-tools/lib/vault.sh: dc_self_tcp_address). The old 144.31.* seeds
     // and the MSK LB 45.93.201.204 are decommissioned.
+    //
+    // Несколько адресов на датацентр - так же, как у апстрима, где у каждого DC
+    // по 2-3 записи. Отличие от апстрима одно и намеренное: мы НЕ возвращаем
+    // каскад поиска DC (Firebase ipconfig + DoH), из-за которого приложение
+    // блокировали в РФ. Здесь только статический список - его DPI не видит.
+    //
+    // Первым идёт балансировщик, дальше - узлы кластера напрямую через
+    // NodePort 30443 (сервис as-backend маппит 10443 -> 30443, проверено
+    // пробой: порт открыт на всех трёх узлах). Если ляжет балансировщик,
+    // свежая установка всё равно поднимется.
+    //
+    // 🚨 Это только BOOTSTRAP. После первого рукопожатия help.getConfig
+    // присылает dc_options, и они ЗАМЕЩАЮТ этот список (replaceAddresses),
+    // после чего он сохраняется. Уже работающему клиенту эти адреса не
+    // помогут - для него запасные адреса обязан отдавать сервер.
     Datacenter *datacenter;
     if (datacenters.find(1) == datacenters.end()) {
         datacenter = new Datacenter(instanceNum, 1);
-        datacenter->addAddressAndPort("85.193.80.91", 10443, 0, "");  // SPB LB (prod)
+        datacenter->addAddressAndPort("85.193.80.91", 10443, 0, "");      // SPB LB (prod)
+        datacenter->addAddressAndPort("5.189.239.125", 30443, 0, "");     // prod-spb-1
+        datacenter->addAddressAndPort("85.193.86.253", 30443, 0, "");     // spb-3-vm-tadd
+        datacenter->addAddressAndPort("176.124.209.189", 30443, 0, "");   // spb-3-vm-c02v
         datacenters[1] = datacenter;
     }
 
     if (datacenters.find(2) == datacenters.end()) {
         datacenter = new Datacenter(instanceNum, 2);
-        datacenter->addAddressAndPort("85.193.80.91", 10443, 0, "");  // same LB (failover seed)
+        datacenter->addAddressAndPort("85.193.80.91", 10443, 0, "");
+        datacenter->addAddressAndPort("5.189.239.125", 30443, 0, "");
+        datacenter->addAddressAndPort("85.193.86.253", 30443, 0, "");
+        datacenter->addAddressAndPort("176.124.209.189", 30443, 0, "");
         datacenters[2] = datacenter;
     }
 }
