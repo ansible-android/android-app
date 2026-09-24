@@ -415,7 +415,7 @@ public abstract class BaseLocationAdapter extends AdapterWithDiffUtils {
                                 cityLocation.geo._long = _long;
                                 cityLocation.query_id = -1;
                                 cityLocation.title = cityBuilder.toString();
-                                cityLocation.icon = "https://ss3.4sqi.net/img/categories_v2/travel/hotel_64.png";
+                                cityLocation.icon = "https://media.ansible.su/venue/travel/hotel_64.png";
                                 cityLocation.emoji = LocationController.countryCodeToEmoji(address.getCountryCode());
                                 cities.add(cityLocation.title);
                                 cityLocation.address = LocaleController.getString(R.string.PassportCity);
@@ -457,7 +457,7 @@ public abstract class BaseLocationAdapter extends AdapterWithDiffUtils {
                                 countryLocation.geo._long = _long;
                                 countryLocation.query_id = -1;
                                 countryLocation.title = countryBuilder.toString();
-                                countryLocation.icon = "https://ss3.4sqi.net/img/categories_v2/building/government_capitolbuilding_64.png";
+                                countryLocation.icon = "https://media.ansible.su/venue/building/government_capitolbuilding_64.png";
                                 countryLocation.emoji = LocationController.countryCodeToEmoji(address.getCountryCode());
                                 countries.add(countryLocation.title);
                                 countryLocation.address = LocaleController.getString(R.string.Country);
@@ -514,7 +514,7 @@ public abstract class BaseLocationAdapter extends AdapterWithDiffUtils {
                     venue.geo = mediaVenue.geo;
                     venue.address = mediaVenue.address;
                     venue.title = mediaVenue.title;
-                    venue.icon = "https://ss3.4sqi.net/img/categories_v2/" + mediaVenue.venue_type + "_64.png";
+                    venue.icon = "https://media.ansible.su/venue/" + mediaVenue.venue_type + "_64.png";
                     venue.venue_type = mediaVenue.venue_type;
                     venue.venue_id = mediaVenue.venue_id;
                     venue.provider = mediaVenue.provider;

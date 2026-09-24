@@ -1311,7 +1311,7 @@ public class LocationController extends BaseController implements NotificationCe
                     cityLocation.geo._long = location.getLongitude();
                     cityLocation.query_id = -1;
                     cityLocation.title = city;
-                    cityLocation.icon = onlyCountry ? "https://ss3.4sqi.net/img/categories_v2/building/government_capitolbuilding_64.png" : "https://ss3.4sqi.net/img/categories_v2/travel/hotel_64.png";
+                    cityLocation.icon = onlyCountry ? "https://media.ansible.su/venue/building/government_capitolbuilding_64.png" : "https://media.ansible.su/venue/travel/hotel_64.png";
                     cityLocation.emoji = countryCodeToEmoji(countryCode);
                     cityLocation.address = onlyCountry ? LocaleController.getString(R.string.Country) : LocaleController.getString(R.string.PassportCity);
 
