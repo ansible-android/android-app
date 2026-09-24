@@ -59,7 +59,7 @@ public class MusicBrowserService extends MediaBrowserService {
     public void onLoadChildren(String parentMediaId, Result<List<MediaBrowser.MediaItem>> result) {
         AnsibleMediaSession holder = AnsibleMediaSession.getInstance(this);
         if (holder.isPasscodeLocked()) {
-            Toast.makeText(getApplicationContext(), LocaleController.getString(R.string.EnterYourTelegramPasscode), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), LocaleController.getString(R.string.EnterYourAnsiblePasscode), Toast.LENGTH_LONG).show();
             stopSelf();
             result.detach();
             return;

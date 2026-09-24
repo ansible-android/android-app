@@ -95,7 +95,7 @@ public class BoostTypeCell extends BaseCell {
             setDivider(true);
             setBackground(Theme.getThemedDrawableByKey(getContext(), R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
         } else if (type == TYPE_STARS) {
-            titleTextView.setText(TextCell.applyNewSpan(getString(R.string.BoostingStars)));
+            titleTextView.setText(TextCell.applyNewSpan(getString(R.string.BoostingDiamonds)));
             setSubtitle(getString(R.string.BoostingWinnersRandomly));
             subtitleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray3, resourcesProvider));
             avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_STARS);

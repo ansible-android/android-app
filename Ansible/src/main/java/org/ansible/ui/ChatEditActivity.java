@@ -1478,10 +1478,10 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 if (!c.isStarsBalanceAvailable(userId)) {
                     SpannableStringBuilder loadingStr = new SpannableStringBuilder("x");
                     loadingStr.setSpan(new LoadingSpan(starsBalanceCell.valueTextView, dp(30)), 0, loadingStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    starsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceStars), loadingStr, R.drawable.menu_premium_main, false);
+                    starsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), loadingStr, R.drawable.menu_premium_main, false);
                 } else {
 
-                    starsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceStars), c.getBotStarsBalance(userId).amount <= 0?"":StarsIntroActivity.replaceStarsWithPlain(TextUtils.concat("XTR", formatStarsAmountShort(c.getBotStarsBalance(userId), .85f, ' ')), .85f), R.drawable.menu_premium_main, false);
+                    starsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), c.getBotStarsBalance(userId).amount <= 0?"":StarsIntroActivity.replaceStarsWithPlain(TextUtils.concat("XTR", formatStarsAmountShort(c.getBotStarsBalance(userId), .85f, ' ')), .85f), R.drawable.menu_premium_main, false);
                 }
                 starsBalanceCell.setVisibility(c.botHasStars(userId) ? View.VISIBLE : View.GONE);
 
@@ -2496,7 +2496,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
             suggestedCell.setTextAndValueAndIcon(
                 (LocaleController.getString(R.string.PostSuggestions)),
                 StarsIntroActivity.replaceStarsWithPlain(
-                    LocaleController.formatString(R.string.PostSuggestionsStars, stars),
+                    LocaleController.formatString(R.string.PostSuggestionsDiamonds, stars),
                     0.66f),
                 R.drawable.msg_markunread, true);
         } else {

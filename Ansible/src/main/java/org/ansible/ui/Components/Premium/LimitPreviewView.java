@@ -680,17 +680,17 @@ public class LimitPreviewView extends LinearLayout {
         if (rating.stars <= 0) {
             percent = 0.5f;
             defaultText.setText("");
-            premiumCount.setText(LocaleController.getString(R.string.StarRatingLevelNegative));
+            premiumCount.setText(LocaleController.getString(R.string.DiamondRatingLevelNegative));
             ratingPaint.setColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
             isRatingNegative = true;
         } else if (rating.next_level_stars == 0) {
             percent = 1f;
-            defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, rating.level - 1));
-            premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, rating.level));
+            defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, rating.level - 1));
+            premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, rating.level));
         } else {
             percent = MathUtils.clamp((rating.stars - k) / (float) (rating.next_level_stars - k), 0, 1f);
-            defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, rating.level));
-            premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, rating.level + 1));
+            defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, rating.level));
+            premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, rating.level + 1));
         }
         ((FrameLayout.LayoutParams) premiumCount.getLayoutParams()).gravity = Gravity.RIGHT;
         setType(LimitReachedBottomSheet.TYPE_BOOSTS);
@@ -716,17 +716,17 @@ public class LimitPreviewView extends LinearLayout {
             if (to.stars <= 0) {
                 percent = 0;
                 defaultText.setText("");
-                premiumCount.setText(LocaleController.getString(R.string.StarRatingLevelNegative));
+                premiumCount.setText(LocaleController.getString(R.string.DiamondRatingLevelNegative));
                 ratingPaint.setColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
                 isRatingNegative = true;
             } else if (to.next_level_stars == 0) {
                 percent = 1f;
-                defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level - 1));
-                premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level));
+                defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level - 1));
+                premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level));
             } else {
                 percent = MathUtils.clamp((to.stars - to.current_level_stars) / (float) (to.next_level_stars - to.current_level_stars), 0, 1f);
-                defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level));
-                premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level + 1));
+                defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level));
+                premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level + 1));
             }
 
             animate = true;
@@ -744,15 +744,15 @@ public class LimitPreviewView extends LinearLayout {
         } else if (to.level > from.level) {
             if (from.stars <= 0) {
 //                defaultText.setText("");
-//                premiumCount.setText(LocaleController.getString(R.string.StarRatingLevelNegative));
+//                premiumCount.setText(LocaleController.getString(R.string.DiamondRatingLevelNegative));
 //                ratingPaint.setColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
                 isRatingNegative = true;
             }// else if (from.next_level_stars == 0) {
-//                defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level - 1));
-//                premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level));
+//                defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level - 1));
+//                premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level));
 //            } else {
-//                defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level));
-//                premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level + 1));
+//                defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level));
+//                premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level + 1));
 //            }
 
 //            final float rightWidth = premiumLayout.getMeasuredWidth() - dp(8);
@@ -794,17 +794,17 @@ public class LimitPreviewView extends LinearLayout {
                 if (to.stars <= 0) {
                     percent = 0;
                     defaultText.setText("");
-                    premiumCount.setText(LocaleController.getString(R.string.StarRatingLevelNegative));
+                    premiumCount.setText(LocaleController.getString(R.string.DiamondRatingLevelNegative));
                     ratingPaint.setColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
                     isRatingNegative = true;
                 } else if (to.next_level_stars == 0) {
                     percent = 1f;
-                    defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level - 1));
-                    premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level));
+                    defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level - 1));
+                    premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level));
                 } else {
                     percent = MathUtils.clamp((to.stars - to.current_level_stars) / (float) (to.next_level_stars - to.current_level_stars), 0, 1f);
-                    defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level));
-                    premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level + 1));
+                    defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level));
+                    premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level + 1));
                 }
 
                 setArrowX(0.0f);
@@ -841,15 +841,15 @@ public class LimitPreviewView extends LinearLayout {
             isRatingNegative = false;
             if (from.stars <= 0) {
 //                defaultText.setText("");
-//                premiumCount.setText(LocaleController.getString(R.string.StarRatingLevelNegative));
+//                premiumCount.setText(LocaleController.getString(R.string.DiamondRatingLevelNegative));
 //                ratingPaint.setColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
                 isRatingNegative = true;
             }// else if (from.next_level_stars == 0) {
-//                defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level - 1));
-//                premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level));
+//                defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level - 1));
+//                premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level));
 //            } else {
-//                defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level));
-//                premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, from.level + 1));
+//                defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level));
+//                premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, from.level + 1));
 //            }
             percent = 0f;
 
@@ -888,17 +888,17 @@ public class LimitPreviewView extends LinearLayout {
                 if (to.stars <= 0) {
                     percent = 0.5f;
                     defaultText.setText("");
-                    premiumCount.setText(LocaleController.getString(R.string.StarRatingLevelNegative));
+                    premiumCount.setText(LocaleController.getString(R.string.DiamondRatingLevelNegative));
                     ratingPaint.setColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
                     isRatingNegative = true;
                 } else if (to.next_level_stars == 0) {
                     percent = 1f;
-                    defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level - 1));
-                    premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level));
+                    defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level - 1));
+                    premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level));
                 } else {
                     percent = MathUtils.clamp((to.stars - to.current_level_stars) / (float) (to.next_level_stars - to.current_level_stars), 0, 1f);
-                    defaultText.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level));
-                    premiumCount.setText(LocaleController.formatString(R.string.StarRatingLevel, to.level + 1));
+                    defaultText.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level));
+                    premiumCount.setText(LocaleController.formatString(R.string.DiamondRatingLevel, to.level + 1));
                 }
 
                 setArrowX(1.0f);

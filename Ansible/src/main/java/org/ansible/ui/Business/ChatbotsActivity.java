@@ -515,7 +515,7 @@ public class ChatbotsActivity extends BaseFragment {
                         .setPad(1)
                 );
                 items.add(
-                    UItem.asRoundCheckbox(PERMISSION_GIFTS_TRANSFER_STARS, getString(R.string.BusinessBotPermissionsGiftsTransferStars))
+                    UItem.asRoundCheckbox(PERMISSION_GIFTS_TRANSFER_STARS, getString(R.string.BusinessBotPermissionsGiftsTransferDiamonds))
                         .setChecked(rights.transfer_stars)
                         .setPad(1)
                 );

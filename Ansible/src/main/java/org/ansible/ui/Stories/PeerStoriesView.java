@@ -4912,7 +4912,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
         } else if (starsPriceBlocked > 0) {
             stealthModeIsActive = false;
             chatActivityEnterView.setEnabled(true);
-            chatActivityEnterView.setOverrideHint(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.TypeMessageForStars, LocaleController.formatNumber(starsPriceBlocked, ','))), animated);
+            chatActivityEnterView.setOverrideHint(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.TypeMessageForDiamonds, LocaleController.formatNumber(starsPriceBlocked, ','))), animated);
         } else if (!currentStory.isLive && stealthMode != null && ConnectionsManager.getInstance(currentAccount).getCurrentTime() < stealthMode.active_until_date) {
             stealthModeIsActive = true;
             int time = stealthMode.active_until_date - ConnectionsManager.getInstance(currentAccount).getCurrentTime();
@@ -5422,10 +5422,10 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                         return false;
                     }
                     ItemOptions.makeOptions(storyViewer.containerView, resourcesProvider, v)
-                        .add(R.drawable.msg_edit, getString(R.string.LiveStoryMessageEditStars), () -> {
+                        .add(R.drawable.msg_edit, getString(R.string.LiveStoryMessageEditDiamonds), () -> {
                             onHighlightLiveMessage();
                         })
-                        .addIf(messageStars > 0, R.drawable.menu_delete_paid, getString(R.string.LiveStoryMessageRemoveStars), () -> {
+                        .addIf(messageStars > 0, R.drawable.menu_delete_paid, getString(R.string.LiveStoryMessageRemoveDiamonds), () -> {
                             messageStars = 0;
                             if (chatActivityEnterView != null) {
                                 chatActivityEnterView.checkSendButton(true);

@@ -1342,7 +1342,7 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
 
                 priceTitleView.setText(StarsIntroActivity.replaceStarsWithPlain("⭐️ " + LocaleController.formatNumber(invite.subscription_pricing.amount, ','), .75f));
                 if (invite.subscription_pricing.period == StarsController.PERIOD_MONTHLY) {
-                    priceSubitleView.setText(getString(R.string.StarsParticipantSubscriptionPerMonth));
+                    priceSubitleView.setText(getString(R.string.DiamondsParticipantSubscriptionPerMonth));
                 } else if (invite.subscription_pricing.period == StarsController.PERIOD_5MINUTES) {
                     priceSubitleView.setText("per 5 minutes");
                 } else if (invite.subscription_pricing.period == StarsController.PERIOD_MINUTE) {

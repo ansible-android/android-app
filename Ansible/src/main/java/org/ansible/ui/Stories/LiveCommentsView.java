@@ -826,7 +826,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
             bulletinLayout.setAnimation(R.raw.stars_topup);
             bulletinLayout.titleTextView.setText(getStarsToastTitle());
             bulletinButton = new Bulletin.UndoButton(getContext(), true, false, resourcesProvider);
-            bulletinButton.setText(LocaleController.getString(R.string.StarsSentUndo));
+            bulletinButton.setText(LocaleController.getString(R.string.DiamondsSentUndo));
             bulletinButton.setUndoAction(this::cancelStars);
             timerView = new Bulletin.TimerView(getContext(), resourcesProvider);
             timerView.timeLeft = REACTIONS_TIMEOUT;
@@ -940,11 +940,11 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
 
     private String getStarsToastTitle() {
 //        if (isAnonymous()) {
-//            return getString(R.string.StarsSentAnonymouslyTitle);
+//            return getString(R.string.DiamondsSentAnonymouslyTitle);
 //        } else if (getPeerId() != 0 && getPeerId() != UserConfig.getInstance(currentAccount).getClientUserId()) {
-//            return formatString(R.string.StarsSentTitleChannel, DialogObject.getShortName(getPeerId()));
+//            return formatString(R.string.DiamondsSentTitleChannel, DialogObject.getShortName(getPeerId()));
 //        } else {
-            return getString(R.string.StarsSentTitle);
+            return getString(R.string.DiamondsSentTitle);
 //        }
     }
 

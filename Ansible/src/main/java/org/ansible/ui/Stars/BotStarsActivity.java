@@ -102,9 +102,9 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
     private TLRPC.TL_starsRevenueStatus lastStatsStatus;
 
     private StatisticActivity.ChartViewData revenueChartData;
-    private final ChannelMonetizationLayout.ProceedOverview availableValue = ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotStarsOverviewAvailableBalance));
-    private final ChannelMonetizationLayout.ProceedOverview totalValue = ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotStarsOverviewTotalBalance));
-    private final ChannelMonetizationLayout.ProceedOverview totalProceedsValue =     ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotStarsOverviewTotalProceeds));
+    private final ChannelMonetizationLayout.ProceedOverview availableValue = ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotDiamondsOverviewAvailableBalance));
+    private final ChannelMonetizationLayout.ProceedOverview totalValue = ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotDiamondsOverviewTotalBalance));
+    private final ChannelMonetizationLayout.ProceedOverview totalProceedsValue =     ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotDiamondsOverviewTotalProceeds));
 
     private final ChannelMonetizationLayout.ProceedOverview tonAvailableValue =      ChannelMonetizationLayout.ProceedOverview.as("TON", getString(R.string.BotMonetizationOverviewAvailable));
     private final ChannelMonetizationLayout.ProceedOverview tonLastWithdrawalValue = ChannelMonetizationLayout.ProceedOverview.as("TON", getString(R.string.BotMonetizationOverviewLastWithdrawal));
@@ -151,8 +151,8 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             BotStarsController.getInstance(currentAccount).preloadTonStats(bot_id);
         }
 
-        withdrawInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? formatPluralStringComma("SelfStarsWithdrawInfo", (int) getMessagesController().starsRevenueWithdrawalMin) : getString(R.string.BotStarsWithdrawInfo), () -> {
-            Browser.openUrl(getContext(), getString(R.string.BotStarsWithdrawInfoLink));
+        withdrawInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? formatPluralStringComma("SelfStarsWithdrawInfo", (int) getMessagesController().starsRevenueWithdrawalMin) : getString(R.string.BotDiamondsWithdrawInfo), () -> {
+            Browser.openUrl(getContext(), getString(R.string.BotDiamondsWithdrawInfoLink));
         }), true);
     }
 
@@ -172,7 +172,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         avatarContainer.setUserAvatar(bot, true);
         avatarContainer.setTitle(UserObject.getUserName(bot));
         if (type == BotStarsActivity.TYPE_STARS) {
-            avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsStars));
+            avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsDiamonds));
         } else {
             avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsTON));
         }
@@ -237,7 +237,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
                 return super.dispatchTouchEvent(event);
             }
         };
-        balanceEditTextContainer.setText(getString(R.string.BotStarsWithdrawPlaceholder));
+        balanceEditTextContainer.setText(getString(R.string.BotDiamondsWithdrawPlaceholder));
         balanceEditTextContainer.setLeftPadding(dp(14 + 22));
         balanceEditText = new EditTextBoldCursor(context) {
             @Override
@@ -313,14 +313,14 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             }
         }.setRound();
         balanceButton.setEnabled(MessagesController.getInstance(currentAccount).channelRevenueWithdrawalEnabled);
-        balanceButton.setText(getString(R.string.BotStarsButtonWithdrawShortAll), false);
+        balanceButton.setText(getString(R.string.BotDiamondsButtonWithdrawShortAll), false);
         balanceButton.setOnClickListener(v -> {
             withdraw();
         });
 
         adsButton = new ButtonWithCounterView(context, getResourceProvider()).setRound();
         adsButton.setEnabled(true);
-        adsButton.setText(getString(R.string.MonetizationStarsAds), false);
+        adsButton.setText(getString(R.string.MonetizationDiamondsAds), false);
         adsButton.setOnClickListener(v -> {
             if (!v.isEnabled() || adsButton.isLoading()) return;
 
@@ -414,7 +414,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
 
         final int now = getConnectionsManager().getCurrentTime();
         if (balanceBlockedUntil > now) {
-            withdrawalBulletin = BulletinFactory.of(this).createSimpleBulletin(R.raw.timer_3, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.BotStarsWithdrawalToast, untilString(balanceBlockedUntil - now)))).show();
+            withdrawalBulletin = BulletinFactory.of(this).createSimpleBulletin(R.raw.timer_3, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.BotDiamondsWithdrawalToast, untilString(balanceBlockedUntil - now)))).show();
             return;
         }
 
@@ -466,7 +466,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         if (type == TYPE_STARS) {
             items.add(UItem.asChart(StatisticActivity.VIEW_TYPE_STACKBAR, stats_dc, revenueChartData));
             items.add(UItem.asShadow(-1, null));
-            items.add(UItem.asBlackHeader(getString(R.string.BotStarsOverview)));
+            items.add(UItem.asBlackHeader(getString(R.string.BotDiamondsOverview)));
             TLRPC.TL_payments_starsRevenueStats stats = s.getStarsRevenueStats(bot_id);
             if (stats != null && stats.status != null) {
                 availableValue.contains1 = false;
@@ -494,8 +494,8 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             items.add(UItem.asProceedOverview(availableValue));
             items.add(UItem.asProceedOverview(totalValue));
             items.add(UItem.asProceedOverview(totalProceedsValue));
-            items.add(UItem.asShadow(-2, getString(self ? R.string.SelfStarsOverviewInfo : R.string.BotStarsOverviewInfo)));
-            items.add(UItem.asBlackHeader(getString(R.string.BotStarsAvailableBalance)));
+            items.add(UItem.asShadow(-2, getString(self ? R.string.SelfDiamondsOverviewInfo : R.string.BotDiamondsOverviewInfo)));
+            items.add(UItem.asBlackHeader(getString(R.string.BotDiamondsAvailableBalance)));
             items.add(UItem.asCustom(BALANCE, balanceLayout));
             items.add(UItem.asShadow(-3, withdrawInfo));
             if (!self) {
@@ -690,7 +690,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         final int now = getConnectionsManager().getCurrentTime();
         balanceButton.setEnabled(balanceEditTextValue > 0 || balanceBlockedUntil > now);
         if (now < balanceBlockedUntil) {
-            balanceButton.setText(getString(R.string.BotStarsButtonWithdrawShortUntil), true);
+            balanceButton.setText(getString(R.string.BotDiamondsButtonWithdrawShortUntil), true);
 
             if (lock == null) {
                 lock = new SpannableStringBuilder("l");
@@ -703,14 +703,14 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             balanceButton.setSubText(buttonLockedText, true);
 
             if (withdrawalBulletin != null && withdrawalBulletin.getLayout() instanceof Bulletin.LottieLayout && withdrawalBulletin.getLayout().isAttachedToWindow()) {
-                ((Bulletin.LottieLayout) withdrawalBulletin.getLayout()).textView.setText(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.BotStarsWithdrawalToast, untilString(balanceBlockedUntil - now))));
+                ((Bulletin.LottieLayout) withdrawalBulletin.getLayout()).textView.setText(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.BotDiamondsWithdrawalToast, untilString(balanceBlockedUntil - now))));
             }
 
             AndroidUtilities.cancelRunOnUIThread(this.setBalanceButtonText);
             AndroidUtilities.runOnUIThread(this.setBalanceButtonText, 1000);
         } else {
             balanceButton.setSubText(null, true);
-            balanceButton.setText(StarsIntroActivity.replaceStars(balanceEditTextAll ? getString(R.string.BotStarsButtonWithdrawShortAll) : LocaleController.formatPluralStringSpaced("BotStarsButtonWithdrawShort", (int) balanceEditTextValue), starRef), true);
+            balanceButton.setText(StarsIntroActivity.replaceStars(balanceEditTextAll ? getString(R.string.BotDiamondsButtonWithdrawShortAll) : LocaleController.formatPluralStringSpaced("BotStarsButtonWithdrawShort", (int) balanceEditTextValue), starRef), true);
         }
     };
 
@@ -754,7 +754,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         lastStatsStatus = stats == null ? null : stats.status;
         if (stats != null) {
             rate = stats.usd_rate;
-            revenueChartData = StatisticActivity.createViewData(stats.revenue_graph, getString(R.string.BotStarsChartRevenue), 2);
+            revenueChartData = StatisticActivity.createViewData(stats.revenue_graph, getString(R.string.BotDiamondsChartRevenue), 2);
             if (revenueChartData != null && revenueChartData.chartData != null && revenueChartData.chartData.lines != null && !revenueChartData.chartData.lines.isEmpty() && revenueChartData.chartData.lines.get(0) != null) {
                 revenueChartData.showAll = true;
                 revenueChartData.chartData.lines.get(0).colorKey = Theme.key_color_yellow;

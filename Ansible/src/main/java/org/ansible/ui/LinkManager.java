@@ -1218,11 +1218,11 @@ public class LinkManager {
             return true;
         }
         if ("faq".equalsIgnoreCase(first)) {
-            Browser.openUrl(activity, LocaleController.getString(R.string.TelegramFaqUrl));
+            Browser.openUrl(activity, LocaleController.getString(R.string.AnsibleFaqUrl));
             return true;
         }
         if ("features".equalsIgnoreCase(first)) {
-            Browser.openUrl(activity, LocaleController.getString(R.string.TelegramFeaturesUrl));
+            Browser.openUrl(activity, LocaleController.getString(R.string.AnsibleFeaturesUrl));
             return true;
         }
         if ("privacy-policy".equalsIgnoreCase(first)) {

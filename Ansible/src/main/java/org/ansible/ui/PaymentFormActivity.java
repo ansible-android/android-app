@@ -4333,7 +4333,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         }
                         long stars = getStars();
                         int icon = isStars ? (isStarsGift || isStarsGiveaway ? R.raw.stars_send : R.raw.stars_topup) : R.raw.payment_success;
-                        CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.StarsGiveawaySentPopup) : isStarsGift ? getString(R.string.StarsGiftSentPopup) : getString(R.string.StarsAcquired));
+                        CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isStarsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
                         CharSequence bulletinText = AndroidUtilities.replaceTags(
                             isStars ?
                                 isStarsGiveaway ? LocaleController.formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "StarsGiftSentPopupInfo" : "StarsAcquiredInfo", (int) stars, giftUser) :
@@ -4441,7 +4441,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                     }
                                     long stars = getStars();
                                     int icon = isStars ? (isStarsGift || isStarsGiveaway ? R.raw.stars_send : R.raw.stars_topup) : R.raw.payment_success;
-                                    CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.StarsGiveawaySentPopup) : isStarsGift ? getString(R.string.StarsGiftSentPopup) : getString(R.string.StarsAcquired));
+                                    CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isStarsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
                                     CharSequence bulletinText = AndroidUtilities.replaceTags(
                                         isStars ?
                                             isStarsGiveaway ? LocaleController.formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "StarsGiftSentPopupInfo" : "StarsAcquiredInfo", (int) stars, giftUser) :

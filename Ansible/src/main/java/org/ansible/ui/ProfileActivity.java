@@ -4549,7 +4549,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else if (position == questionRow) {
                 showDialog(AlertsCreator.createSupportAlert(ProfileActivity.this, resourcesProvider));
             } else if (position == faqRow) {
-                Browser.openUrl(getParentActivity(), LocaleController.getString(R.string.TelegramFaqUrl));
+                Browser.openUrl(getParentActivity(), LocaleController.getString(R.string.AnsibleFaqUrl));
             } else if (position == policyRow) {
                 Browser.openUrl(getParentActivity(), LocaleController.getString(R.string.PrivacyPolicyUrl));
             } else if (position == sendLogsRow) {
@@ -7432,12 +7432,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             o.setLongPressSelectionEnabled(false);
             if (position == phoneRow) {
                 if (userInfo != null && userInfo.phone_calls_available) {
-                    o.add(R.drawable.msg_calls, getString(R.string.CallViaTelegram), () -> {
+                    o.add(R.drawable.msg_calls, getString(R.string.CallViaAnsible), () -> {
                         if (getParentActivity() == null) return;
                         VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                     });
                     if (userInfo.video_calls_available) {
-                        o.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaTelegram), () -> {
+                        o.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaAnsible), () -> {
                             if (getParentActivity() == null) return;
                             VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                         });
@@ -11366,7 +11366,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 } else {
                     if (userInfo != null && userInfo.stars_rating != null && userInfo.stars_rating.stars < 0) {
-                        newString2 = getString(R.string.StarRatingLevelNegative).toLowerCase(Locale.ROOT);
+                        newString2 = getString(R.string.DiamondRatingLevelNegative).toLowerCase(Locale.ROOT);
                     } else {
                         newString2 = LocaleController.getString(R.string.Online);
                     }
@@ -11572,7 +11572,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (userId == UserConfig.getInstance(currentAccount).clientUserId) {
                 onlineTextView[2].setText(LocaleController.getString(R.string.FallbackTooltip));
                 if (userInfo != null && userInfo.stars_rating != null && userInfo.stars_rating.stars < 0) {
-                    onlineTextView[3].setText(newString2 = getString(R.string.StarRatingLevelNegative).toLowerCase(Locale.ROOT));
+                    onlineTextView[3].setText(newString2 = getString(R.string.DiamondRatingLevelNegative).toLowerCase(Locale.ROOT));
                 } else {
                     onlineTextView[3].setText(LocaleController.getString(R.string.Online));
                 }
@@ -13771,14 +13771,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             if (ssb.length() > 0) ssb.append(" ");
                             ssb.append("XTR ").append(formatStarsAmountShort(stars_balance));
                         }
-                        textCell.setTextAndValueAndIcon(getString(R.string.ChannelStars), ChannelMonetizationLayout.replaceTON(StarsIntroActivity.replaceStarsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_feature_paid, true);
+                        textCell.setTextAndValueAndIcon(getString(R.string.ChannelDiamonds), ChannelMonetizationLayout.replaceTON(StarsIntroActivity.replaceStarsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_feature_paid, true);
                     } else if (position == botStarsBalanceRow) {
                         final TL_stars.StarsAmount stars_balance = BotStarsController.getInstance(currentAccount).getBotStarsBalance(userId);
                         SpannableStringBuilder ssb = new SpannableStringBuilder();
                         if (stars_balance.amount > 0) {
                             ssb.append("XTR ").append(formatStarsAmountShort(stars_balance));
                         }
-                        textCell.setTextAndValueAndIcon(getString(R.string.BotBalanceStars), ChannelMonetizationLayout.replaceTON(StarsIntroActivity.replaceStarsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_premium_main, true);
+                        textCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), ChannelMonetizationLayout.replaceTON(StarsIntroActivity.replaceStarsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_premium_main, true);
                     } else if (position == botTonBalanceRow) {
                         long ton_balance = BotStarsController.getInstance(currentAccount).getTONBalance(userId);
                         SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -13847,7 +13847,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == questionRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.AskAQuestion), R.drawable.msg2_ask_question, true);
                     } else if (position == faqRow) {
-                        textCell.setTextAndIcon(LocaleController.getString(R.string.TelegramFAQ), R.drawable.msg2_help, true);
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.AnsibleFAQ), R.drawable.msg2_help, true);
                     } else if (position == policyRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.PrivacyPolicy), R.drawable.msg2_policy, false);
                     } else if (position == sendLogsRow) {
@@ -13871,12 +13871,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == addToGroupButtonRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.AddToGroupOrChannel), R.drawable.msg_groups_create, false);
                     } else if (position == premiumRow) {
-                        textCell.setTextAndIcon(LocaleController.getString(R.string.TelegramPremium), new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumStarMenuDrawable, dp(24), dp(24)), true);
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.AnsiblePremium), new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumStarMenuDrawable, dp(24), dp(24)), true);
                         textCell.setImageLeft(23);
                     } else if (position == starsRow) {
                         StarsController c = StarsController.getInstance(currentAccount);
                         long balance = c.getBalance().amount;
-                        textCell.setTextAndValueAndIcon(LocaleController.getString(R.string.MenuTelegramStars), c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : "", new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().goldenStarMenuDrawable, dp(24), dp(24)), true);
+                        textCell.setTextAndValueAndIcon(LocaleController.getString(R.string.MenuAnsibleDiamonds), c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : "", new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().goldenStarMenuDrawable, dp(24), dp(24)), true);
                         textCell.setImageLeft(23);
                     } else if (position == tonRow) {
                         StarsController c = StarsController.getTonInstance(currentAccount);
@@ -13884,7 +13884,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         textCell.setTextAndValueAndIcon(getString(R.string.MyTON), c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : "", R.drawable.settings_gram_24, true);
                         textCell.setImageLeft(23);
                     } else if (position == businessRow) {
-                        textCell.setTextAndIcon(LocaleController.getString(R.string.TelegramBusiness), R.drawable.menu_shop, true);
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.AnsibleBusiness), R.drawable.menu_shop, true);
                         textCell.setImageLeft(23);
                     } else if (position == premiumGiftingRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.SendAGift), R.drawable.menu_gift, false);
@@ -14676,20 +14676,20 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     new SearchResult(700, getString(R.string.Filters), null, R.drawable.msg2_folder, () -> f.presentFragment(new FiltersSetupActivity())).withLink("as://settings/folders"),
                     new SearchResult(701, getString(R.string.CreateNewFilter), "createFilterRow", getString(R.string.Filters), R.drawable.msg2_folder, () -> f.presentFragment(new FiltersSetupActivity())).withLink("as://settings/folders/create"),
 
-                    isPremiumFeatureAvailable(currentAccount, -1) ? new SearchResult(800, getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.presentFragment(new PremiumPreviewFragment("settings"))) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_LIMITS) ? new SearchResult(801, getString(R.string.PremiumPreviewLimits), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_LIMITS, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_EMOJI) ? new SearchResult(802, getString(R.string.PremiumPreviewEmoji), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_EMOJI, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_UPLOAD_LIMIT) ? new SearchResult(803, getString(R.string.PremiumPreviewUploads), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_UPLOAD_LIMIT, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_DOWNLOAD_SPEED) ? new SearchResult(804, getString(R.string.PremiumPreviewDownloadSpeed), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_DOWNLOAD_SPEED, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_VOICE_TO_TEXT) ? new SearchResult(805, getString(R.string.PremiumPreviewVoiceToText), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_VOICE_TO_TEXT, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ADS) ? new SearchResult(806, getString(R.string.PremiumPreviewNoAds), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ADS, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_REACTIONS) ? new SearchResult(807, getString(R.string.PremiumPreviewReactions), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_REACTIONS, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_STICKERS) ? new SearchResult(808, getString(R.string.PremiumPreviewStickers), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_STICKERS, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ADVANCED_CHAT_MANAGEMENT) ? new SearchResult(809, getString(R.string.PremiumPreviewAdvancedChatManagement), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ADVANCED_CHAT_MANAGEMENT, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_PROFILE_BADGE) ? new SearchResult(810, getString(R.string.PremiumPreviewProfileBadge), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_PROFILE_BADGE, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_AVATARS) ? new SearchResult(811, getString(R.string.PremiumPreviewAnimatedProfiles), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_AVATARS, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_APPLICATION_ICONS) ? new SearchResult(812, getString(R.string.PremiumPreviewAppIcon), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_APPLICATION_ICONS, false).setForceAbout())) : null,
-                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_EMOJI_STATUS) ? new SearchResult(813, getString(R.string.PremiumPreviewEmojiStatus), getString(R.string.TelegramPremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_EMOJI_STATUS, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, -1) ? new SearchResult(800, getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.presentFragment(new PremiumPreviewFragment("settings"))) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_LIMITS) ? new SearchResult(801, getString(R.string.PremiumPreviewLimits), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_LIMITS, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_EMOJI) ? new SearchResult(802, getString(R.string.PremiumPreviewEmoji), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_EMOJI, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_UPLOAD_LIMIT) ? new SearchResult(803, getString(R.string.PremiumPreviewUploads), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_UPLOAD_LIMIT, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_DOWNLOAD_SPEED) ? new SearchResult(804, getString(R.string.PremiumPreviewDownloadSpeed), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_DOWNLOAD_SPEED, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_VOICE_TO_TEXT) ? new SearchResult(805, getString(R.string.PremiumPreviewVoiceToText), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_VOICE_TO_TEXT, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ADS) ? new SearchResult(806, getString(R.string.PremiumPreviewNoAds), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ADS, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_REACTIONS) ? new SearchResult(807, getString(R.string.PremiumPreviewReactions), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_REACTIONS, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_STICKERS) ? new SearchResult(808, getString(R.string.PremiumPreviewStickers), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_STICKERS, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ADVANCED_CHAT_MANAGEMENT) ? new SearchResult(809, getString(R.string.PremiumPreviewAdvancedChatManagement), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ADVANCED_CHAT_MANAGEMENT, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_PROFILE_BADGE) ? new SearchResult(810, getString(R.string.PremiumPreviewProfileBadge), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_PROFILE_BADGE, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_AVATARS) ? new SearchResult(811, getString(R.string.PremiumPreviewAnimatedProfiles), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_AVATARS, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_APPLICATION_ICONS) ? new SearchResult(812, getString(R.string.PremiumPreviewAppIcon), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_APPLICATION_ICONS, false).setForceAbout())) : null,
+                    isPremiumFeatureAvailable(currentAccount, PremiumPreviewFragment.PREMIUM_FEATURE_EMOJI_STATUS) ? new SearchResult(813, getString(R.string.PremiumPreviewEmojiStatus), getString(R.string.AnsiblePremium), R.drawable.msg_settings_premium, () -> f.showDialog(new PremiumFeatureBottomSheet(f, PremiumPreviewFragment.PREMIUM_FEATURE_EMOJI_STATUS, false).setForceAbout())) : null,
 
                     new SearchResult(900, getString(R.string.PowerUsage), null, R.drawable.msg2_battery, () -> f.presentFragment(new LiteModeSettingsActivity())).withLink("as://settings/power-saving"),
                     new SearchResult(901, getString(R.string.LiteOptionsStickers), getString(R.string.PowerUsage), R.drawable.msg2_battery, () -> {
@@ -14793,7 +14793,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     MessagesController.getInstance(currentAccount).getTranslateController().isContextTranslateEnabled() ? new SearchResult(406, getString(R.string.DoNotTranslate), getString(R.string.Language), R.drawable.msg2_language, () -> f.presentFragment(new LanguageSelectActivity())).withLink("as://settings/language/do-not-translate") : null,
 
                     new SearchResult(402, getString(R.string.AskAQuestion), getString(R.string.SettingsHelp), R.drawable.msg2_help, () -> f.showDialog(AlertsCreator.createSupportAlert(f, null))).withLink("as://settings/ask-question"),
-                    new SearchResult(403, getString(R.string.TelegramFAQ), getString(R.string.SettingsHelp), R.drawable.msg2_help, () -> Browser.openUrl(f.getParentActivity(), getString(R.string.TelegramFaqUrl))).withLink("as://settings/faq"),
+                    new SearchResult(403, getString(R.string.AnsibleFAQ), getString(R.string.SettingsHelp), R.drawable.msg2_help, () -> Browser.openUrl(f.getParentActivity(), getString(R.string.AnsibleFaqUrl))).withLink("as://settings/faq"),
                     new SearchResult(404, getString(R.string.PrivacyPolicy), getString(R.string.SettingsHelp), R.drawable.msg2_help, () -> Browser.openUrl(f.getParentActivity(), getString(R.string.PrivacyPolicyUrl))).withLink("as://settings/privacy-policy"),
             };
         }
@@ -14816,7 +14816,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             loadingFaqPage = true;
             final TLRPC.TL_messages_getWebPage req2 = new TLRPC.TL_messages_getWebPage();
-            req2.url = LocaleController.getString(R.string.TelegramFaqUrl);
+            req2.url = LocaleController.getString(R.string.AnsibleFaqUrl);
             req2.hash = 0;
             ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (response2, error2) -> {
                 if (response2 instanceof TLRPC.TL_messages_webPage) {
@@ -16738,7 +16738,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (isSelf) {
                     textView[0].setText(AndroidUtilities.replaceTags(formatPluralStringComma("StarRatingLevelNegativeYou", (int) debt)));
                 } else {
-                    textView[0].setText(AndroidUtilities.replaceTags(formatString(R.string.StarRatingLevelNegativeOther, DialogObject.getName(getDialogId()))));
+                    textView[0].setText(AndroidUtilities.replaceTags(formatString(R.string.DiamondRatingLevelNegativeOther, DialogObject.getName(getDialogId()))));
                 }
             } else {
                 sb = new SpannableStringBuilder();
@@ -16747,7 +16747,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     formatPluralStringComma("StarRatingFuturePendingPoints", (int) points)
                 ));
                 sb.append(" ");
-                sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.StarRatingFuturePendingPointsPreview), () -> {
+                sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.DiamondRatingFuturePendingPointsPreview), () -> {
                     limitPreviewView.animateStarRating(userFull.stars_rating, userFull.stars_my_pending_rating);
                     update.run(true);
                 }), true));
@@ -16764,7 +16764,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 formatPluralStringComma("StarRatingFuturePreview2", (int) points)
             ));
             sb.append(" ");
-            sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.StarRatingFuturePendingPointsPreviewBack), () -> {
+            sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.DiamondRatingFuturePendingPointsPreviewBack), () -> {
                 limitPreviewView.animateStarRating(userFull.stars_my_pending_rating, userFull.stars_rating);
                 update.run(false);
             }), true));
@@ -16778,7 +16778,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         final TextView titleView = new TextView(context);
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setGravity(Gravity.CENTER);
-        titleView.setText(getString(R.string.StarRatingTitle));
+        titleView.setText(getString(R.string.DiamondRatingTitle));
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         linearLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 6));
@@ -16786,9 +16786,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         final TextView titleView2 = new TextView(context);
         titleView2.setGravity(Gravity.CENTER);
         if (userFull.id == UserConfig.getInstance(currentAccount).getClientUserId()) {
-            titleView2.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.StarRatingSelfDescription)));
+            titleView2.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.DiamondRatingSelfDescription)));
         } else {
-            titleView2.setText(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StarRatingDescription, DialogObject.getName(getDialogId()))));
+            titleView2.setText(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DiamondRatingDescription, DialogObject.getName(getDialogId()))));
         }
         titleView2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         titleView2.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
@@ -16796,8 +16796,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         {
             PremiumFeatureCell cell = new PremiumFeatureCell(context, resourcesProvider);
-            cell.title.setText(getString(R.string.StarRatingTitle1));
-            cell.description.setText(LocaleController.formatSpannable(R.string.StarRatingDescription1, createNewSpan(getString(R.string.StarRatingAdded), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider))));
+            cell.title.setText(getString(R.string.DiamondRatingTitle1));
+            cell.description.setText(LocaleController.formatSpannable(R.string.DiamondRatingDescription1, createNewSpan(getString(R.string.DiamondRatingAdded), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider))));
             cell.nextIcon.setVisibility(View.GONE);
             cell.imageView.setImageResource(R.drawable.menu_gift);
             cell.imageView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
@@ -16805,8 +16805,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
         {
             PremiumFeatureCell cell = new PremiumFeatureCell(context, resourcesProvider);
-            cell.title.setText(getString(R.string.StarRatingTitle2));
-            cell.description.setText(LocaleController.formatSpannable(R.string.StarRatingDescription2, createNewSpan(getString(R.string.StarRatingAdded), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider))));
+            cell.title.setText(getString(R.string.DiamondRatingTitle2));
+            cell.description.setText(LocaleController.formatSpannable(R.string.DiamondRatingDescription2, createNewSpan(getString(R.string.DiamondRatingAdded), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider))));
             cell.nextIcon.setVisibility(View.GONE);
             cell.imageView.setImageResource(R.drawable.menu_stars_gift);
             cell.imageView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
@@ -16814,8 +16814,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
         {
             PremiumFeatureCell cell = new PremiumFeatureCell(context, resourcesProvider);
-            cell.title.setText(getString(R.string.StarRatingTitle3));
-            cell.description.setText(LocaleController.formatSpannable(R.string.StarRatingDescription3, createNewSpan(getString(R.string.StarRatingDeduces), Theme.isCurrentThemeDark() ? ColorUtils.blendARGB(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), Color.BLACK, 0.25f): Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider))));
+            cell.title.setText(getString(R.string.DiamondRatingTitle3));
+            cell.description.setText(LocaleController.formatSpannable(R.string.DiamondRatingDescription3, createNewSpan(getString(R.string.DiamondRatingDeduces), Theme.isCurrentThemeDark() ? ColorUtils.blendARGB(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), Color.BLACK, 0.25f): Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider))));
             cell.nextIcon.setVisibility(View.GONE);
             cell.imageView.setImageResource(R.drawable.menu_refund);
             cell.imageView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));

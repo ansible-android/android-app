@@ -1638,7 +1638,7 @@ public class AlertsCreator {
         ArrayList<Integer> types = new ArrayList<>();
         int providers = MessagesController.getInstance(currentAccount).availableMapProviders;
         if ((providers & 1) != 0) {
-            arrayList.add(LocaleController.getString(R.string.MapPreviewProviderTelegram));
+            arrayList.add(LocaleController.getString(R.string.MapPreviewProviderAnsible));
             types.add(0);
         }
         if ((providers & 2) != 0) {
@@ -2369,7 +2369,7 @@ public class AlertsCreator {
         sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessageMulti1", totalChats)));
         sb.append(" ");
         sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessageMulti2", (int) totalPrice, LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessageMulti2Messages", messagesCount * Math.max(1, totalChats)))));
-        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedStarsConfirmTitle), sb, getString(R.string.MessageLockedStarsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessagePay", messagesCount), dontAsk -> {
+        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedDiamondsConfirmTitle), sb, getString(R.string.MessageLockedDiamondsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessagePay", messagesCount), dontAsk -> {
             if (dontAsk) {
                 SharedPreferences.Editor e = MessagesController.getInstance(currentAccount).getMainSettings().edit();
                 for (long dialogId : dialogIds) {
@@ -2492,7 +2492,7 @@ public class AlertsCreator {
             sb.append(" ");
             sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessage2Many2", messagesCount)));
         }
-        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedStarsConfirmTitle), sb, getString(R.string.MessageLockedStarsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessagePay", messagesCount), dontAsk -> {
+        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedDiamondsConfirmTitle), sb, getString(R.string.MessageLockedDiamondsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessagePay", messagesCount), dontAsk -> {
             if (dontAsk) {
                 MessagesController.getInstance(currentAccount).getMainSettings().edit().putLong("ask_paid_message_" + dialogId + "_price", stars).apply();
                 StarsController.getInstance(currentAccount).justAgreedToNotAskDialogs.put(dialogId, System.currentTimeMillis());
@@ -8270,15 +8270,15 @@ public class AlertsCreator {
         if (hasUnsafePaidSuggestedPostStars) {
             final int hours = (int) MessagesController.getInstance(currentAccount).config.starsSuggestedPostAgeMin.get(TimeUnit.HOURS);
 
-            builder.setTitle(getString(R.string.SuggestionStarsWillBeLost));
-            builder.setMessage(replaceTags(LocaleController.formatString(R.string.SuggestionStarsWillBeLostInfo, hours)));
-            builder.setPositiveButton(LocaleController.getString(R.string.SuggestionStarsWillBeLostDelete), deleteAction);
+            builder.setTitle(getString(R.string.SuggestionDiamondsWillBeLost));
+            builder.setMessage(replaceTags(LocaleController.formatString(R.string.SuggestionDiamondsWillBeLostInfo, hours)));
+            builder.setPositiveButton(LocaleController.getString(R.string.SuggestionDiamondsWillBeLostDelete), deleteAction);
         } else if (hasUnsafePaidSuggestedPostTon) {
             final int hours = (int) MessagesController.getInstance(currentAccount).config.starsSuggestedPostAgeMin.get(TimeUnit.HOURS);
 
             builder.setTitle(getString(R.string.SuggestionTONWillBeLost));
             builder.setMessage(replaceTags(LocaleController.formatString(R.string.SuggestionTONWillBeLostInfo, hours)));
-            builder.setPositiveButton(LocaleController.getString(R.string.SuggestionStarsWillBeLostDelete), deleteAction);
+            builder.setPositiveButton(LocaleController.getString(R.string.SuggestionDiamondsWillBeLostDelete), deleteAction);
         } else if (isActiveGiveawayAndOwner && !isSavedMessages) {
             builder.setTitle(LocaleController.getString(R.string.BoostingGiveawayDeleteMsgTitle));
             builder.setMessage(replaceTags(LocaleController.formatString(R.string.BoostingGiveawayDeleteMsgText, giveawayEndDate)));

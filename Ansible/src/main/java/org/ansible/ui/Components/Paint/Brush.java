@@ -416,7 +416,7 @@ public abstract class Brush {
 
             @Override
             public String getShapeName() {
-                return LocaleController.getString(R.string.PaintStar);
+                return LocaleController.getString(R.string.PaintDiamond);
             }
 
             @Override

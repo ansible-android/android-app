@@ -14848,10 +14848,10 @@ public class ChatActivity extends BaseFragment implements
                         replyObjectTextView.setText(LocaleController.getString(R.string.SuggestAPostBelowSubtitle));
                     } else if (messageSuggestionParams.time <= 0) {
                         replyObjectTextView.setText(StarsIntroActivity.replaceStarsWithPlain(isTon,
-                                LocaleController.formatString(R.string.SuggestAPostBelowSubtitleStars, amountString ), 0.66f, spanArr));
+                                LocaleController.formatString(R.string.SuggestAPostBelowSubtitleDiamonds, amountString ), 0.66f, spanArr));
                     } else {
                         replyObjectTextView.setText(StarsIntroActivity.replaceStarsWithPlain(isTon,
-                                LocaleController.formatSpannable(R.string.SuggestAPostBelowSubtitleStarsAndTime, amountString,
+                                LocaleController.formatSpannable(R.string.SuggestAPostBelowSubtitleDiamondsAndTime, amountString,
                                         Emoji.replaceEmoji("\uD83D\uDCC6 " + MessageSuggestionOfferSheet.formatDateTime(messageSuggestionParams.time), replyObjectTextView.getPaint().getFontMetricsInt(), true)
                                 ), 0.66f, spanArr));
                     }
@@ -15366,10 +15366,10 @@ public class ChatActivity extends BaseFragment implements
                     replyObjectTextView.setText(LocaleController.getString(R.string.SuggestAPostBelowSubtitle));
                 } else if (suggestionParams.time <= 0) {
                     replyObjectTextView.setText(StarsIntroActivity.replaceStarsWithPlain(isTon,
-                        LocaleController.formatString(R.string.SuggestAPostBelowSubtitleStars, amountString ), 0.66f, spanArr));
+                        LocaleController.formatString(R.string.SuggestAPostBelowSubtitleDiamonds, amountString ), 0.66f, spanArr));
                 } else {
                     replyObjectTextView.setText(StarsIntroActivity.replaceStarsWithPlain(isTon,
-                        LocaleController.formatSpannable(R.string.SuggestAPostBelowSubtitleStarsAndTime, amountString,
+                        LocaleController.formatSpannable(R.string.SuggestAPostBelowSubtitleDiamondsAndTime, amountString,
                             Emoji.replaceEmoji("\uD83D\uDCC6 " + MessageSuggestionOfferSheet.formatDateTime(suggestionParams.time), replyObjectTextView.getPaint().getFontMetricsInt(), true)
                     ), 0.66f, spanArr));
                 }
@@ -29521,7 +29521,7 @@ public class ChatActivity extends BaseFragment implements
                     span.full = false;
                     emoji.setSpan(span, 0, emoji.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-                SpannableString link = new SpannableString(LocaleController.getString(R.string.TelegramPremium));
+                SpannableString link = new SpannableString(LocaleController.getString(R.string.AnsiblePremium));
                 link.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(@NonNull View view) {
@@ -29557,7 +29557,7 @@ public class ChatActivity extends BaseFragment implements
                     totalText.append("\n\n");
                 }
                 final ColoredImageSpan[] span = new ColoredImageSpan[1];
-                totalText.append(StarsIntroActivity.replaceStars(AndroidUtilities.replaceSingleTag(formatString(R.string.MessageLockedStarsRemoveFeeShort, DialogObject.getShortName(user_id), LocaleController.formatNumber(showCost, ',')), () -> {
+                totalText.append(StarsIntroActivity.replaceStars(AndroidUtilities.replaceSingleTag(formatString(R.string.MessageLockedDiamondsRemoveFeeShort, DialogObject.getShortName(user_id), LocaleController.formatNumber(showCost, ',')), () -> {
                     StarsController.getInstance(currentAccount).getPaidRevenue(user_id, parent_id, revenue -> {
                         if (getContext() == null) return;
                         AlertsCreator.showAlertWithCheckboxWithBalance(
@@ -32639,11 +32639,11 @@ public class ChatActivity extends BaseFragment implements
             if (mfChat != null && currentChat != null && !ChatObject.canManageMonoForum(currentAccount, currentChat)) {
                 final long send_paid_messages_stars = currentChat.send_paid_messages_stars;
                 final CharSequence title = AndroidUtilities.replaceTags(StarsIntroActivity.replaceStars(send_paid_messages_stars > 0 ?
-                    formatString(R.string.SuggestionLockedStars, DialogObject.getShortName(-mfChat.id), LocaleController.formatNumber(send_paid_messages_stars, ',')):
-                    formatString(R.string.SuggestionUnlockedStars, DialogObject.getShortName(-mfChat.id)), 1.0f));
+                    formatString(R.string.SuggestionLockedDiamonds, DialogObject.getShortName(-mfChat.id), LocaleController.formatNumber(send_paid_messages_stars, ',')):
+                    formatString(R.string.SuggestionUnlockedDiamonds, DialogObject.getShortName(-mfChat.id)), 1.0f));
 
                 final CharSequence button = send_paid_messages_stars > 0 ?
-                    LocaleController.getString(R.string.MessageStarsUnlock) : null;
+                    LocaleController.getString(R.string.MessageDiamondsUnlock) : null;
 
                 greetingsViewContainer.setPremiumLock(true, true, title, button, v -> {
                     final long balance = StarsController.getInstance(currentAccount).getBalance().amount;
@@ -32666,7 +32666,7 @@ public class ChatActivity extends BaseFragment implements
                 });
             } else if (userInfo != null && userInfo.send_paid_messages_stars > 0) {
                 final long send_paid_messages_stars = userInfo.send_paid_messages_stars;
-                greetingsViewContainer.setPremiumLock(send_paid_messages_stars > 0, AndroidUtilities.replaceTags(StarsIntroActivity.replaceStars(formatString(R.string.MessageLockedStars, DialogObject.getShortName(dialog_id), LocaleController.formatNumber(userInfo.send_paid_messages_stars, ',')), 1.0f)), LocaleController.getString(R.string.MessageStarsUnlock), v -> {
+                greetingsViewContainer.setPremiumLock(send_paid_messages_stars > 0, AndroidUtilities.replaceTags(StarsIntroActivity.replaceStars(formatString(R.string.MessageLockedDiamonds, DialogObject.getShortName(dialog_id), LocaleController.formatNumber(userInfo.send_paid_messages_stars, ',')), 1.0f)), LocaleController.getString(R.string.MessageDiamondsUnlock), v -> {
                     final long balance = StarsController.getInstance(currentAccount).getBalance().amount;
                     if (balance < send_paid_messages_stars) {
                         new StarsIntroActivity.StarsNeededSheet(getContext(), getResourceProvider(), send_paid_messages_stars, StarsIntroActivity.StarsNeededSheet.TYPE_PRIVATE_MESSAGE, DialogObject.getShortName(getDialogId()), this::updateBottomOverlay, getDialogId()).show();
@@ -32823,7 +32823,7 @@ public class ChatActivity extends BaseFragment implements
                 final TLRPC.ChatFull chatFull = getMessagesController().getChatFull(chatId);
                 if (chatFull != null && !chatFull.paid_reactions_available && !(reactors != null && !reactors.isEmpty())) {
                     final TLRPC.Chat chat = getMessagesController().getChat(chatId);
-                    BulletinFactory.of(this).createSimpleBulletin(R.raw.stars_topup, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StarsReactionsDisabled, (chat != null ? chat.title : "")))).show(true);
+                    BulletinFactory.of(this).createSimpleBulletin(R.raw.stars_topup, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DiamondsReactionsDisabled, (chat != null ? chat.title : "")))).show(true);
                     return;
                 }
                 StarsController.getInstance(currentAccount).commitPaidReaction();
@@ -32841,7 +32841,7 @@ public class ChatActivity extends BaseFragment implements
             final TLRPC.ChatFull chatFull = getMessagesController().getChatFull(chatId);
             if (chatFull != null && !chatFull.paid_reactions_available) {
                 final TLRPC.Chat chat = getMessagesController().getChat(chatId);
-                BulletinFactory.of(this).createSimpleBulletin(R.raw.stars_topup, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StarsReactionsDisabled, (chat != null ? chat.title : "")))).show(true);
+                BulletinFactory.of(this).createSimpleBulletin(R.raw.stars_topup, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DiamondsReactionsDisabled, (chat != null ? chat.title : "")))).show(true);
                 return;
             }
             StarsController.PendingPaidReactions pending = StarsController.getInstance(currentAccount).sendPaidReaction(primaryMessage, ChatActivity.this, +1, true, true, null);
@@ -40094,7 +40094,7 @@ public class ChatActivity extends BaseFragment implements
 
                         if (isDirectAdmin &&  amount.currency == AmountUtils.Currency.STARS) {
                             bulletin[0] = BulletinFactory.of(Bulletin.BulletinWindow.make(getContext()), resourceProvider)
-                                    .createSimpleBulletin(R.raw.info, getString(R.string.SuggestedMessageAcceptStarsDisclaimer), 10)
+                                    .createSimpleBulletin(R.raw.info, getString(R.string.SuggestedMessageAcceptDiamondsDisclaimer), 10)
                                     .setDuration(60_000)
                                     .show(true);
                         }
@@ -44483,7 +44483,7 @@ public class ChatActivity extends BaseFragment implements
         final boolean isMail = str.startsWith("mailto:");
 
         if (!isMail) {
-            options.add(customTabs && !isHashtag ? R.drawable.menu_website : R.drawable.msg_openin, getString(customTabs && !isHashtag ? R.string.OpenInTelegramBrowser2 : R.string.Open), () -> {
+            options.add(customTabs && !isHashtag ? R.drawable.menu_website : R.drawable.msg_openin, getString(customTabs && !isHashtag ? R.string.OpenInAnsibleBrowser2 : R.string.Open), () -> {
                 if (str.startsWith("video?")) {
                     didPressMessageUrl(span, false, messageObject, cell);
                 } else if (customTabs && !isHashtag) {
@@ -44511,7 +44511,7 @@ public class ChatActivity extends BaseFragment implements
                 }
             });
         } else if (!isMail && !isHashtag && !customTabs && allowCustomTabs && !inAppBrowser) {
-            options.add(R.drawable.menu_website, getString(R.string.OpenInTelegramBrowser2), () -> {
+            options.add(R.drawable.menu_website, getString(R.string.OpenInAnsibleBrowser2), () -> {
                 if (MessagesController.getInstance(currentAccount).isWebBrowserExceptionsLimitReached(false)) {
                     Browser.openInTelegramBrowser(getParentActivity(), str, null);
                 } else {
@@ -44971,7 +44971,7 @@ public class ChatActivity extends BaseFragment implements
                 options.addGap();
             }
             if (user == null) {
-                options.add(R.drawable.menu_invit_ansible, getString(R.string.InviteToTelegramShort), () -> {
+                options.add(R.drawable.menu_invit_ansible, getString(R.string.InviteToAnsibleShort), () -> {
                     if (getParentActivity() == null) return;
                     try {
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null));
@@ -44989,14 +44989,14 @@ public class ChatActivity extends BaseFragment implements
                     BulletinFactory.of(this).createCopyBulletin(LocaleController.getString(R.string.PhoneCopied)).show();
                 });
                 options.addGap();
-                options.addText(getString(R.string.NumberNotOnTelegram), 13);
+                options.addText(getString(R.string.NumberNotOnAnsible), 13);
             } else {
                 options.add(R.drawable.msg_discussion, getString(R.string.SendMessage), () -> presentFragment(ChatActivity.of(user.id)));
                 if (!UserObject.isUserSelf(user)) {
-                    options.add(R.drawable.msg_calls, getString(R.string.VoiceCallViaTelegram), () -> {
+                    options.add(R.drawable.msg_calls, getString(R.string.VoiceCallViaAnsible), () -> {
                         VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                     });
-                    options.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaTelegram), () -> {
+                    options.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaAnsible), () -> {
                         VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                     });
                 }

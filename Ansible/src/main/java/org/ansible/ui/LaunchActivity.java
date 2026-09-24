@@ -4948,7 +4948,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                                             if (chat != null) {
                                                 AndroidUtilities.runOnUIThread(() -> {
-                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, LocaleController.getString(R.string.StarsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsSubscriptionCompletedText", (int) stars, chat.title))).show(true);
+                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, LocaleController.getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsSubscriptionCompletedText", (int) stars, chat.title))).show(true);
                                                 }, 250);
                                             }
                                         });
@@ -7246,14 +7246,14 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     builder.setPositiveButton(LocaleController.getString(R.string.Cancel), null);
                     builder.setNegativeButton(LocaleController.getString(R.string.LogOut), (dialog, which) -> MessagesController.getInstance(currentAccount).performLogout(2));
                 } else if (type.startsWith("PREMIUM_")) {
-                    builder.setTitle(LocaleController.getString(R.string.TelegramPremium));
+                    builder.setTitle(LocaleController.getString(R.string.AnsiblePremium));
                     builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                 } else {
                     builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                 }
             } else if (reason == 3) {
                 builder.setTitle(LocaleController.getString(R.string.Proxy));
-                builder.setMessage(LocaleController.getString(R.string.UseProxyTelegramError));
+                builder.setMessage(LocaleController.getString(R.string.UseProxyAnsibleError));
                 builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                 proxyErrorDialog = showAlertDialog(builder);
                 return;

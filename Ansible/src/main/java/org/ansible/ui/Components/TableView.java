@@ -170,12 +170,12 @@ public class TableView extends TableLayout {
         boolean clickable = true;
         if (did == UserObject.ANONYMOUS) {
             clickable = false;
-            username = getString(R.string.StarsTransactionHidden);
+            username = getString(R.string.DiamondsTransactionHidden);
             CombinedDrawable iconDrawable = getPlatformDrawable("anonymous");
             iconDrawable.setIconSize(dp(16), dp(16));
             avatarSpan.setImageDrawable(iconDrawable);
         } else if (UserObject.isService(did)) {
-            username = getString(R.string.StarsTransactionUnknown);
+            username = getString(R.string.DiamondsTransactionUnknown);
             CombinedDrawable iconDrawable = getPlatformDrawable("fragment");
             iconDrawable.setIconSize(dp(16), dp(16));
             avatarSpan.setImageDrawable(iconDrawable);
@@ -281,14 +281,14 @@ public class TableView extends TableLayout {
             deleted = false;
             clickable = false;
             unknown = true;
-            username = getString(R.string.StarsTransactionHidden);
+            username = getString(R.string.DiamondsTransactionHidden);
             CombinedDrawable iconDrawable = getPlatformDrawable("anonymous");
             iconDrawable.setIconSize(dp(16), dp(16));
             avatarSpan.setImageDrawable(iconDrawable);
         } else if (UserObject.isService(did)) {
             deleted = false;
             unknown = true;
-            username = getString(R.string.StarsTransactionUnknown);
+            username = getString(R.string.DiamondsTransactionUnknown);
             CombinedDrawable iconDrawable = getPlatformDrawable("fragment");
             iconDrawable.setIconSize(dp(16), dp(16));
             avatarSpan.setImageDrawable(iconDrawable);

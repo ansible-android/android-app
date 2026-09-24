@@ -224,7 +224,7 @@ public class HighlightMessageSheet {
         final boolean[] first = new boolean[] { true };
         setStars[0] = newStars -> {
             stars[0] = newStars;
-            button.setText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.StarsAddHighlightedMessage, LocaleController.formatNumber(stars[0], ',')), starRef), true);
+            button.setText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.DiamondsAddHighlightedMessage, LocaleController.formatNumber(stars[0], ',')), starRef), true);
             message.stars = stars[0];
             commentView.set(message);
 

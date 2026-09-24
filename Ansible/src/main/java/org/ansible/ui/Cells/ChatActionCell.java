@@ -2091,7 +2091,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             if (messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSuggestedPostApproval && ((TLRPC.TL_messageActionSuggestedPostApproval) messageObject.messageOwner.action).balance_too_low) {
                 final TLRPC.TL_messageActionSuggestedPostApproval approval = (TLRPC.TL_messageActionSuggestedPostApproval) messageObject.messageOwner.action;
                 final String action = (!ChatObject.canManageMonoForum(currentAccount, messageObject.getDialogId())) ?
-                    getString(R.string.StarsBuy) : null;
+                    getString(R.string.DiamondsBuy) : null;
 
                 createGiftPremiumLayouts(null, null, null, text, false, action, 11, null, giftRectSize, false, true);
                 textLayout = null;
@@ -2123,8 +2123,8 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                     createGiftPremiumLayouts(
                         formatPluralStringComma("ActionGiftStarsTitle", (int) stars),
                         null,
-                        null, AndroidUtilities.replaceTags(currentMessageObject.isOutOwner() ? formatString(R.string.ActionGiftStarsSubtitle, UserObject.getForcedFirstName(user)) : getString(R.string.ActionGiftStarsSubtitleYou)),
-                        false, getString(R.string.ActionGiftStarsView),
+                        null, AndroidUtilities.replaceTags(currentMessageObject.isOutOwner() ? formatString(R.string.ActionGiftDiamondsSubtitle, UserObject.getForcedFirstName(user)) : getString(R.string.ActionGiftDiamondsSubtitleYou)),
+                        false, getString(R.string.ActionGiftDiamondsView),
                             11, null, giftRectSize,
                         true,
                             false);
@@ -2147,7 +2147,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                         null,
                         null, getString(R.string.Gift2ActionUpgradeRefundedText),
                         false,
-                        getString(R.string.ActionGiftStarsView),
+                        getString(R.string.ActionGiftDiamondsView),
                         12, getString(R.string.Gift2UniqueRibbon),
                         giftRectSize,
                         true,
@@ -2251,7 +2251,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                     if (action.gift != null && action.gift.limited) {
                         ribbon = LocaleController.formatString(R.string.Gift2Limited1OfRibbon, action.gift.availability_total > 1500 ? AndroidUtilities.formatWholeNumber(action.gift.availability_total, 0) : action.gift.availability_total);
                     }
-                    CharSequence buttonText = getString(R.string.ActionGiftStarsView);
+                    CharSequence buttonText = getString(R.string.ActionGiftDiamondsView);
                     if (!messageObject.isOutOwner() || action.forceIn || freeUpgrade) {
                         if (!messageObject.isOutOwner() && freeUpgrade) {
                             SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -2285,7 +2285,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                         getString(R.string.ActionGiftTonTitle),
                         null,
                         null, currentMessageObject.messageText,
-                        false, getString(R.string.ActionGiftStarsView),
+                        false, getString(R.string.ActionGiftDiamondsView),
                         11, null,
                         giftRectSize,
                         true,
@@ -2297,10 +2297,10 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                     textY = 0;
                 } else {
                     createGiftPremiumLayouts(
-                        getString(R.string.ActionStarGiveawayPrizeTitle),
+                        getString(R.string.ActionDiamondGiveawayPrizeTitle),
                         null,
                         null, currentMessageObject.messageText,
-                        false, getString(R.string.ActionGiftStarsView),
+                        false, getString(R.string.ActionGiftDiamondsView),
                             11, null,
                         giftRectSize,
                         true,
