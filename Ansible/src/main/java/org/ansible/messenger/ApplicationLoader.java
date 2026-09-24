@@ -289,6 +289,9 @@ public class ApplicationLoader extends Application {
 
         super.onCreate();
 
+        // Как можно раньше: всё, что упадёт после этой строки, попадёт в отчёт.
+        CrashReporter.init(this);
+
         // AndroidUtilities must be initialized before FileLog
         final String helloWorld = AndroidUtilities.getHelloWorld();
 
@@ -611,6 +614,10 @@ public class ApplicationLoader extends Application {
     }
 
     public static void appCenterLog(Throwable e) {
+        // Имя метода осталось от App Center, чтобы не разводиться с апстримом
+        // на каждом переносе: дельту мы накладываем патчем. Сам App Center
+        // вырезан, исключения теперь уезжают на наш приёмник.
+        CrashReporter.capture(e);
         applicationLoaderInstance.appCenterLogInternal(e);
     }
 

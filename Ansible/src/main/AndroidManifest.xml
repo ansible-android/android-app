@@ -113,6 +113,11 @@
     >
         <!-- usesCleartextTraffic for browser supporting opening http:// links -->
 
+        <!-- SDK отчётов о падениях поднимает себя сам через ContentProvider.
+             Выключаем: настройки приватности выставляются в CrashReporter, и
+             до них ни одно событие уйти не должно. -->
+        <meta-data android:name="io.sentry.auto-init" android:value="false" />
+
         <activity-alias
             android:enabled="true"
             android:name="org.ansible.messenger.DefaultIcon"
