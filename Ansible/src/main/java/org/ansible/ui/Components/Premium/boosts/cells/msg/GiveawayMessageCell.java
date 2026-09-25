@@ -297,9 +297,9 @@ public class GiveawayMessageCell {
 
         SpannableStringBuilder subTitleBuilder = new SpannableStringBuilder();
         if (isStars) {
-            subTitleBuilder.append(replaceTags(formatPluralStringComma("BoostingStarsGiveawayMsgInfoPlural1", (int) giveaway.stars)));
+            subTitleBuilder.append(replaceTags(formatPluralStringComma("BoostingDiamondsGiveawayMsgInfoPlural1", (int) giveaway.stars)));
             subTitleBuilder.append("\n");
-            subTitleBuilder.append(replaceTags(formatPluralString("BoostingStarsGiveawayMsgInfoPlural2", giveaway.quantity)));
+            subTitleBuilder.append(replaceTags(formatPluralString("BoostingDiamondsGiveawayMsgInfoPlural2", giveaway.quantity)));
         } else {
             subTitleBuilder.append(replaceTags(formatPluralStringComma("BoostingGiveawayMsgInfoPlural1", giveaway.quantity)));
             subTitleBuilder.append("\n");

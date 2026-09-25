@@ -2121,7 +2121,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                 if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftStars) {
                     stars = ((TLRPC.TL_messageActionGiftStars) messageObject.messageOwner.action).stars;
                     createGiftPremiumLayouts(
-                        formatPluralStringComma("ActionGiftStarsTitle", (int) stars),
+                        formatPluralStringComma("ActionGiftDiamondsTitle", (int) stars),
                         null,
                         null, AndroidUtilities.replaceTags(currentMessageObject.isOutOwner() ? formatString(R.string.ActionGiftDiamondsSubtitle, UserObject.getForcedFirstName(user)) : getString(R.string.ActionGiftDiamondsSubtitleYou)),
                         false, getString(R.string.ActionGiftDiamondsView),

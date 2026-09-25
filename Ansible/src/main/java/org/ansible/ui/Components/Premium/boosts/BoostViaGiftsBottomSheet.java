@@ -263,7 +263,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                                         final ChatActivity chatActivity = ChatActivity.of(dialogId);
                                         chatActivity.whenFullyVisible(() -> {
                                             BulletinFactory.of(chatActivity)
-                                                .createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsGiveawaySentPopup), AndroidUtilities.replaceTags(LocaleController.formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) stars)))
+                                                .createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsGiveawaySentPopup), AndroidUtilities.replaceTags(LocaleController.formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) stars)))
                                                 .show(true);
                                         });
                                         lastFragment.presentFragment(chatActivity);
@@ -314,7 +314,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                                 .createSimpleBulletin(
                                     R.raw.stars_send,
                                     getString(R.string.DiamondsGiveawaySentPopup),
-                                    AndroidUtilities.replaceTags(formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) option.stars))
+                                    AndroidUtilities.replaceTags(formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) option.stars))
                                 )
                                 .setDuration(Bulletin.DURATION_PROLONG)
                                 .show(true);
@@ -705,9 +705,9 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                 String months = LocaleController.formatPluralString("BoldMonths", selectedMonths);
                 if (selectedBoostType == BoostTypeCell.TYPE_STARS) {
                     if (additionalPrize.isEmpty()) {
-                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingStarsGiveawayAdditionPrizeCountHint", (int) selectedStars)), false));
+                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingDiamondsGiveawayAdditionPrizeCountHint", (int) selectedStars)), false));
                     } else {
-                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingStarsGiveawayAdditionPrizeCountNameHint", (int) selectedStars, quantity, additionalPrize)), false));
+                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingDiamondsGiveawayAdditionPrizeCountNameHint", (int) selectedStars, quantity, additionalPrize)), false));
                     }
                 } else {
                     if (additionalPrize.isEmpty()) {
@@ -725,9 +725,9 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
 
             if (selectedBoostType == BoostTypeCell.TYPE_STARS) {
                 if (!isPreparedGiveaway()) {
-                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingStarsChooseRandom" : "BoostingStarsChooseRandomGroup", getSelectedSliderValue(), LocaleController.formatPluralString("BoostingStarsChooseRandomStars", (int) selectedStars)), false));
+                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingDiamondsChooseRandom" : "BoostingDiamondsChooseRandomGroup", getSelectedSliderValue(), LocaleController.formatPluralString("BoostingDiamondsChooseRandomDiamonds", (int) selectedStars)), false));
                 } else {
-                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingStarsChooseRandom" : "BoostingStarsChooseRandomGroup", prepaidGiveaway.quantity, LocaleController.formatPluralString("BoostingStarsChooseRandomStars", (int) selectedStars)), false));
+                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingDiamondsChooseRandom" : "BoostingDiamondsChooseRandomGroup", prepaidGiveaway.quantity, LocaleController.formatPluralString("BoostingDiamondsChooseRandomDiamonds", (int) selectedStars)), false));
                 }
             } else {
                 if (!isPreparedGiveaway()) {

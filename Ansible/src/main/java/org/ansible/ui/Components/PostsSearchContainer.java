@@ -319,7 +319,7 @@ public class PostsSearchContainer extends FrameLayout {
 
                 if (pay && paying > 0 && !news) {
                     BulletinFactory.of(fragment)
-                        .createSimpleBulletin(R.raw.stars_topup, AndroidUtilities.replaceTags(formatPluralStringComma("SearchPaidStars", (int) paying)))
+                        .createSimpleBulletin(R.raw.stars_topup, AndroidUtilities.replaceTags(formatPluralStringComma("SearchPaidDiamonds", (int) paying)))
                         .show();
                 }
 

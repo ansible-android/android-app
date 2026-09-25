@@ -93,7 +93,7 @@ public class GiftedUserCell extends UserCell {
             badgeLayout.setVisibility(VISIBLE);
             int months = (boost.expires - boost.date) / 30 / 86400;
             if (boost.stars > 0) {
-                nameTextView.setText(LocaleController.formatPluralString("BoostingBoostStars", (int) boost.stars));
+                nameTextView.setText(LocaleController.formatPluralString("BoostingBoostDiamonds", (int) boost.stars));
                 avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_STARS);
                 avatarImageView.setForUserOrChat(null, avatarDrawable);
                 nameTextView.setRightDrawable(null);

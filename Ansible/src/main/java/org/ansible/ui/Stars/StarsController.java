@@ -1508,11 +1508,11 @@ public class StarsController {
                 final boolean media = messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaPaidMedia;
                 if (media) {
                     Drawable starDrawable = context.getResources().getDrawable(R.drawable.diamond).mutate();
-                    b.createSimpleBulletin(starDrawable, getString(R.string.DiamondsMediaPurchaseCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsMediaPurchaseCompletedInfo", (int) stars, bot))).show();
+                    b.createSimpleBulletin(starDrawable, getString(R.string.DiamondsMediaPurchaseCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsMediaPurchaseCompletedInfo", (int) stars, bot))).show();
                 } else if (subscription_period > 0) {
-                    b.createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsBotSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsBotSubscriptionCompletedInfo", (int) stars, product, bot))).show();
+                    b.createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsBotSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsBotSubscriptionCompletedInfo", (int) stars, product, bot))).show();
                 } else {
-                    b.createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsPurchaseCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsPurchaseCompletedInfo", (int) stars, product, bot))).show();
+                    b.createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsPurchaseCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsPurchaseCompletedInfo", (int) stars, product, bot))).show();
                 }
                 if (LaunchActivity.instance != null && LaunchActivity.instance.getFireworksOverlay() != null) {
                     LaunchActivity.instance.getFireworksOverlay().start(true);
@@ -1637,7 +1637,7 @@ public class StarsController {
                 }
 
                 if (dialogId == 0) {
-                    b.createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsSubscriptionCompletedText", (int) stars, channel))).show();
+                    b.createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsSubscriptionCompletedText", (int) stars, channel))).show();
                 }
                 if (LaunchActivity.instance != null && LaunchActivity.instance.getFireworksOverlay() != null) {
                     LaunchActivity.instance.getFireworksOverlay().start(true);
@@ -1924,7 +1924,7 @@ public class StarsController {
             this.lastTime = System.currentTimeMillis();
 
             bulletinLayout.subtitleTextView.cancelAnimation();
-            bulletinLayout.subtitleTextView.setText(AndroidUtilities.replaceTags(LocaleController.formatPluralString("StarsSentText", (int) this.amount)), true);
+            bulletinLayout.subtitleTextView.setText(AndroidUtilities.replaceTags(LocaleController.formatPluralString("DiamondsSentText", (int) this.amount)), true);
 
             if (shownBulletin) {
                 timerView.timeLeft = REACTIONS_TIMEOUT;
@@ -2576,7 +2576,7 @@ public class StarsController {
 //                            ((ProfileActivity) fragment).sharedMediaLayout.scrollToPage(SharedMediaLayout.TAB_GIFTS);
 //                            ((ProfileActivity) fragment).scrollToSharedMedia();
 //                        }
-//                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedChannelText", (int) stars, name))).show(false);
+//                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedChannelText", (int) stars, name))).show(false);
 //                    } else {
 //                        final Bundle args = new Bundle();
 //                        args.putLong("chat_id", -dialogId);
@@ -2589,17 +2589,17 @@ public class StarsController {
 //                                    profileActivity.scrollToSharedMedia();
 //                                }
 //                            }, 200);
-//                            BulletinFactory.of(profileActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedChannelText", (int) stars, name))).show(false);
+//                            BulletinFactory.of(profileActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedChannelText", (int) stars, name))).show(false);
 //                        });
 //                        fragment.presentFragment(profileActivity);
 //                    }
                 } else {
 //                    if (fragment instanceof ChatActivity && ((ChatActivity) fragment).getDialogId() == dialogId) {
-//                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
+//                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
 //                    } else {
 //                        final ChatActivity chatActivity = ChatActivity.of(dialogId);
 //                        chatActivity.whenFullyVisible(() -> {
-//                            BulletinFactory.of(chatActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
+//                            BulletinFactory.of(chatActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
 //                        });
 //                        fragment.presentFragment(chatActivity);
 //                    }
@@ -2753,7 +2753,7 @@ public class StarsController {
                             ((ProfileActivity) fragment).sharedMediaLayout.scrollToPage(SharedMediaLayout.TAB_GIFTS);
                             ((ProfileActivity) fragment).scrollToSharedMedia();
                         }
-                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedChannelText", (int) stars, name))).show(false);
+                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedChannelText", (int) stars, name))).show(false);
                     } else {
                         final Bundle args = new Bundle();
                         args.putLong("chat_id", -dialogId);
@@ -2766,19 +2766,19 @@ public class StarsController {
                                     profileActivity.scrollToSharedMedia();
                                 }
                             }, 200);
-                            BulletinFactory.of(profileActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedChannelText", (int) stars, name))).show(false);
+                            BulletinFactory.of(profileActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedChannelText", (int) stars, name))).show(false);
                         });
                         fragment.presentFragment(profileActivity);
                     }
                 } else {
                     if (fragment instanceof ChatActivity && ((ChatActivity) fragment).getDialogId() == dialogId) {
-                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
+                        BulletinFactory.of(fragment).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
                     } else {
                         NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.closeProfileActivity, dialogId, false);
                         NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.closeChatActivity, dialogId, false);
                         final ChatActivity chatActivity = ChatActivity.of(dialogId);
                         chatActivity.whenFullyVisible(() -> {
-                            BulletinFactory.of(chatActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
+                            BulletinFactory.of(chatActivity).createEmojiBulletin(gift.sticker, getString(R.string.DiamondsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
                         });
                         fragment.presentFragment(chatActivity);
                     }

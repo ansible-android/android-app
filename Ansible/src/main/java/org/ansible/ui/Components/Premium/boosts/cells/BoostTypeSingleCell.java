@@ -27,7 +27,7 @@ public class BoostTypeSingleCell extends BoostTypeCell {
         if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
             TL_stories.TL_prepaidStarsGiveaway prepaid = (TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway;
             avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_STARS);
-            titleTextView.setText(LocaleController.formatPluralStringComma("BoostingStarsPreparedGiveawaySubscriptionsPlural", (int) prepaid.stars));
+            titleTextView.setText(LocaleController.formatPluralStringComma("BoostingDiamondsPreparedGiveawaySubscriptionsPlural", (int) prepaid.stars));
             setSubtitle(LocaleController.formatPluralString("AmongWinners", prepaid.quantity));
         } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidGiveaway) {
             titleTextView.setText(LocaleController.getString(R.string.BoostingPreparedGiveawayOne));

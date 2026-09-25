@@ -132,7 +132,7 @@ public class PostSuggestionsEditActivity extends BaseFragment {
             final int[] steps = SlideIntChooseView.cut(new int[]{ 0, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().starsPaidMessageAmountMax);
             final SlideIntChooseView.Options options = SlideIntChooseView.Options.make(1, steps, 20, (type, val) -> {
                 if (type == 0) {
-                    return StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("Stars", val), 0.66f);
+                    return StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("Diamonds", val), 0.66f);
                 }
                 return LocaleController.formatNumber(val, ',');
             });

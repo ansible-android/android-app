@@ -569,7 +569,7 @@ public class PushListenerController {
                                         }
                                         case "MESSAGE_STARGIFT": {
                                             userName = args[0];
-                                            messageText = LocaleController.formatPluralStringComma("NotificationMessageStarGift", Integer.parseInt(args[1]), args[0]);
+                                            messageText = LocaleController.formatPluralStringComma("NotificationMessageDiamondGift", Integer.parseInt(args[1]), args[0]);
                                             message1 = LocaleController.formatPluralStringComma("Gift2Notification", Integer.parseInt(args[1]));
                                             break;
                                         }
@@ -587,7 +587,7 @@ public class PushListenerController {
                                         }
                                         case "MESSAGE_STARGIFT_PREPAID_UPGRADE": {
                                             userName = args[0];
-                                            messageText = LocaleController.formatPluralStringComma("NotificationMessageUniqueStarGiftPrepaidUpgrade", Integer.parseInt(args[1]), args[0]);
+                                            messageText = LocaleController.formatPluralStringComma("NotificationMessageUniqueDiamondGiftPrepaidUpgrade", Integer.parseInt(args[1]), args[0]);
                                             message1 = getString(R.string.Gift2UniquePrepaidUpgradeNotification);
                                             break;
                                         }

@@ -758,7 +758,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 StarsController.getInstance(currentAccount).buy(getParentActivity(), (TL_stars.TL_starsTopupOption) item.object, (success, error) -> {
                     if (getContext() == null) return;
                     if (success) {
-                        BulletinFactory.of(this).createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsAcquired), AndroidUtilities.replaceTags(formatPluralString("StarsAcquiredInfo", (int) item.longValue))).show();
+                        BulletinFactory.of(this).createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsAcquired), AndroidUtilities.replaceTags(formatPluralString("DiamondsAcquiredInfo", (int) item.longValue))).show();
                         fireworksOverlay.start(true);
                         StarsController.getInstance(currentAccount).invalidateTransactions(true);
                     } else if (error != null) {
@@ -1067,7 +1067,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 item.id = id;
                 item.intValue = index;
                 item.longValue = option.stars;
-                item.text = formatPluralStringSpaced("StarsCount", (int) option.stars);
+                item.text = formatPluralStringSpaced("DiamondsCount", (int) option.stars);
                 item.subtext = option.loadingStorePrice ? null : BillingController.getInstance().formatCurrency(option.amount, option.currency);
                 item.object = option;
                 return item;
@@ -1078,7 +1078,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 item.id = id;
                 item.intValue = index;
                 item.longValue = option.stars;
-                item.text = formatPluralStringSpaced("StarsCount", (int) option.stars);
+                item.text = formatPluralStringSpaced("DiamondsCount", (int) option.stars);
                 item.subtext = option.loadingStorePrice ? null : BillingController.getInstance().formatCurrency(option.amount, option.currency);
                 item.object = option;
                 return item;
@@ -1694,7 +1694,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 } else if (transaction.paid_message) {
                     titleTextView.setText(username);
                     subtitleTextView.setVisibility(deleted ? GONE : VISIBLE);
-                    subtitleTextView.setText(LocaleController.formatPluralStringComma("StarsTransactionMessageFee", transaction.paid_messages));
+                    subtitleTextView.setText(LocaleController.formatPluralStringComma("DiamondsTransactionMessageFee", transaction.paid_messages));
                 } else if (transaction.premium_gift) {
                     titleTextView.setText(username);
                     subtitleTextView.setVisibility(deleted ? GONE : VISIBLE);
@@ -1763,7 +1763,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             } else if (transaction.floodskip) {
                 titleTextView.setText(getString(R.string.DiamondsTransactionFloodskip));
-                subtitleTextView.setText(LocaleController.formatPluralStringComma("StarsTransactionFloodskipMessages", transaction.floodskip_number));
+                subtitleTextView.setText(LocaleController.formatPluralStringComma("DiamondsTransactionFloodskipMessages", transaction.floodskip_number));
                 imageView.setImageDrawable(getPlatformDrawable("api"));
             } else if (transaction.peer instanceof TL_stars.TL_starsTransactionPeerAppStore) {
                 titleTextView.setText(getString(R.string.DiamondsTransactionInApp));
@@ -2256,18 +2256,18 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
             String c;
             if (videosCount == 0) {
-                c = formatPluralString(isBot ? "StarsConfirmPurchaseMediaBotOne2" : "StarsConfirmPurchaseMediaOne2", (int) stars, photosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SinglePhoto) : formatPluralString("StarsConfirmPurchaseMedia_Photos", photosCount), chatTitle);
+                c = formatPluralString(isBot ? "DiamondsConfirmPurchaseMediaBotOne2" : "DiamondsConfirmPurchaseMediaOne2", (int) stars, photosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SinglePhoto) : formatPluralString("DiamondsConfirmPurchaseMedia_Photos", photosCount), chatTitle);
             } else if (photosCount == 0) {
-                c = formatPluralString(isBot ? "StarsConfirmPurchaseMediaBotOne2" : "StarsConfirmPurchaseMediaOne2", (int) stars, videosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SingleVideo) : formatPluralString("StarsConfirmPurchaseMedia_Videos", videosCount), chatTitle);
+                c = formatPluralString(isBot ? "DiamondsConfirmPurchaseMediaBotOne2" : "DiamondsConfirmPurchaseMediaOne2", (int) stars, videosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SingleVideo) : formatPluralString("DiamondsConfirmPurchaseMedia_Videos", videosCount), chatTitle);
             } else {
-                c = formatPluralString(isBot ? "StarsConfirmPurchaseMediaBotTwo2" : "StarsConfirmPurchaseMediaTwo2", (int) stars, photosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SinglePhoto) : formatPluralString("StarsConfirmPurchaseMedia_Photos", photosCount), videosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SingleVideo) : formatPluralString("StarsConfirmPurchaseMedia_Videos", videosCount), chatTitle);
+                c = formatPluralString(isBot ? "DiamondsConfirmPurchaseMediaBotTwo2" : "DiamondsConfirmPurchaseMediaTwo2", (int) stars, photosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SinglePhoto) : formatPluralString("DiamondsConfirmPurchaseMedia_Photos", photosCount), videosCount == 1 ? getString(R.string.DiamondsConfirmPurchaseMedia_SingleVideo) : formatPluralString("DiamondsConfirmPurchaseMedia_Videos", videosCount), chatTitle);
             }
             subtitleView.setText(AndroidUtilities.replaceTags(c));
         } else {
             if (subscription_period > 0) {
-                subtitleView.setText(AndroidUtilities.replaceTags(formatPluralStringComma("StarsConfirmSubscriptionText2", (int) stars, purchase, UserObject.getUserName(user))));
+                subtitleView.setText(AndroidUtilities.replaceTags(formatPluralStringComma("DiamondsConfirmSubscriptionText2", (int) stars, purchase, UserObject.getUserName(user))));
             } else {
-                subtitleView.setText(AndroidUtilities.replaceTags(formatPluralStringComma("StarsConfirmPurchaseText2", (int) stars, purchase, UserObject.getUserName(user))));
+                subtitleView.setText(AndroidUtilities.replaceTags(formatPluralStringComma("DiamondsConfirmPurchaseText2", (int) stars, purchase, UserObject.getUserName(user))));
             }
         }
         subtitleView.setMaxWidth(HintView2.cutInFancyHalf(subtitleView.getText(), subtitleView.getPaint()));
@@ -2276,9 +2276,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider);
         if (subscription_period > 0) {
-            button.setText(replaceStars(AndroidUtilities.replaceTags(formatPluralStringComma("StarsConfirmSubscriptionButton", (int) stars))), false);
+            button.setText(replaceStars(AndroidUtilities.replaceTags(formatPluralStringComma("DiamondsConfirmSubscriptionButton", (int) stars))), false);
         } else {
-            button.setText(replaceStars(AndroidUtilities.replaceTags(formatPluralStringComma("StarsConfirmPurchaseButton", (int) stars))), false);
+            button.setText(replaceStars(AndroidUtilities.replaceTags(formatPluralStringComma("DiamondsConfirmPurchaseButton", (int) stars))), false);
         }
         linearLayout.addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48));
 
@@ -2401,10 +2401,10 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         if (chatInvite.subscription_pricing.period == StarsController.PERIOD_MONTHLY) {
-            subtitleView.setText(AndroidUtilities.replaceTags(formatPluralString("StarsSubscribeText", (int) chatInvite.subscription_pricing.amount, chatInvite.title)));
+            subtitleView.setText(AndroidUtilities.replaceTags(formatPluralString("DiamondsSubscribeText", (int) chatInvite.subscription_pricing.amount, chatInvite.title)));
         } else {
             final String period = chatInvite.subscription_pricing.period == StarsController.PERIOD_5MINUTES ? "5 minutes" : "a minute";
-            subtitleView.setText(AndroidUtilities.replaceTags(formatPluralString("StarsSubscribeTextTest", (int) chatInvite.subscription_pricing.amount, chatInvite.title, period)));
+            subtitleView.setText(AndroidUtilities.replaceTags(formatPluralString("DiamondsSubscribeTextTest", (int) chatInvite.subscription_pricing.amount, chatInvite.title, period)));
         }
         subtitleView.setMaxWidth(HintView2.cutInFancyHalf(subtitleView.getText(), subtitleView.getPaint()));
         subtitleView.setGravity(Gravity.CENTER);
@@ -2616,7 +2616,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                         BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                         if (lastFragment == null) return;
                         if (success) {
-                            BulletinFactory.of(lastFragment).createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsAcquired), AndroidUtilities.replaceTags(formatPluralString("StarsAcquiredInfo", (int) item.longValue))).show();
+                            BulletinFactory.of(lastFragment).createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsAcquired), AndroidUtilities.replaceTags(formatPluralString("DiamondsAcquiredInfo", (int) item.longValue))).show();
                             if (LaunchActivity.instance != null) {
                                 LaunchActivity.instance.getFireworksOverlay().start(true);
                             }
@@ -2646,7 +2646,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     adapter.update(true);
                 }
                 long balance = StarsController.getInstance(currentAccount).getBalance().amount;
-                headerView.titleView.setText(formatPluralStringComma("StarsNeededTitle", (int) (starsNeeded - balance)));
+                headerView.titleView.setText(formatPluralStringComma("DiamondsNeededTitle", (int) (starsNeeded - balance)));
                 if (actionBar != null) {
                     actionBar.setTitle(getTitle());
                 }
@@ -2754,47 +2754,47 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             headerView = new HeaderView(context, currentAccount, resourcesProvider);
 
             long balance = StarsController.getInstance(currentAccount).getBalance().amount;
-            headerView.titleView.setText(formatPluralString("StarsNeededTitle", (int) Math.max(0, starsNeeded - balance)));
+            headerView.titleView.setText(formatPluralString("DiamondsNeededTitle", (int) Math.max(0, starsNeeded - balance)));
             String stringRes;
             if (type == TYPE_SUBSCRIPTION_BUY) {
-                stringRes = "StarsNeededTextBuySubscription";
+                stringRes = "DiamondsNeededTextBuySubscription";
             } else if (type == TYPE_SUBSCRIPTION_KEEP) {
-                stringRes = "StarsNeededTextKeepSubscription";
+                stringRes = "DiamondsNeededTextKeepSubscription";
             } else if (type == TYPE_BOT_SUBSCRIPTION_KEEP) {
-                stringRes = "StarsNeededTextKeepBotSubscription";
+                stringRes = "DiamondsNeededTextKeepBotSubscription";
             } else if (type == TYPE_BIZ_SUBSCRIPTION_KEEP) {
-                stringRes = "StarsNeededTextKeepBizSubscription";
+                stringRes = "DiamondsNeededTextKeepBizSubscription";
             } else if (type == TYPE_SUBSCRIPTION_REFULFILL) {
-                stringRes = "StarsNeededTextKeepSubscription";
+                stringRes = "DiamondsNeededTextKeepSubscription";
             } else if (type == TYPE_LINK) {
-                stringRes = botName == null ? "StarsNeededTextLink" : "StarsNeededTextLink_" + botName.toLowerCase();
+                stringRes = botName == null ? "DiamondsNeededTextLink" : "DiamondsNeededTextLink_" + botName.toLowerCase();
                 if (LocaleController.nullable(LocaleController.getString(stringRes)) == null) {
-                    stringRes = "StarsNeededTextLink";
+                    stringRes = "DiamondsNeededTextLink";
                 }
             } else if (type == TYPE_REACTIONS) {
-                stringRes = "StarsNeededTextReactions";
+                stringRes = "DiamondsNeededTextReactions";
             } else if (type == TYPE_STAR_GIFT_BUY) {
-                stringRes = "StarsNeededTextGift";
+                stringRes = "DiamondsNeededTextGift";
             } else if (type == TYPE_STAR_GIFT_BUY_CHANNEL) {
-                stringRes = "StarsNeededTextGiftChannel";
+                stringRes = "DiamondsNeededTextGiftChannel";
             } else if (type == TYPE_PRIVATE_MESSAGE) {
-                stringRes = "StarsNeededTextPrivateMessage";
+                stringRes = "DiamondsNeededTextPrivateMessage";
             } else if (type == TYPE_STAR_GIFT_UPGRADE) {
-                stringRes = "StarsNeededTextGiftUpgrade";
+                stringRes = "DiamondsNeededTextGiftUpgrade";
             } else if (type == TYPE_STAR_GIFT_TRANSFER) {
-                stringRes = "StarsNeededTextGiftTransfer";
+                stringRes = "DiamondsNeededTextGiftTransfer";
             } else if (type == TYPE_BIZ) {
-                stringRes = "StarsNeededBizText";
+                stringRes = "DiamondsNeededBizText";
             } else if (type == TYPE_STAR_GIFT_BUY_RESALE) {
-                stringRes = "StarsNeededTextGiftBuyResale";
+                stringRes = "DiamondsNeededTextGiftBuyResale";
             } else if (type == TYPE_SEARCH) {
-                stringRes = "StarsNeededTextSearch";
+                stringRes = "DiamondsNeededTextSearch";
             } else if (type == TYPE_REMOVE_GIFT_DESCRIPTION) {
-                stringRes = "StarsNeededRemoveGiftDescription";
+                stringRes = "DiamondsNeededRemoveGiftDescription";
             } else if (type == TYPE_LIVE_COMMENTS) {
-                stringRes = "StarsNeededLiveComments";
+                stringRes = "DiamondsNeededLiveComments";
             } else {
-                stringRes = "StarsNeededText";
+                stringRes = "DiamondsNeededText";
             }
             if (TextUtils.isEmpty(stringRes)) {
                 headerView.subtitleView.setText("");
@@ -2933,7 +2933,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     StarsController.getInstance(currentAccount).buy(activity, (TL_stars.TL_starsTopupOption) item.object, (success, error) -> {
                         if (getContext() == null) return;
                         if (success) {
-                            BulletinFactory.of((FrameLayout) containerView, resourcesProvider).createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsAcquired), AndroidUtilities.replaceTags(formatPluralString("StarsAcquiredInfo", (int) item.longValue))).show();
+                            BulletinFactory.of((FrameLayout) containerView, resourcesProvider).createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsAcquired), AndroidUtilities.replaceTags(formatPluralString("DiamondsAcquiredInfo", (int) item.longValue))).show();
                             fireworksOverlay.start(true);
                             StarsController.getInstance(currentAccount).invalidateTransactions(true);
                         } else if (error != null) {
@@ -3194,7 +3194,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                                 .createSimpleBulletin(
                                     R.raw.stars_send,
                                     getString(R.string.DiamondsGiftSentPopup),
-                                    AndroidUtilities.replaceTags(formatPluralString("StarsGiftSentPopupInfo", (int) item.longValue, UserObject.getForcedFirstName(user))),
+                                    AndroidUtilities.replaceTags(formatPluralString("DiamondsGiftSentPopupInfo", (int) item.longValue, UserObject.getForcedFirstName(user))),
                                     getString(R.string.ViewInChat),
                                     () -> {
                                         BaseFragment lastFragment2 = LaunchActivity.getSafeLastFragment();
@@ -3481,7 +3481,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             return getString(t.reaction ? R.string.DiamondsTransactionLiveStoryReactionFee : R.string.DiamondsTransactionLiveStoryMessageFee);
         }
         if (t.paid_message) {
-            return LocaleController.formatPluralStringComma("StarsTransactionMessageFee", t.paid_messages);
+            return LocaleController.formatPluralStringComma("DiamondsTransactionMessageFee", t.paid_messages);
         }
         if (t.floodskip) {
             return LocaleController.getString(R.string.DiamondsTransactionFloodskip);
@@ -4525,7 +4525,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         }
 
         if (transaction.floodskip && transaction.floodskip_number > 0) {
-            tableView.addRow(getString(R.string.DiamondsTransactionFloodskipNumberName), LocaleController.formatPluralStringComma("StarsTransactionFloodskipNumber", transaction.floodskip_number));
+            tableView.addRow(getString(R.string.DiamondsTransactionFloodskipNumberName), LocaleController.formatPluralStringComma("DiamondsTransactionFloodskipNumber", transaction.floodskip_number));
         }
 
         tableView.addRow(getString(R.string.DiamondsTransactionDate), LocaleController.formatString(R.string.formatDateAtTime, LocaleController.getInstance().getFormatterGiveawayCard().format(new Date(transaction.date * 1000L)), LocaleController.getInstance().getFormatterDay().format(new Date(transaction.date * 1000L))));
@@ -4936,7 +4936,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                                             TLRPC.Chat newChat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                                             if (newChat != null) {
                                                 AndroidUtilities.runOnUIThread(() -> {
-                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsSubscriptionCompletedText", (int) stars, newChat.title))).show(true);
+                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsSubscriptionCompletedText", (int) stars, newChat.title))).show(true);
                                                 }, 250);
                                             }
                                         });
@@ -5009,7 +5009,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
-        textView.setText(LocaleController.formatPluralStringSpaced("BoostStars", (int) boost.stars));
+        textView.setText(LocaleController.formatPluralStringSpaced("BoostDiamonds", (int) boost.stars));
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 4));
 
         textView = new TextView(context);
@@ -5034,7 +5034,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             if (baseFragment == null) return;
             baseFragment.presentFragment(ChatActivity.of(dialogId));
         });
-        tableView.addRow(getString(R.string.BoostGift), formatPluralString("BoostStars", (int) boost.stars));
+        tableView.addRow(getString(R.string.BoostGift), formatPluralString("BoostDiamonds", (int) boost.stars));
         if (boost.giveaway_msg_id != 0) {
             tableView.addRowLink(getString(R.string.BoostReason), getString(R.string.BoostReasonGiveaway), () -> {
                 if (sheet[0] != null) sheet[0].dismiss();
@@ -5811,7 +5811,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
                 ssb.append(" ").append(getString(R.string.DiamondsNano));
             } else {
-                ssb.append(formatPluralStringComma("Stars", (int) starsAmount.amount));
+                ssb.append(formatPluralStringComma("Diamonds", (int) starsAmount.amount));
             }
         }
         return ssb;

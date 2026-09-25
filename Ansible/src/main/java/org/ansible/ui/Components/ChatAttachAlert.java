@@ -4010,7 +4010,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         photoLayout.setStarsPrice(amount);
                         if (amount != null && amount > 0) {
                             item.setText(getString(R.string.PaidMediaPriceButton));
-                            item.setSubtext(formatPluralString("Stars", (int) (long) amount));
+                            item.setSubtext(formatPluralString("Diamonds", (int) (long) amount));
                             messageSendPreview.setStars(amount);
                         } else {
                             item.setText(getString(R.string.PaidMediaButton));
@@ -4022,7 +4022,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 long amount = photoLayout.getStarsPrice();
                 if (amount > 0) {
                     item.setText(getString(R.string.PaidMediaPriceButton));
-                    item.setSubtext(formatPluralString("Stars", (int) amount));
+                    item.setSubtext(formatPluralString("Diamonds", (int) amount));
                 } else {
                     item.setText(getString(R.string.PaidMediaButton));
                     item.setSubtext(null);

@@ -5452,7 +5452,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
         final int withinDays = Math.max(1, within / (60 * 60 * 24));
         new AlertDialog.Builder(getContext(), resourcesProvider)
             .setTitle(getString(R.string.Gift2ConvertTitle))
-            .setMessage(AndroidUtilities.replaceTags(formatPluralString("Gift2ConvertText2", withinDays, UserObject.isService(fromId) || fromId == UserObject.ANONYMOUS ? getString(R.string.DiamondsTransactionHidden) : DialogObject.getShortName(fromId), formatPluralStringComma("Gift2ConvertStars", (int) convert_stars))))
+            .setMessage(AndroidUtilities.replaceTags(formatPluralString("Gift2ConvertText2", withinDays, UserObject.isService(fromId) || fromId == UserObject.ANONYMOUS ? getString(R.string.DiamondsTransactionHidden) : DialogObject.getShortName(fromId), formatPluralStringComma("Gift2ConvertDiamonds", (int) convert_stars))))
             .setPositiveButton(getString(R.string.Gift2ConvertButton), (di, w) -> {
                 final AlertDialog progressDialog = new AlertDialog(ApplicationLoader.applicationContext, AlertDialog.ALERT_TYPE_SPINNER);
                 progressDialog.showDelayed(500);

@@ -304,12 +304,12 @@ public class BoostsActivity extends GradientHeaderActivity implements Notificati
                 TL_stories.PrepaidGiveaway prepaidGiveaway = item.prepaidGiveaway;
                 GiveawayCell giveawayCell = (GiveawayCell) holder.itemView;
                 if (prepaidGiveaway instanceof TL_stories.TL_prepaidGiveaway) {
-                    String name = LocaleController.formatPluralString("BoostingTelegramPremiumCountPlural", prepaidGiveaway.quantity);
+                    String name = LocaleController.formatPluralString("BoostingAnsiblePremiumCountPlural", prepaidGiveaway.quantity);
                     String info = LocaleController.formatPluralString("BoostingSubscriptionsCountPlural", prepaidGiveaway.quantity, LocaleController.formatPluralString("PrepaidGiveawayMonths", ((TL_stories.TL_prepaidGiveaway) prepaidGiveaway).months));
                     giveawayCell.setData(prepaidGiveaway, name, info, 0, !item.isLast);
                 } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
                     TL_stories.TL_prepaidStarsGiveaway starsGiveaway = (TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway;
-                    String name = LocaleController.formatPluralStringComma("BoostingStarsCountPlural", (int) starsGiveaway.stars);
+                    String name = LocaleController.formatPluralStringComma("BoostingDiamondsCountPlural", (int) starsGiveaway.stars);
                     String info = LocaleController.formatPluralString("AmongWinners", starsGiveaway.quantity);
                     giveawayCell.setData(prepaidGiveaway, name, info, 0, !item.isLast);
                 }

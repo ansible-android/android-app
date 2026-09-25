@@ -495,7 +495,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
         }
 
         slider.setStarsTop(auction.approximateBidAmountFromPlace(auction.gift.gifts_per_round) + 1);
-        slider.setTopText(formatPluralString("StarsReactionTopX", auction.gift.gifts_per_round));
+        slider.setTopText(formatPluralString("DiamondsReactionTopX", auction.gift.gifts_per_round));
 
         updateSelfBidderCell(animated);
         updateSelfBidderHeader(animated);

@@ -101,8 +101,8 @@ public class StarGiveawayOptionCell extends FrameLayout {
             subtitleView.setText(loading2, animated);
             priceView.setText("");
         } else {
-            titleView.setText(LocaleController.formatPluralStringComma("GiveawayStars", (int) option.stars, ' '), false);
-            subtitleView.setText(LocaleController.formatPluralStringComma("BoostingStarOptionPerUser", (int) per_user_stars, ','), animated);
+            titleView.setText(LocaleController.formatPluralStringComma("GiveawayDiamonds", (int) option.stars, ' '), false);
+            subtitleView.setText(LocaleController.formatPluralStringComma("BoostingDiamondOptionPerUser", (int) per_user_stars, ','), animated);
             priceView.setText(BillingController.getInstance().formatCurrency(option.amount, option.currency));
         }
 

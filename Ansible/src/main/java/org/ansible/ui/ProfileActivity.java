@@ -16736,15 +16736,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (userFull.stars_rating.stars < 0 && !isSelf || isSelf && debt > 0) {
                 textView[0].setTextColor(Theme.getColor(Theme.key_text_RedBold));
                 if (isSelf) {
-                    textView[0].setText(AndroidUtilities.replaceTags(formatPluralStringComma("StarRatingLevelNegativeYou", (int) debt)));
+                    textView[0].setText(AndroidUtilities.replaceTags(formatPluralStringComma("DiamondRatingLevelNegativeYou", (int) debt)));
                 } else {
                     textView[0].setText(AndroidUtilities.replaceTags(formatString(R.string.DiamondRatingLevelNegativeOther, DialogObject.getName(getDialogId()))));
                 }
             } else {
                 sb = new SpannableStringBuilder();
                 sb.append(TextUtils.concat(
-                    formatPluralStringComma("StarRatingFuture", days), "\n",
-                    formatPluralStringComma("StarRatingFuturePendingPoints", (int) points)
+                    formatPluralStringComma("DiamondRatingFuture", days), "\n",
+                    formatPluralStringComma("DiamondRatingFuturePendingPoints", (int) points)
                 ));
                 sb.append(" ");
                 sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.DiamondRatingFuturePendingPointsPreview), () -> {
@@ -16760,8 +16760,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             sb = new SpannableStringBuilder();
             sb.append(TextUtils.concat(
-                formatPluralStringComma("StarRatingFuturePreview1", days), "\n",
-                formatPluralStringComma("StarRatingFuturePreview2", (int) points)
+                formatPluralStringComma("DiamondRatingFuturePreview1", days), "\n",
+                formatPluralStringComma("DiamondRatingFuturePreview2", (int) points)
             ));
             sb.append(" ");
             sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.DiamondRatingFuturePendingPointsPreviewBack), () -> {

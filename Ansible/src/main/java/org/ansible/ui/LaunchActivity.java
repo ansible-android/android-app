@@ -4948,7 +4948,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                                             if (chat != null) {
                                                 AndroidUtilities.runOnUIThread(() -> {
-                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, LocaleController.getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("StarsSubscriptionCompletedText", (int) stars, chat.title))).show(true);
+                                                    BulletinFactory.of(chatActivity).createSimpleBulletin(R.raw.stars_send, LocaleController.getString(R.string.DiamondsSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsSubscriptionCompletedText", (int) stars, chat.title))).show(true);
                                                 }, 250);
                                             }
                                         });

@@ -2337,7 +2337,7 @@ public class NotificationsController extends BaseController implements Notificat
                             TLRPC.Chat peerchat = getMessagesController().getChat(-did);
                             peername = peerchat == null ? "" : getTitle(peerchat);
                         }
-                        return LocaleController.formatPluralStringComma("BoostingReceivedStars", (int) action.stars, peername);
+                        return LocaleController.formatPluralStringComma("BoostingReceivedDiamonds", (int) action.stars, peername);
                     } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPaymentRefunded) {
                         return messageObject.messageText.toString();
                     } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionTodoCompletions) {

@@ -3555,7 +3555,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         long amount = getStarsPrice();
         if (amount > 0) {
             starsItem.setText(getString(R.string.PaidMediaPriceButton));
-            starsItem.setSubtext(formatPluralString("Stars", (int) amount));
+            starsItem.setSubtext(formatPluralString("Diamonds", (int) amount));
         } else {
             starsItem.setText(getString(R.string.PaidMediaButton));
             starsItem.setSubtext(null);

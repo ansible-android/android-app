@@ -4948,7 +4948,7 @@ public class MessageObject {
                     boolean isChannel = ChatObject.isChannelAndNotMegaGroup(chat);
                     boolean isStars = (giveawayLaunch.flags & 1) != 0;
                     if (isStars) {
-                        messageText = formatPluralStringComma(isChannel ? "BoostingStarsGiveawayJustStarted" : "BoostingStarsGiveawayJustStartedGroup", (int) giveawayLaunch.stars, chat != null ? chat.title : "");
+                        messageText = formatPluralStringComma(isChannel ? "BoostingDiamondsGiveawayJustStarted" : "BoostingDiamondsGiveawayJustStartedGroup", (int) giveawayLaunch.stars, chat != null ? chat.title : "");
                     } else {
                         messageText = formatString(isChannel ? R.string.BoostingGiveawayJustStarted : R.string.BoostingGiveawayJustStartedGroup, chat != null ? chat.title : "");
                     }
@@ -4984,10 +4984,10 @@ public class MessageObject {
                     TLRPC.TL_messageActionGiveawayResults giveawayResults = (TLRPC.TL_messageActionGiveawayResults) messageOwner.action;
                     SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
                     if (giveawayResults.stars) {
-                        stringBuilder.append(formatPluralStringComma("BoostingStarsGiveawayServiceWinnersSelected", giveawayResults.winners_count));
+                        stringBuilder.append(formatPluralStringComma("BoostingDiamondsGiveawayServiceWinnersSelected", giveawayResults.winners_count));
                         if (giveawayResults.unclaimed_count > 0) {
                             stringBuilder.append("\n");
-                            stringBuilder.append(LocaleController.formatPluralString(isChannel ? "BoostingStarsGiveawayServiceUndistributed" : "BoostingStarsGiveawayServiceUndistributedGroup", giveawayResults.unclaimed_count));
+                            stringBuilder.append(LocaleController.formatPluralString(isChannel ? "BoostingDiamondsGiveawayServiceUndistributed" : "BoostingDiamondsGiveawayServiceUndistributedGroup", giveawayResults.unclaimed_count));
                         }
                     } else {
                         stringBuilder.append(LocaleController.formatPluralString("BoostingGiveawayServiceWinnersSelected", giveawayResults.winners_count));
@@ -5001,7 +5001,7 @@ public class MessageObject {
                     final TLRPC.TL_messageActionPrizeStars action = (TLRPC.TL_messageActionPrizeStars) messageOwner.action;
                     final long chatId = -DialogObject.getPeerDialogId(action.boost_peer);
                     final TLRPC.Chat chat = getChat(chats, sChats, chatId);
-                    messageText = replaceWithLink(AndroidUtilities.replaceTags(formatPluralStringComma("ActionStarGiveawayPrize", (int) action.stars)), "un1", chat);
+                    messageText = replaceWithLink(AndroidUtilities.replaceTags(formatPluralStringComma("ActionDiamondGiveawayPrize", (int) action.stars)), "un1", chat);
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionStarGift) {
                     final TLRPC.TL_messageActionStarGift action = (TLRPC.TL_messageActionStarGift) messageOwner.action;
                     int stars = 0;
@@ -5078,7 +5078,7 @@ public class MessageObject {
                     int i = messageText.toString().indexOf("un2");
                     if (i != -1) {
                         SpannableStringBuilder sb = SpannableStringBuilder.valueOf(messageText);
-                        messageText = sb.replace(i, i + 3, formatPluralStringComma("Gift2StarsCount", (int) stars));
+                        messageText = sb.replace(i, i + 3, formatPluralStringComma("Gift2DiamondsCount", (int) stars));
                     }
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
                     TLRPC.TL_messageActionStarGiftUnique action = (TLRPC.TL_messageActionStarGiftUnique) messageOwner.action;

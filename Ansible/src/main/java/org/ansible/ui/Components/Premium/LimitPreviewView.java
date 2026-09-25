@@ -657,8 +657,8 @@ public class LimitPreviewView extends LinearLayout {
         drawFromRight = true;
         ratingPaint.setColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
         percent = AndroidUtilities.ilerp(current_stars, from.upgrade_stars, to.upgrade_stars);
-        defaultText.setText(LocaleController.formatPluralStringComma("Stars", (int) from.upgrade_stars));
-        premiumCount.setText(LocaleController.formatPluralStringComma("Stars", (int) to.upgrade_stars));
+        defaultText.setText(LocaleController.formatPluralStringComma("Diamonds", (int) from.upgrade_stars));
+        premiumCount.setText(LocaleController.formatPluralStringComma("Diamonds", (int) to.upgrade_stars));
         ((FrameLayout.LayoutParams) premiumCount.getLayoutParams()).gravity = Gravity.RIGHT;
         setType(LimitReachedBottomSheet.TYPE_BOOSTS);
         defaultCount.setVisibility(View.GONE);

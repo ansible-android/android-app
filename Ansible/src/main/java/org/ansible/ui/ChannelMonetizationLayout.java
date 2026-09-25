@@ -371,7 +371,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
             }
         }.setRound();
         starsBalanceButton.setEnabled(false);
-        starsBalanceButton.setText(formatPluralString("MonetizationStarsWithdraw", 0), false);
+        starsBalanceButton.setText(formatPluralString("MonetizationDiamondsWithdraw", 0), false);
         starsBalanceButton.setVisibility(View.VISIBLE);
         starsBalanceButton.setOnClickListener(v -> {
             if (!v.isEnabled() || starsBalanceButton.isLoading() || balanceButton.isLoading()) {
@@ -386,7 +386,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
 
             if (starsBalanceEditTextValue < MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin) {
                 Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
-                BulletinFactory.of(fragment).createSimpleBulletin(starDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotStarsWithdrawMinLimit", (int) MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin), () -> {
+                BulletinFactory.of(fragment).createSimpleBulletin(starDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotDiamondsWithdrawMinLimit", (int) MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin), () -> {
                     Bulletin.hideVisible();
                     if (starsBalance.amount < MessagesController.getInstance(currentAccount).starsRevenueWithdrawalMin) {
                         starsBalanceEditTextAll = true;
@@ -478,7 +478,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
                 AndroidUtilities.runOnUIThread(this.setStarsBalanceButtonText, 1000);
             } else {
                 starsBalanceButton.setSubText(null, true);
-                starsBalanceButton.setText(StarsIntroActivity.replaceStars(starsBalanceEditTextAll ? getString(R.string.MonetizationDiamondsWithdrawAll) : LocaleController.formatPluralStringSpaced("MonetizationStarsWithdraw", (int) starsBalanceEditTextValue), starRef), true);
+                starsBalanceButton.setText(StarsIntroActivity.replaceStars(starsBalanceEditTextAll ? getString(R.string.MonetizationDiamondsWithdrawAll) : LocaleController.formatPluralStringSpaced("MonetizationDiamondsWithdraw", (int) starsBalanceEditTextValue), starRef), true);
             }
         };
 

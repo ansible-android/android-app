@@ -87,7 +87,7 @@ public class AmountUtils {
             if (isRound()) {
                 switch (currency) {
                     case STARS:
-                        return LocaleController.formatPluralStringSpaced("StarsCount", (int) asDecimal());
+                        return LocaleController.formatPluralStringSpaced("DiamondsCount", (int) asDecimal());
                     case TON:
                         return LocaleController.formatPluralStringSpaced("TonCount", (int) asDecimal());
                 }

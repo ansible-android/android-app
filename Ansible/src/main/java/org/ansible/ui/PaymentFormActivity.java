@@ -4336,7 +4336,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isStarsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
                         CharSequence bulletinText = AndroidUtilities.replaceTags(
                             isStars ?
-                                isStarsGiveaway ? LocaleController.formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "StarsGiftSentPopupInfo" : "StarsAcquiredInfo", (int) stars, giftUser) :
+                                isStarsGiveaway ? LocaleController.formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "DiamondsGiftSentPopupInfo" : "DiamondsAcquiredInfo", (int) stars, giftUser) :
                                 LocaleController.formatString(R.string.PaymentInfoHint, totalPrice[0], currentItemName)
                         );
                         BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
@@ -4444,7 +4444,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                     CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isStarsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
                                     CharSequence bulletinText = AndroidUtilities.replaceTags(
                                         isStars ?
-                                            isStarsGiveaway ? LocaleController.formatPluralStringComma("StarsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "StarsGiftSentPopupInfo" : "StarsAcquiredInfo", (int) stars, giftUser) :
+                                            isStarsGiveaway ? LocaleController.formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "DiamondsGiftSentPopupInfo" : "DiamondsAcquiredInfo", (int) stars, giftUser) :
                                             LocaleController.formatString(R.string.PaymentInfoHint, totalPrice[0], currentItemName)
                                     );
                                     BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();

@@ -2234,10 +2234,10 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                                     SpannableStringBuilder ssb = new SpannableStringBuilder();
                                     ssb.append(lockSpan);
                                     ssb.append(" ");
-                                    ssb.append(LocaleController.formatPluralStringComma("Stars", val));
+                                    ssb.append(LocaleController.formatPluralStringComma("Diamonds", val));
                                     return ssb;
                                 }
-                                return LocaleController.formatPluralStringComma("Stars", val);
+                                return LocaleController.formatPluralStringComma("Diamonds", val);
                             }
                             return LocaleController.formatNumber(val, ',');
                         });

@@ -2129,7 +2129,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                 } else if (viewType == VIEW_TYPE_SLIDER) {
                     int max = (int) MessagesController.getInstance(currentAccount).starsPaidMessageAmountMax;
                     final int[] steps = SlideIntChooseView.cut(new int[] { 0, 1, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, max);
-                    ((SlideIntChooseView) holder.itemView).set((int) Utilities.clamp(commentsPrice, max, 0), SlideIntChooseView.Options.make(0, steps, 20, (type, val) -> type == 0 ? val == 0 ? getString(R.string.LiveStoryPricePerCommentFree) : LocaleController.formatPluralStringComma("Stars", val) : "" + val), newValue -> {
+                    ((SlideIntChooseView) holder.itemView).set((int) Utilities.clamp(commentsPrice, max, 0), SlideIntChooseView.Options.make(0, steps, 20, (type, val) -> type == 0 ? val == 0 ? getString(R.string.LiveStoryPricePerCommentFree) : LocaleController.formatPluralStringComma("Diamonds", val) : "" + val), newValue -> {
                         commentsPrice = newValue;
                     });
                 }

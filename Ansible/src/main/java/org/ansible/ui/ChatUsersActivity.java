@@ -3796,7 +3796,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     SlideIntChooseView cell = (SlideIntChooseView) holder.itemView;
                     if (position == priceRow) {
                         final int[] steps = SlideIntChooseView.cut(new int[] { 1, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().starsPaidMessageAmountMax);
-                        cell.set((int) Utilities.clamp(starsPrice, getMessagesController().starsPaidMessageAmountMax, 1), SlideIntChooseView.Options.make(1, steps, 20, (type, val) -> type == 0 ? LocaleController.formatPluralStringComma("Stars", val) : "" + val), newValue -> {
+                        cell.set((int) Utilities.clamp(starsPrice, getMessagesController().starsPaidMessageAmountMax, 1), SlideIntChooseView.Options.make(1, steps, 20, (type, val) -> type == 0 ? LocaleController.formatPluralStringComma("Diamonds", val) : "" + val), newValue -> {
                             starsPrice = newValue;
                             AndroidUtilities.updateVisibleRow(listView, priceInfoRow);
                         });

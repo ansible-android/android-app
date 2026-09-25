@@ -151,7 +151,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             BotStarsController.getInstance(currentAccount).preloadTonStats(bot_id);
         }
 
-        withdrawInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? formatPluralStringComma("SelfStarsWithdrawInfo", (int) getMessagesController().starsRevenueWithdrawalMin) : getString(R.string.BotDiamondsWithdrawInfo), () -> {
+        withdrawInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? formatPluralStringComma("SelfDiamondsWithdrawInfo", (int) getMessagesController().starsRevenueWithdrawalMin) : getString(R.string.BotDiamondsWithdrawInfo), () -> {
             Browser.openUrl(getContext(), getString(R.string.BotDiamondsWithdrawInfoLink));
         }), true);
     }
@@ -420,7 +420,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
 
         if (balanceEditTextValue < getMessagesController().starsRevenueWithdrawalMin) {
             Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
-            BulletinFactory.of(this).createSimpleBulletin(starDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotStarsWithdrawMinLimit", (int) getMessagesController().starsRevenueWithdrawalMin), () -> {
+            BulletinFactory.of(this).createSimpleBulletin(starDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotDiamondsWithdrawMinLimit", (int) getMessagesController().starsRevenueWithdrawalMin), () -> {
                 Bulletin.hideVisible();
                 long balance = BotStarsController.getInstance(currentAccount).getAvailableBalance(bot_id);
                 if (balance < getMessagesController().starsRevenueWithdrawalMin) {
@@ -710,7 +710,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             AndroidUtilities.runOnUIThread(this.setBalanceButtonText, 1000);
         } else {
             balanceButton.setSubText(null, true);
-            balanceButton.setText(StarsIntroActivity.replaceStars(balanceEditTextAll ? getString(R.string.BotDiamondsButtonWithdrawShortAll) : LocaleController.formatPluralStringSpaced("BotStarsButtonWithdrawShort", (int) balanceEditTextValue), starRef), true);
+            balanceButton.setText(StarsIntroActivity.replaceStars(balanceEditTextAll ? getString(R.string.BotDiamondsButtonWithdrawShortAll) : LocaleController.formatPluralStringSpaced("BotDiamondsButtonWithdrawShort", (int) balanceEditTextValue), starRef), true);
         }
     };
 

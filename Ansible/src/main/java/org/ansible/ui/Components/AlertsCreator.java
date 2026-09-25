@@ -2366,10 +2366,10 @@ public class AlertsCreator {
         final Theme.ResourcesProvider resourcesProvider = PhotoViewer.getInstance().isVisible() || lastFragment != null && lastFragment.hasShownSheet() ? new DarkThemeResourceProvider() : (lastFragment != null ? lastFragment.getResourceProvider() : null);
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessageMulti1", totalChats)));
+        sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessageMulti1", totalChats)));
         sb.append(" ");
-        sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessageMulti2", (int) totalPrice, LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessageMulti2Messages", messagesCount * Math.max(1, totalChats)))));
-        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedDiamondsConfirmTitle), sb, getString(R.string.MessageLockedDiamondsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessagePay", messagesCount), dontAsk -> {
+        sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessageMulti2", (int) totalPrice, LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessageMulti2Messages", messagesCount * Math.max(1, totalChats)))));
+        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedDiamondsConfirmTitle), sb, getString(R.string.MessageLockedDiamondsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessagePay", messagesCount), dontAsk -> {
             if (dontAsk) {
                 SharedPreferences.Editor e = MessagesController.getInstance(currentAccount).getMainSettings().edit();
                 for (long dialogId : dialogIds) {
@@ -2483,16 +2483,16 @@ public class AlertsCreator {
         }
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessage1", (int) stars, chatName)));
+        sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessage1", (int) stars, chatName)));
         sb.append(" ");
         if (messagesCount == 1) {
-            sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessage2One", (int) stars)));
+            sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessage2One", (int) stars)));
         } else {
-            sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessage2Many1", (int) (stars * messagesCount))));
+            sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessage2Many1", (int) (stars * messagesCount))));
             sb.append(" ");
-            sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessage2Many2", messagesCount)));
+            sb.append(replaceTags(LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessage2Many2", messagesCount)));
         }
-        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedDiamondsConfirmTitle), sb, getString(R.string.MessageLockedDiamondsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedStarsConfirmMessagePay", messagesCount), dontAsk -> {
+        showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedDiamondsConfirmTitle), sb, getString(R.string.MessageLockedDiamondsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessagePay", messagesCount), dontAsk -> {
             if (dontAsk) {
                 MessagesController.getInstance(currentAccount).getMainSettings().edit().putLong("ask_paid_message_" + dialogId + "_price", stars).apply();
                 StarsController.getInstance(currentAccount).justAgreedToNotAskDialogs.put(dialogId, System.currentTimeMillis());

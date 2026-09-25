@@ -511,7 +511,7 @@ public class BoostDialogs {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 
         if (isStars) {
-            stringBuilder.append(replaceTags(formatPluralStringComma(isChannel ? "BoostingStarsGiveawayHowItWorksText" : "BoostingStarsGiveawayHowItWorksTextGroup", (int) giveaway.stars, from)));
+            stringBuilder.append(replaceTags(formatPluralStringComma(isChannel ? "BoostingDiamondsGiveawayHowItWorksText" : "BoostingDiamondsGiveawayHowItWorksTextGroup", (int) giveaway.stars, from)));
         } else {
             stringBuilder.append(replaceTags(formatPluralString(isChannel ? "BoostingGiveawayHowItWorksText" : "BoostingGiveawayHowItWorksTextGroup", quantity, from, quantity, months)));
         }
@@ -587,7 +587,7 @@ public class BoostDialogs {
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 
         if (isStars) {
-            stringBuilder.append(replaceTags(formatPluralStringComma(isChannel ? "BoostingStarsGiveawayHowItWorksTextEnd" : "BoostingStarsGiveawayHowItWorksTextEndGroup", (int) giveaway.stars, from)));
+            stringBuilder.append(replaceTags(formatPluralStringComma(isChannel ? "BoostingDiamondsGiveawayHowItWorksTextEnd" : "BoostingDiamondsGiveawayHowItWorksTextEndGroup", (int) giveaway.stars, from)));
         } else {
             stringBuilder.append(replaceTags(formatPluralString(isChannel ? "BoostingGiveawayHowItWorksTextEnd" : "BoostingGiveawayHowItWorksTextEndGroup", quantity, from, quantity, months)));
         }
