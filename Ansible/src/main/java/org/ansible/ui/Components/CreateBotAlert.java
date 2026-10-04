@@ -318,7 +318,7 @@ public class CreateBotAlert {
                                     ),
                                     () -> {
                                         sheet.dismiss();
-                                        Browser.openUrl(context, "https://asme.su/BotFather?start=deletebot");
+                                        Browser.openUrl(context, "https://asme.su/BotManager?start=deletebot");
                                     },
                                     resourcesProvider
                                 )
@@ -398,7 +398,13 @@ public class CreateBotAlert {
             s = new SpannableStringBuilder(c);
         else
             s = (SpannableStringBuilder) c;
-        final int index = AndroidUtilities.charSequenceIndexOf(s, "@BotFather");
+        // Имя берётся из пака: пока он не перевыпущен, там может быть прежнее.
+        int index = AndroidUtilities.charSequenceIndexOf(s, "@BotManager");
+        String mention = "@BotManager";
+        if (index == -1) {
+            index = AndroidUtilities.charSequenceIndexOf(s, "@BotFather");
+            mention = "@BotFather";
+        }
         if (index >= 0) {
             s.setSpan(new ClickableSpan() {
                 @Override
@@ -412,7 +418,7 @@ public class CreateBotAlert {
                 public void onClick(@NonNull View view) {
                     onClick.run();
                 }
-            }, index, index + "@BotFather".length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }, index, index + mention.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         return s;
     }

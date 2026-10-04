@@ -121,6 +121,10 @@ import java.util.concurrent.CountDownLatch;
 
 public class ChatEditActivity extends BaseFragment implements ImageUpdater.ImageUpdaterDelegate, NotificationCenter.NotificationCenterDelegate {
 
+    // Управляющий бот мессенджера: у нас это @BotManager (uid 15).
+    // Имени BotFather на стенде нет вовсе, и ссылки на него открывали пустоту.
+    private static final String BOT_MANAGER_USERNAME = "BotManager";
+
     private View doneButton;
 
     private AlertDialog progressDialog;
@@ -1361,19 +1365,19 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
             editIntroCell.setBackground(Theme.getSelectorDrawable(false));
             editIntroCell.setTextAndIcon(getString(R.string.BotEditIntro), R.drawable.msg_log, true);
             infoContainer.addView(editIntroCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-            editIntroCell.setOnClickListener(v -> Browser.openUrl(v.getContext(), "https://asme.su/BotFather?start=" + getActiveUsername(currentUser) + "-intro"));
+            editIntroCell.setOnClickListener(v -> Browser.openUrl(v.getContext(), "https://asme.su/" + BOT_MANAGER_USERNAME + "?start=" + getActiveUsername(currentUser) + "-intro"));
 
             editCommandsCell = new TextCell(context);
             editCommandsCell.setBackground(Theme.getSelectorDrawable(false));
             editCommandsCell.setTextAndIcon(getString(R.string.BotEditCommands), R.drawable.msg_media, true);
             infoContainer.addView(editCommandsCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-            editCommandsCell.setOnClickListener(v -> Browser.openUrl(v.getContext(), "https://asme.su/BotFather?start=" + getActiveUsername(currentUser) + "-commands"));
+            editCommandsCell.setOnClickListener(v -> Browser.openUrl(v.getContext(), "https://asme.su/" + BOT_MANAGER_USERNAME + "?start=" + getActiveUsername(currentUser) + "-commands"));
 
             changeBotSettingsCell = new TextCell(context);
             changeBotSettingsCell.setBackground(Theme.getSelectorDrawable(false));
             changeBotSettingsCell.setTextAndIcon(getString(R.string.BotChangeSettings), R.drawable.msg_bot, true);
             infoContainer.addView(changeBotSettingsCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-            changeBotSettingsCell.setOnClickListener(v -> Browser.openUrl(v.getContext(), "https://asme.su/BotFather?start=" + getActiveUsername(currentUser)));
+            changeBotSettingsCell.setOnClickListener(v -> Browser.openUrl(v.getContext(), "https://asme.su/" + BOT_MANAGER_USERNAME + "?start=" + getActiveUsername(currentUser)));
         }
 
         if (currentChat != null) {
@@ -1390,12 +1394,20 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
             botInfoCell = new TextInfoPrivacyCell(context, 12, resourceProvider);
             String str = getString(R.string.BotManageInfo);
             SpannableString span = SpannableString.valueOf(str);
-            int index = str.indexOf("@BotFather");
+            // Имя в подписи приходит из языкового пака. Пока пак не
+            // перевыпущен, там может стоять прежнее имя — ищем оба, иначе
+            // ссылка просто пропадёт.
+            int index = str.indexOf("@" + BOT_MANAGER_USERNAME);
+            String botMention = "@" + BOT_MANAGER_USERNAME;
+            if (index == -1) {
+                index = str.indexOf("@BotFather");
+                botMention = "@BotFather";
+            }
             if (index != -1) {
                 span.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(@NonNull View widget) {
-                        Browser.openUrl(widget.getContext(), "https://asme.su/BotFather");
+                        Browser.openUrl(widget.getContext(), "https://asme.su/" + BOT_MANAGER_USERNAME);
                     }
 
                     @Override

@@ -6468,7 +6468,7 @@
     <string name="BotBalanceTON">Toncoin</string>
     <string name="BotBalanceDiamonds">Stars</string>
     <string name="BotChangeSettings">Change Bot Settings</string>
-    <string name="BotManageInfo">Use @BotFather to manage this bot.</string>
+    <string name="BotManageInfo">Use @BotManager to manage this bot.</string>
     <string name="BotSetPublicLinkHeader">Set public link</string>
     <string name="BotUsernamesHelp">Drag and drop links to change the order in which they will be displayed on the bot info page.</string>
     <string name="SendWhenOnline">Send When Online</string>
@@ -10869,8 +10869,8 @@
     <string name="ManagedBotChatInfo">**%1$s** is ready!\n\nTap **Start** below to test your new chatbot. Its behavior is defined by **%2$s**.</string>
     <string name="CreateManagedBotLimitTitle">Bot Limit Exceeded</string>
     <string name="CreateManagedBotLimitTextTime">You can create another bot in %s.</string>
-    <string name="CreateManagedBotLimitTextPremium">Subscribe to **Premium** to create up to %1$d bots, or delete one of your %2$d bots via @BotFather</string>
-    <string name="CreateManagedBotLimitText">You can create up to %d bots, or delete your current ones via @BotFather</string>
+    <string name="CreateManagedBotLimitTextPremium">Subscribe to **Premium** to create up to %1$d bots, or delete one of your %2$d bots via @BotManager</string>
+    <string name="CreateManagedBotLimitText">You can create up to %d bots, or delete your current ones via @BotManager</string>
     <string name="UnverifiedApp">Unverified App</string>
     <string name="StickerOrEmojiSearchResult">Search Result</string>
     <string name="StickerOrEmojiGlobalSearchResult">Global Search Result</string>
