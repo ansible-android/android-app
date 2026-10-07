@@ -25,7 +25,7 @@ import org.ansible.messenger.wallpaper.WallpaperGiftBitmapDrawable;
 import org.ansible.messenger.wallpaper.WallpaperGiftPatternPosition;
 import org.ansible.asnet.ResultCallback;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.theme.ITheme;
 import org.ansible.ui.ActionBar.theme.ThemeKey;
 import org.ansible.ui.Components.RLottieDrawable;
@@ -820,11 +820,11 @@ public class EmojiThemes {
         }
     }
 
-    public TL_stars.TL_starGiftUnique getThemeGift() {
+    public TL_diamonds.TL_starGiftUnique getThemeGift() {
         if (chatTheme instanceof TLRPC.TL_chatThemeUniqueGift) {
-            TL_stars.StarGift gift = ((TLRPC.TL_chatThemeUniqueGift) chatTheme).gift;
-            if (gift instanceof TL_stars.TL_starGiftUnique)
-            return (TL_stars.TL_starGiftUnique) gift;
+            TL_diamonds.StarGift gift = ((TLRPC.TL_chatThemeUniqueGift) chatTheme).gift;
+            if (gift instanceof TL_diamonds.TL_starGiftUnique)
+            return (TL_diamonds.TL_starGiftUnique) gift;
         }
 
         return null;
@@ -856,7 +856,7 @@ public class EmojiThemes {
         }
     }
 
-    public static void loadWallpaperGiftPattern(int currentAccount, long hash, TL_stars.StarGift gift, ResultCallback<Pair<Long, Bitmap>> callback) {
+    public static void loadWallpaperGiftPattern(int currentAccount, long hash, TL_diamonds.StarGift gift, ResultCallback<Pair<Long, Bitmap>> callback) {
         //ChatThemeController.getInstance(currentAccount).getWallpaperBitmap(hash, cachedBitmap -> {
             /*if (cachedBitmap != null && callback != null) {
                 callback.onComplete(new Pair<>(hash, cachedBitmap));

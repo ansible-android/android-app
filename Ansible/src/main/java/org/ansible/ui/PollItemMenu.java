@@ -772,7 +772,7 @@ public class PollItemMenu extends Dialog {
                             y = actionCell.reactionsLayoutInBubble.y + btn.y + btn.height / 2f;
                         }
                     }
-                    if (visibleReaction != null && visibleReaction.isStar) {
+                    if (visibleReaction != null && visibleReaction.isDiamond) {
                         longpress = true;
                     }
                     chatActivity.selectReaction(cell, message, finalReactionsLayout, v, x, y, visibleReaction,false, longpress, addToRecent, false);

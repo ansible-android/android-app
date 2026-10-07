@@ -47,7 +47,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
 import org.ansible.ui.ActionBar.AlertDialog;
@@ -66,7 +66,7 @@ import org.ansible.ui.Components.ScaleStateListAnimator;
 import org.ansible.ui.Components.SectionsScrollView;
 import org.ansible.ui.Components.SizeNotifierFrameLayout;
 import org.ansible.ui.Components.SlideChooseView;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Stories.recorder.KeyboardNotifier;
 
 import java.util.ArrayList;
@@ -559,15 +559,15 @@ public class LinkEditActivity extends BaseFragment {
                         } else {
                             try {
                                 long stars = Long.parseLong(newText.toString());
-                                if (stars > getMessagesController().starsSubscriptionAmountMax) {
+                                if (stars > getMessagesController().diamondsSubscriptionAmountMax) {
                                     ignoreTextChanged = true;
-                                    stars = getMessagesController().starsSubscriptionAmountMax;
+                                    stars = getMessagesController().diamondsSubscriptionAmountMax;
                                     setText(Long.toString(stars));
                                     ignoreTextChanged = false;
                                 }
                                 subPriceView.setText(formatString(
                                         getConnectionsManager().isTestBackend() ? R.string.RequireMonthlyFeePriceTest5Minutes : R.string.RequireMonthlyFeePrice,
-                                        BillingController.getInstance().formatCurrency((long) (stars / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000), "USD")
+                                        BillingController.getInstance().formatCurrency((long) (stars / 1000.0 * MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000), "USD")
                                 ));
                             } catch (Exception e) {
                                 FileLog.e(e);
@@ -757,8 +757,8 @@ public class LinkEditActivity extends BaseFragment {
 
             if (stars > 0) {
                 req.flags |= 32;
-                req.subscription_pricing = new TL_stars.TL_starsSubscriptionPricing();
-                req.subscription_pricing.period = getConnectionsManager().isTestBackend() ? StarsController.PERIOD_5MINUTES : StarsController.PERIOD_MONTHLY;
+                req.subscription_pricing = new TL_diamonds.TL_starsSubscriptionPricing();
+                req.subscription_pricing.period = getConnectionsManager().isTestBackend() ? DiamondsController.PERIOD_5MINUTES : DiamondsController.PERIOD_MONTHLY;
                 req.subscription_pricing.amount = stars;
             }
 

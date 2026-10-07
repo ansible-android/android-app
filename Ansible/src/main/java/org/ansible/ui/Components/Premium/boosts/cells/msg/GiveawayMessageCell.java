@@ -102,7 +102,7 @@ public class GiveawayMessageCell {
     private StaticLayout countriesLayout;
 
     private TextPaint counterTextPaint;
-    private TextPaint counterStarsTextPaint;
+    private TextPaint counterDiamondsTextPaint;
     private TextPaint chatTextPaint;
     private TextPaint textPaint;
     private TextPaint textDividerPaint;
@@ -122,7 +122,7 @@ public class GiveawayMessageCell {
     private int selectorColor;
     private Drawable selectorDrawable;
     private MessageObject messageObject;
-    private boolean isStars;
+    private boolean isDiamonds;
     private int pressedPos = -1;
     private boolean isButtonPressed = false;
     private boolean isContainerPressed = false;
@@ -136,7 +136,7 @@ public class GiveawayMessageCell {
             return;
         }
         counterTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        counterStarsTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        counterDiamondsTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         chatTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textDividerPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -167,10 +167,10 @@ public class GiveawayMessageCell {
         counterTextPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
         counterTextPaint.setTextSize(dp(12));
         counterTextPaint.setTextAlign(Paint.Align.CENTER);
-        counterStarsTextPaint.setTypeface(AndroidUtilities.bold());
-        counterStarsTextPaint.setTextSize(dp(12));
-        counterStarsTextPaint.setTextAlign(Paint.Align.CENTER);
-        counterStarsTextPaint.setColor(0xFFFFFFFF);
+        counterDiamondsTextPaint.setTypeface(AndroidUtilities.bold());
+        counterDiamondsTextPaint.setTextSize(dp(12));
+        counterDiamondsTextPaint.setTextAlign(Paint.Align.CENTER);
+        counterDiamondsTextPaint.setColor(0xFFFFFFFF);
         chatTextPaint.setTypeface(AndroidUtilities.bold());
         chatTextPaint.setTextSize(dp(13));
         countriesTextPaint.setTextSize(dp(13));
@@ -277,7 +277,7 @@ public class GiveawayMessageCell {
         createImages();
         setGiftImage(messageObject);
         TLRPC.TL_messageMediaGiveaway giveaway = (TLRPC.TL_messageMediaGiveaway) messageObject.messageOwner.media;
-        isStars = (giveaway.flags & 32) != 0;
+        isDiamonds = (giveaway.flags & 32) != 0;
         checkArraysLimits(giveaway.channels.size());
 
         int giftSize = AndroidUtilities.dp(148);
@@ -296,7 +296,7 @@ public class GiveawayMessageCell {
         titleStringBuilder.setSpan(new RelativeSizeSpan(1.05f), 0, giveawayPrizes.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         SpannableStringBuilder subTitleBuilder = new SpannableStringBuilder();
-        if (isStars) {
+        if (isDiamonds) {
             subTitleBuilder.append(replaceTags(formatPluralStringComma("BoostingDiamondsGiveawayMsgInfoPlural1", (int) giveaway.stars)));
             subTitleBuilder.append("\n");
             subTitleBuilder.append(replaceTags(formatPluralString("BoostingDiamondsGiveawayMsgInfoPlural2", giveaway.quantity)));
@@ -396,7 +396,7 @@ public class GiveawayMessageCell {
         measuredHeight += dp(32 + 96); //gift
         measuredWidth = maxWidth;
 
-        if (isStars) {
+        if (isDiamonds) {
             if (counterIcon == null) {
                 counterIcon = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.filled_giveaway_stars).mutate();
             }
@@ -503,7 +503,7 @@ public class GiveawayMessageCell {
             chatBgPaint.setColor(Theme.getColor(Theme.key_chat_inReplyLine, resourcesProvider));
         }
 
-        if (isStars) {
+        if (isDiamonds) {
             counterBgPaint.setColor(Theme.getColor(Theme.key_starsGradient1, resourcesProvider));
         }
 
@@ -540,7 +540,7 @@ public class GiveawayMessageCell {
             counterIcon.setBounds((int) countRect.left + dp(5), (int) countRect.centerY() - dp(12 * s), (int) countRect.left + dp(5 + 28 * s), (int) countRect.centerY() + dp(12 * s));
             counterIcon.draw(canvas);
         }
-        canvas.drawText(counterStr, countRect.centerX() + dp(isStars ? 8 : 0), countRect.centerY() + dp(4), isStars ? counterStarsTextPaint : counterTextPaint);
+        canvas.drawText(counterStr, countRect.centerX() + dp(isDiamonds ? 8 : 0), countRect.centerY() + dp(4), isDiamonds ? counterDiamondsTextPaint : counterTextPaint);
         canvas.restore();
 
         canvas.translate(0, dp(32 + 96));

@@ -1101,7 +1101,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
     private boolean sendAfterDoneNotify;
     private int sendAfterDoneScheduleDate;
     private boolean sendAfterDoneOnce;
-    private long sendAfterDonePayStars;
+    private long sendAfterDonePayDiamonds;
 
     private Runnable recordStartRunnable;
     private DispatchQueue recordQueue;
@@ -1190,7 +1190,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 } else {
                     recordBuffers.add(buffer);
                     if (sendAfterDone != 3 && sendAfterDone != 4) {
-                        stopRecordingInternal(sendAfterDone, sendAfterDoneNotify, sendAfterDoneScheduleDate, sendAfterDoneOnce, sendAfterDonePayStars);
+                        stopRecordingInternal(sendAfterDone, sendAfterDoneNotify, sendAfterDoneScheduleDate, sendAfterDoneOnce, sendAfterDonePayDiamonds);
                     }
                 }
             }
@@ -4873,7 +4873,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         ignoreOnPause = false;
     }
 
-    private void stopRecordingInternal(final int send, boolean notify, int scheduleDate, boolean once, long payStars) {
+    private void stopRecordingInternal(final int send, boolean notify, int scheduleDate, boolean once, long payDiamonds) {
         if (send != 0 && recordingAudioFile != null) {
             final TLRPC.TL_document audioToSend = recordingAudio;
             final File recordingAudioFileToSend_ = recordingAudioFile;
@@ -4921,7 +4921,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                             params.suggestionParams = recordMonoForumSuggestionParams;
                             params.replyToStoryItem = recordReplyingStory;
                             params.sendMessageChatArguments = recordSendMessageChatArguments;
-                            params.payStars = payStars;
+                            params.payDiamonds = payDiamonds;
                             SendMessagesHelper.getInstance(recordingCurrentAccount).sendMessage(params);
                         }
                         NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.audioDidSent, recordingGuid, send == 2 ? audioToSend : null, send == 2 ? recordingAudioFileToSend.getAbsolutePath() : null);
@@ -4958,7 +4958,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         ignoreOnPause = false;
     }
 
-    public void stopRecording(final int send, boolean notify, int scheduleDate, boolean once, long payStars) {
+    public void stopRecording(final int send, boolean notify, int scheduleDate, boolean once, long payDiamonds) {
         if (recordStartRunnable != null) {
             recordQueue.cancelRunnable(recordStartRunnable);
             recordStartRunnable = null;
@@ -4966,7 +4966,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         recordQueue.postRunnable(() -> {
             if (sendAfterDone == 3) {
                 sendAfterDone = 0;
-                stopRecordingInternal(send, notify, scheduleDate, once, payStars);
+                stopRecordingInternal(send, notify, scheduleDate, once, payDiamonds);
                 return;
             }
             if (audioRecorder == null) {
@@ -4981,7 +4981,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 sendAfterDoneNotify = notify;
                 sendAfterDoneScheduleDate = scheduleDate;
                 sendAfterDoneOnce = once;
-                sendAfterDonePayStars = payStars;
+                sendAfterDonePayDiamonds = payDiamonds;
                 audioRecorder.stop();
                 setBluetoothScoOn(false);
             } catch (Exception e) {

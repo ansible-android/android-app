@@ -29,8 +29,8 @@ import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.TextHelper;
-import org.ansible.ui.Stars.StarsIntroActivity;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -132,17 +132,17 @@ public class HighlightMessageSheet {
     }
 
     public static int getTierOption(int currentAccount, int stars, int option) {
-        final int[] tiers = MessagesController.getInstance(currentAccount).starsGroupcallMessageLimits;
+        final int[] tiers = MessagesController.getInstance(currentAccount).diamondsGroupcallMessageLimits;
         for (int i = 0; i < tiers.length / 7; ++i) {
-            final int tierStars = tiers[i * 7];
-            if (stars >= tierStars)
+            final int tierDiamonds = tiers[i * 7];
+            if (stars >= tierDiamonds)
                 return tiers[i * 7 + 1 + option];
         }
         return 0;
     }
 
     public static int getMaxLength(int currentAccount) {
-        final int[] tiers = MessagesController.getInstance(currentAccount).starsGroupcallMessageLimits;
+        final int[] tiers = MessagesController.getInstance(currentAccount).diamondsGroupcallMessageLimits;
         if (tiers == null || tiers.length <= 1 + TIER_LENGTH) {
             return 400;
         }
@@ -155,9 +155,9 @@ public class HighlightMessageSheet {
         long dialogId,
         String dialogName,
         TLRPC.TL_textWithEntities text,
-        long minStars,
-        long currentStars,
-        Utilities.Callback<Long> onStarsSelected,
+        long minDiamonds,
+        long currentDiamonds,
+        Utilities.Callback<Long> onDiamondsSelected,
         Theme.ResourcesProvider resourcesProvider
     ) {
         BottomSheet.Builder builder = new BottomSheet.Builder(context, false, resourcesProvider);
@@ -167,7 +167,7 @@ public class HighlightMessageSheet {
         container.setOrientation(LinearLayout.VERTICAL);
         builder.setCustomView(container);
 
-        final int[] tiers = MessagesController.getInstance(currentAccount).starsGroupcallMessageLimits;
+        final int[] tiers = MessagesController.getInstance(currentAccount).diamondsGroupcallMessageLimits;
 
         final CharSequence stringText = MessageObject.formatTextWithEntities(text, false, new TextPaint());
         int emojisCount = 0;
@@ -177,21 +177,21 @@ public class HighlightMessageSheet {
             final Emoji.EmojiSpan[] emojis = spannable.getSpans(0, stringText.length(), Emoji.EmojiSpan.class);
             emojisCount = animatedEmojis.length + emojis.length;
         }
-        int initialStars = (int) Math.max(minStars, currentStars <= 0 ? 100 : currentStars);
+        int initialDiamonds = (int) Math.max(minDiamonds, currentDiamonds <= 0 ? 100 : currentDiamonds);
         for (int i = tiers.length / 7 - 1; i >= 0; --i) {
-            final int tierStars = tiers[i * 7];
+            final int tierDiamonds = tiers[i * 7];
             final int tierLength = tiers[i * 7 + 1 + TIER_LENGTH];
             final int tierEmojis = tiers[i * 7 + 1 + TIER_EMOJIS];
 
             if (emojisCount <= tierEmojis && stringText.length() <= tierLength) {
-                initialStars = Math.max(initialStars, tierStars);
+                initialDiamonds = Math.max(initialDiamonds, tierDiamonds);
                 break;
             }
         }
 
-        final long[] stars = new long[] { initialStars };
+        final long[] stars = new long[] { initialDiamonds };
 
-        final ColoredImageSpan[] starRef = new ColoredImageSpan[1];
+        final ColoredImageSpan[] diamondRef = new ColoredImageSpan[1];
         final ButtonWithCounterView button = new ButtonWithCounterView(context, null);
 
         final LiveCommentsView.Message message = new LiveCommentsView.Message();
@@ -214,7 +214,7 @@ public class HighlightMessageSheet {
 
         final Utilities.Callback<Integer>[] setStars = new Utilities.Callback[1];
 
-        final StarsReactionsSheet.StarsSlider slider = new StarsReactionsSheet.StarsSlider(context, resourcesProvider) {
+        final DiamondsReactionsSheet.DiamondsSlider slider = new DiamondsReactionsSheet.DiamondsSlider(context, resourcesProvider) {
             @Override
             public void onValueChanged(int value) {
                 setStars[0].run(value);
@@ -222,23 +222,23 @@ public class HighlightMessageSheet {
         };
 
         final boolean[] first = new boolean[] { true };
-        setStars[0] = newStars -> {
-            stars[0] = newStars;
-            button.setText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.DiamondsAddHighlightedMessage, LocaleController.formatNumber(stars[0], ',')), starRef), true);
+        setStars[0] = newDiamonds -> {
+            stars[0] = newDiamonds;
+            button.setText(DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.DiamondsAddHighlightedMessage, LocaleController.formatNumber(stars[0], ',')), diamondRef), true);
             message.stars = stars[0];
             commentView.set(message);
 
-            final int period = getTierOption(currentAccount, newStars, TIER_PERIOD);
-            final int length = getTierOption(currentAccount, newStars, TIER_LENGTH);
-            final int emojis = getTierOption(currentAccount, newStars, TIER_EMOJIS);
+            final int period = getTierOption(currentAccount, newDiamonds, TIER_PERIOD);
+            final int length = getTierOption(currentAccount, newDiamonds, TIER_LENGTH);
+            final int emojis = getTierOption(currentAccount, newDiamonds, TIER_EMOJIS);
 
             tierPeriod.set(period >= 60 ? LocaleController.formatString(R.string.SlowmodeMinutes, period / 60) : LocaleController.formatString(R.string.SlowmodeSeconds, period));
             tierLength.set(LocaleController.formatNumber(length, ','));
             tierEmoji.set(LocaleController.formatNumber(emojis, ','));
 
             slider.setColor(
-                getTierOption(currentAccount, newStars, TIER_COLOR1),
-                getTierOption(currentAccount, newStars, TIER_COLOR2),
+                getTierOption(currentAccount, newDiamonds, TIER_COLOR1),
+                getTierOption(currentAccount, newDiamonds, TIER_COLOR2),
                 !first[0]
             );
             first[0] = false;
@@ -247,13 +247,13 @@ public class HighlightMessageSheet {
         commentView.set(message);
 
         int[] steps_arr = new int[] { 1, 50, 100, 500, 1_000, 2_000, 5_000, 7_500, 10_000 };
-        final int max = MessagesController.getInstance(currentAccount).starsGroupcallMessageAmountMax;
+        final int max = MessagesController.getInstance(currentAccount).diamondsGroupcallMessageAmountMax;
         ArrayList<Integer> steps = new ArrayList<>();
         for (int i = 0; i < steps_arr.length; ++i) {
-            if (steps_arr[i] < minStars) {
+            if (steps_arr[i] < minDiamonds) {
                 continue;
-            } else if (i > 0 && steps.isEmpty() && steps_arr[i] > minStars) {
-                steps.add((int) minStars);
+            } else if (i > 0 && steps.isEmpty() && steps_arr[i] > minDiamonds) {
+                steps.add((int) minDiamonds);
             }
             if (steps_arr[i] > max) {
                 steps.add(max);
@@ -290,7 +290,7 @@ public class HighlightMessageSheet {
         BottomSheet sheet = builder.show();
 
         button.setOnClickListener(v -> {
-            onStarsSelected.run(stars[0]);
+            onDiamondsSelected.run(stars[0]);
             sheet.dismiss();
         });
     }

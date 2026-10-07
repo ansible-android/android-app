@@ -10,6 +10,46 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] - 2026-10-07
+
+### Changed
+- **Brand media replaced from the designer kit: 316 resources** across
+  `drawable-*`, `mipmap-*`, `raw`, `drawable` and `assets/models`, plus 42 in
+  the standalone module. The mark was rebuilt as clean geometry off the 1024 px
+  master; the six launcher icons became six real variants (they used to be six
+  copies of one image with an opaque mark layer, so the background could never
+  show); the plane gave way to the logo everywhere it appeared; the star became
+  the diamond already used in `drawable/diamond`. Resource volume dropped from
+  11.2 MB to 6.1 MB. Delivered against this repository's own `0c66541a`, so
+  every file landed over its namesake with no path guesswork.
+- **Currency renamed in code: Stars -> Diamonds, 7967 replacements in 215
+  files.** Only internal names moved: local variables, fields, methods, class
+  and package names. The package `org.ansible.ui.Stars` became
+  `org.ansible.ui.Diamonds` and 17 classes were renamed with it
+  (`StarsController` -> `DiamondsController`, `StarGiftSheet` ->
+  `DiamondGiftSheet`, `TL_stars` -> `TL_diamonds` and so on).
+
+### Unchanged on purpose
+- **Resource names stay as they are** (`star_small_inner`, `stars_topup`,
+  `R.raw.star_premium_2` and 35 more). An Android resource name is a file name:
+  renaming the reference without the files breaks the build, and the designer
+  kit is delivered against exactly these names.
+- **String resource names stay too** — they are langpack keys.
+  `LocaleController.getString(int res)` derives the key with
+  `getResourceEntryName(res)`, so renaming a name silently changes the key the
+  client asks the translation service for, and translations would quietly fall
+  back to the bundled English. These already read `Diamond*` from earlier
+  releases; nothing needed to move.
+- **TL vocabulary stays frozen**: constructor, field and result-type names of
+  the MTProto schema, and the `TL_*` classes mirroring them. The schema's own
+  names feed the CRC32 of a constructor id.
+- **`Icon3D.java` is left alone.** It picks between four distinct 3D models by
+  type, and `starModel` (`TYPE_STAR`, `TYPE_GOLDEN_STAR`) is a different model
+  from `diamondModel` (`TYPE_DIAMOND`) rather than an old name for it.
+- **Vendored code is untouched**: `androidx`, `com/android`, `com/google`
+  (exoplayer, whose `StarRating` is public API), `com/carrotsearch`, `me`,
+  `org/webrtc`.
+
 ## [0.2.0] - 2026-09-21
 
 ### Changed

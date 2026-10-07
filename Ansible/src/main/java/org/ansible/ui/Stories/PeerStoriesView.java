@@ -196,8 +196,8 @@ import org.ansible.ui.PinchToZoomHelper;
 import org.ansible.ui.PremiumPreviewFragment;
 import org.ansible.ui.ProfileActivity;
 import org.ansible.ui.ReportBottomSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.CaptionContainerView;
 import org.ansible.ui.Stories.recorder.HintView2;
@@ -300,7 +300,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
     boolean isGroup;
     boolean isPremiumBlocked;
     boolean areLiveCommentsDisabled;
-    long starsPriceBlocked;
+    long diamondsPriceBlocked;
 
     private float alpha = 1f;
     private int previousSelectedPotision = -1;
@@ -319,8 +319,8 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
     private boolean isUploading, isEditing, isFailed;
     private FrameLayout selfView;
     private CommentButton commentButton;
-    private PaidReactionButton.PaidReactionButtonEffectsView starsButtonEffectsView;
-    private PaidReactionButton starsButton;
+    private PaidReactionButton.PaidReactionButtonEffectsView diamondsButtonEffectsView;
+    private PaidReactionButton diamondsButton;
     private MuteButton muteButton;
     ChatActivityEnterView chatActivityEnterView;
     ChatActivitySideControlsButtonsLayout sideControlsButtonsLayout;
@@ -1903,7 +1903,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                                     .allowCover(false)
                                     .setCount(1)
                                     .isEdit(false)
-                                    .set(storyViewer.livePlayer != null && storyViewer.livePlayer.areMessagesEnabled(), currentStory.allowScreenshots(), currentStory.storyItem != null && currentStory.storyItem.pinned, storyViewer.livePlayer == null ? 0 : (int) storyViewer.livePlayer.getSendPaidMessagesStars());
+                                    .set(storyViewer.livePlayer != null && storyViewer.livePlayer.areMessagesEnabled(), currentStory.allowScreenshots(), currentStory.storyItem != null && currentStory.storyItem.pinned, storyViewer.livePlayer == null ? 0 : (int) storyViewer.livePlayer.getSendPaidMessagesDiamonds());
                                 sheet.whenSelectedRules((privacy, allowComments, allowScreenshots, keepInProfile, isRtmpStream, sendAs, pricePerComment, whenDone, cancelled) -> {
                                     if ((currentStory.storyItem != null && currentStory.storyItem.pinned) != keepInProfile) {
                                         MessagesController.getInstance(currentAccount).getStoriesController().updateStoriesPinned(dialogId, storyItems, keepInProfile, null);
@@ -2370,35 +2370,35 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             }
 
             @Override
-            protected void onStarsCountUpdated() {
-                starsButton.setCount((int) getStarsCount());
-                starsButton.setFilled(areSendingStars());
+            protected void onDiamondsCountUpdated() {
+                diamondsButton.setCount((int) getDiamondsCount());
+                diamondsButton.setFilled(areSendingDiamonds());
             }
 
             @Override
-            protected void onStarsButtonPressed(long sendingStars, boolean withEffects) {
+            protected void onDiamondsButtonPressed(long sendingDiamonds, boolean withEffects) {
                 if (withEffects) {
-                    starsButton.playEffect(sendingStars);
+                    diamondsButton.playEffect(sendingDiamonds);
                 } else {
-                    starsButton.stopEffects();
+                    diamondsButton.stopEffects();
                 }
             }
 
             @Override
-            protected void onStarReaction(long dialogId, int totalStars, int stars) {
-                if (starsButtonEffectsView == null) return;
-                starsButtonEffectsView.pushChip(dialogId, totalStars, stars);
+            protected void onDiamondReaction(long dialogId, int totalStars, int stars) {
+                if (diamondsButtonEffectsView == null) return;
+                diamondsButtonEffectsView.pushChip(dialogId, totalStars, stars);
             }
 
             @Override
-            protected void onCancelledStarReaction(long dialogId) {
-                if (starsButtonEffectsView == null) return;
-                starsButtonEffectsView.removeChipsFrom(dialogId);
+            protected void onCancelledDiamondReaction(long dialogId) {
+                if (diamondsButtonEffectsView == null) return;
+                diamondsButtonEffectsView.removeChipsFrom(dialogId);
             }
 
             @Override
-            protected void onStarsButtonCancelled() {
-                starsButton.stopEffects();
+            protected void onDiamondsButtonCancelled() {
+                diamondsButton.stopEffects();
             }
         };
         storyContainer.addView(liveCommentsShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 200, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
@@ -2952,7 +2952,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
     private TL_stories.TL_premium_boostsStatus boostsStatus;
     private ChannelBoostsController.CanApplyBoost canApplyBoost;
 
-    private long messageStars;
+    private long messageDiamonds;
 
     private void showPremiumBlockedToast() {
         if (areLiveCommentsDisabled) return;
@@ -3036,27 +3036,27 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
     }
 
     private void createPaidReactionsButton() {
-        if (starsButton != null || getContext() == null) return;
-        starsButtonEffectsView = new PaidReactionButton.PaidReactionButtonEffectsView(getContext(), currentAccount);
-        starsButton = new PaidReactionButton(getContext(), starsButtonEffectsView, blurredBackgroundColorProvider);
-        starsButton.setOnClickListener(v -> {
+        if (diamondsButton != null || getContext() == null) return;
+        diamondsButtonEffectsView = new PaidReactionButton.PaidReactionButtonEffectsView(getContext(), currentAccount);
+        diamondsButton = new PaidReactionButton(getContext(), diamondsButtonEffectsView, blurredBackgroundColorProvider);
+        diamondsButton.setOnClickListener(v -> {
             if (disabledPaidFeatures(false)) {
-                liveCommentsView.openStarsSheet(disabledPaidFeatures(false));
+                liveCommentsView.openDiamondsSheet(disabledPaidFeatures(false));
             } else {
-                final StarsController s = StarsController.getInstance(currentAccount);
+                final DiamondsController s = DiamondsController.getInstance(currentAccount);
                 if (s.balanceAvailable() && s.balance.amount <= 0) {
-                    liveCommentsView.openStarsSheet(disabledPaidFeatures(false));
+                    liveCommentsView.openDiamondsSheet(disabledPaidFeatures(false));
                 } else {
-                    liveCommentsView.sendStars(+1, true);
+                    liveCommentsView.sendDiamonds(+1, true);
                 }
             }
         });
-        starsButton.setOnLongClickListener(v -> {
-            liveCommentsView.openStarsSheet(disabledPaidFeatures(false));
+        diamondsButton.setOnLongClickListener(v -> {
+            liveCommentsView.openDiamondsSheet(disabledPaidFeatures(false));
             return true;
         });
-        addView(starsButton, LayoutHelper.createFrame(38 + 8, 38 + 4, Gravity.RIGHT | Gravity.BOTTOM, 7, 0, 7, 3));
-        addView(starsButtonEffectsView, LayoutHelper.createFrame(200, 200, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 0, 0));
+        addView(diamondsButton, LayoutHelper.createFrame(38 + 8, 38 + 4, Gravity.RIGHT | Gravity.BOTTOM, 7, 0, 7, 3));
+        addView(diamondsButtonEffectsView, LayoutHelper.createFrame(200, 200, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 0, 0));
     }
 
     private void createMuteButton() {
@@ -3155,7 +3155,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     return false;
                 }
                 if (currentStory.isLive) {
-                    final long stars = Math.max(messageStars, getMessageMinPrice());
+                    final long stars = Math.max(messageDiamonds, getMessageMinPrice());
 
                     final TLRPC.TL_textWithEntities text = getTextWithEntities();
                     final CharSequence stringText = MessageObject.formatTextWithEntities(text, false, new TextPaint());
@@ -3185,7 +3185,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     liveCommentsView.send(text, stars);
                     messageEditText.setText("");
                     AndroidUtilities.hideKeyboard(this);
-                    messageStars = 0;
+                    messageDiamonds = 0;
                     checkStealthMode(true);
                     checkSendButton(true);
 
@@ -3342,12 +3342,12 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             }
 
             @Override
-            protected boolean sendMessageInternal(boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars, boolean allowConfirm) {
+            protected boolean sendMessageInternal(boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds, boolean allowConfirm) {
                 if (MessagesController.getInstance(currentAccount).isFrozen()) {
                     AccountFrozenAlert.show(currentAccount);
                     return false;
                 }
-                return super.sendMessageInternal(notify, scheduleDate, scheduleRepeatPeriod, payStars, allowConfirm);
+                return super.sendMessageInternal(notify, scheduleDate, scheduleRepeatPeriod, payDiamonds, allowConfirm);
             }
 
             @Override
@@ -3359,11 +3359,11 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             }
 
             @Override
-            public long getStarsPrice() {
+            public long getDiamondsPrice() {
                 if (currentStory.isLive) {
-                    return Math.max(getMessageMinPrice(), messageStars);
+                    return Math.max(getMessageMinPrice(), messageDiamonds);
                 }
-                return super.getStarsPrice();
+                return super.getDiamondsPrice();
             }
 
             @Override
@@ -3424,13 +3424,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             }
 
             @Override
-            public void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars) {
+            public void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds) {
                 if (isRecording) {
                     AndroidUtilities.runOnUIThread(() -> {
-                        afterMessageSend(payStars <= 0);
+                        afterMessageSend(payDiamonds <= 0);
                     }, 200);
                 } else {
-                    afterMessageSend(payStars <= 0);
+                    afterMessageSend(payDiamonds <= 0);
                 }
             }
 
@@ -3670,11 +3670,11 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
         mentionContainer.withDelegate(new MentionsContainerView.Delegate() {
             @Override
             public void onStickerSelected(TLRPC.TL_document document, String query, Object parent) {
-                AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payStars -> {
-                    SendMessagesHelper.getInstance(currentAccount).sendSticker(document, query, dialogId, null, null, currentStory.storyItem, null, null, true, 0, 0, false, parent, null, payStars, chatActivityEnterView.getSendMonoForumPeerId(), chatActivityEnterView.getSendMessageSuggestionParams());
+                AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payDiamonds -> {
+                    SendMessagesHelper.getInstance(currentAccount).sendSticker(document, query, dialogId, null, null, currentStory.storyItem, null, null, true, 0, 0, false, parent, null, payDiamonds, chatActivityEnterView.getSendMonoForumPeerId(), chatActivityEnterView.getSendMessageSuggestionParams());
                     chatActivityEnterView.addStickerToRecent(document);
                     chatActivityEnterView.setFieldText("");
-                    afterMessageSend(payStars <= 0);
+                    afterMessageSend(payDiamonds <= 0);
                 });
             }
 
@@ -3695,16 +3695,16 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
 
             @Override
             public void sendBotInlineResult(TLRPC.BotInlineResult result, boolean notify, int scheduleDate) {
-                AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payStars -> {
+                AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payDiamonds -> {
                     long uid = mentionContainer.getAdapter().getContextBotId();
                     HashMap<String, String> params = new HashMap<>();
                     params.put("id", result.id);
                     params.put("query_id", "" + result.query_id);
                     params.put("bot", "" + uid);
                     params.put("bot_name", mentionContainer.getAdapter().getContextBotName());
-                    SendMessagesHelper.prepareSendingBotContextResult(storyViewer.fragment, getAccountInstance(), result, params, dialogId, null, null, currentStory.storyItem, null, notify, scheduleDate, 0, null, 0, payStars);
+                    SendMessagesHelper.prepareSendingBotContextResult(storyViewer.fragment, getAccountInstance(), result, params, dialogId, null, null, currentStory.storyItem, null, notify, scheduleDate, 0, null, 0, payDiamonds);
                     chatActivityEnterView.setFieldText("");
-                    afterMessageSend(payStars <= 0);
+                    afterMessageSend(payDiamonds <= 0);
                     MediaDataController.getInstance(currentAccount).increaseInlineRating(uid);
                 });
             }
@@ -3771,7 +3771,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
         if (disabledPaidFeatures(true)) {
             return 0;
         }
-        return storyViewer.livePlayer.getSendPaidMessagesStars();
+        return storyViewer.livePlayer.getSendPaidMessagesDiamonds();
     }
 
     private void openAttachMenu() {
@@ -3806,7 +3806,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             chatAttachAlert.setDelegate(new ChatAttachAlert.ChatAttachViewDelegate() {
 
                 @Override
-                public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payStars) {
+                public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payDiamonds) {
                     if (!storyViewer.isShowing) {
                         return;
                     }
@@ -3857,7 +3857,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                                 SendMessagesHelper.prepareSendingMedia(getAccountInstance(), photos, dialogId, null, null, storyItem, null, button == 4 || forceDocument, arg, null, notify, scheduleDate, scheduleRepeatPeriod, 0, updateStickersOrder, null, null, 0, false, 0, chatActivityEnterView.getSendMonoForumPeerId(), chatActivityEnterView.getSendMessageSuggestionParams());
                             }
                             chatActivityEnterView.setFieldText("");
-                            afterMessageSend(payStars <= 0);
+                            afterMessageSend(payDiamonds <= 0);
                         }
 //                        if (scheduleDate != 0) {
 //                            if (scheduledMessagesCount == -1) {
@@ -3889,13 +3889,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 }
 
                 @Override
-                public void sendAudio(ArrayList<MessageObject> audios, CharSequence caption, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payStars) {
+                public void sendAudio(ArrayList<MessageObject> audios, CharSequence caption, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payDiamonds) {
                     TL_stories.StoryItem storyItem = currentStory.storyItem;
                     if (storyItem == null || storyItem instanceof TL_stories.TL_storyItemSkipped) {
                         return;
                     }
-                    SendMessagesHelper.prepareSendingAudioDocuments(getAccountInstance(), audios, caption != null ? caption : null, dialogId, null, null, storyItem, notify, scheduleDate, scheduleRepeatPeriod, null, null, effectId, invertMedia, payStars);
-                    afterMessageSend(payStars <= 0);
+                    SendMessagesHelper.prepareSendingAudioDocuments(getAccountInstance(), audios, caption != null ? caption : null, dialogId, null, null, storyItem, notify, scheduleDate, scheduleRepeatPeriod, null, null, effectId, invertMedia, payDiamonds);
+                    afterMessageSend(payDiamonds <= 0);
                 }
 
                 @Override
@@ -3908,13 +3908,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             chatAttachAlert.init();
             chatAttachAlert.setDocumentsDelegate(new ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate() {
                 @Override
-                public void didSelectFiles(ArrayList<String> files, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, ArrayList<MessageObject> fmessages, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payStars) {
+                public void didSelectFiles(ArrayList<String> files, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, ArrayList<MessageObject> fmessages, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payDiamonds) {
                     TL_stories.StoryItem storyItem = currentStory.storyItem;
                     if (storyItem == null || storyItem instanceof TL_stories.TL_storyItemSkipped) {
                         return;
                     }
-                    SendMessagesHelper.prepareSendingDocuments(getAccountInstance(), files, files, null, caption, null, dialogId, null, null, storyItem, null, null, notify, scheduleDate, null, null, 0, false, payStars);
-                    afterMessageSend(payStars <= 0);
+                    SendMessagesHelper.prepareSendingDocuments(getAccountInstance(), files, files, null, caption, null, dialogId, null, null, storyItem, null, null, notify, scheduleDate, null, null, 0, false, payDiamonds);
+                    afterMessageSend(payDiamonds <= 0);
                 }
 
                 @Override
@@ -4222,7 +4222,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             final TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
             final TL_account.RequirementToContact r = MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId);
             isPremiumBlocked = !UserConfig.getInstance(currentAccount).isPremium() && DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+            diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
             avatarDrawable.setInfo(currentAccount, user);
             headerView.backupImageView.getImageReceiver().setForUserOrChat(user, avatarDrawable);
             setTitle(true, dialogId, false);
@@ -4239,7 +4239,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 MessagesStorage.getInstance(currentAccount).loadChatInfo(-dialogId, true, new CountDownLatch(1), false, false);
             }
             isPremiumBlocked = isGroup && !ChatObject.canSendPlain(chat);
-            starsPriceBlocked = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId);
+            diamondsPriceBlocked = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId);
             avatarDrawable.setInfo(currentAccount, chat);
             headerView.backupImageView.getImageReceiver().setForUserOrChat(chat, avatarDrawable);
             setTitle(true, dialogId, false);
@@ -4845,9 +4845,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
         } else if (id == NotificationCenter.userIsPremiumBlockedUpadted) {
             final TL_account.RequirementToContact r = MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId);
             final boolean newPremiumBlocked = dialogId >= 0 && !UserConfig.getInstance(currentAccount).isPremium() && DialogObject.isPremiumBlocked(r);
-            if (isPremiumBlocked != newPremiumBlocked || starsPriceBlocked != DialogObject.getMessagesStarsPrice(r)) {
+            if (isPremiumBlocked != newPremiumBlocked || diamondsPriceBlocked != DialogObject.getMessagesDiamondsPrice(r)) {
                 isPremiumBlocked = newPremiumBlocked;
-                starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+                diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
                 updatePosition();
                 checkStealthMode(true);
             }
@@ -4870,7 +4870,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 }
 
                 if (liveCommentsView != null) {
-                    liveCommentsView.updatedMinStars();
+                    liveCommentsView.updatedMinDiamonds();
                 }
             }
         } else if (id == NotificationCenter.didLoadSendAsPeers) {
@@ -4909,10 +4909,10 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             stealthModeIsActive = false;
             chatActivityEnterView.setEnabled(false);
             chatActivityEnterView.setOverrideHint(" ", animated);
-        } else if (starsPriceBlocked > 0) {
+        } else if (diamondsPriceBlocked > 0) {
             stealthModeIsActive = false;
             chatActivityEnterView.setEnabled(true);
-            chatActivityEnterView.setOverrideHint(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.TypeMessageForDiamonds, LocaleController.formatNumber(starsPriceBlocked, ','))), animated);
+            chatActivityEnterView.setOverrideHint(DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.TypeMessageForDiamonds, LocaleController.formatNumber(diamondsPriceBlocked, ','))), animated);
         } else if (!currentStory.isLive && stealthMode != null && ConnectionsManager.getInstance(currentAccount).getCurrentTime() < stealthMode.active_until_date) {
             stealthModeIsActive = true;
             int time = stealthMode.active_until_date - ConnectionsManager.getInstance(currentAccount).getCurrentTime();
@@ -4931,9 +4931,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             stealthModeIsActive = false;
             chatActivityEnterView.setEnabled(true);
             if (currentStory.isLive) {
-                final long stars = chatActivityEnterView.getStarsPrice();
+                final long stars = chatActivityEnterView.getDiamondsPrice();
                 if (stars > 0) {
-                    chatActivityEnterView.setOverrideHint(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.CommentFor, LocaleController.formatNumber((int) stars, ',')), chatActivityEnterView.spans), animated);
+                    chatActivityEnterView.setOverrideHint(DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.CommentFor, LocaleController.formatNumber((int) stars, ',')), chatActivityEnterView.spans), animated);
                     if (chatActivityEnterView.spans[0] != null) {
                         chatActivityEnterView.spans[0].spaceScaleX = 0.9f;
                     }
@@ -5425,8 +5425,8 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                         .add(R.drawable.msg_edit, getString(R.string.LiveStoryMessageEditDiamonds), () -> {
                             onHighlightLiveMessage();
                         })
-                        .addIf(messageStars > 0, R.drawable.menu_delete_paid, getString(R.string.LiveStoryMessageRemoveDiamonds), () -> {
-                            messageStars = 0;
+                        .addIf(messageDiamonds > 0, R.drawable.menu_delete_paid, getString(R.string.LiveStoryMessageRemoveDiamonds), () -> {
+                            messageDiamonds = 0;
                             if (chatActivityEnterView != null) {
                                 chatActivityEnterView.checkSendButton(true);
                                 chatActivityEnterView.updateSendButtonPaid();
@@ -5482,14 +5482,14 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             muteButton.setMuted(LivePlayer.recording != null && LivePlayer.recording.isMuted(), true);
             muteButton.setConnected(LivePlayer.recording == null || LivePlayer.recording.isConnected(), true);
         }
-        if (starsButton != null) {
-            starsButtonEffectsView.setVisibility(!unsupported && currentStory.isLive ? View.VISIBLE : View.GONE);
-            starsButton.setVisibility(!unsupported && currentStory.isLive ? View.VISIBLE : View.GONE);
-            final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) starsButton.getLayoutParams();
+        if (diamondsButton != null) {
+            diamondsButtonEffectsView.setVisibility(!unsupported && currentStory.isLive ? View.VISIBLE : View.GONE);
+            diamondsButton.setVisibility(!unsupported && currentStory.isLive ? View.VISIBLE : View.GONE);
+            final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) diamondsButton.getLayoutParams();
             final int rightMargin = muteButton != null && muteButton.getVisibility() == View.VISIBLE ? dp(54) : dp(7);
             if (lp.rightMargin != rightMargin) {
                 lp.rightMargin = rightMargin;
-                starsButton.setLayoutParams(lp);
+                diamondsButton.setLayoutParams(lp);
             }
         }
 
@@ -5506,7 +5506,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
         if (currentStory.storyItem != null && currentStory.storyItem.media instanceof TLRPC.TL_messageMediaVideoStream) {
             if (liveCommentsView.setup(dialogId, ((TLRPC.TL_messageMediaVideoStream) currentStory.storyItem.media).call)) {
                 liveCommentsView.setCollapsed(false, false);
-                messageStars = 0;
+                messageDiamonds = 0;
                 if (chatActivityEnterView != null) {
                     chatActivityEnterView.checkSendButton(true);
                     chatActivityEnterView.updateSendButtonPaid();
@@ -5697,8 +5697,8 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
         final TLRPC.Peer sendAsPeer = storyViewer.livePlayer.getDefaultSendAs();
         if (sendAsPeer != null)
             send_as = DialogObject.getPeerDialogId(sendAsPeer);
-        HighlightMessageSheet.open(getContext(), currentAccount, send_as, DialogObject.getShortName(currentAccount, dialogId), text, getMessageMinPrice(), messageStars, stars -> {
-            messageStars = stars;
+        HighlightMessageSheet.open(getContext(), currentAccount, send_as, DialogObject.getShortName(currentAccount, dialogId), text, getMessageMinPrice(), messageDiamonds, stars -> {
+            messageDiamonds = stars;
             if (chatActivityEnterView != null) {
                 chatActivityEnterView.checkSendButton(true);
                 chatActivityEnterView.updateSendButtonPaid();
@@ -7542,13 +7542,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 hintView.updatePosition();
             } else if (child != instantCameraView && child != storyContainer && child != shareButton && child != bottomActionsLinearLayout && child != repostButtonContainer && child != mediaBanTooltip && child != highlightMessageHintView && child != likeButtonContainer && (likesReactionLayout == null || likesReactionLayout.getReactionsWindow() == null || child != likesReactionLayout.getReactionsWindow().windowView)) {
                 float keyboard = progressToKeyboard;
-                if (child == commentButton || child == starsButton || child == muteButton || child == starsButtonEffectsView) {
+                if (child == commentButton || child == diamondsButton || child == muteButton || child == diamondsButtonEffectsView) {
                     keyboard = 0f;
                 }
 
                 float alpha;
                 float translationY = -enterViewBottomOffset * (1f - keyboard) - dp(7) * keyboard - animatingKeyboardHeight - dp(8) * (1f - keyboard) - dp(20) * storyViewer.swipeToReplyProgress;
-                if (child == commentButton || child == starsButton || child == muteButton || child == starsButtonEffectsView) {
+                if (child == commentButton || child == diamondsButton || child == muteButton || child == diamondsButtonEffectsView) {
                     translationY += animatingKeyboardHeight;
                 }
                 if (BIG_SCREEN) {
@@ -7908,7 +7908,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                         })) {
                         return;
                     }
-                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payStars -> {
+                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payDiamonds -> {
                         ReactionsEffectOverlay effectOverlay;
                         if (longpress && visibleReaction.emojicon != null) {
                             try {
@@ -7938,7 +7938,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             document = MediaDataController.getInstance(currentAccount).getEmojiAnimatedSticker(visibleReaction.emojicon);
                             SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(visibleReaction.emojicon, dialogId);
                             params.replyToStoryItem = currentStory.storyItem;
-                            params.payStars = payStars;
+                            params.payDiamonds = payDiamonds;
                             SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
                         } else {
                             document = AnimatedEmojiDrawable.findDocument(currentAccount, visibleReaction.documentId);
@@ -7958,11 +7958,11 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             customEmojiEntitiy.length = emoticon.length();
                             params.entities.add(customEmojiEntitiy);
                             params.replyToStoryItem = currentStory.storyItem;
-                            params.payStars = payStars;
+                            params.payDiamonds = payDiamonds;
                             SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
                         }
 
-                        if (payStars <= 0) {
+                        if (payDiamonds <= 0) {
                             BulletinFactory.of(storyContainer, resourcesProvider).createEmojiBulletin(document,
                                 getString(R.string.ReactionSent),
                                 getString(R.string.ViewInChat),

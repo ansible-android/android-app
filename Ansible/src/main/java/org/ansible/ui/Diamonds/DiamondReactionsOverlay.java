@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.scaleRect;
@@ -36,7 +36,7 @@ import org.ansible.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
-public class StarReactionsOverlay extends View {
+public class DiamondReactionsOverlay extends View {
 
     private final ChatActivity chatActivity;
 
@@ -59,7 +59,7 @@ public class StarReactionsOverlay extends View {
 
     private final GradientClip clip = new GradientClip();
 
-    public StarReactionsOverlay(ChatActivity chatActivity) {
+    public DiamondReactionsOverlay(ChatActivity chatActivity) {
         super(chatActivity.getContext());
         this.chatActivity = chatActivity;
 
@@ -106,10 +106,10 @@ public class StarReactionsOverlay extends View {
                 return;
             }
 
-            StarsController.getInstance(msg.currentAccount).commitPaidReaction();
+            DiamondsController.getInstance(msg.currentAccount).commitPaidReaction();
 
             final TLRPC.ChatFull chatFull = chatActivity.getCurrentChatInfo();
-            final StarsReactionsSheet sheet = new StarsReactionsSheet(getContext(), chatActivity.getCurrentAccount(), chatActivity.getDialogId(), chatActivity, msg, reactors, chatFull == null || chatFull.paid_reactions_available, false, 0, chatActivity.getResourceProvider());
+            final DiamondsReactionsSheet sheet = new DiamondsReactionsSheet(getContext(), chatActivity.getCurrentAccount(), chatActivity.getDialogId(), chatActivity, msg, reactors, chatFull == null || chatFull.paid_reactions_available, false, 0, chatActivity.getResourceProvider());
             sheet.setMessageCell(chatActivity, msg.getId(), cell);
             sheet.show();
         };
@@ -128,10 +128,10 @@ public class StarReactionsOverlay extends View {
     private void checkBalance() {
         if (getMessageObject() != null) {
             final MessageObject msg = getMessageObject();
-            final StarsController starsController = StarsController.getInstance(chatActivity.getCurrentAccount());
-            final long totalStars = starsController.getPendingPaidReactions(msg);
-            if (starsController.balanceAvailable() && starsController.getBalance(false) < totalStars) {
-                StarsController.getInstance(chatActivity.getCurrentAccount()).undoPaidReaction();
+            final DiamondsController diamondsController = DiamondsController.getInstance(chatActivity.getCurrentAccount());
+            final long totalStars = diamondsController.getPendingPaidReactions(msg);
+            if (diamondsController.balanceAvailable() && diamondsController.getBalance(false) < totalStars) {
+                DiamondsController.getInstance(chatActivity.getCurrentAccount()).undoPaidReaction();
                 final long dialogId = chatActivity.getDialogId();
                 String name;
                 if (dialogId >= 0) {
@@ -141,8 +141,8 @@ public class StarReactionsOverlay extends View {
                     TLRPC.Chat chat = chatActivity.getMessagesController().getChat(-dialogId);
                     name = chat == null ? "" : chat.title;
                 }
-                new StarsIntroActivity.StarsNeededSheet(chatActivity.getContext(), chatActivity.getResourceProvider(), totalStars, StarsIntroActivity.StarsNeededSheet.TYPE_REACTIONS, name, () -> {
-                    starsController.sendPaidReaction(msg, chatActivity, totalStars, true, true, null);
+                new DiamondsIntroActivity.DiamondsNeededSheet(chatActivity.getContext(), chatActivity.getResourceProvider(), totalStars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_REACTIONS, name, () -> {
+                    diamondsController.sendPaidReaction(msg, chatActivity, totalStars, true, true, null);
                 }, 0).show();
             }
         }
@@ -358,7 +358,7 @@ public class StarReactionsOverlay extends View {
         final MessageObject msg = getMessageObject();
         final ReactionsLayoutInBubble reactionsLayoutInBubble = getReactionsLayoutInBubble();
         if (msg == null || reactionsLayoutInBubble == null) return;
-        final StarsController starsController = StarsController.getInstance(chatActivity.getCurrentAccount());
+        final DiamondsController diamondsController = DiamondsController.getInstance(chatActivity.getCurrentAccount());
 
         playEffect();
         ReactionsLayoutInBubble.ReactionButton btn = reactionsLayoutInBubble.getReactionButton("stars");
@@ -367,10 +367,10 @@ public class StarReactionsOverlay extends View {
             try {
                 performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
             } catch (Exception ignore) {}
-            StarsController.getInstance(chatActivity.getCurrentAccount()).sendPaidReaction(msg, chatActivity, +1, true, false, null);
+            DiamondsController.getInstance(chatActivity.getCurrentAccount()).sendPaidReaction(msg, chatActivity, +1, true, false, null);
         }
         counter.cancelAnimation();
-        counter.setText("+" + starsController.getPendingPaidReactions(msg));
+        counter.setText("+" + diamondsController.getPendingPaidReactions(msg));
         counterShown = true;
         AndroidUtilities.cancelRunOnUIThread(hideCounterRunnable);
         AndroidUtilities.runOnUIThread(hideCounterRunnable, 1500);

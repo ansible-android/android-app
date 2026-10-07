@@ -45,9 +45,9 @@ import org.ansible.ui.Components.Premium.boosts.UserSelectorBottomSheet;
 import org.ansible.ui.Components.SharedMediaLayout;
 import org.ansible.ui.Components.voip.VoIPHelper;
 import org.ansible.ui.Gifts.GiftSheet;
-import org.ansible.ui.Stars.BotStarsActivity;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BotDiamondsActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.StoryRecorder;
 import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.ChannelAffiliateProgramsFragment;
@@ -1165,15 +1165,15 @@ public class LinkManager {
 
         if ("stars".equalsIgnoreCase(first)) {
             if ("top-up".equalsIgnoreCase(second)) {
-                new StarsIntroActivity.StarsOptionsSheet(activity, null).show();
+                new DiamondsIntroActivity.DiamondsOptionsSheet(activity, null).show();
                 return true;
             }
             if ("stats".equalsIgnoreCase(second)) {
-                presentFragment(new BotStarsActivity(BotStarsActivity.TYPE_STARS, getUserConfig().getClientUserId()));
+                presentFragment(new BotDiamondsActivity(BotDiamondsActivity.TYPE_STARS, getUserConfig().getClientUserId()));
                 return true;
             }
             if ("gift".equalsIgnoreCase(second)) {
-                StarsController.getInstance(currentAccount).getGiftOptions();
+                DiamondsController.getInstance(currentAccount).getGiftOptions();
                 UserSelectorBottomSheet.open(UserSelectorBottomSheet.TYPE_STARS, 0, BirthdayController.getInstance(currentAccount).getState());
                 return true;
             }
@@ -1181,7 +1181,7 @@ public class LinkManager {
                 presentFragment(new ChannelAffiliateProgramsFragment(getUserConfig().getClientUserId()));
                 return true;
             }
-            presentFragment(new StarsIntroActivity());
+            presentFragment(new DiamondsIntroActivity());
             return true;
         }
 
@@ -1252,10 +1252,10 @@ public class LinkManager {
                 }
             } else if (!activity.isFinishing()) {
                 PaymentFormActivity paymentFormActivity = null;
-                if (response instanceof TLRPC.TL_payments_paymentFormStars) {
+                if (response instanceof TLRPC.TL_payments_paymentFormDiamonds) {
                     final Runnable callback = activity.navigateToPremiumGiftCallback;
                     activity.navigateToPremiumGiftCallback = null;
-                    StarsController.getInstance(currentAccount).openPaymentForm(null, invoiceSlug, (TLRPC.TL_payments_paymentFormStars) response, () -> {
+                    DiamondsController.getInstance(currentAccount).openPaymentForm(null, invoiceSlug, (TLRPC.TL_payments_paymentFormDiamonds) response, () -> {
                         done();
                     }, status -> {
                         if (callback != null && "paid".equals(status)) {

@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

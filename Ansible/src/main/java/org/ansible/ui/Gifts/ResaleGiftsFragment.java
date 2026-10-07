@@ -7,7 +7,7 @@ import static org.ansible.messenger.LocaleController.formatPluralStringComma;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
 import static org.ansible.messenger.Utilities.clamp01;
-import static org.ansible.ui.Stars.StarsController.findAttributes;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttributes;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -48,7 +48,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.asnet.ConnectionsManager;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenuSubItem;
 import org.ansible.ui.ActionBar.AlertDialog;
@@ -84,9 +84,9 @@ import org.ansible.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.ansible.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
 import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceColor;
 import org.ansible.ui.LaunchActivity;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -128,7 +128,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
     private View filtersDivider;
     private UniversalRecyclerView listView;
     private FrameLayout clearFiltersContainer;
-    private FrameLayout onlyStarsContainer;
+    private FrameLayout onlyDiamondsContainer;
     private TextView clearFiltersButton;
     private LargeEmptyView emptyView;
     private boolean emptyViewVisible;
@@ -194,12 +194,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
         fragmentView.setBackgroundColor(backgroundColor);
         this.fragmentView = fragmentView;
 
-        StarsIntroActivity.StarsBalanceView balanceView = new StarsIntroActivity.StarsBalanceView(context, currentAccount, resourceProvider);
+        DiamondsIntroActivity.DiamondsBalanceView balanceView = new DiamondsIntroActivity.DiamondsBalanceView(context, currentAccount, resourceProvider);
         balanceView.withTon();
         ScaleStateListAnimator.apply(balanceView);
         balanceView.setOnClickListener(v -> {
             if (balanceView.lastBalance <= 0) return;
-            presentFragment(new StarsIntroActivity());
+            presentFragment(new DiamondsIntroActivity());
         });
         actionBar.addView(balanceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.RIGHT, 0, 0, 4, 0));
 
@@ -281,26 +281,26 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
         checkboxLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(18), 0, Theme.blendOver(getThemedColor(Theme.key_windowBackgroundWhite), Theme.multAlpha(getThemedColor(Theme.key_featuredStickers_addButton), 0.10f))));
 
 
-        onlyStarsContainer = new FrameLayout(context);
-        onlyStarsContainer.setPadding(dp(8), dp(8), dp(8), dp(8));
-        onlyStarsContainer.setBackground(iBlur3Factory.create(onlyStarsContainer)
+        onlyDiamondsContainer = new FrameLayout(context);
+        onlyDiamondsContainer.setPadding(dp(8), dp(8), dp(8), dp(8));
+        onlyDiamondsContainer.setBackground(iBlur3Factory.create(onlyDiamondsContainer)
             .setColorProvider(BlurredBackgroundProviderImpl.shadow(resourceProvider))
             .setPadding(dp(8))
             .setRadius(dp(18)));
-        onlyStarsContainer.setOnClickListener(v -> {
+        onlyDiamondsContainer.setOnClickListener(v -> {
             if (list != null) {
                 list.starsOnly = !list.starsOnly;
                 checkbox.setChecked(list.starsOnly, true);
                 list.reload();
             }
         });
-        onlyStarsContainer.addView(checkboxLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT));
-        ScaleStateListAnimator.apply(onlyStarsContainer, 0.04f, 1.5f);
-        fragmentView.addView(onlyStarsContainer, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 36 + 8 + 8, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0, 0, AndroidUtilities.navigationBarHeight / AndroidUtilities.density));
+        onlyDiamondsContainer.addView(checkboxLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT));
+        ScaleStateListAnimator.apply(onlyDiamondsContainer, 0.04f, 1.5f);
+        fragmentView.addView(onlyDiamondsContainer, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 36 + 8 + 8, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0, 0, AndroidUtilities.navigationBarHeight / AndroidUtilities.density));
 
-        StarsController tc = StarsController.getTonInstance(currentAccount);
+        DiamondsController tc = DiamondsController.getTonInstance(currentAccount);
         if (tc.balanceAvailable() && !tc.getBalanceAmount().isZero()) {
-            onlyStarsContainer.setVisibility(View.GONE);
+            onlyDiamondsContainer.setVisibility(View.GONE);
         }
 
 
@@ -387,7 +387,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             });
 
             final String[] query = new String[] { "" };
-            final ArrayList<TL_stars.starGiftAttributeModel> attributes = new ArrayList<>(list.modelAttributes);
+            final ArrayList<TL_diamonds.starGiftAttributeModel> attributes = new ArrayList<>(list.modelAttributes);
             Collections.sort(attributes, (a, b) -> {
                 final Integer aCount = list.modelAttributesCounter.get(a.document.id);
                 final Integer bCount = list.modelAttributesCounter.get(b.document.id);
@@ -398,7 +398,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             final UniversalRecyclerView listView = new UniversalRecyclerView(this, (items, adapter) -> {
                 final String q = query[0].toLowerCase(), tq = AndroidUtilities.translitSafe(q);
                 final boolean allSelected = list.notSelectedModelAttributes.isEmpty();
-                for (TL_stars.starGiftAttributeModel attr : attributes) {
+                for (TL_diamonds.starGiftAttributeModel attr : attributes) {
                     final boolean checked = !list.notSelectedModelAttributes.contains(attr.document.id);
                     if (TextUtils.isEmpty(q) || attr.name.toLowerCase().startsWith(q) || attr.name.toLowerCase().startsWith(tq) || attr.name.toLowerCase().contains(" " + q) || attr.name.toLowerCase().contains(" " + tq)) {
                         final Integer counter = list.modelAttributesCounter.get(attr.document.id);
@@ -409,12 +409,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                     items.add(EmptyView.Factory.asEmptyView(getString(R.string.Gift2ResaleFiltersModelEmpty)));
                 }
             }, (item, view, position, x, y) -> {
-                final TL_stars.starGiftAttributeModel pattern = (TL_stars.starGiftAttributeModel) item.object;
+                final TL_diamonds.starGiftAttributeModel pattern = (TL_diamonds.starGiftAttributeModel) item.object;
                 final long document_id = pattern.document.id;
                 final boolean checked = !list.notSelectedModelAttributes.contains(document_id);
                 if (checked) {
                     if (list.notSelectedModelAttributes.isEmpty()) {
-                        for (TL_stars.starGiftAttributeModel attr1 : list.modelAttributes) {
+                        for (TL_diamonds.starGiftAttributeModel attr1 : list.modelAttributes) {
                             if (attr1.document.id != document_id) {
                                 list.notSelectedModelAttributes.add(attr1.document.id);
                             }
@@ -500,7 +500,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             });
 
             final String[] query = new String[] { "" };
-            final ArrayList<TL_stars.starGiftAttributeBackdrop> attributes = new ArrayList<>(list.backdropAttributes);
+            final ArrayList<TL_diamonds.starGiftAttributeBackdrop> attributes = new ArrayList<>(list.backdropAttributes);
             Collections.sort(attributes, (a, b) -> {
                 final Integer aCount = list.backdropAttributesCounter.get(a.backdrop_id);
                 final Integer bCount = list.backdropAttributesCounter.get(b.backdrop_id);
@@ -511,7 +511,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             final UniversalRecyclerView listView = new UniversalRecyclerView(this, (items, adapter) -> {
                 final String q = query[0].toLowerCase(), tq = AndroidUtilities.translitSafe(q);
                 final boolean allSelected = list.notSelectedBackdropAttributes.isEmpty();
-                for (TL_stars.starGiftAttributeBackdrop attr : attributes) {
+                for (TL_diamonds.starGiftAttributeBackdrop attr : attributes) {
                     final boolean checked = !list.notSelectedBackdropAttributes.contains(attr.backdrop_id);
                     if (TextUtils.isEmpty(q) || attr.name.toLowerCase().startsWith(q) || attr.name.toLowerCase().startsWith(tq) || attr.name.toLowerCase().contains(" " + q) || attr.name.toLowerCase().contains(" " + tq)) {
                         final Integer counter = list.backdropAttributesCounter.get(attr.backdrop_id);
@@ -522,12 +522,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                     items.add(EmptyView.Factory.asEmptyView(getString(R.string.Gift2ResaleFiltersBackdropEmpty)));
                 }
             }, (item, view, position, x, y) -> {
-                final TL_stars.starGiftAttributeBackdrop backdrop = (TL_stars.starGiftAttributeBackdrop) item.object;
+                final TL_diamonds.starGiftAttributeBackdrop backdrop = (TL_diamonds.starGiftAttributeBackdrop) item.object;
                 final int backdrop_id = backdrop.backdrop_id;
                 final boolean checked = !list.notSelectedBackdropAttributes.contains(backdrop_id);
                 if (checked) {
                     if (list.notSelectedBackdropAttributes.isEmpty()) {
-                        for (TL_stars.starGiftAttributeBackdrop attr1 : list.backdropAttributes) {
+                        for (TL_diamonds.starGiftAttributeBackdrop attr1 : list.backdropAttributes) {
                             if (attr1.backdrop_id != backdrop_id) {
                                 list.notSelectedBackdropAttributes.add(attr1.backdrop_id);
                             }
@@ -613,7 +613,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             });
 
             final String[] query = new String[] { "" };
-            final ArrayList<TL_stars.starGiftAttributePattern> attributes = new ArrayList<>(list.patternAttributes);
+            final ArrayList<TL_diamonds.starGiftAttributePattern> attributes = new ArrayList<>(list.patternAttributes);
             Collections.sort(attributes, (a, b) -> {
                 final Integer aCount = list.patternAttributesCounter.get(a.document.id);
                 final Integer bCount = list.patternAttributesCounter.get(b.document.id);
@@ -624,7 +624,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             final UniversalRecyclerView listView = new UniversalRecyclerView(this, (items, adapter) -> {
                 final String q = query[0].toLowerCase(), tq = AndroidUtilities.translitSafe(q);
                 final boolean allSelected = list.notSelectedPatternAttributes.isEmpty();
-                for (TL_stars.starGiftAttributePattern attr : attributes) {
+                for (TL_diamonds.starGiftAttributePattern attr : attributes) {
                     final boolean checked = !list.notSelectedPatternAttributes.contains(attr.document.id);
                     if (TextUtils.isEmpty(q) || attr.name.toLowerCase().startsWith(q) || attr.name.toLowerCase().startsWith(tq) || attr.name.toLowerCase().contains(" " + q) || attr.name.toLowerCase().contains(" " + tq)) {
                         final Integer counter = list.patternAttributesCounter.get(attr.document.id);
@@ -635,12 +635,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                     items.add(EmptyView.Factory.asEmptyView(getString(R.string.Gift2ResaleFiltersSymbolEmpty)));
                 }
             }, (item, view, position, x, y) -> {
-                final TL_stars.starGiftAttributePattern pattern = (TL_stars.starGiftAttributePattern) item.object;
+                final TL_diamonds.starGiftAttributePattern pattern = (TL_diamonds.starGiftAttributePattern) item.object;
                 final long document_id = pattern.document.id;
                 final boolean checked = !list.notSelectedPatternAttributes.contains(document_id);
                 if (checked) {
                     if (list.notSelectedPatternAttributes.isEmpty()) {
-                        for (TL_stars.starGiftAttributePattern attr1 : list.patternAttributes) {
+                        for (TL_diamonds.starGiftAttributePattern attr1 : list.patternAttributes) {
                             if (attr1.document.id != document_id) {
                                 list.notSelectedPatternAttributes.add(attr1.document.id);
                             }
@@ -792,8 +792,8 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
     }
 
     private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-        for (TL_stars.TL_starGiftUnique gift : list.gifts) {
-            items.add(GiftSheet.GiftCell.Factory.asStarGift(0, gift, false, false, false, true, false));
+        for (TL_diamonds.TL_starGiftUnique gift : list.gifts) {
+            items.add(GiftSheet.GiftCell.Factory.asDiamondGift(0, gift, false, false, false, true, false));
         }
         if (list.loading || !list.endReached) {
             items.add(UItem.asFlicker(-1, FlickerLoadingView.STAR_GIFT).setSpanCount(1));
@@ -852,10 +852,10 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
 
     private void onItemClick(UItem item, View view, int position, float x, float y) {
-        if (item.object instanceof TL_stars.TL_starGiftUnique) {
-            final TL_stars.TL_starGiftUnique gift = (TL_stars.TL_starGiftUnique) item.object;
+        if (item.object instanceof TL_diamonds.TL_starGiftUnique) {
+            final TL_diamonds.TL_starGiftUnique gift = (TL_diamonds.TL_starGiftUnique) item.object;
 
-            final StarGiftSheet sheet = new StarGiftSheet(getContext(), currentAccount, dialogId, resourceProvider);
+            final DiamondGiftSheet sheet = new DiamondGiftSheet(getContext(), currentAccount, dialogId, resourceProvider);
             sheet.set(gift.slug, gift, list);
             sheet.setOnBoughtGift((boughtGift, dialogId, fragmentsImmediately) -> {
                 if (dialogId == UserConfig.getInstance(currentAccount).getClientUserId()) {
@@ -927,22 +927,22 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
     @Override
     public void onFactorChanged(int id, float factor, float fraction, FactorAnimator callee) {
         if (id == ANIMATOR_ID_CLEAR_FILTERS_BUTTON_VISIBLE) {
-            onlyStarsContainer.setTranslationY(-dp(44 + 8) * factor);
+            onlyDiamondsContainer.setTranslationY(-dp(44 + 8) * factor);
             FragmentFloatingButton.setAnimatedVisibility(clearFiltersContainer, factor);
         }
     }
 
-    public static class ResaleGiftsList implements StarsController.IGiftsList {
+    public static class ResaleGiftsList implements DiamondsController.IGiftsList {
         private final int account;
         public final long gift_id;
         private final Utilities.Callback<Boolean> onUpdate;
 
-        public final ArrayList<TL_stars.TL_starGiftUnique> gifts = new ArrayList<>();
+        public final ArrayList<TL_diamonds.TL_starGiftUnique> gifts = new ArrayList<>();
         private int totalCount;
 
-        public final ArrayList<TL_stars.starGiftAttributeModel> modelAttributes = new ArrayList<>();
-        public final ArrayList<TL_stars.starGiftAttributeBackdrop> backdropAttributes = new ArrayList<>();
-        public final ArrayList<TL_stars.starGiftAttributePattern> patternAttributes = new ArrayList<>();
+        public final ArrayList<TL_diamonds.starGiftAttributeModel> modelAttributes = new ArrayList<>();
+        public final ArrayList<TL_diamonds.starGiftAttributeBackdrop> backdropAttributes = new ArrayList<>();
+        public final ArrayList<TL_diamonds.starGiftAttributePattern> patternAttributes = new ArrayList<>();
         private long attributes_hash;
 
         public final HashSet<Long> notSelectedModelAttributes       = new HashSet<>();
@@ -1018,7 +1018,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
         public void load(boolean force) {
             if (loading || !force && endReached) return;
             loading = true;
-            final TL_stars.getResaleStarGifts req = new TL_stars.getResaleStarGifts();
+            final TL_diamonds.getResaleStarGifts req = new TL_diamonds.getResaleStarGifts();
             req.gift_id = gift_id;
             req.offset = last_offset == null ? "" : last_offset;
             req.limit = 15;
@@ -1044,27 +1044,27 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             if (!notSelectedModelAttributes.isEmpty() || !notSelectedBackdropAttributes.isEmpty() || !notSelectedPatternAttributes.isEmpty()) {
                 req.flags |= 8;
                 if (!notSelectedModelAttributes.isEmpty()) {
-                    for (TL_stars.starGiftAttributeModel attr : modelAttributes) {
+                    for (TL_diamonds.starGiftAttributeModel attr : modelAttributes) {
                         if (!notSelectedModelAttributes.contains(attr.document.id)) {
-                            final TL_stars.starGiftAttributeIdModel attrId = new TL_stars.starGiftAttributeIdModel();
+                            final TL_diamonds.starGiftAttributeIdModel attrId = new TL_diamonds.starGiftAttributeIdModel();
                             attrId.document_id = attr.document.id;
                             req.attributes.add(attrId);
                         }
                     }
                 }
                 if (!notSelectedBackdropAttributes.isEmpty()) {
-                    for (TL_stars.starGiftAttributeBackdrop attr : backdropAttributes) {
+                    for (TL_diamonds.starGiftAttributeBackdrop attr : backdropAttributes) {
                         if (!notSelectedBackdropAttributes.contains(attr.backdrop_id)) {
-                            final TL_stars.starGiftAttributeIdBackdrop attrId = new TL_stars.starGiftAttributeIdBackdrop();
+                            final TL_diamonds.starGiftAttributeIdBackdrop attrId = new TL_diamonds.starGiftAttributeIdBackdrop();
                             attrId.backdrop_id = attr.backdrop_id;
                             req.attributes.add(attrId);
                         }
                     }
                 }
                 if (!notSelectedPatternAttributes.isEmpty()) {
-                    for (TL_stars.starGiftAttributePattern attr : patternAttributes) {
+                    for (TL_diamonds.starGiftAttributePattern attr : patternAttributes) {
                         if (!notSelectedPatternAttributes.contains(attr.document.id)) {
-                            final TL_stars.starGiftAttributeIdPattern attrId = new TL_stars.starGiftAttributeIdPattern();
+                            final TL_diamonds.starGiftAttributeIdPattern attrId = new TL_diamonds.starGiftAttributeIdPattern();
                             attrId.document_id = attr.document.id;
                             req.attributes.add(attrId);
                         }
@@ -1074,8 +1074,8 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             reqId = ConnectionsManager.getInstance(account).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                 reqId = -1;
 
-                if (res instanceof TL_stars.resaleStarGifts) {
-                    final TL_stars.resaleStarGifts r = (TL_stars.resaleStarGifts) res;
+                if (res instanceof TL_diamonds.resaleStarGifts) {
+                    final TL_diamonds.resaleStarGifts r = (TL_diamonds.resaleStarGifts) res;
                     MessagesController.getInstance(account).putUsers(r.users, false);
                     MessagesController.getInstance(account).putChats(r.chats, false);
 
@@ -1085,9 +1085,9 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                         first = true;
                         gifts.clear();
                     }
-                    for (TL_stars.StarGift starGift : r.gifts) {
-                        if (starGift instanceof TL_stars.TL_starGiftUnique) {
-                            final TL_stars.TL_starGiftUnique gift = (TL_stars.TL_starGiftUnique) starGift;
+                    for (TL_diamonds.StarGift starGift : r.gifts) {
+                        if (starGift instanceof TL_diamonds.TL_starGiftUnique) {
+                            final TL_diamonds.TL_starGiftUnique gift = (TL_diamonds.TL_starGiftUnique) starGift;
                             gifts.add(gift);
                         }
                     }
@@ -1099,21 +1099,21 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                         backdropAttributes.clear();
                         patternAttributes.clear();
 
-                        modelAttributes.addAll(findAttributes(r.attributes, TL_stars.starGiftAttributeModel.class));
-                        backdropAttributes.addAll(findAttributes(r.attributes, TL_stars.starGiftAttributeBackdrop.class));
-                        patternAttributes.addAll(findAttributes(r.attributes, TL_stars.starGiftAttributePattern.class));
+                        modelAttributes.addAll(findAttributes(r.attributes, TL_diamonds.starGiftAttributeModel.class));
+                        backdropAttributes.addAll(findAttributes(r.attributes, TL_diamonds.starGiftAttributeBackdrop.class));
+                        patternAttributes.addAll(findAttributes(r.attributes, TL_diamonds.starGiftAttributePattern.class));
                         attributes_hash = r.attributes_hash;
                     }
                     if (!r.counters.isEmpty()) {
                         backdropAttributesCounter.clear();
                         patternAttributesCounter.clear();
                         modelAttributesCounter.clear();
-                        for (final TL_stars.starGiftAttributeCounter counter : r.counters) {
-                            if (counter.attribute instanceof TL_stars.starGiftAttributeIdBackdrop) {
+                        for (final TL_diamonds.starGiftAttributeCounter counter : r.counters) {
+                            if (counter.attribute instanceof TL_diamonds.starGiftAttributeIdBackdrop) {
                                 backdropAttributesCounter.put(counter.attribute.backdrop_id, counter.count);
-                            } else if (counter.attribute instanceof TL_stars.starGiftAttributeIdPattern) {
+                            } else if (counter.attribute instanceof TL_diamonds.starGiftAttributeIdPattern) {
                                 patternAttributesCounter.put(counter.attribute.document_id, counter.count);
-                            } else if (counter.attribute instanceof TL_stars.starGiftAttributeIdModel) {
+                            } else if (counter.attribute instanceof TL_diamonds.starGiftAttributeIdModel) {
                                 modelAttributesCounter.put(counter.attribute.document_id, counter.count);
                             }
                         }
@@ -1351,7 +1351,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
         private long emojiDrawableId;
         private AnimatedEmojiDrawable emojiDrawable;
-        public void set(TL_stars.starGiftAttributeModel pattern, int counter, String query, boolean checked) {
+        public void set(TL_diamonds.starGiftAttributeModel pattern, int counter, String query, boolean checked) {
             if (emojiDrawable == null || emojiDrawableId != pattern.document.id) {
                 emojiDrawableId = pattern.document.id;
                 if (emojiDrawable != null) {
@@ -1410,10 +1410,10 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
             @Override
             public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
-                ((ModelItem) view).set((TL_stars.starGiftAttributeModel) item.object, item.intValue, (String) item.text, item.checked);
+                ((ModelItem) view).set((TL_diamonds.starGiftAttributeModel) item.object, item.intValue, (String) item.text, item.checked);
             }
 
-            public static UItem asModel(TL_stars.starGiftAttributeModel model, int counter, String query) {
+            public static UItem asModel(TL_diamonds.starGiftAttributeModel model, int counter, String query) {
                 UItem item = UItem.ofFactory(Factory.class);
                 item.object = model;
                 item.text = query;
@@ -1453,7 +1453,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
         private long emojiDrawableId;
         private AnimatedEmojiDrawable emojiDrawable;
-        public void set(TL_stars.starGiftAttributePattern pattern, int counter, String query, boolean checked) {
+        public void set(TL_diamonds.starGiftAttributePattern pattern, int counter, String query, boolean checked) {
             if (emojiDrawable == null || emojiDrawableId != pattern.document.id) {
                 emojiDrawableId = pattern.document.id;
                 if (emojiDrawable != null) {
@@ -1513,10 +1513,10 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
             @Override
             public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
-                ((PatternItem) view).set((TL_stars.starGiftAttributePattern) item.object, item.intValue, (String) item.text, item.checked);
+                ((PatternItem) view).set((TL_diamonds.starGiftAttributePattern) item.object, item.intValue, (String) item.text, item.checked);
             }
 
-            public static UItem asPattern(TL_stars.starGiftAttributePattern backdrop, int counter, String query) {
+            public static UItem asPattern(TL_diamonds.starGiftAttributePattern backdrop, int counter, String query) {
                 UItem item = UItem.ofFactory(Factory.class);
                 item.object = backdrop;
                 item.text = query;
@@ -1537,7 +1537,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             setBackground(null);
         }
 
-        public void set(TL_stars.starGiftAttributeBackdrop backdrop, int counter, String query, boolean checked) {
+        public void set(TL_diamonds.starGiftAttributeBackdrop backdrop, int counter, String query, boolean checked) {
             final Drawable circle = Theme.createCircleDrawable(dp(20), backdrop.center_color | 0xFF000000);
             CharSequence name = backdrop.name;//new SpannableStringBuilder(/*" ").append(*/);
             if (!TextUtils.isEmpty(query)) {
@@ -1577,10 +1577,10 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
             @Override
             public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
-                ((BackdropItem) view).set((TL_stars.starGiftAttributeBackdrop) item.object, item.intValue, (String) item.text, item.checked);
+                ((BackdropItem) view).set((TL_diamonds.starGiftAttributeBackdrop) item.object, item.intValue, (String) item.text, item.checked);
             }
 
-            public static UItem asBackdrop(TL_stars.starGiftAttributeBackdrop backdrop, int counter, String query) {
+            public static UItem asBackdrop(TL_diamonds.starGiftAttributeBackdrop backdrop, int counter, String query) {
                 UItem item = UItem.ofFactory(Factory.class);
                 item.object = backdrop;
                 item.text = query;
@@ -1605,12 +1605,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
         public static class State implements NotificationCenter.NotificationCenterDelegate {
             public final int currentAccount;
             public final long giftId;
-            private final StarsController.GiftsList list;
+            private final DiamondsController.GiftsList list;
             private final ResaleGiftsList resaleList;
             public State(int currentAccount, long gift_id) {
                 this.currentAccount = currentAccount;
                 this.giftId = gift_id;
-                list = new StarsController.GiftsList(currentAccount, 0, false);
+                list = new DiamondsController.GiftsList(currentAccount, 0, false);
                 list.forCrafting(gift_id);
                 resaleList = new ResaleGiftsList(currentAccount, gift_id, this::update).forCraft();
             }
@@ -1626,14 +1626,14 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             private boolean attached;
             public void attach() {
                 if (attached) return;
-                NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starUserGiftsLoaded);
+                NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
                 list.load();
                 resaleList.load();
                 attached = true;
             }
             public void detach() {
                 if (!attached) return;
-                NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starUserGiftsLoaded);
+                NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondUserGiftsLoaded);
                 list.cancel();
                 resaleList.cancel();
                 attached = false;
@@ -1641,7 +1641,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
             @Override
             public void didReceivedNotification(int id, int account, Object... args) {
-                if (id == NotificationCenter.starUserGiftsLoaded) {
+                if (id == NotificationCenter.diamondUserGiftsLoaded) {
                     if (args[1] == list) {
                         update(true);
                     }
@@ -1649,7 +1649,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             }
         }
 
-        private StarGiftSheet.ActionView actionView;
+        private DiamondGiftSheet.ActionView actionView;
 
         public SelectGiftSheet(Context context, String collectionName, State state) {
             super(context, null, false, false, false, ActionBarType.SLIDING, null);
@@ -1711,7 +1711,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 });
 
                 final String[] query = new String[] { "" };
-                final ArrayList<TL_stars.starGiftAttributeModel> attributes = new ArrayList<>(state.resaleList.modelAttributes);
+                final ArrayList<TL_diamonds.starGiftAttributeModel> attributes = new ArrayList<>(state.resaleList.modelAttributes);
                 Collections.sort(attributes, (a, b) -> {
                     final Integer aCount = state.resaleList.modelAttributesCounter.get(a.document.id);
                     final Integer bCount = state.resaleList.modelAttributesCounter.get(b.document.id);
@@ -1722,7 +1722,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 final UniversalRecyclerView listView = new UniversalRecyclerView(context, currentAccount, 0, (items, adapter) -> {
                     final String q = query[0].toLowerCase(), tq = AndroidUtilities.translitSafe(q);
                     final boolean allSelected = state.resaleList.notSelectedModelAttributes.isEmpty();
-                    for (TL_stars.starGiftAttributeModel attr : attributes) {
+                    for (TL_diamonds.starGiftAttributeModel attr : attributes) {
                         final boolean checked = !state.resaleList.notSelectedModelAttributes.contains(attr.document.id);
                         if (TextUtils.isEmpty(q) || attr.name.toLowerCase().startsWith(q) || attr.name.toLowerCase().startsWith(tq) || attr.name.toLowerCase().contains(" " + q) || attr.name.toLowerCase().contains(" " + tq)) {
                             final Integer counter = state.resaleList.modelAttributesCounter.get(attr.document.id);
@@ -1733,12 +1733,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                         items.add(EmptyView.Factory.asEmptyView(getString(R.string.Gift2ResaleFiltersModelEmpty)));
                     }
                 }, (item, view, position, x, y) -> {
-                    final TL_stars.starGiftAttributeModel pattern = (TL_stars.starGiftAttributeModel) item.object;
+                    final TL_diamonds.starGiftAttributeModel pattern = (TL_diamonds.starGiftAttributeModel) item.object;
                     final long document_id = pattern.document.id;
                     final boolean checked = !state.resaleList.notSelectedModelAttributes.contains(document_id);
                     if (checked) {
                         if (state.resaleList.notSelectedModelAttributes.isEmpty()) {
-                            for (TL_stars.starGiftAttributeModel attr1 : state.resaleList.modelAttributes) {
+                            for (TL_diamonds.starGiftAttributeModel attr1 : state.resaleList.modelAttributes) {
                                 if (attr1.document.id != document_id) {
                                     state.resaleList.notSelectedModelAttributes.add(attr1.document.id);
                                 }
@@ -1823,7 +1823,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 });
 
                 final String[] query = new String[] { "" };
-                final ArrayList<TL_stars.starGiftAttributeBackdrop> attributes = new ArrayList<>(state.resaleList.backdropAttributes);
+                final ArrayList<TL_diamonds.starGiftAttributeBackdrop> attributes = new ArrayList<>(state.resaleList.backdropAttributes);
                 Collections.sort(attributes, (a, b) -> {
                     final Integer aCount = state.resaleList.backdropAttributesCounter.get(a.backdrop_id);
                     final Integer bCount = state.resaleList.backdropAttributesCounter.get(b.backdrop_id);
@@ -1834,7 +1834,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 final UniversalRecyclerView listView = new UniversalRecyclerView(context, currentAccount, 0, (items, adapter) -> {
                     final String q = query[0].toLowerCase(), tq = AndroidUtilities.translitSafe(q);
                     final boolean allSelected = state.resaleList.notSelectedBackdropAttributes.isEmpty();
-                    for (TL_stars.starGiftAttributeBackdrop attr : attributes) {
+                    for (TL_diamonds.starGiftAttributeBackdrop attr : attributes) {
                         final boolean checked = !state.resaleList.notSelectedBackdropAttributes.contains(attr.backdrop_id);
                         if (TextUtils.isEmpty(q) || attr.name.toLowerCase().startsWith(q) || attr.name.toLowerCase().startsWith(tq) || attr.name.toLowerCase().contains(" " + q) || attr.name.toLowerCase().contains(" " + tq)) {
                             final Integer counter = state.resaleList.backdropAttributesCounter.get(attr.backdrop_id);
@@ -1845,12 +1845,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                         items.add(EmptyView.Factory.asEmptyView(getString(R.string.Gift2ResaleFiltersBackdropEmpty)));
                     }
                 }, (item, view, position, x, y) -> {
-                    final TL_stars.starGiftAttributeBackdrop backdrop = (TL_stars.starGiftAttributeBackdrop) item.object;
+                    final TL_diamonds.starGiftAttributeBackdrop backdrop = (TL_diamonds.starGiftAttributeBackdrop) item.object;
                     final int backdrop_id = backdrop.backdrop_id;
                     final boolean checked = !state.resaleList.notSelectedBackdropAttributes.contains(backdrop_id);
                     if (checked) {
                         if (state.resaleList.notSelectedBackdropAttributes.isEmpty()) {
-                            for (TL_stars.starGiftAttributeBackdrop attr1 : state.resaleList.backdropAttributes) {
+                            for (TL_diamonds.starGiftAttributeBackdrop attr1 : state.resaleList.backdropAttributes) {
                                 if (attr1.backdrop_id != backdrop_id) {
                                     state.resaleList.notSelectedBackdropAttributes.add(attr1.backdrop_id);
                                 }
@@ -1935,7 +1935,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 });
 
                 final String[] query = new String[] { "" };
-                final ArrayList<TL_stars.starGiftAttributePattern> attributes = new ArrayList<>(state.resaleList.patternAttributes);
+                final ArrayList<TL_diamonds.starGiftAttributePattern> attributes = new ArrayList<>(state.resaleList.patternAttributes);
                 Collections.sort(attributes, (a, b) -> {
                     final Integer aCount = state.resaleList.patternAttributesCounter.get(a.document.id);
                     final Integer bCount = state.resaleList.patternAttributesCounter.get(b.document.id);
@@ -1946,7 +1946,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 final UniversalRecyclerView listView = new UniversalRecyclerView(context, currentAccount, 0, (items, adapter) -> {
                     final String q = query[0].toLowerCase(), tq = AndroidUtilities.translitSafe(q);
                     final boolean allSelected = state.resaleList.notSelectedPatternAttributes.isEmpty();
-                    for (TL_stars.starGiftAttributePattern attr : attributes) {
+                    for (TL_diamonds.starGiftAttributePattern attr : attributes) {
                         final boolean checked = !state.resaleList.notSelectedPatternAttributes.contains(attr.document.id);
                         if (TextUtils.isEmpty(q) || attr.name.toLowerCase().startsWith(q) || attr.name.toLowerCase().startsWith(tq) || attr.name.toLowerCase().contains(" " + q) || attr.name.toLowerCase().contains(" " + tq)) {
                             final Integer counter = state.resaleList.patternAttributesCounter.get(attr.document.id);
@@ -1957,12 +1957,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                         items.add(EmptyView.Factory.asEmptyView(getString(R.string.Gift2ResaleFiltersSymbolEmpty)));
                     }
                 }, (item, view, position, x, y) -> {
-                    final TL_stars.starGiftAttributePattern pattern = (TL_stars.starGiftAttributePattern) item.object;
+                    final TL_diamonds.starGiftAttributePattern pattern = (TL_diamonds.starGiftAttributePattern) item.object;
                     final long document_id = pattern.document.id;
                     final boolean checked = !state.resaleList.notSelectedPatternAttributes.contains(document_id);
                     if (checked) {
                         if (state.resaleList.notSelectedPatternAttributes.isEmpty()) {
-                            for (TL_stars.starGiftAttributePattern attr1 : state.resaleList.patternAttributes) {
+                            for (TL_diamonds.starGiftAttributePattern attr1 : state.resaleList.patternAttributes) {
                                 if (attr1.document.id != document_id) {
                                     state.resaleList.notSelectedPatternAttributes.add(attr1.document.id);
                                 }
@@ -2043,8 +2043,8 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             recyclerListView.setOnItemClickListener((view, position, x, y) -> {
                 final UItem item = adapter.getItem(position - 1);
                 if (item == null) return;
-                if (item.object instanceof TL_stars.StarGift) {
-                    final TL_stars.StarGift gift = (TL_stars.StarGift) item.object;
+                if (item.object instanceof TL_diamonds.StarGift) {
+                    final TL_diamonds.StarGift gift = (TL_diamonds.StarGift) item.object;
                     final boolean resale = item.red;
 
                     if (!TextUtils.isEmpty(gift.gift_address) && willBeFirst) {
@@ -2056,12 +2056,12 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                         return;
                     }
 
-                    if (resale && gift instanceof TL_stars.TL_starGiftUnique) {
-                        buyGift((TL_stars.TL_starGiftUnique) item.object);
+                    if (resale && gift instanceof TL_diamonds.TL_starGiftUnique) {
+                        buyGift((TL_diamonds.TL_starGiftUnique) item.object);
                         return;
                     } else if (!resale) {
-                        TL_stars.SavedStarGift savedStarGift = null;
-                        for (final TL_stars.SavedStarGift savedGift : state.list.gifts) {
+                        TL_diamonds.SavedStarGift savedStarGift = null;
+                        for (final TL_diamonds.SavedStarGift savedGift : state.list.gifts) {
                             if (savedGift.gift == gift) {
                                 savedStarGift = savedGift;
                                 break;
@@ -2099,7 +2099,7 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             recyclerListView.setItemAnimator(itemAnimator);
             recyclerListView.setItemSelectorColorProvider(position -> 0);
 
-            actionView = new StarGiftSheet.ActionView(context);
+            actionView = new DiamondGiftSheet.ActionView(context);
             actionView.setPadding(dp(20), dp(9));
             actionView.setRoundRadius(dp(22));
             actionView.setFullRect(true);
@@ -2140,19 +2140,19 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             }
         }
 
-        private void buyGift(TL_stars.TL_starGiftUnique gift) {
+        private void buyGift(TL_diamonds.TL_starGiftUnique gift) {
             final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
             progressDialog.showDelayed(400);
             final long to = UserConfig.getInstance(currentAccount).getClientUserId();
             final AmountUtils.Currency currency = gift.resale_ton_only ? AmountUtils.Currency.TON : AmountUtils.Currency.STARS;
-            StarsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, to, form -> {
+            DiamondsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, to, form -> {
                 progressDialog.dismiss();
                 if (form == null) return;
-                final StarGiftSheet.PaymentFormState initial = new StarGiftSheet.PaymentFormState(currency, form);
+                final DiamondGiftSheet.PaymentFormState initial = new DiamondGiftSheet.PaymentFormState(currency, form);
 
-                new StarGiftSheet.ResaleBuyTransferAlert(getContext(), resourcesProvider, gift, initial, currentAccount, to, gift.title + " #" + LocaleController.formatNumber(gift.num, ','), true, (state, progress) -> {
+                new DiamondGiftSheet.ResaleBuyTransferAlert(getContext(), resourcesProvider, gift, initial, currentAccount, to, gift.title + " #" + LocaleController.formatNumber(gift.num, ','), true, (state, progress) -> {
                     progress.init();
-                    StarsController.getInstance(currentAccount, state.currency).buyResellingGift(state.form, gift, to, (status, err) -> {
+                    DiamondsController.getInstance(currentAccount, state.currency).buyResellingGift(state.form, gift, to, (status, err) -> {
                         progress.end();
                         if (status) {
                             if (onSelect != null) {
@@ -2180,8 +2180,8 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             actionView.setTranslationY(ty);
         }
 
-        private Utilities.Callback<TL_stars.StarGift> onSelect;
-        public SelectGiftSheet setOnSelect(Utilities.Callback<TL_stars.StarGift> onSelect) {
+        private Utilities.Callback<TL_diamonds.StarGift> onSelect;
+        public SelectGiftSheet setOnSelect(Utilities.Callback<TL_diamonds.StarGift> onSelect) {
             this.onSelect = onSelect;
             return this;
         }
@@ -2243,10 +2243,10 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             items.add(UItem.asHeader(-1, getString(R.string.GiftCraftSelectYour)));
             boolean giftsEmpty = true;
             int count = 0;
-            for (final TL_stars.SavedStarGift gift : state.list.gifts) {
+            for (final TL_diamonds.SavedStarGift gift : state.list.gifts) {
                 if (without.contains(gift.gift.id)) continue;
                 final boolean canCraft = gift.can_craft_at <= now;
-                items.add(GiftSheet.GiftCell.Factory.asStarGift(0, gift.gift, false, true, false, false, true).setEnabled(canCraft));
+                items.add(GiftSheet.GiftCell.Factory.asDiamondGift(0, gift.gift, false, true, false, false, true).setEnabled(canCraft));
                 giftsEmpty = false;
                 count++;
             }
@@ -2266,8 +2266,8 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 if (filterScrollView != null) {
                     items.add(UItem.asCustom(-3, filterScrollView));
                 }
-                for (final TL_stars.TL_starGiftUnique gift : state.resaleList.gifts) {
-                    items.add(GiftSheet.GiftCell.Factory.asStarGift(0, gift, false, true, false, true, true));
+                for (final TL_diamonds.TL_starGiftUnique gift : state.resaleList.gifts) {
+                    items.add(GiftSheet.GiftCell.Factory.asDiamondGift(0, gift, false, true, false, true, true));
                 }
                 if (state.resaleList.loading || !state.resaleList.endReached) {
                     items.add(UItem.asFlicker(10 + 0, FlickerLoadingView.STAR_GIFT_SELECT).setSpanCount(1));

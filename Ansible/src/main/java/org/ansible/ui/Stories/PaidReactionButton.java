@@ -52,7 +52,7 @@ import org.ansible.ui.Components.Text;
 import org.ansible.ui.Components.blur3.StrokeDrawable;
 import org.ansible.ui.Components.blur3.drawable.color.BlurredBackgroundColorProvider;
 import org.ansible.ui.LaunchActivity;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 
 import java.util.ArrayList;
 
@@ -393,7 +393,7 @@ public class PaidReactionButton extends View {
 
     private final RectF rect = new RectF();
     private final Path clipPath = new Path();
-    private final StarsReactionsSheet.Particles particles;
+    private final DiamondsReactionsSheet.Particles particles;
     private final ColoredImageSpan span;
     private final AnimatedFloat animatedFilled = new AnimatedFloat(this, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
     private final AnimatedFloat animatedShowCounter = new AnimatedFloat(this, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -429,7 +429,7 @@ public class PaidReactionButton extends View {
         span.setScale(1.8f, 1.8f);
         setCount(0);
 
-        particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 50);
+        particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 50);
     }
 
     @Override
@@ -525,13 +525,13 @@ public class PaidReactionButton extends View {
     private long lastRippleTime;
     private float accumulatedRippleIntensity;
     private final int[] pos = new int[2];
-    public void playEffect(long sendingStars) {
+    public void playEffect(long sendingDiamonds) {
         effectsView.updatePosition(this);
         if (effectsView.hidden) {
             effectsView.show();
         }
         effectsView.playEffect();
-        effectsView.showCounter(sendingStars);
+        effectsView.showCounter(sendingDiamonds);
 
         ripple();
     }

@@ -54,7 +54,7 @@ import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.INavigationLayout;
 import org.ansible.ui.ActionBar.Theme;
@@ -86,9 +86,9 @@ import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceColor;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.PreviewView;
 
@@ -104,7 +104,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
     private final int currentAccount;
     private final long dialogId;
     private final boolean forceUpgrade, forceNotUpgrade;
-    private final TL_stars.StarGift starGift;
+    private final TL_diamonds.StarGift starGift;
     private @Nullable GiftAuctionController.Auction auction;
     private final GiftPremiumBottomSheet.GiftTier premiumTier;
     private final String name;
@@ -132,7 +132,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
 
     public boolean anonymous;
     public boolean upgrade = false;
-    public boolean useStars = false;
+    public boolean useDiamonds = false;
 
     private EditEmojiTextCell messageEdit;
 
@@ -142,7 +142,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
 
     public final AnimationNotificationsLocker animationsLock = new AnimationNotificationsLocker();
 
-    public SendGiftSheet(Context context, int currentAccount, TL_stars.StarGift gift, long dialogId, Runnable closeParentSheet, boolean forceUpgrade, boolean forceNotUpgrade) {
+    public SendGiftSheet(Context context, int currentAccount, TL_diamonds.StarGift gift, long dialogId, Runnable closeParentSheet, boolean forceUpgrade, boolean forceNotUpgrade) {
         this(context, currentAccount, gift, null, dialogId, closeParentSheet, forceUpgrade, forceNotUpgrade);
     }
 
@@ -150,7 +150,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         this(context, currentAccount, null, premiumTier, dialogId, closeParentSheet, false, false);
     }
 
-    private SendGiftSheet(Context context, int currentAccount, TL_stars.StarGift starGift, GiftPremiumBottomSheet.GiftTier premiumTier, long dialogId, Runnable closeParentSheet, boolean forceUpgrade, boolean forceNotUpgrade) {
+    private SendGiftSheet(Context context, int currentAccount, TL_diamonds.StarGift starGift, GiftPremiumBottomSheet.GiftTier premiumTier, long dialogId, Runnable closeParentSheet, boolean forceUpgrade, boolean forceNotUpgrade) {
         super(context, null, true, false, false, false, ActionBarType.SLIDING, null);
 
         self = dialogId == UserConfig.getInstance(currentAccount).getClientUserId();
@@ -269,7 +269,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         chatLinearLayout.setOrientation(LinearLayout.VERTICAL);
 
         if (starGift != null) {
-            TLRPC.TL_messageActionStarGift action = new TLRPC.TL_messageActionStarGift();
+            TLRPC.TL_messageActionDiamondGift action = new TLRPC.TL_messageActionDiamondGift();
             action.gift = starGift;
             action.flags |= 2;
             action.message = new TLRPC.TL_textWithEntities();
@@ -304,8 +304,8 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         } else {
             throw new RuntimeException("SendGiftSheet with no star gift and no premium tier");
         }
-        if (action instanceof TLRPC.TL_messageActionStarGift) {
-            TLRPC.TL_messageActionStarGift thisAction = (TLRPC.TL_messageActionStarGift) action;
+        if (action instanceof TLRPC.TL_messageActionDiamondGift) {
+            TLRPC.TL_messageActionDiamondGift thisAction = (TLRPC.TL_messageActionDiamondGift) action;
             thisAction.can_upgrade = upgrade || self && starGift != null && starGift.can_upgrade;
             thisAction.upgrade_stars = self ? 0 : upgrade ? this.starGift.upgrade_stars : 0;
             thisAction.convert_stars = upgrade ? 0 : this.starGift.convert_stars;
@@ -318,7 +318,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         message.peer_id = MessagesController.getInstance(currentAccount).getPeer(dialogId   );
         message.action = action;
 
-        send_paid_messages_stars = starGift != null ? MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId) : 0;
+        send_paid_messages_stars = starGift != null ? MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId) : 0;
 
         messageObject = new MessageObject(currentAccount, message, false, false);
         actionCell.setMessageObject(messageObject, true);
@@ -343,8 +343,8 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
             @Override
             protected void onTextChanged(CharSequence newText) {
                 TLRPC.TL_textWithEntities txt;
-                if (action instanceof TLRPC.TL_messageActionStarGift) {
-                    txt = ((TLRPC.TL_messageActionStarGift) action).message = new TLRPC.TL_textWithEntities();
+                if (action instanceof TLRPC.TL_messageActionDiamondGift) {
+                    txt = ((TLRPC.TL_messageActionDiamondGift) action).message = new TLRPC.TL_textWithEntities();
                 } else if (action instanceof TLRPC.TL_messageActionGiftCode) {
                     ((TLRPC.TL_messageActionGiftCode) action).flags |= 16;
                     txt = ((TLRPC.TL_messageActionGiftCode) action).message = new TLRPC.TL_textWithEntities();
@@ -507,7 +507,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 messageEdit.editTextEmoji.closeKeyboard();
             }
             if (starGift != null) {
-                buyStarGift();
+                buyDiamondGift();
             } else {
                 buyPremiumTier();
             }
@@ -554,8 +554,8 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
             if (item == null) return;
             if (item.id == 1) {
                 anonymous = !anonymous;
-                if (action instanceof TLRPC.TL_messageActionStarGift) {
-                    ((TLRPC.TL_messageActionStarGift) action).name_hidden = anonymous;
+                if (action instanceof TLRPC.TL_messageActionDiamondGift) {
+                    ((TLRPC.TL_messageActionDiamondGift) action).name_hidden = anonymous;
                 }
                 messageObject.updateMessageText();
                 actionCell.setMessageObject(messageObject, true);
@@ -566,8 +566,8 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                     return;
                 }
                 upgrade = !upgrade;
-                if (action instanceof TLRPC.TL_messageActionStarGift) {
-                    TLRPC.TL_messageActionStarGift thisAction = (TLRPC.TL_messageActionStarGift) action;
+                if (action instanceof TLRPC.TL_messageActionDiamondGift) {
+                    TLRPC.TL_messageActionDiamondGift thisAction = (TLRPC.TL_messageActionDiamondGift) action;
                     thisAction.can_upgrade = upgrade || self && starGift != null && starGift.can_upgrade;
                     thisAction.upgrade_stars = self ? 0 : upgrade ? this.starGift.upgrade_stars : 0;
                     thisAction.convert_stars = upgrade ? 0 : this.starGift.convert_stars;
@@ -577,12 +577,12 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 adapter.update(true);
                 setButtonText(true);
             } else if (item.id == 3) {
-                useStars = !useStars;
+                useDiamonds = !useDiamonds;
                 if (action instanceof TLRPC.TL_messageActionGiftPremium) {
                     final TLRPC.TL_messageActionGiftPremium thisAction = (TLRPC.TL_messageActionGiftPremium) action;
-                    if (useStars) {
+                    if (useDiamonds) {
                         thisAction.currency = "XTR";
-                        thisAction.amount = premiumTier.getStarsPrice();
+                        thisAction.amount = premiumTier.getDiamondsPrice();
                     } else {
                         thisAction.currency = premiumTier.getCurrency();
                         thisAction.amount = premiumTier.getPrice();
@@ -592,9 +592,9 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                     }
                 } else if (action instanceof TLRPC.TL_messageActionGiftCode) {
                     final TLRPC.TL_messageActionGiftCode thisAction = (TLRPC.TL_messageActionGiftCode) action;
-                    if (useStars) {
+                    if (useDiamonds) {
                         thisAction.currency = "XTR";
-                        thisAction.amount = premiumTier.getStarsPrice();
+                        thisAction.amount = premiumTier.getDiamondsPrice();
                     } else {
                         thisAction.currency = premiumTier.getCurrency();
                         thisAction.amount = premiumTier.getPrice();
@@ -614,7 +614,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.starBalanceUpdated) {
+        if (id == NotificationCenter.diamondBalanceUpdated) {
             setButtonText(true);
             if (adapter != null && premiumTier != null) {
                 adapter.update(true);
@@ -625,13 +625,13 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
     }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondBalanceUpdated);
     }
 
     private void setButtonText(boolean animated) {
@@ -650,18 +650,18 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 button.setSubText(null, animated);
             }
         } else if (starGift != null) {
-            final long balance = StarsController.getInstance(currentAccount).getBalance().amount;
+            final long balance = DiamondsController.getInstance(currentAccount).getBalance().amount;
             final long price = this.starGift.stars + (upgrade ? this.starGift.upgrade_stars : 0) + (TextUtils.isEmpty(messageEdit.getText()) ? 0 : send_paid_messages_stars);
-            button.setText(StarsIntroActivity.replaceStars(LocaleController.formatPluralStringComma(self ? "Gift2SendSelf" : "Gift2Send", (int) price), cachedStarSpan), animated);
-            if (StarsController.getInstance(currentAccount).balanceAvailable() && price > balance) {
+            button.setText(DiamondsIntroActivity.replaceDiamonds(LocaleController.formatPluralStringComma(self ? "Gift2SendSelf" : "Gift2Send", (int) price), cachedDiamondSpan), animated);
+            if (DiamondsController.getInstance(currentAccount).balanceAvailable() && price > balance) {
                 button.setSubText(LocaleController.formatPluralStringComma("Gift2SendYourBalance", (int) balance), animated);
             } else {
                 button.setSubText(null, animated);
             }
         } else if (premiumTier != null) {
-            if (useStars) {
-                button.setText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.Gift2SendPremiumDiamonds, LocaleController.formatNumber(premiumTier.getStarsPrice(), ',')), 1.0f, cachedStarSpan), animated);
-                cachedStarSpan[0].spaceScaleX = .85f;
+            if (useDiamonds) {
+                button.setText(DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.Gift2SendPremiumDiamonds, LocaleController.formatNumber(premiumTier.getDiamondsPrice(), ',')), 1.0f, cachedDiamondSpan), animated);
+                cachedDiamondSpan[0].spaceScaleX = .85f;
             } else {
                 button.setText(new SpannableStringBuilder(LocaleController.formatString(R.string.Gift2SendPremium, premiumTier.getFormattedPrice())), animated);
             }
@@ -681,15 +681,15 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         return BulletinFactory.of(lastFragment);
     }
 
-    private final ColoredImageSpan[] cachedStarSpan = new ColoredImageSpan[1];
+    private final ColoredImageSpan[] cachedDiamondSpan = new ColoredImageSpan[1];
 
     private TLRPC.TL_textWithEntities getMessage() {
-        final long paidMessagesStarsPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId);
-        if (paidMessagesStarsPrice > 0) {
+        final long paidMessagesDiamondsPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId);
+        if (paidMessagesDiamondsPrice > 0) {
             return null;
         }
-        if (action instanceof TLRPC.TL_messageActionStarGift) {
-            return ((TLRPC.TL_messageActionStarGift) action).message;
+        if (action instanceof TLRPC.TL_messageActionDiamondGift) {
+            return ((TLRPC.TL_messageActionDiamondGift) action).message;
         } else if (action instanceof TLRPC.TL_messageActionGiftCode) {
             return ((TLRPC.TL_messageActionGiftCode) action).message;
         } else if (action instanceof TLRPC.TL_messageActionGiftPremium) {
@@ -699,8 +699,8 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         }
     }
 
-    private void buyStarGift() {
-        StarsController.getInstance(currentAccount).buyStarGift(
+    private void buyDiamondGift() {
+        DiamondsController.getInstance(currentAccount).buyDiamondGift(
             this.starGift,
             anonymous,
             upgrade,
@@ -716,7 +716,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 } else if ("STARGIFT_USAGE_LIMITED".equalsIgnoreCase(err)) {
                     AndroidUtilities.hideKeyboard(messageEdit);
                     dismiss();
-                    StarsController.getInstance(currentAccount).makeStarGiftSoldOut(starGift);
+                    DiamondsController.getInstance(currentAccount).makeDiamondGiftSoldOut(starGift);
                     return;
                 } else if ("STARGIFT_USER_USAGE_LIMITED".equalsIgnoreCase(err)) {
                     AndroidUtilities.hideKeyboard(messageEdit);
@@ -746,8 +746,8 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
             return;
         }
         final Object option;
-        if (useStars && premiumTier.isStarsPaymentAvailable()) {
-            option = premiumTier.getStarsOption();
+        if (useDiamonds && premiumTier.isDiamondsPaymentAvailable()) {
+            option = premiumTier.getDiamondsOption();
         } else {
             if (premiumTier.giftCodeOption != null) {
                 option = premiumTier.giftCodeOption;
@@ -761,7 +761,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         if (option instanceof TLRPC.TL_premiumGiftCodeOption) {
             final TLRPC.TL_premiumGiftCodeOption o = (TLRPC.TL_premiumGiftCodeOption) option;
             if ("XTR".equalsIgnoreCase(o.currency)) {
-                StarsController.getInstance(currentAccount).buyPremiumGift(dialogId, o, getMessage(), (status, err) -> {
+                DiamondsController.getInstance(currentAccount).buyPremiumGift(dialogId, o, getMessage(), (status, err) -> {
                     if (status) {
                         if (closeParentSheet != null) {
                             closeParentSheet.run();
@@ -812,7 +812,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         } else if (option instanceof TLRPC.TL_premiumGiftOption) {
             final TLRPC.TL_premiumGiftOption o = (TLRPC.TL_premiumGiftOption) option;
             if ("XTR".equalsIgnoreCase(o.currency)) {
-                StarsController.getInstance(currentAccount).buyPremiumGift(dialogId, o, getMessage(), (status, err) -> {
+                DiamondsController.getInstance(currentAccount).buyPremiumGift(dialogId, o, getMessage(), (status, err) -> {
                     if (status) {
                         if (closeParentSheet != null) {
                             closeParentSheet.run();
@@ -925,18 +925,18 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
     }
 
     public void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-        final long paidMessagesStarsPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId);
+        final long paidMessagesDiamondsPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId);
         items.add(UItem.asCustom(-1, chatView));
-        if (paidMessagesStarsPrice <= 0) {
+        if (paidMessagesDiamondsPrice <= 0) {
             items.add(UItem.asCustom(-2, messageEdit));
             items.add(UItem.asSpace(dp(12)));
         }
         if (starGift != null) {
             if (starGift.can_upgrade && !self) {
                 items.add(UItem.asShadow(-3, null));
-                items.add(UItem.asCheck(2, StarsIntroActivity.replaceStarsWithPlain(formatString(self ? R.string.Gift2UpgradeSelf : R.string.Gift2Upgrade, (int) starGift.upgrade_stars), .78f)).setChecked(upgrade));
+                items.add(UItem.asCheck(2, DiamondsIntroActivity.replaceDiamondsWithPlain(formatString(self ? R.string.Gift2UpgradeSelf : R.string.Gift2Upgrade, (int) starGift.upgrade_stars), .78f)).setChecked(upgrade));
                 items.add(UItem.asShadow(-5, forceNotUpgrade ? formatString(dialogId < 0 ? R.string.Gift2NoUpgradeChannelForcedInfo : R.string.Gift2NoUpgradeForcedInfo, name) : forceUpgrade ? formatString(dialogId < 0 ? R.string.Gift2UpgradeChannelForcedInfo : R.string.Gift2UpgradeForcedInfo, name) : AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? getString(R.string.Gift2UpgradeSelfInfo) : formatString(dialogId >= 0 ? R.string.Gift2UpgradeInfo : R.string.Gift2UpgradeChannelInfo, name), () -> {
-                    new StarGiftSheet(getContext(), currentAccount, dialogId, resourcesProvider)
+                    new DiamondGiftSheet(getContext(), currentAccount, dialogId, resourcesProvider)
                         .openAsLearnMore(starGift.id, name);
                 }), true)).setEnabled(!forceUpgrade && !forceNotUpgrade));
             } else {
@@ -952,19 +952,19 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 items.add(UItem.asShadow(-44, s));
             }
         } else {
-            if (paidMessagesStarsPrice <= 0) {
+            if (paidMessagesDiamondsPrice <= 0) {
                 items.add(UItem.asShadow(-3, formatString(R.string.Gift2MessagePremiumInfo, name)));
             }
-            if (premiumTier != null && premiumTier.isStarsPaymentAvailable()) {
-                items.add(UItem.asCheck(3, StarsIntroActivity.replaceStarsWithPlain(formatString(R.string.Gift2MessageDiamonds, (int) premiumTier.getStarsPrice()), .78f)).setChecked(useStars));
-                final long balance = StarsController.getInstance(currentAccount).getBalance().amount;
+            if (premiumTier != null && premiumTier.isDiamondsPaymentAvailable()) {
+                items.add(UItem.asCheck(3, DiamondsIntroActivity.replaceDiamondsWithPlain(formatString(R.string.Gift2MessageDiamonds, (int) premiumTier.getDiamondsPrice()), .78f)).setChecked(useDiamonds));
+                final long balance = DiamondsController.getInstance(currentAccount).getBalance().amount;
                 SpannableStringBuilder boldBalance = new SpannableStringBuilder(LocaleController.formatNumber(balance, ','));
                 boldBalance.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, boldBalance.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 items.add(UItem.asShadow(-7, TextUtils.concat(
-                    StarsIntroActivity.replaceStarsWithPlain(formatSpannable(R.string.Gift2MessageDiamondsInfo, boldBalance), .66f),
+                    DiamondsIntroActivity.replaceDiamondsWithPlain(formatSpannable(R.string.Gift2MessageDiamondsInfo, boldBalance), .66f),
                     " ",
                     AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2MessageDiamondsInfoLink), () -> {
-                        new StarsIntroActivity.StarsOptionsSheet(getContext(), resourcesProvider).show();
+                        new DiamondsIntroActivity.DiamondsOptionsSheet(getContext(), resourcesProvider).show();
                     }), true, dp(8f / 3f), dp(1))
                 )));
             }

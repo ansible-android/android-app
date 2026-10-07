@@ -715,7 +715,7 @@ public class LivePlayer implements NotificationCenter.NotificationCenterDelegate
         return call.messages_enabled;
     }
 
-    public long getSendPaidMessagesStars() {
+    public long getSendPaidMessagesDiamonds() {
         if (call == null) return 0;
         return call.send_paid_messages_stars;
     }

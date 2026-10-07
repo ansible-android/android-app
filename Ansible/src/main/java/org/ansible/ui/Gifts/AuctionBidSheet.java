@@ -76,10 +76,10 @@ import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.BalanceCloud;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.BalanceCloud;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
     private final ButtonWithCounterView buttonView;
 
     private final CountdownTimer timer;
-    private final StarsReactionsSheet.StarsSlider slider;
+    private final DiamondsReactionsSheet.DiamondsSlider slider;
     private final InfoCell minimumBidCell;
     private final InfoCell nextRoundCell;
     private final InfoCell giftsLeftCell;
@@ -151,7 +151,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
         headerItem = UItem.asCustom(-1, linearLayout);
 
 
-        slider = new StarsReactionsSheet.StarsSlider(context, resourcesProvider) {
+        slider = new DiamondsReactionsSheet.DiamondsSlider(context, resourcesProvider) {
             @Override
             public void onValueChanged(int value) {
                 super.onValueChanged(value);
@@ -319,7 +319,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
         balanceCloud.setClickable(false);
         container.addView(balanceCloud, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 48, 0, 0));
         ScaleStateListAnimator.apply(balanceCloud);
-        balanceCloud.setOnClickListener(v -> new StarsIntroActivity.StarsOptionsSheet(context, resourcesProvider).show());
+        balanceCloud.setOnClickListener(v -> new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show());
 
         bulletinContainer = new FrameLayout(context);
         container.addView(bulletinContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 100, Gravity.TOP));
@@ -447,7 +447,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
     private final ColoredImageSpan[] refS = new ColoredImageSpan[1];
     private AnimatedEmojiSpan animatedEmojiSpan;
     private void updateTable(boolean animated) {
-        minimumBidCell.infoView.setText(StarsIntroActivity.replaceStarsWithPlain(
+        minimumBidCell.infoView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(
             "⭐️" + LocaleController.formatNumberWithMillion((int) auction.getMinimumBid(), ','), 0.78f, refS), animated);
 
         if (auction.auctionStateActive != null) {
@@ -494,7 +494,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
             }
         }
 
-        slider.setStarsTop(auction.approximateBidAmountFromPlace(auction.gift.gifts_per_round) + 1);
+        slider.setDiamondsTop(auction.approximateBidAmountFromPlace(auction.gift.gifts_per_round) + 1);
         slider.setTopText(formatPluralString("DiamondsReactionTopX", auction.gift.gifts_per_round));
 
         updateSelfBidderCell(animated);
@@ -573,7 +573,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
     private void updateSelfBidderCell(boolean animated) {
         final long amount = slider.getValue();
         final int myPlace = auction.getApproximatedMyPlace();
-        final int place = auction.approximatePlaceFromStars(amount);
+        final int place = auction.approximatePlaceFromDiamonds(amount);
         selfBidderCell.setBid(Math.max(amount, auction.getCurrentMyBid()), false);
         final int pos = myPlace > 0 ? Math.min(myPlace, place) : place;
         selfBidderCell.setPlace(pos, false, animated);
@@ -607,7 +607,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
         Bulletin.removeDelegate(container);
     }
 
-    private final ColoredImageSpan[] spanRefStars = new ColoredImageSpan[1];
+    private final ColoredImageSpan[] spanRefDiamonds = new ColoredImageSpan[1];
     private void updateButtonText(boolean animated) {
         final int myBid = slider.getValue();
         if (myBid == auction.getCurrentMyBid()) {
@@ -615,14 +615,14 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
             buttonView.setOnClickListener(v -> dismiss());
         } else {
             if (auction.auctionUserState.bid_amount < myBid && !auction.auctionUserState.returned) {
-                buttonView.setText(StarsIntroActivity.replaceStars(
+                buttonView.setText(DiamondsIntroActivity.replaceDiamonds(
                         formatString(R.string.Gift2AuctionPlaceBidAdd, formatNumber(myBid - auction.auctionUserState.bid_amount, ',')),
-                        spanRefStars
+                        spanRefDiamonds
                 ), animated);
             } else {
-                buttonView.setText(StarsIntroActivity.replaceStars(
+                buttonView.setText(DiamondsIntroActivity.replaceDiamonds(
                         formatString(R.string.Gift2AuctionPlaceBid, formatNumber(myBid, ',')),
-                        spanRefStars
+                        spanRefDiamonds
                 ), animated);
             }
             buttonView.setOnClickListener(v -> {
@@ -731,13 +731,13 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
         }
 
         final long currentBid = auction.auctionUserState.bid_amount;
-        final long starsForSend = currentBid > 0 ? (amount - currentBid) : (amount);
+        final long diamondsForSend = currentBid > 0 ? (amount - currentBid) : (amount);
 
-        if (StarsController.getInstance(currentAccount).balanceAvailable()) {
-            final long totalStars = StarsController.getInstance(currentAccount).getBalance(false);
-            if (totalStars < starsForSend) {
-                new StarsIntroActivity.StarsNeededSheet(getContext(),
-                    resourcesProvider, starsForSend, StarsIntroActivity.StarsNeededSheet.TYPE_STAR_GIFT_BUY_RESALE, null, null, 0).show();
+        if (DiamondsController.getInstance(currentAccount).balanceAvailable()) {
+            final long totalStars = DiamondsController.getInstance(currentAccount).getBalance(false);
+            if (totalStars < diamondsForSend) {
+                new DiamondsIntroActivity.DiamondsNeededSheet(getContext(),
+                    resourcesProvider, diamondsForSend, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY_RESALE, null, null, 0).show();
                 return;
             }
         }
@@ -750,7 +750,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
             bidIsPending = false;
             if (res != null) {
                 showBidSuccessBulletin(currentBid > 0);
-                StarsController.getInstance(currentAccount).getBalance(false, null, true);
+                DiamondsController.getInstance(currentAccount).getBalance(false, null, true);
             }
             if (err != null) {
                 updateBulletinContainerPosition();
@@ -987,7 +987,7 @@ public class AuctionBidSheet extends BottomSheetWithRecyclerListView implements 
         }
 
         public void setBid(long bid, boolean animated) {
-            bidTextView.setText(StarsIntroActivity.replaceStarsWithPlain("⭐️" + LocaleController.formatNumber((int) bid, ','), 0.78f, ref), animated);
+            bidTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain("⭐️" + LocaleController.formatNumber((int) bid, ','), 0.78f, ref), animated);
         }
 
         private boolean drawDivider;

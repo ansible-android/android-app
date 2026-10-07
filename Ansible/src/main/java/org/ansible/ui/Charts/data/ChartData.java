@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ansible.messenger.SegmentTree;
 import org.ansible.ui.ActionBar.ThemeColors;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -114,7 +114,7 @@ public class ChartData {
     public int getFormatter(String value) {
         if (TextUtils.isEmpty(value)) return 0;
         if (value.contains("TON")) return FORMATTER_TON;
-        if (value.contains(StarsController.currency)) return FORMATTER_XTR;
+        if (value.contains(DiamondsController.currency)) return FORMATTER_XTR;
         return 0;
     }
 

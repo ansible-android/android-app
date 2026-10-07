@@ -578,7 +578,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-                <data android:scheme="wear" android:host="*" android:pathPrefix="/tg-wear-auth/" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/as-wear-auth/" />
             </intent-filter>
         </service>
 

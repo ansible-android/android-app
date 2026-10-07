@@ -80,8 +80,8 @@ import org.ansible.ui.Components.RadialProgressView;
 import org.ansible.ui.Components.ScaleStateListAnimator;
 import org.ansible.ui.Components.spoilers.SpoilersTextView;
 import org.ansible.ui.LaunchActivity;
-import org.ansible.ui.Stars.BalanceCloud;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BalanceCloud;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -618,9 +618,9 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
         }
     }
 
-    private boolean needStarsBalance;
-    public AlertDialog setShowStarsBalance(boolean show) {
-        needStarsBalance = show;
+    private boolean needDiamondsBalance;
+    public AlertDialog setShowDiamondsBalance(boolean show) {
+        needDiamondsBalance = show;
         return this;
     }
 
@@ -630,11 +630,11 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
 
     private FrameLayout fullscreenContainerView;
 
-    public BalanceCloud getStarsBalanceCloud() {
-        return starsBalanceCloud;
+    public BalanceCloud getDiamondsBalanceCloud() {
+        return diamondsBalanceCloud;
     }
 
-    private BalanceCloud starsBalanceCloud;
+    private BalanceCloud diamondsBalanceCloud;
 
     private AlertDialogView containerView;
     public AlertDialogView getContainerView() {
@@ -669,28 +669,28 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
             }
         }
         View rootView = containerView;
-        if (needStarsBalance) {
+        if (needDiamondsBalance) {
             if (fullscreenContainerView == null) {
                 fullscreenContainerView = new FrameLayout(getContext());
                 fullscreenContainerView.setOnClickListener(v -> {
                     dismiss();
                 });
             }
-            if (starsBalanceCloud == null) {
-                starsBalanceCloud = new BalanceCloud(getContext(), UserConfig.selectedAccount, resourcesProvider);
-                ScaleStateListAnimator.apply(starsBalanceCloud);
-                starsBalanceCloud.setOnClickListener(v -> {
-                    new StarsIntroActivity.StarsOptionsSheet(getContext(), resourcesProvider).show();
+            if (diamondsBalanceCloud == null) {
+                diamondsBalanceCloud = new BalanceCloud(getContext(), UserConfig.selectedAccount, resourcesProvider);
+                ScaleStateListAnimator.apply(diamondsBalanceCloud);
+                diamondsBalanceCloud.setOnClickListener(v -> {
+                    new DiamondsIntroActivity.DiamondsOptionsSheet(getContext(), resourcesProvider).show();
                 });
             }
             AndroidUtilities.removeFromParent(containerView);
-            AndroidUtilities.removeFromParent(starsBalanceCloud);
+            AndroidUtilities.removeFromParent(diamondsBalanceCloud);
             fullscreenContainerView.addView(containerView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
-            fullscreenContainerView.addView(starsBalanceCloud, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 48, 0, 0));
+            fullscreenContainerView.addView(diamondsBalanceCloud, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 48, 0, 0));
             rootView = fullscreenContainerView;
         }
         if (setContent) {
-            if (needStarsBalance) {
+            if (needDiamondsBalance) {
                 FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 lp.gravity = Gravity.FILL;
                 setContentView(rootView, lp);
@@ -1281,7 +1281,7 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
         Window window = getWindow();
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         params.copyFrom(window.getAttributes());
-        if (needStarsBalance) {
+        if (needDiamondsBalance) {
 //            params.width = WindowManager.LayoutParams.MATCH_PARENT;
             params.height = WindowManager.LayoutParams.MATCH_PARENT;
             params.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;

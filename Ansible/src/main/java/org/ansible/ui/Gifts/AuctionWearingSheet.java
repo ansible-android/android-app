@@ -6,7 +6,7 @@ import static org.ansible.messenger.LocaleController.formatNumber;
 import static org.ansible.messenger.LocaleController.formatSpannable;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarGiftSheet.replaceUnderstood;
+import static org.ansible.ui.Diamonds.DiamondGiftSheet.replaceUnderstood;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -39,7 +39,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
@@ -52,18 +52,18 @@ import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.PremiumFeatureCell;
-import org.ansible.ui.Stars.StarGiftSheet;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
 
 public class AuctionWearingSheet extends BottomSheetWithRecyclerListView implements GiftAuctionController.OnAuctionUpdateListener {
-    private final TL_stars.StarGift starGift;
+    private final TL_diamonds.StarGift starGift;
     private final long giftId;
     private final FrameLayout headerContainer;
     private final LinearLayout linearLayout;
 
-    private final StarGiftSheet.TopView topView;
+    private final DiamondGiftSheet.TopView topView;
     private final TextView giftNameTextView;
     private final GiftSheet.GiftCell giftCell2;
     private final ButtonWithCounterView buttonView;
@@ -71,8 +71,8 @@ public class AuctionWearingSheet extends BottomSheetWithRecyclerListView impleme
     private GiftAuctionController.Auction auction;
 
     public AuctionWearingSheet(Context context, Theme.ResourcesProvider resourcesProvider,
-                                long dialogId, TL_stars.StarGift starGift,
-                                ArrayList<TL_stars.StarGiftAttribute> previewAttributes,
+                                long dialogId, TL_diamonds.StarGift starGift,
+                                ArrayList<TL_diamonds.StarGiftAttribute> previewAttributes,
                                 Runnable closeParentSheet, boolean isInfo) {
         super(context, null, false, false, false, false, ActionBarType.FADING, resourcesProvider);
         this.starGift = starGift;
@@ -127,7 +127,7 @@ public class AuctionWearingSheet extends BottomSheetWithRecyclerListView impleme
 
         final int topHeightDp = isInfo ? 220: 208;
         auction = GiftAuctionController.getInstance(currentAccount).subscribeToGiftAuction(giftId, this);
-        topView = new StarGiftSheet.TopView(context, resourcesProvider, this::onBackPressed, v -> {}, null, v -> {}, v -> {}, v -> {}, v -> {}, v -> {}) {
+        topView = new DiamondGiftSheet.TopView(context, resourcesProvider, this::onBackPressed, v -> {}, null, v -> {}, v -> {}, v -> {}, v -> {}, v -> {}) {
             @Override
             public float getRealHeight() {
                 return dp(topHeightDp);
@@ -181,7 +181,7 @@ public class AuctionWearingSheet extends BottomSheetWithRecyclerListView impleme
                 }
             }
         };
-        topView.onSwitchPage(new StarGiftSheet.PageTransition(StarGiftSheet.PAGE_UPGRADE, StarGiftSheet.PAGE_UPGRADE, 1.0f));
+        topView.onSwitchPage(new DiamondGiftSheet.PageTransition(DiamondGiftSheet.PAGE_UPGRADE, DiamondGiftSheet.PAGE_UPGRADE, 1.0f));
         topView.setPreviewingAttributes(previewAttributes);
         topView.hideCloseButton();
         headerContainer.addView(topView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, topHeightDp, Gravity.TOP));
@@ -249,7 +249,7 @@ public class AuctionWearingSheet extends BottomSheetWithRecyclerListView impleme
             }
         };
         giftCell.setPriorityAuction();
-        giftCell.setStarsGift(starGift, true, false, false, false, false);
+        giftCell.setDiamondsGift(starGift, true, false, false, false, false);
         giftCell.setImageSize(dp(84));
         giftCell.setImageLayer(7);
         giftCell.hidePrice();
@@ -319,7 +319,7 @@ public class AuctionWearingSheet extends BottomSheetWithRecyclerListView impleme
         };
         giftCell2.removeImage();
         giftCell2.setPriorityAuction();
-        giftCell2.setStarsGift(starGift, true, false, false, false, false);
+        giftCell2.setDiamondsGift(starGift, true, false, false, false, false);
         giftCell2.setImageSize(dp(100));
         giftCell2.setImageLayer(7);
         giftCell2.hidePrice();
@@ -500,7 +500,7 @@ public class AuctionWearingSheet extends BottomSheetWithRecyclerListView impleme
     }
 
 
-    private static void showWearingMoreInfo(Context context, Theme.ResourcesProvider resourcesProvider, LinearLayout linearLayout, TL_stars.StarGift starGift) {
+    private static void showWearingMoreInfo(Context context, Theme.ResourcesProvider resourcesProvider, LinearLayout linearLayout, TL_diamonds.StarGift starGift) {
         if (context == null || starGift == null) {
             return;
         }

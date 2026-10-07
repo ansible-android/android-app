@@ -46,7 +46,7 @@ import org.ansible.ui.Components.TextHelper;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
-import org.ansible.ui.Stars.ExplainStarsSheet;
+import org.ansible.ui.Diamonds.ExplainDiamondsSheet;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -325,15 +325,15 @@ public class PasskeysActivity extends BaseFragment {
         subtitle.setText(getString(R.string.PasskeyFeatureSubtitle));
         linearLayout.addView(subtitle, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 32, 0, 32, 24));
 
-        ExplainStarsSheet.FeatureCell f = new ExplainStarsSheet.FeatureCell(context, ExplainStarsSheet.FeatureCell.STYLE_SHEET, resourcesProvider);
+        ExplainDiamondsSheet.FeatureCell f = new ExplainDiamondsSheet.FeatureCell(context, ExplainDiamondsSheet.FeatureCell.STYLE_SHEET, resourcesProvider);
         f.set(R.drawable.msg2_permissions, getString(R.string.PasskeyFeature1Title), getString(R.string.PasskeyFeature1Subtitle));
         linearLayout.addView(f, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 8));
 
-        f = new ExplainStarsSheet.FeatureCell(context, ExplainStarsSheet.FeatureCell.STYLE_SHEET, resourcesProvider);
+        f = new ExplainDiamondsSheet.FeatureCell(context, ExplainDiamondsSheet.FeatureCell.STYLE_SHEET, resourcesProvider);
         f.set(R.drawable.menu_face, getString(R.string.PasskeyFeature2Title), getString(R.string.PasskeyFeature2Subtitle));
         linearLayout.addView(f, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 8));
 
-        f = new ExplainStarsSheet.FeatureCell(context, ExplainStarsSheet.FeatureCell.STYLE_SHEET, resourcesProvider);
+        f = new ExplainDiamondsSheet.FeatureCell(context, ExplainDiamondsSheet.FeatureCell.STYLE_SHEET, resourcesProvider);
         f.set(R.drawable.menu_privacy, getString(R.string.PasskeyFeature3Title), getString(R.string.PasskeyFeature3Subtitle));
         linearLayout.addView(f, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 8));
 

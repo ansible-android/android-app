@@ -24,7 +24,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
@@ -44,13 +44,13 @@ import org.ansible.ui.Components.Premium.boosts.cells.DateEndCell;
 import org.ansible.ui.Components.Premium.boosts.cells.ParticipantsTypeCell;
 import org.ansible.ui.Components.Premium.boosts.cells.BoostTypeCell;
 import org.ansible.ui.Components.Premium.boosts.cells.DurationCell;
-import org.ansible.ui.Components.Premium.boosts.cells.StarGiveawayOptionCell;
+import org.ansible.ui.Components.Premium.boosts.cells.DiamondGiveawayOptionCell;
 import org.ansible.ui.Components.Premium.boosts.cells.SwitcherCell;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.Premium.boosts.adapters.BoostAdapter.Item;
 import org.ansible.ui.LaunchActivity;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,11 +73,11 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         BoostRepository.isGoogleBillingAvailable() ?
             Arrays.asList(1, 3, 5, 7, 10, 25, 50) :
             Arrays.asList(1, 3, 5, 7, 10, 25, 50, 100);
-    private final List<Integer> sliderStarsValues =
+    private final List<Integer> sliderDiamondsValues =
         BoostRepository.isGoogleBillingAvailable() ?
             Arrays.asList(1, 3, 5, 7, 10, 25, 50) :
             Arrays.asList(1, 3, 5, 7, 10, 25, 50, 100);
-    private final List<Integer> starsNotExtended = Arrays.asList(750, 10_000, 50_000);
+    private final List<Integer> diamondsNotExtended = Arrays.asList(750, 10_000, 50_000);
     private final TLRPC.Chat currentChat;
     private final List<TLObject> selectedChats = new ArrayList<>();
     private final List<TLObject> selectedUsers = new ArrayList<>();
@@ -87,12 +87,12 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
     private int selectedBoostType = BoostTypeCell.TYPE_PREMIUM;
     private int selectedBoostSubType = BoostTypeCell.TYPE_GIVEAWAY;
     private int selectedParticipantsType = ParticipantsTypeCell.TYPE_ALL;
-    private boolean starOptionsExpanded;
+    private boolean diamondOptionsExpanded;
     private int selectedMonths = 12;
     private long selectedEndDate = BoostDialogs.getThreeDaysAfterToday();
     private int selectedSliderIndex = 2;
-    private int selectedStarsSliderIndex = 2;
-    private long selectedStars;
+    private int selectedDiamondsSliderIndex = 2;
+    private long selectedDiamonds;
     private ActionBtnCell actionBtn;
     private ActionListener actionListener;
     private int top;
@@ -114,7 +114,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         updateTitle();
         ((ViewGroup.MarginLayoutParams) actionBar.getLayoutParams()).leftMargin = 0;
         ((ViewGroup.MarginLayoutParams) actionBar.getLayoutParams()).rightMargin = 0;
-        if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
+        if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
             selectedBoostType = BoostTypeCell.TYPE_STARS;
         }
         DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
@@ -204,18 +204,18 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                 if (actionListener != null) {
                     actionListener.onAddChat(selectedChats);
                 }
-            } else if (view instanceof StarGiveawayOptionCell) {
-                StarGiveawayOptionCell cell = (StarGiveawayOptionCell) view;
-                TL_stars.TL_starsGiveawayOption option = cell.getOption();
+            } else if (view instanceof DiamondGiveawayOptionCell) {
+                DiamondGiveawayOptionCell cell = (DiamondGiveawayOptionCell) view;
+                TL_diamonds.TL_starsGiveawayOption option = cell.getOption();
                 if (option != null) {
-                    selectedStars = option.stars;
+                    selectedDiamonds = option.stars;
                     updateRows(true, true);
                     updateActionButton(true);
                     updateTitle();
                 }
                 return;
-            } else if (view instanceof StarsIntroActivity.ExpandView) {
-                starOptionsExpanded = true;
+            } else if (view instanceof DiamondsIntroActivity.ExpandView) {
+                diamondOptionsExpanded = true;
                 updateRows(true, true);
             }
         });
@@ -224,7 +224,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
             if (selectedBoostType == BoostTypeCell.TYPE_PREMIUM) {
                 selectedSliderIndex = sliderIndex;
             } else {
-                selectedStarsSliderIndex = sliderIndex;
+                selectedDiamondsSliderIndex = sliderIndex;
             }
             actionBtn.updateCounter(getSelectedSliderValueWithBoosts());
             if (selectedBoostType == BoostTypeCell.TYPE_STARS) {
@@ -248,8 +248,8 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                 return;
             }
             if (isPreparedGiveaway()) {
-                final TL_stories.TL_prepaidStarsGiveaway starsGiveaway = prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway ? (TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway : null;
-                final long stars = starsGiveaway != null ? starsGiveaway.stars : 0;
+                final TL_stories.TL_prepaidDiamondsGiveaway diamondsGiveaway = prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway ? (TL_stories.TL_prepaidDiamondsGiveaway) prepaidGiveaway : null;
+                final long stars = diamondsGiveaway != null ? diamondsGiveaway.stars : 0;
                 BoostDialogs.showStartGiveawayDialog(() -> {
                     int dateInt = BoostRepository.prepareServerDate(selectedEndDate);
                     boolean onlyNewSubscribers = selectedParticipantsType == ParticipantsTypeCell.TYPE_NEW;
@@ -257,7 +257,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                     BoostRepository.launchPreparedGiveaway(prepaidGiveaway, selectedChats, selectedCountries, currentChat, dateInt, onlyNewSubscribers, isShowWinnersSelected, isAdditionalPrizeSelected, prepaidGiveaway.quantity, additionalPrize,
                             result -> {
                                 dismiss();
-                                if (starsGiveaway != null) {
+                                if (diamondsGiveaway != null) {
                                     final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                                     if (lastFragment != null) {
                                         final ChatActivity chatActivity = ChatActivity.of(dialogId);
@@ -282,13 +282,13 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                 if (activity == null) activity = LaunchActivity.instance;
                 if (activity == null || activity.isFinishing()) return;
 
-                final TL_stars.TL_starsGiveawayOption option = getSelectedStarsOption();
+                final TL_diamonds.TL_starsGiveawayOption option = getSelectedDiamondsOption();
                 final int users = getSelectedSliderValue();
                 if (option == null) return;
 
                 actionBtn.button.setLoading(true);
                 final boolean onlyNewSubscribers = selectedParticipantsType == ParticipantsTypeCell.TYPE_NEW;
-                StarsController.getInstance(currentAccount).buyGiveaway(
+                DiamondsController.getInstance(currentAccount).buyGiveaway(
                     activity,
                     currentChat,
                     selectedChats,
@@ -382,12 +382,12 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         containerView.addView(actionBtn, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, BOTTOM_HEIGHT_DP, Gravity.BOTTOM, 0, 0, 0, 0));
         loadOptions();
 
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starGiveawayOptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondGiveawayOptionsLoaded);
     }
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.starGiveawayOptionsLoaded) {
+        if (id == NotificationCenter.diamondGiveawayOptionsLoaded) {
             if (recyclerListView != null && recyclerListView.isAttachedToWindow()) {
                 updateRows(true, true);
             }
@@ -408,7 +408,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         if (onCloseClick != null) {
             onCloseClick.run();
         }
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starGiveawayOptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondGiveawayOptionsLoaded);
     }
 
     private void loadOptions() {
@@ -421,7 +421,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
 
     private void updateActionButton(boolean animated) {
         if (isPreparedGiveaway()) {
-            if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
+            if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
                 actionBtn.setStartGiveAwayStyle(prepaidGiveaway.quantity, animated);
             } else {
                 actionBtn.setStartGiveAwayStyle(prepaidGiveaway.quantity * BoostRepository.giveawayBoostsPerPremium(), animated);
@@ -457,11 +457,11 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
             return sliderValues.get(selectedSliderIndex);
         } else {
             final List<Integer> values = getSliderValues();
-            if (selectedStarsSliderIndex < 0 || selectedStarsSliderIndex >= values.size())
-                selectedStarsSliderIndex = 0;
-            if (selectedStarsSliderIndex >= values.size())
+            if (selectedDiamondsSliderIndex < 0 || selectedDiamondsSliderIndex >= values.size())
+                selectedDiamondsSliderIndex = 0;
+            if (selectedDiamondsSliderIndex >= values.size())
                 return 0;
-            return values.get(selectedStarsSliderIndex);
+            return values.get(selectedDiamondsSliderIndex);
         }
     }
 
@@ -469,36 +469,36 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         if (selectedBoostType == BoostTypeCell.TYPE_PREMIUM) {
             return sliderValues.get(selectedSliderIndex) * BoostRepository.giveawayBoostsPerPremium();
         } else {
-            TL_stars.TL_starsGiveawayOption selectedGiveawayOption = getSelectedStarsOption();
+            TL_diamonds.TL_starsGiveawayOption selectedGiveawayOption = getSelectedDiamondsOption();
             return (selectedGiveawayOption != null ? selectedGiveawayOption.yearly_boosts : getSelectedSliderValue() * BoostRepository.giveawayBoostsPerPremium());
         }
     }
 
-    private long getSelectedPerUserStars() {
-        final List<Long> values = getPerUserStarsValues();
-        if (selectedStarsSliderIndex < 0 || selectedStarsSliderIndex >= values.size())
-            selectedStarsSliderIndex = 0;
-        if (selectedStarsSliderIndex >= values.size())
+    private long getSelectedPerUserDiamonds() {
+        final List<Long> values = getPerUserDiamondsValues();
+        if (selectedDiamondsSliderIndex < 0 || selectedDiamondsSliderIndex >= values.size())
+            selectedDiamondsSliderIndex = 0;
+        if (selectedDiamondsSliderIndex >= values.size())
             return 1;
-        return values.get(selectedStarsSliderIndex);
+        return values.get(selectedDiamondsSliderIndex);
     }
 
-    private long getSelectedPerUserStars(long stars) {
-        final List<Long> values = getPerUserStarsValues(stars);
+    private long getSelectedPerUserDiamonds(long stars) {
+        final List<Long> values = getPerUserDiamondsValues(stars);
         if (values.isEmpty())
-            return Math.round((float) stars / getSelectedPerUserStars());
-        return values.get(Utilities.clamp(selectedStarsSliderIndex, values.size() - 1, 0));
+            return Math.round((float) stars / getSelectedPerUserDiamonds());
+        return values.get(Utilities.clamp(selectedDiamondsSliderIndex, values.size() - 1, 0));
     }
 
-    public TL_stars.TL_starsGiveawayOption getSelectedStarsOption() {
-        return getSelectedStarsOption(selectedStars);
+    public TL_diamonds.TL_starsGiveawayOption getSelectedDiamondsOption() {
+        return getSelectedDiamondsOption(selectedDiamonds);
     }
 
-    public TL_stars.TL_starsGiveawayOption getSelectedStarsOption(long stars) {
-        final ArrayList<TL_stars.TL_starsGiveawayOption> options = StarsController.getInstance(currentAccount).getGiveawayOptions();
+    public TL_diamonds.TL_starsGiveawayOption getSelectedDiamondsOption(long stars) {
+        final ArrayList<TL_diamonds.TL_starsGiveawayOption> options = DiamondsController.getInstance(currentAccount).getGiveawayOptions();
         if (options != null) {
             for (int i = 0; i < options.size(); ++i) {
-                final TL_stars.TL_starsGiveawayOption option = options.get(i);
+                final TL_diamonds.TL_starsGiveawayOption option = options.get(i);
                 if (option != null && option.stars == stars) {
                     return option;
                 }
@@ -512,10 +512,10 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
             return sliderValues;
         }
         final ArrayList<Integer> possibleCounts = new ArrayList<>();
-        TL_stars.TL_starsGiveawayOption option = getSelectedStarsOption();
+        TL_diamonds.TL_starsGiveawayOption option = getSelectedDiamondsOption();
         if (option != null) {
             for (int i = 0; i < option.winners.size(); ++i) {
-                final TL_stars.TL_starsGiveawayWinnersOption winnersOption = option.winners.get(i);
+                final TL_diamonds.TL_starsGiveawayWinnersOption winnersOption = option.winners.get(i);
                 if (option != null && !possibleCounts.contains(winnersOption.users)) {
                     possibleCounts.add(winnersOption.users);
                 }
@@ -524,16 +524,16 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         return possibleCounts;
     }
 
-    private List<Long> getPerUserStarsValues() {
-        return getPerUserStarsValues(selectedStars);
+    private List<Long> getPerUserDiamondsValues() {
+        return getPerUserDiamondsValues(selectedDiamonds);
     }
-    private List<Long> getPerUserStarsValues(long selectedStars) {
+    private List<Long> getPerUserDiamondsValues(long selectedDiamonds) {
         final ArrayList<Integer> possibleCounts = new ArrayList<>();
         final ArrayList<Long> stars = new ArrayList<>();
-        TL_stars.TL_starsGiveawayOption option = getSelectedStarsOption(selectedStars);
+        TL_diamonds.TL_starsGiveawayOption option = getSelectedDiamondsOption(selectedDiamonds);
         if (option != null) {
             for (int i = 0; i < option.winners.size(); ++i) {
-                final TL_stars.TL_starsGiveawayWinnersOption winnersOption = option.winners.get(i);
+                final TL_diamonds.TL_starsGiveawayWinnersOption winnersOption = option.winners.get(i);
                 if (option != null && !possibleCounts.contains(winnersOption.users)) {
                     possibleCounts.add(winnersOption.users);
                     stars.add(winnersOption.per_user_stars);
@@ -543,18 +543,18 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
         return stars;
     }
 
-    private List<Long> getStarsOptions() {
-        final ArrayList<TL_stars.TL_starsGiveawayOption> options = StarsController.getInstance(currentAccount).getGiveawayOptions();
-        final ArrayList<Long> possibleStars = new ArrayList<>();
+    private List<Long> getDiamondsOptions() {
+        final ArrayList<TL_diamonds.TL_starsGiveawayOption> options = DiamondsController.getInstance(currentAccount).getGiveawayOptions();
+        final ArrayList<Long> possibleDiamonds = new ArrayList<>();
         if (options != null) {
             for (int i = 0; i < options.size(); ++i) {
-                final TL_stars.TL_starsGiveawayOption option = options.get(i);
-                if (option != null && !possibleStars.contains(option.stars)) {
-                    possibleStars.add(option.stars);
+                final TL_diamonds.TL_starsGiveawayOption option = options.get(i);
+                if (option != null && !possibleDiamonds.contains(option.stars)) {
+                    possibleDiamonds.add(option.stars);
                 }
             }
         }
-        return possibleStars;
+        return possibleDiamonds;
     }
 
     private boolean isPreparedGiveaway() {
@@ -578,20 +578,20 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
             if (!isPreparedGiveaway()) {
                 BoostAdapter.Item header = Item.asSubTitleWithCounter(getString(R.string.BoostingDiamondsOptions), getSelectedSliderValueWithBoosts());
                 items.add(header);
-                final List<Long> starOptions = getStarsOptions();
+                final List<Long> diamondOptions = getDiamondsOptions();
                 int optionsCount = 0;
-                for (int i = 0; i < starOptions.size(); ++i) {
-                    final long stars = starOptions.get(i);
-                    TL_stars.TL_starsGiveawayOption option = getSelectedStarsOption(stars);
+                for (int i = 0; i < diamondOptions.size(); ++i) {
+                    final long stars = diamondOptions.get(i);
+                    TL_diamonds.TL_starsGiveawayOption option = getSelectedDiamondsOption(stars);
                     if (option.missingStorePrice) continue;
-                    if (selectedStars == 0 && option.isDefault) {
-                        selectedStars = option.stars;
+                    if (selectedDiamonds == 0 && option.isDefault) {
+                        selectedDiamonds = option.stars;
                     }
-                    if (option.extended && !starOptionsExpanded) continue;
+                    if (option.extended && !diamondOptionsExpanded) continue;
                     optionsCount++;
-                    items.add(Item.asOption(option, (starOptionsExpanded ? i : 2 + i), getSelectedPerUserStars(option.stars), selectedStars == option.stars, true));
+                    items.add(Item.asOption(option, (diamondOptionsExpanded ? i : 2 + i), getSelectedPerUserDiamonds(option.stars), selectedDiamonds == option.stars, true));
                 }
-                if (!starOptionsExpanded && optionsCount < starOptions.size()) {
+                if (!diamondOptionsExpanded && optionsCount < diamondOptions.size()) {
                     items.add(Item.asExpandOptions());
                 }
                 if (optionsCount <= 0) {
@@ -603,19 +603,19 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                 items.add(Item.asDivider(getString(R.string.BoostingDiamondsOptionsInfo), false));
 
                 final List<Integer> values = getSliderValues();
-                if (selectedStarsSliderIndex < 0 || selectedStarsSliderIndex >= values.size()) selectedStarsSliderIndex = 0;
+                if (selectedDiamondsSliderIndex < 0 || selectedDiamondsSliderIndex >= values.size()) selectedDiamondsSliderIndex = 0;
                 if (values.size() > 1) {
                     items.add(Item.asSubTitle(getString(R.string.BoostingDiamondsQuantityPrizes)));
-                    items.add(Item.asSlider(getSliderValues(), selectedStarsSliderIndex));
+                    items.add(Item.asSlider(getSliderValues(), selectedDiamondsSliderIndex));
                     items.add(Item.asDivider(getString(R.string.BoostingDiamondsQuantityPrizesInfo), false));
                 }
-            } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
-                selectedStars = ((TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway).stars;
+            } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
+                selectedDiamonds = ((TL_stories.TL_prepaidDiamondsGiveaway) prepaidGiveaway).stars;
             }
 
             items.add(Item.asSubTitle(getString(R.string.BoostingChannelsGroupsIncludedGiveaway)));
             if (isPreparedGiveaway()) {
-                if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
+                if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
                     items.add(Item.asChat(currentChat, false, prepaidGiveaway.quantity));
                 } else {
                     items.add(Item.asChat(currentChat, false, prepaidGiveaway.quantity * BoostRepository.giveawayBoostsPerPremium()));
@@ -648,7 +648,7 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                 }
                 items.add(Item.asSubTitle(getString(R.string.BoostingChannelsGroupsIncludedGiveaway)));
                 if (isPreparedGiveaway()) {
-                    if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
+                    if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
                         items.add(Item.asChat(currentChat, false, prepaidGiveaway.quantity));
                     } else {
                         items.add(Item.asChat(currentChat, false, prepaidGiveaway.quantity * BoostRepository.giveawayBoostsPerPremium()));
@@ -688,8 +688,8 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                         getString(R.string.BoostingStoriesFeaturesAndTerms),
                         Theme.key_chat_messageLinkIn, 0, () -> {
                             PremiumPreviewBottomSheet previewBottomSheet = new PremiumPreviewBottomSheet(getBaseFragment(), currentAccount, null, resourcesProvider);
-                            previewBottomSheet.setOnDismissListener(dialog -> adapter.setPausedStars(false));
-                            previewBottomSheet.setOnShowListener(dialog -> adapter.setPausedStars(true));
+                            previewBottomSheet.setOnDismissListener(dialog -> adapter.setPausedDiamonds(false));
+                            previewBottomSheet.setOnShowListener(dialog -> adapter.setPausedDiamonds(true));
                             previewBottomSheet.show();
                         },
                         resourcesProvider), true));
@@ -705,9 +705,9 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                 String months = LocaleController.formatPluralString("BoldMonths", selectedMonths);
                 if (selectedBoostType == BoostTypeCell.TYPE_STARS) {
                     if (additionalPrize.isEmpty()) {
-                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingDiamondsGiveawayAdditionPrizeCountHint", (int) selectedStars)), false));
+                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingDiamondsGiveawayAdditionPrizeCountHint", (int) selectedDiamonds)), false));
                     } else {
-                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingDiamondsGiveawayAdditionPrizeCountNameHint", (int) selectedStars, quantity, additionalPrize)), false));
+                        items.add(Item.asDivider(AndroidUtilities.replaceTags(LocaleController.formatPluralString("BoostingDiamondsGiveawayAdditionPrizeCountNameHint", (int) selectedDiamonds, quantity, additionalPrize)), false));
                     }
                 } else {
                     if (additionalPrize.isEmpty()) {
@@ -725,9 +725,9 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
 
             if (selectedBoostType == BoostTypeCell.TYPE_STARS) {
                 if (!isPreparedGiveaway()) {
-                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingDiamondsChooseRandom" : "BoostingDiamondsChooseRandomGroup", getSelectedSliderValue(), LocaleController.formatPluralString("BoostingDiamondsChooseRandomDiamonds", (int) selectedStars)), false));
+                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingDiamondsChooseRandom" : "BoostingDiamondsChooseRandomGroup", getSelectedSliderValue(), LocaleController.formatPluralString("BoostingDiamondsChooseRandomDiamonds", (int) selectedDiamonds)), false));
                 } else {
-                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingDiamondsChooseRandom" : "BoostingDiamondsChooseRandomGroup", prepaidGiveaway.quantity, LocaleController.formatPluralString("BoostingDiamondsChooseRandomDiamonds", (int) selectedStars)), false));
+                    items.add(Item.asDivider(LocaleController.formatPluralString(isChannel ? "BoostingDiamondsChooseRandom" : "BoostingDiamondsChooseRandomGroup", prepaidGiveaway.quantity, LocaleController.formatPluralString("BoostingDiamondsChooseRandomDiamonds", (int) selectedDiamonds)), false));
                 }
             } else {
                 if (!isPreparedGiveaway()) {
@@ -746,8 +746,8 @@ public class BoostViaGiftsBottomSheet extends BottomSheetWithRecyclerListView im
                         LocaleController.getString(R.string.BoostingGiveawayShowWinnersHint) + (selectedBoostType != BoostTypeCell.TYPE_STARS ? "\n\n" + getString(R.string.BoostingStoriesFeaturesAndTerms) : ""),
                         Theme.key_chat_messageLinkIn, 0, () -> {
                             PremiumPreviewBottomSheet previewBottomSheet = new PremiumPreviewBottomSheet(getBaseFragment(), currentAccount, null, resourcesProvider);
-                            previewBottomSheet.setOnDismissListener(dialog -> adapter.setPausedStars(false));
-                            previewBottomSheet.setOnShowListener(dialog -> adapter.setPausedStars(true));
+                            previewBottomSheet.setOnDismissListener(dialog -> adapter.setPausedDiamonds(false));
+                            previewBottomSheet.setOnShowListener(dialog -> adapter.setPausedDiamonds(true));
                             previewBottomSheet.show();
                         },
                         resourcesProvider), true));

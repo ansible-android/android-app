@@ -98,8 +98,8 @@ import org.ansible.ui.Components.UniversalRecyclerView;
 import org.ansible.ui.Components.spoilers.SpoilersTextView;
 import org.ansible.ui.GradientClip;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.StarsIntroActivity;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -127,22 +127,22 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         public int currentAccount;
         public long dialogId;
         public int lastSentDate;
-        private long max_stars;
+        private long max_diamonds;
         public int place;
 
         public ArrayList<Message> messages = new ArrayList<>();
 
-        public int getStars() {
-            return getStars(ConnectionsManager.getInstance(currentAccount).getCurrentTime());
+        public int getDiamonds() {
+            return getDiamonds(ConnectionsManager.getInstance(currentAccount).getCurrentTime());
         }
-        public int getStars(int now) {
+        public int getDiamonds(int now) {
             int stars = 0;
             for (Message msg : messages) {
                 if (msg.stars > 0 && now - msg.date <= getTierOption(currentAccount, (int) msg.stars, TIER_PERIOD)) {
                     stars += (int) msg.stars;
                 }
             }
-            max_stars = Math.max(max_stars, stars);
+            max_diamonds = Math.max(max_diamonds, stars);
             return stars;
         }
 
@@ -462,12 +462,12 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                 }
             }
 
-            final long minStars = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesStars();
+            final long minDiamonds = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesDiamonds();
             int msg_id = -1;
             int msg_position = 0;
             for (int i = 0; i < messages.size(); ++i) {
                 final Message msg = messages.get(i);
-                if (!(!msg.fromAdmin && msg.isReaction && msg.stars < minStars)) {
+                if (!(!msg.fromAdmin && msg.isReaction && msg.stars < minDiamonds)) {
                     if (messageIds.contains(msg.id) && (highlightingDialog != sender.dialogId || highlightingMessageId == 0 || msg.id < highlightingMessageId)) {
                         msg_id = msg.id;
                         break;
@@ -480,7 +480,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                 msg_position = 0;
                 for (int i = 0; i < messages.size(); ++i) {
                     final Message msg = messages.get(i);
-                    if (!(!msg.fromAdmin && msg.isReaction && msg.stars < minStars)) {
+                    if (!(!msg.fromAdmin && msg.isReaction && msg.stars < minDiamonds)) {
                         if (messageIds.contains(msg.id)) {
                             msg_id = msg.id;
                             break;
@@ -565,13 +565,13 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         this.allowTouches = allowTouches;
     }
 
-    private long lastMinStars;
+    private long lastMinDiamonds;
     private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-        final long minStars = lastMinStars = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesStars();
+        final long minDiamonds = lastMinDiamonds = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesDiamonds();
         for (int i = 0; i < messages.size(); ++i) {
             final Message msg = messages.get(i);
             // do not show reaction messages lower than required minimum for a message
-            if (!(!msg.fromAdmin && msg.isReaction && msg.stars < minStars)) {
+            if (!(!msg.fromAdmin && msg.isReaction && msg.stars < minDiamonds)) {
                 items.add(LiveCommentView.Factory.of(msg));
             }
         }
@@ -697,9 +697,9 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         if (changed) {
             closeBulletin.run();
             if (inputCall == null) {
-                AndroidUtilities.cancelRunOnUIThread(pollStarsRunnable);
+                AndroidUtilities.cancelRunOnUIThread(pollDiamondsRunnable);
             } else {
-                pollStarsRunnable.run();
+                pollDiamondsRunnable.run();
             }
         }
         return changed;
@@ -737,8 +737,8 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         setAllowTouches(true);
         super.onAttachedToWindow();
         if (inputCall != null) {
-            AndroidUtilities.cancelRunOnUIThread(pollStarsRunnable);
-            AndroidUtilities.runOnUIThread(pollStarsRunnable);
+            AndroidUtilities.cancelRunOnUIThread(pollDiamondsRunnable);
+            AndroidUtilities.runOnUIThread(pollDiamondsRunnable);
         }
     }
 
@@ -746,21 +746,21 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (inputCall != null) {
-            AndroidUtilities.cancelRunOnUIThread(pollStarsRunnable);
+            AndroidUtilities.cancelRunOnUIThread(pollDiamondsRunnable);
         }
     }
 
     private long totalStars;
-    private long localStars;
-    private boolean sentStars;
+    private long localDiamonds;
+    private boolean sentDiamonds;
     private ArrayList<TL_phone.groupCallDonor> topDonors = new ArrayList<>();
 
     private boolean polling;
-    private Runnable pollStarsRunnable = () -> pollStars();
-    private void pollStars() {
+    private Runnable pollDiamondsRunnable = () -> pollDiamonds();
+    private void pollDiamonds() {
         if (inputCall == null || polling) return;
 
-        AndroidUtilities.cancelRunOnUIThread(pollStarsRunnable);
+        AndroidUtilities.cancelRunOnUIThread(pollDiamondsRunnable);
         polling = true;
 
         final TL_phone.getGroupCallStars req = new TL_phone.getGroupCallStars();
@@ -775,27 +775,27 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                 MessagesController.getInstance(currentAccount).putUsers(res.users, false);
                 MessagesController.getInstance(currentAccount).putChats(res.chats, false);
 
-                boolean sentStars = false;
+                boolean sentDiamonds = false;
                 for (int i = 0; i < res.top_donors.size(); ++i) {
                     if (res.top_donors.get(i).my) {
-                        sentStars = res.top_donors.get(i).stars > 0;
+                        sentDiamonds = res.top_donors.get(i).stars > 0;
                         break;
                     }
                 }
-                boolean starsUpdated = res.total_stars != totalStars || this.sentStars != sentStars;
+                boolean diamondsUpdated = res.total_stars != totalStars || this.sentDiamonds != sentDiamonds;
                 totalStars = res.total_stars;
                 topDonors = res.top_donors;
-                this.sentStars = sentStars;
+                this.sentDiamonds = sentDiamonds;
 
-                if (starsUpdated) {
-                    onStarsCountUpdated();
+                if (diamondsUpdated) {
+                    onDiamondsCountUpdated();
                 }
                 updateMessagesPlaces();
             }
 
             if (isAttachedToWindow()) {
-                AndroidUtilities.cancelRunOnUIThread(pollStarsRunnable);
-                AndroidUtilities.runOnUIThread(pollStarsRunnable, 5_000);
+                AndroidUtilities.cancelRunOnUIThread(pollDiamondsRunnable);
+                AndroidUtilities.runOnUIThread(pollDiamondsRunnable, 5_000);
             }
         });
     }
@@ -814,50 +814,50 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
     }
 
     public static final long REACTIONS_TIMEOUT = 5_000;
-    private Bulletin starsBulletin;
+    private Bulletin diamondsBulletin;
     private Bulletin.TwoLineAnimatedLottieLayout bulletinLayout;
     private Bulletin.UndoButton bulletinButton;
     private Bulletin.TimerView timerView;
 
-    public void sendStars(long stars, boolean withEffects) {
-        if (starsBulletin == null || !starsBulletin.isShowing()) {
+    public void sendDiamonds(long stars, boolean withEffects) {
+        if (diamondsBulletin == null || !diamondsBulletin.isShowing()) {
             final Theme.ResourcesProvider resourcesProvider = new DarkThemeResourceProvider();
             bulletinLayout = new Bulletin.TwoLineAnimatedLottieLayout(getContext(), resourcesProvider);
             bulletinLayout.setAnimation(R.raw.stars_topup);
-            bulletinLayout.titleTextView.setText(getStarsToastTitle());
+            bulletinLayout.titleTextView.setText(getDiamondsToastTitle());
             bulletinButton = new Bulletin.UndoButton(getContext(), true, false, resourcesProvider);
             bulletinButton.setText(LocaleController.getString(R.string.DiamondsSentUndo));
-            bulletinButton.setUndoAction(this::cancelStars);
+            bulletinButton.setUndoAction(this::cancelDiamonds);
             timerView = new Bulletin.TimerView(getContext(), resourcesProvider);
             timerView.timeLeft = REACTIONS_TIMEOUT;
             timerView.setColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
             bulletinButton.addView(timerView, LayoutHelper.createFrame(20, 20, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0, 0, 12, 0));
             bulletinButton.undoTextView.setPadding(dp(12), dp(8), dp(20 + 10), dp(8));
             bulletinLayout.setButton(bulletinButton);
-            starsBulletin = BulletinFactory.of(topBulletinContainer, resourcesProvider).create(bulletinLayout, -1);
-            starsBulletin.hideAfterBottomSheet = false;
-            starsBulletin.show(true);
-            starsBulletin.setOnHideListener(closeBulletin);
+            diamondsBulletin = BulletinFactory.of(topBulletinContainer, resourcesProvider).create(bulletinLayout, -1);
+            diamondsBulletin.hideAfterBottomSheet = false;
+            diamondsBulletin.show(true);
+            diamondsBulletin.setOnHideListener(closeBulletin);
         }
 
-        localStars += stars;
-        onCancelledStarReaction(getDefaultPeerId());
-        onStarReaction(getDefaultPeerId(), getTotalMyStars(), (int) localStars);
+        localDiamonds += stars;
+        onCancelledDiamondReaction(getDefaultPeerId());
+        onDiamondReaction(getDefaultPeerId(), getTotalMyDiamonds(), (int) localDiamonds);
 
-        bulletinLayout.titleTextView.setText(getStarsToastTitle());
-        bulletinLayout.subtitleTextView.setText(getStarsToastSubtitle());
+        bulletinLayout.titleTextView.setText(getDiamondsToastTitle());
+        bulletinLayout.subtitleTextView.setText(getDiamondsToastSubtitle());
         timerView.timeLeft = REACTIONS_TIMEOUT;
 
         AndroidUtilities.cancelRunOnUIThread(closeBulletin);
         AndroidUtilities.runOnUIThread(closeBulletin, REACTIONS_TIMEOUT);
 
-        onStarsButtonPressed(localStars, withEffects);
-        onStarsCountUpdated();
+        onDiamondsButtonPressed(localDiamonds, withEffects);
+        onDiamondsCountUpdated();
     }
 
-    private int getTotalMyStars() {
+    private int getTotalMyDiamonds() {
         int stars = 0;
-        stars += localStars;
+        stars += localDiamonds;
         for (int i = 0; i < topDonors.size(); ++i) {
             if (topDonors.get(i).my) {
                 stars += topDonors.get(i).stars;
@@ -866,7 +866,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         return stars;
     }
 
-    public void openStarsSheet(boolean disabledPaidFeatures) {
+    public void openDiamondsSheet(boolean disabledPaidFeatures) {
         closeBulletin.run();
         final ArrayList<TLRPC.MessageReactor> reactors = new ArrayList<>();
         if (topDonors != null) {
@@ -884,7 +884,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         final TLRPC.Peer sendAsPeer = getDefaultSendAs();
         if (sendAsPeer != null)
             send_as = DialogObject.getPeerDialogId(sendAsPeer);
-        final StarsReactionsSheet sheet = new StarsReactionsSheet(getContext(), currentAccount, dialogId, null, null, reactors, !disabledPaidFeatures, true, send_as, new DarkThemeResourceProvider() {
+        final DiamondsReactionsSheet sheet = new DiamondsReactionsSheet(getContext(), currentAccount, dialogId, null, null, reactors, !disabledPaidFeatures, true, send_as, new DarkThemeResourceProvider() {
             @Override
             public void appendColors() {
                 sparseIntArray.put(Theme.key_divider, 0x14FFFFFF);
@@ -893,20 +893,20 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         sheet.setLiveCommentsView(this);
         sheet.setOnSend((peer, stars) -> {
             closeBulletin.run();
-            localStars = stars;
+            localDiamonds = stars;
             Bulletin b = BulletinFactory.of(topBulletinContainer, new DarkThemeResourceProvider())
-                .createSimpleBulletin(R.raw.stars_topup, getStarsToastTitle(), getStarsToastSubtitle());
+                .createSimpleBulletin(R.raw.stars_topup, getDiamondsToastTitle(), getDiamondsToastSubtitle());
             b.hideAfterBottomSheet = false;
             b.show(true);
 
-            localStars = 0;
-            sentStars = true;
+            localDiamonds = 0;
+            sentDiamonds = true;
 
             int msg_id = send(new TLRPC.TL_textWithEntities(), stars);
 
-            final long minStars = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesStars();
+            final long minDiamonds = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesDiamonds();
             final boolean fromAdmin = getDefaultPeerId() == this.dialogId && isAdmin();
-            if (stars < minStars && !fromAdmin) {
+            if (stars < minDiamonds && !fromAdmin) {
                 return Integer.MIN_VALUE;
             }
 
@@ -917,28 +917,28 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
 
     private Runnable closeBulletin = () -> {
         AndroidUtilities.cancelRunOnUIThread(this.closeBulletin);
-        if (starsBulletin != null) {
-            starsBulletin.hide();
-            starsBulletin = null;
+        if (diamondsBulletin != null) {
+            diamondsBulletin.hide();
+            diamondsBulletin = null;
         }
-        if (localStars > 0) {
-            final long stars = localStars;
-            localStars = 0;
-            sentStars = true;
+        if (localDiamonds > 0) {
+            final long stars = localDiamonds;
+            localDiamonds = 0;
+            sentDiamonds = true;
             send(new TLRPC.TL_textWithEntities(), stars);
         } else {
-            onStarsCountUpdated();
+            onDiamondsCountUpdated();
         }
     };
 
-    public void cancelStars() {
-        localStars = 0;
-        onCancelledStarReaction(getDefaultPeerId());
-        onStarsButtonCancelled();
-        onStarsCountUpdated();
+    public void cancelDiamonds() {
+        localDiamonds = 0;
+        onCancelledDiamondReaction(getDefaultPeerId());
+        onDiamondsButtonCancelled();
+        onDiamondsCountUpdated();
     }
 
-    private String getStarsToastTitle() {
+    private String getDiamondsToastTitle() {
 //        if (isAnonymous()) {
 //            return getString(R.string.DiamondsSentAnonymouslyTitle);
 //        } else if (getPeerId() != 0 && getPeerId() != UserConfig.getInstance(currentAccount).getClientUserId()) {
@@ -948,8 +948,8 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
 //        }
     }
 
-    private CharSequence getStarsToastSubtitle() {
-        return AndroidUtilities.replaceTags(LocaleController.formatPluralStringComma("PaidMessageSentSubtitle", Math.max(0, (int) localStars)));
+    private CharSequence getDiamondsToastSubtitle() {
+        return AndroidUtilities.replaceTags(LocaleController.formatPluralStringComma("PaidMessageSentSubtitle", Math.max(0, (int) localDiamonds)));
     }
 
     public boolean isCollapsed() {
@@ -1031,7 +1031,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
 
         if (message.id < 0 && message.isReaction && message.stars > 0) {
             totalStars -= message.stars;
-            onStarsCountUpdated();
+            onDiamondsCountUpdated();
         }
 
         boolean updatedTopMessages = false;
@@ -1160,7 +1160,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                 AndroidUtilities.runOnUIThread(() -> {
                     delete(id);
                     if ("BALANCE_TOO_LOW".equalsIgnoreCase(err.text)) {
-                        new StarsIntroActivity.StarsNeededSheet(getContext(), new DarkThemeResourceProvider(), stars, StarsIntroActivity.StarsNeededSheet.TYPE_LIVE_COMMENTS, "", () -> send(send_as, text, stars), dialogId).show();
+                        new DiamondsIntroActivity.DiamondsNeededSheet(getContext(), new DarkThemeResourceProvider(), stars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_LIVE_COMMENTS, "", () -> send(send_as, text, stars), dialogId).show();
                     } else if ("GROUPCALL_INVALID".equalsIgnoreCase(err.text)) {
                         if (livePlayer != null) {
                             livePlayer.storyDeleted();
@@ -1222,58 +1222,58 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
     public int getUnreadMessagesCount() {
         if (maxReadId < 0)
             return 0;
-        final long minStars = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesStars();
+        final long minDiamonds = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesDiamonds();
         int count = 0;
         for (int i = 0; i < messages.size(); ++i) {
             final Message msg = messages.get(i);
             final int id = msg.id;
-            if (id >= 0 && id > maxReadId && !(!msg.fromAdmin && msg.isReaction && msg.stars < minStars)) {
+            if (id >= 0 && id > maxReadId && !(!msg.fromAdmin && msg.isReaction && msg.stars < minDiamonds)) {
                 count++;
             }
         }
         return count;
     }
 
-    public void updatedMinStars() {
-        final long minStars = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesStars();
-        if (lastMinStars != minStars) {
+    public void updatedMinDiamonds() {
+        final long minDiamonds = livePlayer == null ? 0 : livePlayer.getSendPaidMessagesDiamonds();
+        if (lastMinDiamonds != minDiamonds) {
             adapter.update(true);
         }
     }
 
-    public long getStarsCount() {
-        return totalStars + localStars;
+    public long getDiamondsCount() {
+        return totalStars + localDiamonds;
     }
 
-    public boolean didSendStars() {
-        return sentStars || localStars > 0;
+    public boolean didSendDiamonds() {
+        return sentDiamonds || localDiamonds > 0;
     }
 
-    public boolean areSendingStars() {
-        return starsBulletin != null;
+    public boolean areSendingDiamonds() {
+        return diamondsBulletin != null;
     }
 
     protected void onMessagesCountUpdated() {
 
     }
 
-    protected void onStarsButtonPressed(long sendingStars, boolean withEffects) {
+    protected void onDiamondsButtonPressed(long sendingDiamonds, boolean withEffects) {
 
     }
 
-    protected void onStarsButtonCancelled() {
+    protected void onDiamondsButtonCancelled() {
 
     }
 
-    protected void onStarsCountUpdated() {
+    protected void onDiamondsCountUpdated() {
 
     }
 
-    protected void onStarReaction(long dialogId, int totalStars, int stars) {
+    protected void onDiamondReaction(long dialogId, int totalStars, int stars) {
 
     }
 
-    protected void onCancelledStarReaction(long dialogId) {
+    protected void onCancelledDiamondReaction(long dialogId) {
 
     }
 
@@ -1340,7 +1340,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
 
         if (!isHistory && message.isReaction && message.stars > 0) {
             totalStars += message.stars;
-            onStarsCountUpdated();
+            onDiamondsCountUpdated();
         }
 
         int position = 0;
@@ -1387,8 +1387,8 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                 donor.stars = 0;
                 for (int i = 0; i < topMessages.size(); ++i) {
                     if (topMessages.get(i).dialogId == message.dialogId) {
-                        topMessages.get(i).getStars();
-                        donor.stars += topMessages.get(i).max_stars;
+                        topMessages.get(i).getDiamonds();
+                        donor.stars += topMessages.get(i).max_diamonds;
                     }
                 }
                 topDonors.add(donor);
@@ -1396,7 +1396,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
             donor.stars += message.stars;
             totalStars = (int) donor.stars;
 
-            onStarReaction(message.dialogId, totalStars, (int) message.stars);
+            onDiamondReaction(message.dialogId, totalStars, (int) message.stars);
         }
         updateMessagesPlaces();
 
@@ -1422,12 +1422,12 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         Collections.sort(sorted, (a, b) -> (int) (b.stars - a.stars));
 
         int currentPlace = 0;
-        int lastStars = Integer.MIN_VALUE;
+        int lastDiamonds = Integer.MIN_VALUE;
         for (TL_phone.groupCallDonor sender : sorted) {
             int stars = (int) sender.stars;
-            if (stars != lastStars) {
+            if (stars != lastDiamonds) {
                 currentPlace++;
-                lastStars = stars;
+                lastDiamonds = stars;
             }
             if (currentPlace > 3) {
                 break;
@@ -1485,7 +1485,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
     public static class LiveCommentView extends FrameLayout implements ItemOptions.ScrimView {
 
         private boolean drawParticles = false;
-        private boolean drawStar = true;
+        private boolean drawDiamond = true;
         private final int currentAccount;
         private final boolean filled;
 
@@ -1502,27 +1502,27 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
         public final BackupImageView avatarView;
         public final AvatarDrawable avatarDrawable;
         public final SpoilersTextView textView;
-        public final TextView starsView;
-        public final TextView smallStarsView;
+        public final TextView diamondsView;
+        public final TextView smallDiamondsView;
 
-        private final ColoredImageSpan[] starsViewCache = new ColoredImageSpan[1];
-        private final ColoredImageSpan[] smallStarsViewCache = new ColoredImageSpan[1];
+        private final ColoredImageSpan[] diamondsViewCache = new ColoredImageSpan[1];
+        private final ColoredImageSpan[] smallDiamondsViewCache = new ColoredImageSpan[1];
 
-        public void setDrawStar(boolean drawStar) {
-            this.drawStar = drawStar;
-            if (starsViewCache[0] != null && starsViewCache[0].draw != drawStar) {
-                starsViewCache[0].draw = drawStar;
-                starsView.invalidate();
+        public void setDrawDiamond(boolean drawDiamond) {
+            this.drawDiamond = drawDiamond;
+            if (diamondsViewCache[0] != null && diamondsViewCache[0].draw != drawDiamond) {
+                diamondsViewCache[0].draw = drawDiamond;
+                diamondsView.invalidate();
             }
         }
 
-        public void getStarLocation(RectF out) {
-            if (starsViewCache[0] == null) return;
-            final Layout layout = starsView.getLayout();
+        public void getDiamondLocation(RectF out) {
+            if (diamondsViewCache[0] == null) return;
+            final Layout layout = diamondsView.getLayout();
             if (layout == null) return;
-            final float x = starsView.getX() + starsView.getPaddingLeft() + starsViewCache[0].translateX;
-            final float y = starsView.getY() + starsView.getPaddingTop() + starsViewCache[0].translateY;
-            out.set(x, y, x + starsViewCache[0].drawable.getBounds().width(), y + starsViewCache[0].drawable.getBounds().height());
+            final float x = diamondsView.getX() + diamondsView.getPaddingLeft() + diamondsViewCache[0].translateX;
+            final float y = diamondsView.getY() + diamondsView.getPaddingTop() + diamondsViewCache[0].translateY;
+            out.set(x, y, x + diamondsViewCache[0].drawable.getBounds().width(), y + diamondsViewCache[0].drawable.getBounds().height());
         }
 
         public LiveCommentView(Context context, int currentAccount, boolean filled) {
@@ -1531,7 +1531,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
             this.filled = filled;
 
             layout = new LinearLayout(context) {
-                StarsReactionsSheet.Particles particles;
+                DiamondsReactionsSheet.Particles particles;
                 Path clipPath = new Path();
 
                 @Override
@@ -1544,7 +1544,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                         canvas.clipPath(clipPath);
 
                         if (particles == null) {
-                            particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 250);
+                            particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 250);
                         }
                         particles.setBounds(0, 0, getWidth(), getHeight());
                         particles.setSpeed(30.0f);
@@ -1594,19 +1594,19 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
             NotificationCenter.listenEmojiLoading(textView);
             textLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 
-            starsView = new TextView(context);
-            starsView.setTextColor(0xFFFFFFFF);
-            starsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
-            starsView.setPadding(dp(4.66f), 0, dp(4.66f), 0);
-            starsView.setVisibility(View.GONE);
-            layout.addView(starsView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 16, 0, Gravity.RIGHT | Gravity.CENTER_VERTICAL, -3, 0, 6, 0));
+            diamondsView = new TextView(context);
+            diamondsView.setTextColor(0xFFFFFFFF);
+            diamondsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
+            diamondsView.setPadding(dp(4.66f), 0, dp(4.66f), 0);
+            diamondsView.setVisibility(View.GONE);
+            layout.addView(diamondsView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 16, 0, Gravity.RIGHT | Gravity.CENTER_VERTICAL, -3, 0, 6, 0));
 
-            smallStarsView = new TextView(context);
-            smallStarsView.setTextColor(0xFFFFFFFF);
-            smallStarsView.setAlpha(0.65f);
-            smallStarsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
-            smallStarsView.setVisibility(View.GONE);
-            layout.addView(smallStarsView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.RIGHT | Gravity.BOTTOM, 0, 3, 10, 0));
+            smallDiamondsView = new TextView(context);
+            smallDiamondsView.setTextColor(0xFFFFFFFF);
+            smallDiamondsView.setAlpha(0.65f);
+            smallDiamondsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
+            smallDiamondsView.setVisibility(View.GONE);
+            layout.addView(smallDiamondsView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.RIGHT | Gravity.BOTTOM, 0, 3, 10, 0));
         }
 
         private int highlightingMessageId;
@@ -1755,18 +1755,18 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                 layout.setBackground(background = Theme.createRoundRectGradientDrawable(dp(13), backgroundColor1, backgroundColor2));
                 background.setAlpha((int) (0xFF * (backgroundViewAlpha = !filled ? 0.65f : 1.0f)));
                 if (!message.isReaction) {
-                    smallStarsView.setVisibility(View.VISIBLE);
-                    smallStarsView.setText(StarsIntroActivity.replaceStars("⭐️ " + LocaleController.formatNumber(message.stars, ','), 0.75f, smallStarsViewCache, 0, 0, 1.0f));
-                    starsView.setVisibility(View.GONE);
-                    starsView.setText("");
+                    smallDiamondsView.setVisibility(View.VISIBLE);
+                    smallDiamondsView.setText(DiamondsIntroActivity.replaceDiamonds("⭐️ " + LocaleController.formatNumber(message.stars, ','), 0.75f, smallDiamondsViewCache, 0, 0, 1.0f));
+                    diamondsView.setVisibility(View.GONE);
+                    diamondsView.setText("");
                 } else {
-                    smallStarsView.setVisibility(View.GONE);
-                    smallStarsView.setText("");
-                    starsView.setVisibility(View.VISIBLE);
-                    starsView.setBackground(Theme.createRoundRectDrawable(dp(13), Theme.multAlpha(darkerBackgroundColor, 0.25f)));
-                    starsView.setText(StarsIntroActivity.replaceStars("⭐️ " + LocaleController.formatNumber(message.stars, ','), 0.75f, starsViewCache, 0, dp(0.66f), 1.0f));
-                    if (starsViewCache[0] != null) {
-                        starsViewCache[0].draw = drawStar;
+                    smallDiamondsView.setVisibility(View.GONE);
+                    smallDiamondsView.setText("");
+                    diamondsView.setVisibility(View.VISIBLE);
+                    diamondsView.setBackground(Theme.createRoundRectDrawable(dp(13), Theme.multAlpha(darkerBackgroundColor, 0.25f)));
+                    diamondsView.setText(DiamondsIntroActivity.replaceDiamonds("⭐️ " + LocaleController.formatNumber(message.stars, ','), 0.75f, diamondsViewCache, 0, dp(0.66f), 1.0f));
+                    if (diamondsViewCache[0] != null) {
+                        diamondsViewCache[0].draw = drawDiamond;
                     }
                 }
             } else if (message.fromAdmin) {
@@ -1800,14 +1800,14 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                 adminNameView.setText(name);
                 adminRoleView.setText(getString(R.string.LiveStoryAdminRole));
 
-                smallStarsView.setVisibility(View.GONE);
-                starsView.setVisibility(View.GONE);
+                smallDiamondsView.setVisibility(View.GONE);
+                diamondsView.setVisibility(View.GONE);
             } else {
                 layout.setWillNotDraw(!(drawParticles = false));
                 textView.setShadowLayer(dp(2.5f), 0, dp(1.5f), Theme.multAlpha(0xFF000000, 0.6f));
                 layout.setBackground(background = null);
-                smallStarsView.setVisibility(View.GONE);
-                starsView.setVisibility(View.GONE);
+                smallDiamondsView.setVisibility(View.GONE);
+                diamondsView.setVisibility(View.GONE);
             }
             layout.invalidate();
         }
@@ -1883,7 +1883,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
             ScaleStateListAnimator.apply(this);
 
             layout = new LinearLayout(context) {
-                StarsReactionsSheet.Particles particles;
+                DiamondsReactionsSheet.Particles particles;
                 final Path clipPath = new Path();
                 final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 long lastDialogId = 0;
@@ -1898,8 +1898,8 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                     canvas.clipPath(clipPath);
 
                     if (sender != null) {
-                        final int color = getTierOption(sender.currentAccount, sender.getStars(), TIER_COLOR1);
-                        final int backgroundColor = getTierOption(sender.currentAccount, sender.getStars(), TIER_COLOR_BACKGROUND);
+                        final int color = getTierOption(sender.currentAccount, sender.getDiamonds(), TIER_COLOR1);
+                        final int backgroundColor = getTierOption(sender.currentAccount, sender.getDiamonds(), TIER_COLOR_BACKGROUND);
                         canvas.drawColor(color);
 
                         if (lastDialogId != sender.dialogId) {
@@ -1913,7 +1913,7 @@ public class LiveCommentsView extends FrameLayout implements NotificationCenter.
                     }
 
                     if (particles == null) {
-                        particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 250);
+                        particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 250);
                     }
                     particles.setBounds(0, 0, getWidth(), getHeight());
                     particles.setSpeed(30.0f);

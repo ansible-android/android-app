@@ -14,7 +14,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.ShadowSectionCell;
@@ -30,13 +30,13 @@ import org.ansible.ui.Components.Premium.boosts.cells.HeaderCell;
 import org.ansible.ui.Components.Premium.boosts.cells.ParticipantsTypeCell;
 import org.ansible.ui.Components.Premium.boosts.cells.DurationCell;
 import org.ansible.ui.Components.Premium.boosts.cells.SliderCell;
-import org.ansible.ui.Components.Premium.boosts.cells.StarGiveawayOptionCell;
+import org.ansible.ui.Components.Premium.boosts.cells.DiamondGiveawayOptionCell;
 import org.ansible.ui.Components.Premium.boosts.cells.SubtitleWithCounterCell;
 import org.ansible.ui.Components.Premium.boosts.cells.SwitcherCell;
 import org.ansible.ui.Components.Premium.boosts.cells.TextInfoCell;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.SlideChooseView;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,7 +141,7 @@ public class BoostAdapter extends AdapterWithDiffUtils {
         }
     }
 
-    public void setPausedStars(boolean paused) {
+    public void setPausedDiamonds(boolean paused) {
         if (headerCell != null) {
             headerCell.setPaused(paused);
         }
@@ -252,7 +252,7 @@ public class BoostAdapter extends AdapterWithDiffUtils {
                 view = new AddChannelCell(context, resourcesProvider);
                 break;
             case HOLDER_TYPE_EXPAND_OPTIONS:
-                StarsIntroActivity.ExpandView expandView = new StarsIntroActivity.ExpandView(context, resourcesProvider);
+                DiamondsIntroActivity.ExpandView expandView = new DiamondsIntroActivity.ExpandView(context, resourcesProvider);
                 expandView.set(LocaleController.getString(R.string.NotifyMoreOptions), true, true, false);
                 view = expandView;
                 break;
@@ -280,7 +280,7 @@ public class BoostAdapter extends AdapterWithDiffUtils {
                 view = new DurationCell(context, resourcesProvider);
                 break;
             case HOLDER_TYPE_STAR_OPTION:
-                view = new StarGiveawayOptionCell(context, resourcesProvider);
+                view = new DiamondGiveawayOptionCell(context, resourcesProvider);
                 break;
         }
         view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -364,8 +364,8 @@ public class BoostAdapter extends AdapterWithDiffUtils {
                 break;
             }
             case HOLDER_TYPE_STAR_OPTION: {
-                StarGiveawayOptionCell cell = (StarGiveawayOptionCell) holder.itemView;
-                cell.setOption(item.object == null ? null : (TL_stars.TL_starsGiveawayOption) item.object, item.intValue, item.longValue, item.selectable, item.boolValue);
+                DiamondGiveawayOptionCell cell = (DiamondGiveawayOptionCell) holder.itemView;
+                cell.setOption(item.object == null ? null : (TL_diamonds.TL_starsGiveawayOption) item.object, item.intValue, item.longValue, item.selectable, item.boolValue);
                 break;
             }
             case HOLDER_TYPE_SIMPLE_DIVIDER: {
@@ -526,10 +526,10 @@ public class BoostAdapter extends AdapterWithDiffUtils {
             return item;
         }
 
-        public static Item asOption(TL_stars.TL_starsGiveawayOption option, int index, long starsPerUser, boolean selected, boolean needDivider) {
+        public static Item asOption(TL_diamonds.TL_starsGiveawayOption option, int index, long diamondsPerUser, boolean selected, boolean needDivider) {
             Item item = new Item(HOLDER_TYPE_STAR_OPTION, selected);
             item.intValue = index;
-            item.longValue = starsPerUser;
+            item.longValue = diamondsPerUser;
             item.object = option;
             item.boolValue = needDivider;
             return item;

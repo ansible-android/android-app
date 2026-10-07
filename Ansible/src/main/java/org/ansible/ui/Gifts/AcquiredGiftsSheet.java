@@ -22,7 +22,7 @@ import org.ansible.messenger.GiftAuctionController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
@@ -36,17 +36,17 @@ import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AcquiredGiftsSheet extends BottomSheetWithRecyclerListView {
-    private final List<TL_stars.TL_StarGiftAuctionAcquiredGift> gifts;
+    private final List<TL_diamonds.TL_StarGiftAuctionAcquiredGift> gifts;
     private final GiftAuctionController.Auction auction;
 
-    public AcquiredGiftsSheet(Context context, Theme.ResourcesProvider resourcesProvider, GiftAuctionController.Auction auction, List<TL_stars.TL_StarGiftAuctionAcquiredGift> gifts) {
+    public AcquiredGiftsSheet(Context context, Theme.ResourcesProvider resourcesProvider, GiftAuctionController.Auction auction, List<TL_diamonds.TL_StarGiftAuctionAcquiredGift> gifts) {
         super(context, null, false, false, false, false, ActionBarType.SLIDING, resourcesProvider);
         this.auction = auction;
         this.gifts = gifts;
@@ -94,7 +94,7 @@ public class AcquiredGiftsSheet extends BottomSheetWithRecyclerListView {
         if (gifts == null) {
             return;
         }
-        for (TL_stars.TL_StarGiftAuctionAcquiredGift gift : gifts) {
+        for (TL_diamonds.TL_StarGiftAuctionAcquiredGift gift : gifts) {
             items.add(AcquiredGiftsCell.Factory.as(gift, auction, (v) -> {
                 openProfile(DialogObject.getPeerDialogId(gift.peer));
             }));
@@ -133,7 +133,7 @@ public class AcquiredGiftsSheet extends BottomSheetWithRecyclerListView {
             setPadding(dp(18), dp(9), dp(18), dp(9));
         }
 
-        private void bind(GiftAuctionController.Auction auction, TL_stars.TL_StarGiftAuctionAcquiredGift gift, View.OnClickListener listener) {
+        private void bind(GiftAuctionController.Auction auction, TL_diamonds.TL_StarGiftAuctionAcquiredGift gift, View.OnClickListener listener) {
             removeAllViews();
 
             SpannableStringBuilder ssb = new SpannableStringBuilder("*");
@@ -149,7 +149,7 @@ public class AcquiredGiftsSheet extends BottomSheetWithRecyclerListView {
 
             SpannableStringBuilder ssb1 = new SpannableStringBuilder();
             final CharSequence bid = "⭐️" + formatNumber(gift.bid_amount, ',');
-            ssb1.append(StarsIntroActivity.replaceStarsWithPlain(bid, 0.75f));
+            ssb1.append(DiamondsIntroActivity.replaceDiamondsWithPlain(bid, 0.75f));
 
             String top = formatString(R.string.Gift2AuctionsAcquiredTop, gift.pos);
 
@@ -181,10 +181,10 @@ public class AcquiredGiftsSheet extends BottomSheetWithRecyclerListView {
             public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
                 ((AcquiredGiftsCell) view).bind(
                     (GiftAuctionController.Auction) item.object2,
-                    (TL_stars.TL_StarGiftAuctionAcquiredGift) item.object, item.clickCallback);
+                    (TL_diamonds.TL_StarGiftAuctionAcquiredGift) item.object, item.clickCallback);
             }
 
-            public static UItem as(TL_stars.TL_StarGiftAuctionAcquiredGift gift, GiftAuctionController.Auction auction, OnClickListener listener) {
+            public static UItem as(TL_diamonds.TL_StarGiftAuctionAcquiredGift gift, GiftAuctionController.Auction auction, OnClickListener listener) {
                 UItem item = UItem.ofFactory(Factory.class);
                 item.object = gift;
                 item.object2 = auction;

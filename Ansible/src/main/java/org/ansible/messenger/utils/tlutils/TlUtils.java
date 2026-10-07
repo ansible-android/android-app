@@ -10,7 +10,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_ephemeral;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -162,12 +162,12 @@ public class TlUtils {
         return false;
     }
 
-    public static TLRPC.Document getGiftDocument(TL_stars.StarGift gift) {
+    public static TLRPC.Document getGiftDocument(TL_diamonds.StarGift gift) {
         TLRPC.Document document = gift.sticker;
         if (gift.attributes != null && document == null)  {
-            for (TL_stars.StarGiftAttribute attribute : gift.attributes) {
-                if (attribute instanceof TL_stars.starGiftAttributeModel) {
-                    document = ((TL_stars.starGiftAttributeModel) attribute).document;
+            for (TL_diamonds.StarGiftAttribute attribute : gift.attributes) {
+                if (attribute instanceof TL_diamonds.starGiftAttributeModel) {
+                    document = ((TL_diamonds.starGiftAttributeModel) attribute).document;
                     break;
                 }
             }
@@ -175,12 +175,12 @@ public class TlUtils {
         return document;
     }
 
-    public static TLRPC.Document getGiftDocumentPattern(TL_stars.StarGift gift) {
+    public static TLRPC.Document getGiftDocumentPattern(TL_diamonds.StarGift gift) {
         TLRPC.Document document = gift.sticker;
         if (gift.attributes != null && document == null)  {
-            for (TL_stars.StarGiftAttribute attribute : gift.attributes) {
-                if (attribute instanceof TL_stars.starGiftAttributePattern) {
-                    document = ((TL_stars.starGiftAttributePattern) attribute).document;
+            for (TL_diamonds.StarGiftAttribute attribute : gift.attributes) {
+                if (attribute instanceof TL_diamonds.starGiftAttributePattern) {
+                    document = ((TL_diamonds.starGiftAttributePattern) attribute).document;
                     break;
                 }
             }

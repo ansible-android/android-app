@@ -48,8 +48,8 @@ public class GLIconRenderer implements GLSurfaceView.Renderer {
     int color1;
     int color2;
 
-    public int colorKey1 = Theme.key_premiumStarGradient1;
-    public int colorKey2 = Theme.key_premiumStarGradient2;
+    public int colorKey1 = Theme.key_premiumDiamondGradient1;
+    public int colorKey2 = Theme.key_premiumDiamondGradient2;
 
     public int goldenColorKey1 = Theme.key_starsGradient1;
     public int goldenColorKey2 = Theme.key_starsGradient2;

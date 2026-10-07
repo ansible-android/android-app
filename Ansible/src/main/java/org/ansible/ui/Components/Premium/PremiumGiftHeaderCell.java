@@ -23,7 +23,7 @@ import org.ansible.ui.Components.LayoutHelper;
 public class PremiumGiftHeaderCell extends LinearLayout {
     private TLRPC.User user;
 
-    private StarParticlesView.Drawable drawable;
+    private DiamondParticlesView.Drawable drawable;
 
     private BackupImageView avatarImageView;
     private AvatarDrawable avatarDrawable;
@@ -55,7 +55,7 @@ public class PremiumGiftHeaderCell extends LinearLayout {
 
         setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        drawable = new StarParticlesView.Drawable(50);
+        drawable = new DiamondParticlesView.Drawable(50);
         drawable.useGradient = true;
         drawable.roundEffect = true;
 

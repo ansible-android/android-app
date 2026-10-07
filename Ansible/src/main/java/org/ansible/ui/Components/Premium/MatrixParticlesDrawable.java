@@ -32,7 +32,7 @@ public class MatrixParticlesDrawable {
         TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
         textPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rcondensedbold.ttf"));
         textPaint.setTextSize(size);
-        textPaint.setColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_premiumStartSmallStarsColor2), 30));
+        textPaint.setColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_premiumStartSmallDiamondsColor2), 30));
         textPaint.setTextAlign(Paint.Align.CENTER);
         for (int i = 0; i < 16; i++) {
             char c = (char) (i < 10 ? ('0' + i) : ('A' + (i - 10)));

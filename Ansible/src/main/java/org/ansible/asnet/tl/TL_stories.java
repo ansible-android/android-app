@@ -2487,8 +2487,8 @@ public class TL_stories {
                 case TL_mediaAreaUrl.constructor:
                     result = new TL_mediaAreaUrl();
                     break;
-                case TL_mediaAreaStarGift.constructor:
-                    result = new TL_mediaAreaStarGift();
+                case TL_mediaAreaDiamondGift.constructor:
+                    result = new TL_mediaAreaDiamondGift();
                     break;
                 case TL_mediaAreaVenue.constructor:
                     result = new TL_mediaAreaVenue();
@@ -2620,7 +2620,7 @@ public class TL_stories {
         }
     }
 
-    public static class TL_mediaAreaStarGift extends MediaArea {
+    public static class TL_mediaAreaDiamondGift extends MediaArea {
         public static final int constructor = 0x5787686d;
 
         public String slug;
@@ -2870,15 +2870,15 @@ public class TL_stories {
                 case TL_prepaidGiveaway.constructor:
                     result = new TL_prepaidGiveaway();
                     break;
-                case TL_prepaidStarsGiveaway.constructor:
-                    result = new TL_prepaidStarsGiveaway();
+                case TL_prepaidDiamondsGiveaway.constructor:
+                    result = new TL_prepaidDiamondsGiveaway();
                     break;
             }
             return TLdeserialize(PrepaidGiveaway.class, result, stream, constructor, exception);
         }
     }
 
-    public static class TL_prepaidStarsGiveaway extends PrepaidGiveaway {
+    public static class TL_prepaidDiamondsGiveaway extends PrepaidGiveaway {
         public static final int constructor = 0x9a9d77e0;
 
         public long stars;

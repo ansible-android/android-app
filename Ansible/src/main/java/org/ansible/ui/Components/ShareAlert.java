@@ -2421,9 +2421,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         if (sendingMessageObjects != null) {
             for (int a = 0; a < selectedDialogs.size(); a++) {
                 final long did = selectedDialogs.keyAt(a);
-                long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
+                long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(did);
                 if (thisPrice <= 0) {
-                    thisPrice = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
+                    thisPrice = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
                 }
                 if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
                     if (thisPrice > 0) messagesCount++;
@@ -2445,9 +2445,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             if (storyItem != null) {
                 for (int a = 0; a < selectedDialogs.size(); a++) {
                     final long did = selectedDialogs.keyAt(a);
-                    long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
+                    long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(did);
                     if (thisPrice <= 0) {
-                        thisPrice = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
+                        thisPrice = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
                     }
                     if (storyItem != null) {
                         if (frameLayout2.getTag() != null && commentTextView.length() > 0 && text[0] != null) {
@@ -2464,9 +2464,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             } else if (sendingText[num] != null) {
                 for (int a = 0; a < selectedDialogs.size(); a++) {
                     final long did = selectedDialogs.keyAt(a);
-                    long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
+                    long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(did);
                     if (thisPrice <= 0) {
-                        thisPrice = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
+                        thisPrice = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
                     }
                     if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
                         if (thisPrice > 0) messagesCount++;
@@ -2500,7 +2500,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                     int result;
                     if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
                         SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, withSound, 0, 0, null, false);
-                        params.payStars = price == null ? 0 : price;
+                        params.payDiamonds = price == null ? 0 : price;
                         params.monoForumPeer = monoForumPeerId;
                         SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
                     }
@@ -2557,7 +2557,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                             params = SendMessagesHelper.SendMessageParams.of(null, key, replyTopMsg, replyTopMsg, null, true, null, null, null, withSound, 0, 0, null, false);
                             params.sendingStory = storyItem;
                         }
-                        params.payStars = price == null ? 0 : price;
+                        params.payDiamonds = price == null ? 0 : price;
                         params.monoForumPeer = monoForumPeerId;
                         SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
                     }
@@ -2573,12 +2573,12 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
 
                         if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
                             SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, withSound, 0, 0, null, false);
-                            params.payStars = price == null ? 0 : price;
+                            params.payDiamonds = price == null ? 0 : price;
                             params.monoForumPeer = monoForumPeerId;
                             SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
                         }
                         SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(sendingText[num], key, replyTopMsg, replyTopMsg, null, true, null, null, null, withSound, 0, 0, null, false);
-                        params2.payStars = price == null ? 0 : price;
+                        params2.payDiamonds = price == null ? 0 : price;
                         params2.monoForumPeer = monoForumPeerId;
                         SendMessagesHelper.getInstance(currentAccount).sendMessage(params2);
                     }
@@ -2868,14 +2868,14 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             long price = 0;
             for (int i = 0; i < selectedDialogs.size(); ++i) {
                 final long did = selectedDialogs.valueAt(i).id;
-                long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
+                long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(did);
                 if (thisPrice <= 0) {
-                    thisPrice = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
+                    thisPrice = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
                 }
                 price += thisPrice;
             }
             writeButton.setCount(Math.max(1, selectedDialogs.size()), animated != 0);
-            writeButton.setStarsPrice(price, messagesCount, animated != 0);
+            writeButton.setDiamondsPrice(price, messagesCount, animated != 0);
             showCommentTextView(true);
 
             commentTextView.setPadding(0, 0, Math.max(dp(84), writeButton.width()), 0);

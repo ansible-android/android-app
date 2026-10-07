@@ -32,7 +32,7 @@ import org.ansible.messenger.LiteMode;
 import org.ansible.messenger.R;
 import org.ansible.messenger.SvgHelper;
 import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 
 import java.util.Arrays;
 
@@ -105,7 +105,7 @@ public class CacheChart extends View {
     private final AnimatedTextView.AnimatedTextDrawable topCompleteText = new AnimatedTextView.AnimatedTextDrawable(false, true, true);
     private final AnimatedTextView.AnimatedTextDrawable bottomCompleteText = new AnimatedTextView.AnimatedTextDrawable(false, true, true);
 
-    private StarParticlesView.Drawable completeDrawable;
+    private DiamondParticlesView.Drawable completeDrawable;
 
     private static long particlesStart = -1;
     class Sector {
@@ -843,7 +843,7 @@ public class CacheChart extends View {
         if (complete > 0) {
             boolean init = false;
             if (completeDrawable == null) {
-                completeDrawable = new StarParticlesView.Drawable(25);
+                completeDrawable = new DiamondParticlesView.Drawable(25);
                 completeDrawable.type = 100;
                 completeDrawable.roundEffect = true;
                 completeDrawable.useRotate = true;

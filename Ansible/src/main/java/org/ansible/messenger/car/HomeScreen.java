@@ -240,7 +240,7 @@ public class HomeScreen extends Screen
                 .setSelf(selfPerson)
                 .setMessages(carMessages)
                 .setGroupConversation(isGroup)
-                .setConversationCallback(new TelegramConversationCallback(currentAccount, dialogId, latestMid));
+                .setConversationCallback(new AnsibleConversationCallback(currentAccount, dialogId, latestMid));
         if (icon != null) {
             cb.setIcon(new CarIcon.Builder(icon).build());
         }
@@ -396,12 +396,12 @@ public class HomeScreen extends Screen
         }
     }
 
-    private static final class TelegramConversationCallback implements ConversationCallback {
+    private static final class AnsibleConversationCallback implements ConversationCallback {
         private final int currentAccount;
         private final long dialogId;
         private final int maxId;
 
-        TelegramConversationCallback(int currentAccount, long dialogId, int maxId) {
+        AnsibleConversationCallback(int currentAccount, long dialogId, int maxId) {
             this.currentAccount = currentAccount;
             this.dialogId = dialogId;
             this.maxId = maxId;

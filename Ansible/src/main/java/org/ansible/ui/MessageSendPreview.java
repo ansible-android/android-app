@@ -79,7 +79,7 @@ import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceBitmap;
 import org.ansible.ui.Components.blur3.utils.Blur3Utils;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.Components.spoilers.SpoilerEffect2;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.KeyboardNotifier;
 
 import java.util.ArrayList;
@@ -702,7 +702,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
                         }
                         lastDrawnGroup = group;
                         if (group == null) {
-                            drawStarsPrice(canvas, cell.getBoundsLeft(), cell.getY(), cell.getBoundsRight(), cell.getY() + cell.getHeight());
+                            drawDiamondsPrice(canvas, cell.getBoundsLeft(), cell.getY(), cell.getBoundsRight(), cell.getY() + cell.getHeight());
                         }
                     }
                 }
@@ -790,7 +790,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
                         if (b > chatListView.getMeasuredHeight() + dp(20)) {
                             b = chatListView.getMeasuredHeight() + dp(20);
                         }
-                        drawStarsPrice(canvas, l, t, r, b);
+                        drawDiamondsPrice(canvas, l, t, r, b);
                         group.transitionParams.cell = null;
                     }
                 }
@@ -1936,7 +1936,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
     private Paint buttonBgPaint;
 
     public void setStars(long stars) {
-        buttonText = stars <= 0 ? null : new Text(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) stars), .7f), 14, AndroidUtilities.bold());
+        buttonText = stars <= 0 ? null : new Text(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) stars), .7f), 14, AndroidUtilities.bold());
         if (buttonBgPaint == null) {
             buttonBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             buttonBgPaint.setColor(0x40000000);
@@ -1951,7 +1951,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
         adapter.notifyDataSetChanged();
     }
 
-    public void drawStarsPrice(Canvas canvas, float l, float t, float r, float b) {
+    public void drawDiamondsPrice(Canvas canvas, float l, float t, float r, float b) {
         if (buttonText == null || buttonBgPaint == null) return;
         final float cx = (l + r) / 2f, cy = (t + b) / 2f;
 

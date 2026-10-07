@@ -13763,7 +13763,7 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public void markMessageAsSendErrorWithParams(TLRPC.Message msg, long errorAllowedPriceStars, long errorNewPriceStars) {
+    public void markMessageAsSendErrorWithParams(TLRPC.Message msg, long errorAllowedPriceDiamonds, long errorNewPriceDiamonds) {
         final long selfId = getUserConfig().getClientUserId();
         storageQueue.postRunnable(() -> {
             SQLiteCursor cursor = null;
@@ -16762,13 +16762,13 @@ public class MessagesStorage extends BaseController {
                 }
             }
         }
-        if (message.action instanceof TLRPC.TL_messageActionStarGift) {
-            final TLRPC.TL_messageActionStarGift action = (TLRPC.TL_messageActionStarGift) message.action;
+        if (message.action instanceof TLRPC.TL_messageActionDiamondGift) {
+            final TLRPC.TL_messageActionDiamondGift action = (TLRPC.TL_messageActionDiamondGift) message.action;
             if (action.gift != null && action.gift.released_by != null) {
                 addLoadPeerInfo(action.gift.released_by, usersToLoad, chatsToLoad);
             }
-        } else if (message.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
-            final TLRPC.TL_messageActionStarGiftUnique action = (TLRPC.TL_messageActionStarGiftUnique) message.action;
+        } else if (message.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
+            final TLRPC.TL_messageActionDiamondGiftUnique action = (TLRPC.TL_messageActionDiamondGiftUnique) message.action;
             if (action.gift != null && action.gift.released_by != null) {
                 addLoadPeerInfo(action.gift.released_by, usersToLoad, chatsToLoad);
             }

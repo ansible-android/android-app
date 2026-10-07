@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 
@@ -55,7 +55,7 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
         textView2 = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
         textView2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         textView2.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.Gift2MessageDiamondsInfoLink), () -> {
-            new StarsIntroActivity.StarsOptionsSheet(context, resourcesProvider).show();
+            new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
         }), true, dp(8f / 3f), dp(1)));
         textView2.setGravity(Gravity.CENTER);
         addView(textView2, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.CENTER, 0, 1, 0, 0));
@@ -74,19 +74,19 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
     private final ColoredImageSpan[] coloredImageSpansTon = new ColoredImageSpan[1];
 
     private void updateBalance(boolean animated) {
-        final StarsController c = StarsController.getInstance(currentAccount, currency);
+        final DiamondsController c = DiamondsController.getInstance(currentAccount, currency);
         final AmountUtils.Amount balance = c.getBalanceAmount();
 
         if (currency == AmountUtils.Currency.STARS) {
-            textView1.setText(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatString(R.string.Gift2MessageDiamondsInfo, LocaleController.formatNumber(balance.asDecimal(), ',')), .60f));
+            textView1.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatString(R.string.Gift2MessageDiamondsInfo, LocaleController.formatNumber(balance.asDecimal(), ',')), .60f));
 
             textView2.setTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
             textView2.setLinkTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
             textView2.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.Gift2MessageDiamondsInfoLink), () -> {
-                new StarsIntroActivity.StarsOptionsSheet(getContext(), resourcesProvider).show();
+                new DiamondsIntroActivity.DiamondsOptionsSheet(getContext(), resourcesProvider).show();
             }), true, dp(8f / 3f), dp(1)));
         } else if (currency == AmountUtils.Currency.TON) {
-            textView1.setText(StarsIntroActivity.replaceStarsWithPlain(true, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.Gift2MessageDiamondsInfoTON, balance.asDecimalString())), .60f, coloredImageSpansTon));
+            textView1.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(true, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.Gift2MessageDiamondsInfoTON, balance.asDecimalString())), .60f, coloredImageSpansTon));
             coloredImageSpansTon[0].setColorKey(Theme.key_undo_cancelColor);
 
             final StringBuilder sb = new StringBuilder(10);
@@ -108,20 +108,20 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         updateBalance(false);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botStarsUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botDiamondsUpdated);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starBalanceUpdated);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botStarsUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botDiamondsUpdated);
     }
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.starBalanceUpdated) {
+        if (id == NotificationCenter.diamondBalanceUpdated) {
             updateBalance(true);
         }
     }

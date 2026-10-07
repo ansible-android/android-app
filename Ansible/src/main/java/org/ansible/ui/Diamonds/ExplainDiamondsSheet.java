@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
@@ -25,9 +25,9 @@ import org.ansible.ui.Components.LinkSpanDrawable;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconRenderer;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconTextureView;
 import org.ansible.ui.Components.Premium.GLIcon.Icon3D;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.RecyclerListView;
-import org.ansible.ui.Components.StarAppsSheet;
+import org.ansible.ui.Components.DiamondAppsSheet;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
@@ -35,14 +35,14 @@ import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
 
-public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
+public class ExplainDiamondsSheet extends BottomSheetWithRecyclerListView {
 
     private UniversalAdapter adapter;
 
     private LinearLayout headerView;
     private FrameLayout buttonContainer;
 
-    public ExplainStarsSheet(Context context) {
+    public ExplainDiamondsSheet(Context context) {
         super(context, null, false, false, false, null);
         topPadding = .1f;
 
@@ -57,14 +57,14 @@ public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
         topView.setClipChildren(false);
         topView.setClipToPadding(false);
 
-        StarParticlesView particlesView = StarsIntroActivity.makeParticlesView(context, 70, 0);
+        DiamondParticlesView particlesView = DiamondsIntroActivity.makeParticlesView(context, 70, 0);
         topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         GLIconTextureView iconView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_DIAMOND);
         iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconView.mRenderer.updateColors();
-        iconView.setStarParticlesView(particlesView);
+        iconView.setDiamondParticlesView(particlesView);
         topView.addView(iconView, LayoutHelper.createFrame(170, 170, Gravity.CENTER, 0, 32, 0, 24));
         iconView.setPaused(false);
 
@@ -116,7 +116,7 @@ public class ExplainStarsSheet extends BottomSheetWithRecyclerListView {
         items.add(UItem.asCustom(headerView));
         items.add(FeatureCell.Factory.of(R.drawable.msg_gift_premium, getString(R.string.ExplainDiamondsFeature1Title), getString(R.string.ExplainDiamondsFeature1Text)));
         items.add(FeatureCell.Factory.of(R.drawable.msg_bot, getString(R.string.ExplainDiamondsFeature2Title), AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.ExplainDiamondsFeature2Text), () -> {
-            new StarAppsSheet(getContext()).show();
+            new DiamondAppsSheet(getContext()).show();
         }), true)));
         items.add(FeatureCell.Factory.of(R.drawable.menu_unlock, getString(R.string.ExplainDiamondsFeature3Title), getString(R.string.ExplainDiamondsFeature3Text)));
         items.add(FeatureCell.Factory.of(R.drawable.menu_feature_paid, getString(R.string.ExplainDiamondsFeature4Title), getString(R.string.ExplainDiamondsFeature4Text)));

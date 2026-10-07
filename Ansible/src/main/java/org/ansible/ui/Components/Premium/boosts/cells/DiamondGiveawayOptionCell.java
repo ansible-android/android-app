@@ -21,7 +21,7 @@ import org.ansible.messenger.BillingController;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;
@@ -30,13 +30,13 @@ import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LoadingSpan;
 import org.ansible.ui.Components.RadioButton;
 
-public class StarGiveawayOptionCell extends FrameLayout {
+public class DiamondGiveawayOptionCell extends FrameLayout {
 
     private final Theme.ResourcesProvider resourcesProvider;
     private RadioButton radioButton;
 
-    private final Drawable starDrawableOutline;
-    private final Drawable starDrawable;
+    private final Drawable diamondDrawableOutline;
+    private final Drawable diamondDrawable;
 
     private AnimatedTextView titleView;
     private AnimatedTextView subtitleView;
@@ -44,13 +44,13 @@ public class StarGiveawayOptionCell extends FrameLayout {
 
     private SpannableString loading1, loading2;
 
-    public StarGiveawayOptionCell(Context context, Theme.ResourcesProvider resourcesProvider) {
+    public DiamondGiveawayOptionCell(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
         this.resourcesProvider = resourcesProvider;
 
-        starDrawableOutline = context.getResources().getDrawable(R.drawable.star_small_outline).mutate();
-        starDrawableOutline.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
-        starDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
+        diamondDrawableOutline = context.getResources().getDrawable(R.drawable.star_small_outline).mutate();
+        diamondDrawableOutline.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+        diamondDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
         setWillNotDraw(false);
 
         titleView = new AnimatedTextView(context);
@@ -82,15 +82,15 @@ public class StarGiveawayOptionCell extends FrameLayout {
         addView(radioButton, LayoutHelper.createFrame(20, 20, Gravity.LEFT | Gravity.CENTER_VERTICAL, 22, 0, 0, 0));
     }
 
-    private TL_stars.TL_starsGiveawayOption currentOption;
-    private long currentOptionStarsPerUser;
+    private TL_diamonds.TL_starsGiveawayOption currentOption;
+    private long currentOptionDiamondsPerUser;
 
-    public void setOption(TL_stars.TL_starsGiveawayOption option, int index, long per_user_stars, boolean selected, boolean needDivider) {
+    public void setOption(TL_diamonds.TL_starsGiveawayOption option, int index, long per_user_stars, boolean selected, boolean needDivider) {
         final boolean animated = currentOption == option;
         radioButton.setChecked(selected, animated);
 
         currentOption = option;
-        currentOptionStarsPerUser = per_user_stars;
+        currentOptionDiamondsPerUser = per_user_stars;
 
         if (animated) {
             subtitleView.cancelAnimation();
@@ -106,15 +106,15 @@ public class StarGiveawayOptionCell extends FrameLayout {
             priceView.setText(BillingController.getInstance().formatCurrency(option.amount, option.currency));
         }
 
-        starsCount = 1 + index;
+        diamondsCount = 1 + index;
         if (!animated) {
-            animatedStarsCount.set(starsCount, true);
+            animatedDiamondsCount.set(diamondsCount, true);
         }
         invalidate();
 
     }
 
-    public TL_stars.TL_starsGiveawayOption getOption() {
+    public TL_diamonds.TL_starsGiveawayOption getOption() {
         return currentOption;
     }
 
@@ -126,31 +126,31 @@ public class StarGiveawayOptionCell extends FrameLayout {
         );
     }
 
-    private int starsCount;
-    private final AnimatedFloat animatedStarsCount = new AnimatedFloat(this, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private int diamondsCount;
+    private final AnimatedFloat animatedDiamondsCount = new AnimatedFloat(this, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
-        final float starsCount = animatedStarsCount.set(this.starsCount);
+        final float diamondsCount = animatedDiamondsCount.set(this.diamondsCount);
         final float rtl = 1f; // LocaleController.isRTL ? -1f : 1f;
         final float wsize = dp(24), hsize = dp(24);
         final float pad = dp(2.5f);
         final float sx = dp(64);
         final float sy = dp(8);
-        for (int i = (int) Math.ceil(starsCount) - 1; i >= 0; --i) {
-            final float alpha = Utilities.clamp(starsCount - i, 1f, 0f);
+        for (int i = (int) Math.ceil(diamondsCount) - 1; i >= 0; --i) {
+            final float alpha = Utilities.clamp(diamondsCount - i, 1f, 0f);
             final float x = sx + (i - 1 - (1f - alpha)) * pad * rtl;
             final float y = sy;
-            starDrawableOutline.setBounds((int) x, (int) y, (int) (x + wsize), (int) (y + hsize));
-            starDrawableOutline.setAlpha((int) (0xFF * alpha));
-            starDrawableOutline.draw(canvas);
-            starDrawable.setBounds((int) x, (int) y, (int) (x + wsize), (int) (y + hsize));
-            starDrawable.setAlpha((int) (0xFF * alpha));
-            starDrawable.draw(canvas);
+            diamondDrawableOutline.setBounds((int) x, (int) y, (int) (x + wsize), (int) (y + hsize));
+            diamondDrawableOutline.setAlpha((int) (0xFF * alpha));
+            diamondDrawableOutline.draw(canvas);
+            diamondDrawable.setBounds((int) x, (int) y, (int) (x + wsize), (int) (y + hsize));
+            diamondDrawable.setAlpha((int) (0xFF * alpha));
+            diamondDrawable.draw(canvas);
         }
-        titleView.setTranslationX(dp(22) + pad * starsCount);
+        titleView.setTranslationX(dp(22) + pad * diamondsCount);
 
     }
 }

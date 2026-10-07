@@ -198,8 +198,8 @@ import org.ansible.ui.MultiContactsSelectorBottomSheet;
 import org.ansible.ui.PhotoViewer;
 import org.ansible.ui.PremiumPreviewFragment;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.StickersActivity;
 import org.ansible.ui.Stories.HighlightMessageSheet;
 import org.ansible.ui.Stories.recorder.CaptionContainerView;
@@ -295,7 +295,7 @@ public class ChatActivityEnterView extends FrameLayout implements
 
         default void onContextMenuClose() {}
 
-        void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars);
+        void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds);
 
         void needSendTyping();
 
@@ -2969,8 +2969,8 @@ public class ChatActivityEnterView extends FrameLayout implements
                                         slideText.setEnabled(false);
                                     }
                                     delegate.toggleVideoRecordingPause();
-                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payStars -> {
-                                        sendMessageInternal(true, 0, 0, payStars, false);
+                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payDiamonds -> {
+                                        sendMessageInternal(true, 0, 0, payDiamonds, false);
                                     });
                                     return true;
                                 }
@@ -2996,8 +2996,8 @@ public class ChatActivityEnterView extends FrameLayout implements
                                             slideText.setEnabled(false);
                                         }
                                     }
-                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payStars -> {
-                                        sendMessageInternal(true, 0, 0, payStars, false);
+                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payDiamonds -> {
+                                        sendMessageInternal(true, 0, 0, payDiamonds, false);
                                     });
                                     return true;
                                 }
@@ -3091,8 +3091,8 @@ public class ChatActivityEnterView extends FrameLayout implements
                                         slideText.setEnabled(false);
                                     }
                                     delegate.toggleVideoRecordingPause();
-                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payStars -> {
-                                        sendMessageInternal(true, 0, 0, payStars, false);
+                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payDiamonds -> {
+                                        sendMessageInternal(true, 0, 0, payDiamonds, false);
                                     });
                                     return true;
                                 }
@@ -3111,8 +3111,8 @@ public class ChatActivityEnterView extends FrameLayout implements
                                     if (slideText != null) {
                                         slideText.setEnabled(false);
                                     }
-                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payStars -> {
-                                        sendMessageInternal(true, 0, 0, payStars, false);
+                                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, 1, payDiamonds -> {
+                                        sendMessageInternal(true, 0, 0, payDiamonds, false);
                                     });
                                     return true;
                                 }
@@ -3544,7 +3544,7 @@ public class ChatActivityEnterView extends FrameLayout implements
 
     private long paidMessagesPrice;
     public void updateSendButtonPaid() {
-        long paidMessagesPrice = getStarsPrice();
+        long paidMessagesPrice = getDiamondsPrice();
         if (paidMessagesPrice > 0) {
             paidMessagesPrice *= getMessagesCount();
         }
@@ -3561,7 +3561,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                 oldSendButton.setVisibility(View.GONE);
             }
             if (paidMessagesPrice > 0 || isLiveComment) {
-                sendButton.setStarsPrice(paidMessagesPrice, 1);
+                sendButton.setDiamondsPrice(paidMessagesPrice, 1);
             }
             updateFieldRight(lastAttachVisible);
         }
@@ -3602,10 +3602,10 @@ public class ChatActivityEnterView extends FrameLayout implements
         sendButton.setOnLongClickListener(listener != null ? listener : this::onSendLongClick);
     }
 
-    public long getStarsPrice() {
+    public long getDiamondsPrice() {
         return parentFragment != null ?
-                parentFragment.getMessagesController().getSendPaidMessagesStars(parentFragment.getDialogId()) :
-                MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialog_id);
+                parentFragment.getMessagesController().getSendPaidMessagesDiamonds(parentFragment.getDialogId()) :
+                MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialog_id);
     }
 
     public boolean areLiveCommentsFree() {
@@ -5177,7 +5177,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                             final SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(command, dialog_id, replyingMessageObject, getThreadMessage(), null, false, null, null, null, true, 0, 0, null, false);
                             params.sendMessageChatArguments = parentFragment != null ? parentFragment.getMessageChatSendParams() : null;
                             params.effect_id = effectId;
-                            params.payStars = stars;
+                            params.payDiamonds = stars;
                             params.monoForumPeer = getSendMonoForumPeerId();
                             params.suggestionParams = getSendMessageSuggestionParams();
                             SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
@@ -6783,9 +6783,9 @@ public class ChatActivityEnterView extends FrameLayout implements
         }
         updateSendButtonPaid();
         final boolean isPostSuggestions = parentFragment != null && parentFragment.getChatMode() == ChatActivity.MODE_SUGGESTIONS && parentFragment.isSubscriberSuggestions;
-        long paidMessagesStarsPrice = (parentFragment != null ? parentFragment.getMessagesController().getSendPaidMessagesStars(parentFragment.getDialogId()) : 0);
-        if (paidMessagesStarsPrice > 0) {
-            paidMessagesStarsPrice *= getMessagesCount();
+        long paidMessagesDiamondsPrice = (parentFragment != null ? parentFragment.getMessagesController().getSendPaidMessagesDiamonds(parentFragment.getDialogId()) : 0);
+        if (paidMessagesDiamondsPrice > 0) {
+            paidMessagesDiamondsPrice *= getMessagesCount();
         }
 
         final int chatActivityMode = parentFragment != null ? parentFragment.getChatMode() : -1;
@@ -6801,8 +6801,8 @@ public class ChatActivityEnterView extends FrameLayout implements
                 messageEditText.setHintText(getString(R.string.BusinessRepliesEnter));
             }
         } else if (isPostSuggestions) {
-            final CharSequence hint = paidMessagesStarsPrice > 0 ?
-                StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.SuggestPostForDiamonds, LocaleController.formatNumber((int) paidMessagesStarsPrice, ','), spans)):
+            final CharSequence hint = paidMessagesDiamondsPrice > 0 ?
+                DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.SuggestPostForDiamonds, LocaleController.formatNumber((int) paidMessagesDiamondsPrice, ','), spans)):
                 LocaleController.formatString(R.string.SuggestPostForFree);
             messageEditText.setHintText(hint);
             if (spans[0] != null) {
@@ -6814,8 +6814,8 @@ public class ChatActivityEnterView extends FrameLayout implements
             messageEditText.setHintText(replyingMessageObject.messageOwner.reply_markup.placeholder, animated);
         } else if (editingMessageObject != null) {
             messageEditText.setHintText(editingCaption ? getString(R.string.Caption) : getString(R.string.TypeMessage));
-        } else if (paidMessagesStarsPrice > 0) {
-            messageEditText.setHintText(StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.TypeMessageForDiamonds, LocaleController.formatNumber((int) paidMessagesStarsPrice, ',')), spans));
+        } else if (paidMessagesDiamondsPrice > 0) {
+            messageEditText.setHintText(DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.TypeMessageForDiamonds, LocaleController.formatNumber((int) paidMessagesDiamondsPrice, ',')), spans));
             if (spans[0] != null) {
                 spans[0].spaceScaleX = 0.9f;
             }
@@ -7239,7 +7239,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         }
     }
 
-    protected boolean sendMessageInternal(boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars, boolean allowConfirm) {
+    protected boolean sendMessageInternal(boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds, boolean allowConfirm) {
         final boolean allowConfirmFinal = allowConfirm && !animatorEphemeralMessageVisibility.getValue();
 
         final Runnable send = () -> {
@@ -7264,13 +7264,13 @@ public class ChatActivityEnterView extends FrameLayout implements
                 }
             }
             if (allowConfirmFinal && showConfirmAlert(() -> {
-                sendMessageInternal(notify, scheduleDate, scheduleRepeatPeriod, payStars, false);
+                sendMessageInternal(notify, scheduleDate, scheduleRepeatPeriod, payDiamonds, false);
             })) {
                 return;
             }
             dismissSendPreviewSent = true;
             if (videoToSendMessageObject != null) {
-                delegate.needStartRecordVideo(4, notify, scheduleDate, 0, voiceOnce ? 0x7FFFFFFF : 0, effectId, payStars);
+                delegate.needStartRecordVideo(4, notify, scheduleDate, 0, voiceOnce ? 0x7FFFFFFF : 0, effectId, payDiamonds);
                 sendButton.setEffect(effectId = 0);
                 hideRecordedAudioPanel(true);
                 checkSendButton(true);
@@ -7315,7 +7315,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                 SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(audioToSend, null, audioToSendPath, dialog_id, replyingMessageObject, getThreadMessage(), null, null, null, null, notify, scheduleDate, 0, voiceOnce ? 0x7FFFFFFF : 0, null, null, false);
                 params.sendMessageChatArguments = parentFragment != null ? parentFragment.getMessageChatSendParams() : null;
                 params.effect_id = effectId;
-                params.payStars = payStars;
+                params.payDiamonds = payDiamonds;
                 params.monoForumPeer = getSendMonoForumPeerId();
                 params.suggestionParams = getSendMessageSuggestionParams();
                 sendButton.setEffect(effectId = 0);
@@ -7327,7 +7327,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                 applyStoryToSendMessageParams(params);
                 SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
                 if (delegate != null) {
-                    delegate.onMessageSend(null, notify, scheduleDate, scheduleRepeatPeriod, payStars);
+                    delegate.onMessageSend(null, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
                 }
                 hideRecordedAudioPanel(true);
                 checkSendButton(true);
@@ -7339,7 +7339,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                 millisecondsRecorded = 0;
                 return;
             } else if (richDraftActive && richDraftMessage != null) {
-                sendRichDraft(notify, scheduleDate, scheduleRepeatPeriod, payStars);
+                sendRichDraft(notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
                 return;
             }
             CharSequence message = messageEditText == null ? "" : messageEditText.getTextToUse();
@@ -7358,13 +7358,13 @@ public class ChatActivityEnterView extends FrameLayout implements
             if (checkPremiumAnimatedEmoji(currentAccount, dialog_id, parentFragment, null, message)) {
                 return;
             }
-            if (processSendingText(message, notify, scheduleDate, scheduleRepeatPeriod, payStars)) {
+            if (processSendingText(message, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds)) {
                 if (delegate.hasForwardingMessages() || (scheduleDate != 0 && !isInScheduleMode()) || isInScheduleMode()) {
                     if (messageEditText != null) {
                         messageEditText.setText("");
                     }
                     if (delegate != null) {
-                        delegate.onMessageSend(message, notify, scheduleDate, scheduleRepeatPeriod, payStars);
+                        delegate.onMessageSend(message, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
                     }
                 } else {
                     messageTransitionIsRunning = false;
@@ -7375,20 +7375,20 @@ public class ChatActivityEnterView extends FrameLayout implements
                             messageEditText.setText("");
                         }
                         if (delegate != null) {
-                            delegate.onMessageSend(message, notify, scheduleDate, scheduleRepeatPeriod, payStars);
+                            delegate.onMessageSend(message, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
                         }
                     }, 200);
                 }
                 lastTypingTimeSend = 0;
             } else if (forceShowSendButton) {
                 if (delegate != null) {
-                    delegate.onMessageSend(null, notify, scheduleDate, scheduleRepeatPeriod, payStars);
+                    delegate.onMessageSend(null, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
                 }
             }
             updateSendButtonPaid();
         };
         if (allowConfirmFinal) {
-            boolean alertShown = AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, getMessagesCount(), starsPrice -> sendMessageInternal(notify, scheduleDate, scheduleRepeatPeriod, starsPrice, false), payStars);
+            boolean alertShown = AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialog_id, getMessagesCount(), diamondsPrice -> sendMessageInternal(notify, scheduleDate, scheduleRepeatPeriod, diamondsPrice, false), payDiamonds);
             if (alertShown && sendButtonVisible) {
                 if (isInVideoMode()) {
                     if (delegate.isVideoRecordingPaused())
@@ -7609,7 +7609,7 @@ public class ChatActivityEnterView extends FrameLayout implements
             final MessageSuggestionParams params = parentFragment != null && parentFragment.messageSuggestionParams != null ?
                 parentFragment.messageSuggestionParams : MessageSuggestionParams.of(editingMessageObject.messageOwner.suggested_post);
 
-            if (!StarsController.isEnoughAmount(currentAccount, params.amount)) {
+            if (!DiamondsController.isEnoughAmount(currentAccount, params.amount)) {
                 if (parentFragment != null) {
                     parentFragment.showSuggestionOfferForEditMessage(params);
                 }
@@ -7732,7 +7732,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         setEditingMessageObject(null, null, false);
     }
 
-    public boolean processSendingText(CharSequence text, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars) {
+    public boolean processSendingText(CharSequence text, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds) {
         if (replyingQuote != null && parentFragment != null && replyingQuote.outdated) {
             parentFragment.showQuoteMessageUpdate();
             return false;
@@ -7822,7 +7822,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                 SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(message[0].toString(), dialog_id, replyingMessageObject, replyToTopMsg, messageWebPage, messageWebPageSearch, entities, null, null, notify, scheduleDate, scheduleRepeatPeriod, sendAnimationData, updateStickersOrder);
                 params.sendMessageChatArguments = parentFragment != null ? parentFragment.getMessageChatSendParams() : null;
                 params.effect_id = effectId;
-                params.payStars = payStars;
+                params.payDiamonds = payDiamonds;
                 params.monoForumPeer = getSendMonoForumPeerId();
                 params.suggestionParams = getSendMessageSuggestionParams();
                 sendButton.setEffect(effectId = 0);
@@ -8080,7 +8080,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                     }
                 }
             }
-        } else if (message.length() > 0 || forceShowSendButton || richDraftActive || audioToSend != null || videoToSendMessageObject != null || slowModeTimer == Integer.MAX_VALUE && !isSlowModeIgnored() || isLiveComment && getStarsPrice() > 0 || animatorIsBlockedByStreaming.getValue()) {
+        } else if (message.length() > 0 || forceShowSendButton || richDraftActive || audioToSend != null || videoToSendMessageObject != null || slowModeTimer == Integer.MAX_VALUE && !isSlowModeIgnored() || isLiveComment && getDiamondsPrice() > 0 || animatorIsBlockedByStreaming.getValue()) {
             shownSendButton = true;
             final String caption = messageEditText == null ? null : messageEditText.getCaption();
             boolean showBotButton = caption != null && (getSendButtonInternal().getVisibility() == VISIBLE || expandStickersButton != null && expandStickersButton.getVisibility() == VISIBLE);
@@ -9911,11 +9911,11 @@ public class ChatActivityEnterView extends FrameLayout implements
             doneButton.setOnClickListener(view -> doneEditingMessage());
 
             if (editingMessageObject.needResendWhenEdit() && paidMessagesPrice > 0) {
-                doneButton.setStarsPrice(paidMessagesPrice, 1, true);
+                doneButton.setDiamondsPrice(paidMessagesPrice, 1, true);
                 doneButton.setLayoutParams(LayoutHelper.createFrame(DEFAULT_HEIGHT, DEFAULT_HEIGHT, Gravity.BOTTOM | Gravity.RIGHT));
                 doneButton.requestLayout();
             } else {
-                doneButton.setStarsPrice(0, 1, true);
+                doneButton.setDiamondsPrice(0, 1, true);
                 doneButton.setLayoutParams(LayoutHelper.createFrame(DEFAULT_HEIGHT, DEFAULT_HEIGHT, Gravity.BOTTOM | Gravity.RIGHT));
                 doneButton.requestLayout();
             }
@@ -10802,7 +10802,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         parentFragment.presentFragment(editor);
     }
 
-    private void sendRichDraft(boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars) {
+    private void sendRichDraft(boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds) {
         final TL_iv.RichMessage rich = richDraftMessage;
         if (rich == null) {
             return;
@@ -10823,13 +10823,13 @@ public class ChatActivityEnterView extends FrameLayout implements
             parentFragment != null ? parentFragment.getMessageChatSendParams() : null,
             effectId,
             getSendMonoForumPeerId(),
-            payStars
+            payDiamonds
         );
         sendButton.setEffect(effectId = 0);
         messageEditText.setText("");
         clearRichDraft();
         if (delegate != null) {
-            delegate.onMessageSend(null, notify, scheduleDate, scheduleRepeatPeriod, payStars);
+            delegate.onMessageSend(null, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
         }
         checkSendButton(true);
     }
@@ -14801,7 +14801,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         private float ephemeralFactor;
         private float sameWidthFactor;
 
-        private long starsPrice;
+        private long diamondsPrice;
         private int messagesCount;
         private boolean hidePrice;
         private final AnimatedTextView.AnimatedTextDrawable priceText;
@@ -14980,20 +14980,20 @@ public class ChatActivityEnterView extends FrameLayout implements
         }
 
         private final ColoredImageSpan[] spans = new ColoredImageSpan[1];
-        public void setStarsPrice(long price, int count) {
-            setStarsPrice(price, count, true);
+        public void setDiamondsPrice(long price, int count) {
+            setDiamondsPrice(price, count, true);
         }
-        public void setStarsPrice(long price, int count, boolean animated) {
-            if (starsPrice == price && messagesCount == count) return;
-            starsPrice = price;
+        public void setDiamondsPrice(long price, int count, boolean animated) {
+            if (diamondsPrice == price && messagesCount == count) return;
+            diamondsPrice = price;
             messagesCount = count;
             if (price > 0) {
-                priceText.setText(StarsIntroActivity.replaceStars("⭐️" + LocaleController.formatNumber(price * Math.max(1, messagesCount), ','), spans), animated);
+                priceText.setText(DiamondsIntroActivity.replaceDiamonds("⭐️" + LocaleController.formatNumber(price * Math.max(1, messagesCount), ','), spans), animated);
             } else {
                 priceText.setText("", animated);
             }
             if (!animated) {
-                animatedPriceVisible.force(starsPrice > 0);
+                animatedPriceVisible.force(diamondsPrice > 0);
             } else {
                 invalidate();
             }
@@ -15014,7 +15014,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         }
 
         public boolean isOpen() {
-            return starsPrice > 0;
+            return diamondsPrice > 0;
         }
 
         public boolean isInScheduleMode() {
@@ -15099,7 +15099,7 @@ public class ChatActivityEnterView extends FrameLayout implements
             final float loadingShown = this.loadingAnimatedShown.set(this.loadingShown);
 
             final float openProgress = open.set(isOpen());
-            final float priceProgress = animatedPriceVisible.set(starsPrice > 0 && !hidePrice) * (1f - ephemeralFactor);
+            final float priceProgress = animatedPriceVisible.set(diamondsPrice > 0 && !hidePrice) * (1f - ephemeralFactor);
             final float appear = this.appear.set(1);
             if (openProgress < 1) {
                 canvas.save();
@@ -15308,7 +15308,7 @@ public class ChatActivityEnterView extends FrameLayout implements
 
         public int width(int h) {
             final float openProgress = isOpen() ? 1.0f : 0.0f;
-            final float priceProgress = starsPrice > 0 ? 1.0f : 0.0f;
+            final float priceProgress = diamondsPrice > 0 ? 1.0f : 0.0f;
             return (int) lerp(circlePadX + getCircleWidth() + circlePadX, dp(9 + 9) + dp(isNewDesignSendButton ? (10 + 10) : (11 + 11)) + priceText.getAnimateToWidth(), priceProgress * openProgress);
         }
 
@@ -15317,7 +15317,7 @@ public class ChatActivityEnterView extends FrameLayout implements
         }
 
         public int height(int h) {
-            final float priceProgress = starsPrice > 0 ? 1.0f : 0.0f;
+            final float priceProgress = diamondsPrice > 0 ? 1.0f : 0.0f;
             return (int) lerp(circlePadY + getCircleHeight() + circlePadY, dp(32), priceProgress);
         }
 
@@ -15376,7 +15376,7 @@ public class ChatActivityEnterView extends FrameLayout implements
             btn.count.setText(this.count.getText(), false);
             btn.countBounceScale = countBounceScale;
             btn.setEmoji(emojiDrawable.getDrawable());
-            btn.setStarsPrice(starsPrice, messagesCount);
+            btn.setDiamondsPrice(diamondsPrice, messagesCount);
             btn.open.force(open.get());
             btn.animatedPriceVisible.force(animatedPriceVisible.get());
             btn.setCircleSize(circleWidth, circleHeight);

@@ -135,7 +135,7 @@ public class TL_payments {
         public int commission_permille;
         public int duration_months;
         public int end_date;
-        public TL_stars.StarsAmount daily_revenue_per_user = TL_stars.StarsAmount.ofStars(0);
+        public TL_diamonds.StarsAmount daily_revenue_per_user = TL_diamonds.StarsAmount.ofDiamonds(0);
 
         public static starRefProgram TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             final starRefProgram result = starRefProgram.constructor != constructor ? null : new starRefProgram();
@@ -154,7 +154,7 @@ public class TL_payments {
                 end_date = stream.readInt32(exception);
             }
             if (hasFlag(flags, 4)) {
-                daily_revenue_per_user = TL_stars.StarsAmount.TLdeserialize(stream, stream.readInt32(exception), exception);
+                daily_revenue_per_user = TL_diamonds.StarsAmount.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
         }
 
@@ -326,7 +326,7 @@ public class TL_payments {
     public static class TL_starGiftActiveAuctions extends StarGiftActiveAuctions {
         public static final int constructor = 0xAEF6ABBC;
 
-        public ArrayList<TL_stars.TL_StarGiftActiveAuctionState> auctions = new ArrayList<>();
+        public ArrayList<TL_diamonds.TL_StarGiftActiveAuctionState> auctions = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
 
@@ -340,7 +340,7 @@ public class TL_payments {
 
         @Override
         public void readParams(InputSerializedData stream, boolean exception) {
-            auctions = Vector.deserialize(stream, TL_stars.TL_StarGiftActiveAuctionState::TLdeserialize, exception);
+            auctions = Vector.deserialize(stream, TL_diamonds.TL_StarGiftActiveAuctionState::TLdeserialize, exception);
             users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
             chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
         }
@@ -349,7 +349,7 @@ public class TL_payments {
     public static class TL_StarGiftAuctionAcquiredGifts extends TLObject {
         public static final int constructor = 0x7D5BD1F0;
 
-        public ArrayList<TL_stars.TL_StarGiftAuctionAcquiredGift> gifts = new ArrayList<>();
+        public ArrayList<TL_diamonds.TL_StarGiftAuctionAcquiredGift> gifts = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
 
@@ -363,7 +363,7 @@ public class TL_payments {
 
         @Override
         public void readParams(InputSerializedData stream, boolean exception) {
-            gifts = Vector.deserialize(stream, TL_stars.TL_StarGiftAuctionAcquiredGift::TLdeserialize, exception);
+            gifts = Vector.deserialize(stream, TL_diamonds.TL_StarGiftAuctionAcquiredGift::TLdeserialize, exception);
             users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
             chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
         }
@@ -377,9 +377,9 @@ public class TL_payments {
     public static class TL_StarGiftAuctionState extends TLObject {
         public static final int constructor = 0x6B39F4EC;
 
-        public TL_stars.StarGift gift;
-        public TL_stars.StarGiftAuctionState state;
-        public TL_stars.TL_StarGiftAuctionUserState user_state;
+        public TL_diamonds.StarGift gift;
+        public TL_diamonds.StarGiftAuctionState state;
+        public TL_diamonds.TL_StarGiftAuctionUserState user_state;
         public int timeout;
         public ArrayList<TLRPC.User> users;
         public ArrayList<TLRPC.Chat> chats;
@@ -397,9 +397,9 @@ public class TL_payments {
 
         @Override
         public void readParams(InputSerializedData stream, boolean exception) {
-            gift = TL_stars.StarGift.TLdeserialize(stream, stream.readInt32(exception), exception);
-            state = TL_stars.StarGiftAuctionState.TLdeserialize(stream, stream.readInt32(exception), exception);
-            user_state = TL_stars.TL_StarGiftAuctionUserState.TLdeserialize(stream, stream.readInt32(exception), exception);
+            gift = TL_diamonds.StarGift.TLdeserialize(stream, stream.readInt32(exception), exception);
+            state = TL_diamonds.StarGiftAuctionState.TLdeserialize(stream, stream.readInt32(exception), exception);
+            user_state = TL_diamonds.TL_StarGiftAuctionUserState.TLdeserialize(stream, stream.readInt32(exception), exception);
             timeout = stream.readInt32(exception);
             users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
             chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
@@ -411,10 +411,10 @@ public class TL_payments {
         }
     }
 
-    public static class TL_getStarGiftAuctionState extends TLMethod<TL_StarGiftAuctionState> {
+    public static class TL_getDiamondGiftAuctionState extends TLMethod<TL_StarGiftAuctionState> {
         public static final int constructor = 0x5c9ff4d6;
 
-        public TL_stars.InputStarGiftAuction auction;
+        public TL_diamonds.InputStarGiftAuction auction;
         public int version;
 
         @Override
@@ -430,7 +430,7 @@ public class TL_payments {
         }
     }
 
-    public static class TL_getStarGiftAuctionAcquiredGifts extends TLMethod<TL_StarGiftAuctionAcquiredGifts> {
+    public static class TL_getDiamondGiftAuctionAcquiredGifts extends TLMethod<TL_StarGiftAuctionAcquiredGifts> {
         public static final int constructor = 0x6ba2cbec;
         public long gift_id;
 
@@ -446,7 +446,7 @@ public class TL_payments {
         }
     }
 
-    public static class TL_getStarGiftActiveAuctions extends TLMethod<StarGiftActiveAuctions> {
+    public static class TL_getDiamondGiftActiveAuctions extends TLMethod<StarGiftActiveAuctions> {
         public static final int constructor = 0xa5d0514d;
         public long hash;
 
@@ -462,7 +462,7 @@ public class TL_payments {
         }
     }
 
-    public static class TL_resolveStarGiftOffer extends TLMethod<TLRPC.Updates> {
+    public static class TL_resolveDiamondGiftOffer extends TLMethod<TLRPC.Updates> {
         public static final int constructor = 0xe9ce781c;
 
         public boolean decline;
@@ -483,13 +483,13 @@ public class TL_payments {
         }
     }
 
-    public static class TL_sendStarGiftOffer extends TLMethod<TLRPC.Updates> {
+    public static class TL_sendDiamondGiftOffer extends TLMethod<TLRPC.Updates> {
         public static final int constructor = 0x8fb86b41;
 
         public int flags;
         public TLRPC.InputPeer peer;
         public String slug;
-        public TL_stars.StarsAmount price;
+        public TL_diamonds.StarsAmount price;
         public int duration;
         public long random_id;
         public long allow_paid_stars;

@@ -44,13 +44,13 @@ import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkSpanDrawable;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconRenderer;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconTextureView;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 
 @SuppressLint("ViewConstructor")
 public class HeaderCell extends FrameLayout {
 
     private final GLIconTextureView iconTextureView;
-    private final StarParticlesView starParticlesView;
+    private final DiamondParticlesView diamondParticlesView;
     private final TextView titleView;
     private final LinkSpanDrawable.LinksTextView subtitleView;
     private final Theme.ResourcesProvider resourcesProvider;
@@ -87,7 +87,7 @@ public class HeaderCell extends FrameLayout {
         iconTextureView.mRenderer.updateColors();
         linearLayout.addView(iconTextureView, LayoutHelper.createLinear(160, 160, Gravity.CENTER_HORIZONTAL));
 
-        starParticlesView = new StarParticlesView(context) {
+        diamondParticlesView = new DiamondParticlesView(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -97,26 +97,26 @@ public class HeaderCell extends FrameLayout {
             @Override
             protected void onAttachedToWindow() {
                 super.onAttachedToWindow();
-                starParticlesView.setPaused(false);
+                diamondParticlesView.setPaused(false);
             }
 
             @Override
             protected void onDetachedFromWindow() {
                 super.onDetachedFromWindow();
-                starParticlesView.setPaused(true);
+                diamondParticlesView.setPaused(true);
             }
         };
 
         paints = new Paint[20];
         updatePaints(0);
 
-        starParticlesView.drawable.useGradient = false;
-        starParticlesView.drawable.useBlur = false;
-        starParticlesView.drawable.forceMaxAlpha = true;
-        starParticlesView.drawable.checkBounds = true;
-        starParticlesView.drawable.getPaint = i -> paints[i % paints.length];
-        starParticlesView.drawable.init();
-        iconTextureView.setStarParticlesView(starParticlesView);
+        diamondParticlesView.drawable.useGradient = false;
+        diamondParticlesView.drawable.useBlur = false;
+        diamondParticlesView.drawable.forceMaxAlpha = true;
+        diamondParticlesView.drawable.checkBounds = true;
+        diamondParticlesView.drawable.getPaint = i -> paints[i % paints.length];
+        diamondParticlesView.drawable.init();
+        iconTextureView.setDiamondParticlesView(diamondParticlesView);
 
         titleView = new TextView(context);
         titleView.setTypeface(AndroidUtilities.bold());
@@ -136,7 +136,7 @@ public class HeaderCell extends FrameLayout {
         linearLayout.addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 24, 8, 24, 18));
 
         setClipChildren(false);
-        addView(starParticlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 234, Gravity.TOP));
+        addView(diamondParticlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 234, Gravity.TOP));
         addView(linearLayout);
         setWillNotDraw(false);
     }
@@ -196,12 +196,12 @@ public class HeaderCell extends FrameLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         float y = iconTextureView.getTop() + iconTextureView.getMeasuredHeight() / 2f;
-        starParticlesView.setTranslationY(y - starParticlesView.getMeasuredHeight() / 2f);
+        diamondParticlesView.setTranslationY(y - diamondParticlesView.getMeasuredHeight() / 2f);
     }
 
     public void setPaused(boolean value) {
         iconTextureView.setPaused(value);
-        starParticlesView.setPaused(value);
+        diamondParticlesView.setPaused(value);
     }
 
     private ValueAnimator goldenAnimator;

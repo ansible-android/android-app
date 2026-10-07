@@ -22,7 +22,7 @@ import org.ansible.messenger.MessagesStorage;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
 import org.ansible.ui.ActionBar.AlertDialog;
@@ -39,7 +39,7 @@ import org.ansible.ui.Components.LinkActionView;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 
@@ -55,9 +55,9 @@ public class PostSuggestionsEditActivity extends BaseFragment {
     private ActionBarMenuItem doneButton;
 
     private final boolean initialSuggestionsEnabled;
-    private final long initialSuggestionsStarsCount;
+    private final long initialSuggestionsDiamondsCount;
     private boolean isSuggestionsEnabled;
-    private long suggestionsStarsCount;
+    private long suggestionsDiamondsCount;
 
     public PostSuggestionsEditActivity(long chatId) {
         currentChatId = chatId;
@@ -72,9 +72,9 @@ public class PostSuggestionsEditActivity extends BaseFragment {
 
         final long stars = monoforumChat == null ? 0 : monoforumChat.send_paid_messages_stars;
         initialSuggestionsEnabled = currentChat != null && currentChat.broadcast_messages_allowed;
-        initialSuggestionsStarsCount = Utilities.clamp(initialSuggestionsEnabled ? stars : getMessagesController().config.starsPaidMessagesChannelAmountDefault.get(), getMessagesController().starsPaidMessageAmountMax, 0);
+        initialSuggestionsDiamondsCount = Utilities.clamp(initialSuggestionsEnabled ? stars : getMessagesController().config.diamondsPaidMessagesChannelAmountDefault.get(), getMessagesController().diamondsPaidMessageAmountMax, 0);
         isSuggestionsEnabled = initialSuggestionsEnabled;
-        suggestionsStarsCount = initialSuggestionsStarsCount;
+        suggestionsDiamondsCount = initialSuggestionsDiamondsCount;
     }
 
     @Override
@@ -129,17 +129,17 @@ public class PostSuggestionsEditActivity extends BaseFragment {
 
         if (isSuggestionsEnabled) {
             items.add(UItem.asHeader(getString(R.string.PriceForEachSuggestion)));
-            final int[] steps = SlideIntChooseView.cut(new int[]{ 0, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().starsPaidMessageAmountMax);
+            final int[] steps = SlideIntChooseView.cut(new int[]{ 0, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().diamondsPaidMessageAmountMax);
             final SlideIntChooseView.Options options = SlideIntChooseView.Options.make(1, steps, 20, (type, val) -> {
                 if (type == 0) {
-                    return StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("Diamonds", val), 0.66f);
+                    return DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatPluralStringComma("Diamonds", val), 0.66f);
                 }
                 return LocaleController.formatNumber(val, ',');
             });
-            slideView.set((int) Utilities.clamp(suggestionsStarsCount, 10000, 0), options, newValue -> {
-                suggestionsStarsCount = newValue;
+            slideView.set((int) Utilities.clamp(suggestionsDiamondsCount, 10000, 0), options, newValue -> {
+                suggestionsDiamondsCount = newValue;
                 final View view = listView.findViewByItemId(4);
-                if (view instanceof TextInfoPrivacyCell && ((TextInfoPrivacyCell) view).getFixedSize() <= 0 && suggestionsStarsCount > 0) {
+                if (view instanceof TextInfoPrivacyCell && ((TextInfoPrivacyCell) view).getFixedSize() <= 0 && suggestionsDiamondsCount > 0) {
                     ((TextInfoPrivacyCell) view).setText(getIncomeInfo());
                 } else {
                     listView.adapter.update(true);
@@ -147,7 +147,7 @@ public class PostSuggestionsEditActivity extends BaseFragment {
                 checkDone(true);
             });
             items.add(UItem.asCustom(3, slideView));
-            items.add(UItem.asShadow(4, suggestionsStarsCount > 0 ? getIncomeInfo() : null));
+            items.add(UItem.asShadow(4, suggestionsDiamondsCount > 0 ? getIncomeInfo() : null));
 
             final TLRPC.Chat chat = getMessagesController().getChat(currentChatId);
             if (chat != null && !TextUtils.isEmpty(ChatObject.getPublicUsername(chat))) {
@@ -162,9 +162,9 @@ public class PostSuggestionsEditActivity extends BaseFragment {
     }
 
     private CharSequence getIncomeInfo() {
-        final int percent = getMessagesController().starsPaidMessageCommissionPermille;
+        final int percent = getMessagesController().diamondsPaidMessageCommissionPermille;
         final float revenuePercent = percent / 1000.0f;
-        final String income = String.valueOf((int) ((suggestionsStarsCount * revenuePercent / 1000.0 * getMessagesController().starsUsdWithdrawRate1000)) / 100.0);
+        final String income = String.valueOf((int) ((suggestionsDiamondsCount * revenuePercent / 1000.0 * getMessagesController().diamondsUsdWithdrawRate1000)) / 100.0);
         return formatString(R.string.PostSuggestionsPriceInfo2, percents(percent), income);
     }
 
@@ -188,9 +188,9 @@ public class PostSuggestionsEditActivity extends BaseFragment {
     }
 
 
-    private MessagesStorage.LongCallback starsCallback;
+    private MessagesStorage.LongCallback diamondsCallback;
     public PostSuggestionsEditActivity setOnApplied(MessagesStorage.LongCallback stars) {
-        this.starsCallback = stars;
+        this.diamondsCallback = stars;
         return this;
     }
 
@@ -202,9 +202,9 @@ public class PostSuggestionsEditActivity extends BaseFragment {
         }
 
         doneButtonDrawable.animateToProgress(1f);
-        final TL_stars.updatePaidMessagesPrice req = new TL_stars.updatePaidMessagesPrice();
+        final TL_diamonds.updatePaidMessagesPrice req = new TL_diamonds.updatePaidMessagesPrice();
         req.channel = getMessagesController().getInputChannel(currentChatId);
-        req.send_paid_messages_stars = isSuggestionsEnabled ? suggestionsStarsCount : 0;
+        req.send_paid_messages_stars = isSuggestionsEnabled ? suggestionsDiamondsCount : 0;
         req.suggestions_allowed = isSuggestionsEnabled;
 
         getConnectionsManager().sendRequest(req, (response, error) -> {
@@ -221,8 +221,8 @@ public class PostSuggestionsEditActivity extends BaseFragment {
                 getMessagesController().processUpdates(updates, false);
 
                 if (!isFinished && !finishing) {
-                    if (starsCallback != null) {
-                        starsCallback.run(req.suggestions_allowed ? req.send_paid_messages_stars : -1);
+                    if (diamondsCallback != null) {
+                        diamondsCallback.run(req.suggestions_allowed ? req.send_paid_messages_stars : -1);
                     }
                     finishFragment();
                 }
@@ -244,7 +244,7 @@ public class PostSuggestionsEditActivity extends BaseFragment {
             if (mfChat != null) {
                 if (isSuggestionsEnabled) {
                     mfChat.flags2 |= 16384;
-                    mfChat.send_paid_messages_stars = suggestionsStarsCount;
+                    mfChat.send_paid_messages_stars = suggestionsDiamondsCount;
                 } else {
                     mfChat.flags2 &=~ 16384;
                     mfChat.send_paid_messages_stars = 0;
@@ -253,13 +253,13 @@ public class PostSuggestionsEditActivity extends BaseFragment {
             }
         }
 
-        if (starsCallback != null) {
-            starsCallback.run(isSuggestionsEnabled ? suggestionsStarsCount : -1);
+        if (diamondsCallback != null) {
+            diamondsCallback.run(isSuggestionsEnabled ? suggestionsDiamondsCount : -1);
         }
     }
 
     private boolean hasChanges() {
-        return suggestionsStarsCount != initialSuggestionsStarsCount || isSuggestionsEnabled != initialSuggestionsEnabled;
+        return suggestionsDiamondsCount != initialSuggestionsDiamondsCount || isSuggestionsEnabled != initialSuggestionsEnabled;
     }
 
     private boolean lastHasChanges = true;

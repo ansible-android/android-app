@@ -11,11 +11,11 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.asnet.TLRPC;
 
-public class StarAppsSheet extends BottomSheetWithRecyclerListView {
+public class DiamondAppsSheet extends BottomSheetWithRecyclerListView {
 
     private DialogsBotsAdapter adapter;
 
-    public StarAppsSheet(Context context) {
+    public DiamondAppsSheet(Context context) {
         super(context, null, true, false, false, null);
 
         fixNavigationBar();

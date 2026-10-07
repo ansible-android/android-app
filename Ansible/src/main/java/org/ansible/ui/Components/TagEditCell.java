@@ -4,7 +4,7 @@ import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.dpf2;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarGiftSheet.replaceUnderstood;
+import static org.ansible.ui.Diamonds.DiamondGiftSheet.replaceUnderstood;
 
 import android.content.Context;
 import android.content.SharedPreferences;

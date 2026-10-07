@@ -139,7 +139,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
 import org.ansible.asnet.tl.TL_chatlists;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenu;
@@ -210,9 +210,9 @@ import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.Components.chat.layouts.ChatActivityFadeView;
 import org.ansible.ui.Components.inset.WindowInsetsStateHolder;
 import org.ansible.ui.Gifts.GiftSheet;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.StealthModeAlert;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.bots.BotWebViewSheet;
@@ -2940,8 +2940,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             .add(NotificationCenter.storiesEnabledUpdate)
             .add(NotificationCenter.unconfirmedAuthUpdate)
             .add(NotificationCenter.premiumPromoUpdated)
-            .add(NotificationCenter.starBalanceUpdated)
-            .add(NotificationCenter.starSubscriptionsLoaded)
+            .add(NotificationCenter.diamondBalanceUpdated)
+            .add(NotificationCenter.diamondSubscriptionsLoaded)
             .add(NotificationCenter.communityPendingRequestsUpdate)
             .add(NotificationCenter.communitySwitchedCollapsed)
             .add(NotificationCenter.appConfigUpdated)
@@ -3003,7 +3003,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    private Drawable premiumStar;
+    private Drawable premiumDiamond;
 
     public void updateStatus(TLRPC.User user, boolean animated) {
         if (dialogStoriesCell != null) {
@@ -3030,9 +3030,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             });
             SelectAnimatedEmojiDialog.preload(currentAccount);
         } else if (user != null && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
-            if (premiumStar == null) {
-                premiumStar = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
-                premiumStar = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumStar, dp(18), dp(18)) {
+            if (premiumDiamond == null) {
+                premiumDiamond = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
+                premiumDiamond = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumDiamond, dp(18), dp(18)) {
                     @Override
                     public void draw(@NonNull Canvas canvas) {
                         canvas.save();
@@ -3042,8 +3042,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     }
                 };
             }
-            premiumStar.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
-            statusDrawable.set(premiumStar, animated);
+            premiumDiamond.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
+            statusDrawable.set(premiumDiamond, animated);
             statusDrawable.setParticles(false, animated);
             actionBar.setRightDrawableOnClick(e -> {
                 if (dialogStoriesCellVisible && dialogStoriesCell != null && !dialogStoriesCell.isExpanded()) {
@@ -4915,13 +4915,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
 
                 @Override
-                public long getStarsPrice() {
+                public long getDiamondsPrice() {
                     long price = 0;
                     if (selectedDialogs != null) {
                         for (final long did : selectedDialogs) {
-                            long dialogPrice = getMessagesController().getSendPaidMessagesStars(did);
+                            long dialogPrice = getMessagesController().getSendPaidMessagesDiamonds(did);
                             if (dialogPrice <= 0 && did > 0) {
-                                dialogPrice = DialogObject.getMessagesStarsPrice(getMessagesController().isUserContactBlocked(did));
+                                dialogPrice = DialogObject.getMessagesDiamondsPrice(getMessagesController().isUserContactBlocked(did));
                             }
                             price += dialogPrice;
                         }
@@ -4957,7 +4957,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
             commentView.setDelegate(new ChatActivityEnterView.ChatActivityEnterViewDelegate() {
                 @Override
-                public void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars) {
+                public void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds) {
                     if (delegate == null || selectedDialogs.isEmpty()) {
                         return;
                     }
@@ -5762,20 +5762,20 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    public boolean isStarsSubscriptionHintVisible() {
+    public boolean isDiamondsSubscriptionHintVisible() {
         if (folderId != 0 || communityId != 0) {
             return false;
         }
 
         if (MessagesController.getInstance(currentAccount).pendingSuggestions.contains("STARS_SUBSCRIPTION_LOW_BALANCE")) {
-            StarsController c = StarsController.getInstance(currentAccount);
+            DiamondsController c = DiamondsController.getInstance(currentAccount);
             if (!c.hasInsufficientSubscriptions()) {
                 c.loadInsufficientSubscriptions();
                 return false;
             } else {
-                long starsNeeded = -c.balance.amount;
+                long diamondsNeeded = -c.balance.amount;
                 for (int i = 0; i < c.insufficientSubscriptions.size(); ++i) {
-                    final TL_stars.StarsSubscription sub = c.insufficientSubscriptions.get(i);
+                    final TL_diamonds.StarsSubscription sub = c.insufficientSubscriptions.get(i);
                     final long did = DialogObject.getPeerDialogId(sub.peer);
                     if (did >= 0) {
                         TLRPC.User user = getMessagesController().getUser(did);
@@ -5784,9 +5784,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         TLRPC.Chat chat = getMessagesController().getChat(-did);
                         if (chat == null) continue;
                     }
-                    starsNeeded += sub.pricing.amount;
+                    diamondsNeeded += sub.pricing.amount;
                 }
-                return starsNeeded > 0;
+                return diamondsNeeded > 0;
             }
         }
 
@@ -5882,24 +5882,24 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(this, getContext(), true, xoff, SelectAnimatedEmojiDialog.TYPE_EMOJI_STATUS, getResourceProvider()) {
             @Override
-            protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+            protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                 if (gift != null) {
-                    final TL_stars.SavedStarGift savedStarGift = StarsController.getInstance(currentAccount).findUserStarGift(gift.id);
+                    final TL_diamonds.SavedStarGift savedStarGift = DiamondsController.getInstance(currentAccount).findUserDiamondGift(gift.id);
                     return savedStarGift == null || MessagesController.getGlobalMainSettings().getInt("statusgiftpage", 0) >= 2;
                 }
                 return true;
             }
 
             @Override
-            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                 final TLRPC.EmojiStatus emojiStatus;
                 if (documentId == null) {
                     emojiStatus = new TLRPC.TL_emojiStatusEmpty();
                 } else if (gift != null) {
-                    final TL_stars.SavedStarGift savedStarGift = StarsController.getInstance(currentAccount).findUserStarGift(gift.id);
+                    final TL_diamonds.SavedStarGift savedStarGift = DiamondsController.getInstance(currentAccount).findUserDiamondGift(gift.id);
                     if (savedStarGift != null && MessagesController.getGlobalMainSettings().getInt("statusgiftpage", 0) < 2) {
                         MessagesController.getGlobalMainSettings().edit().putInt("statusgiftpage", MessagesController.getGlobalMainSettings().getInt("statusgiftpage", 0) + 1).apply();
-                        new StarGiftSheet(getContext(), currentAccount, UserConfig.getInstance(currentAccount).getClientUserId(), resourceProvider)
+                        new DiamondGiftSheet(getContext(), currentAccount, UserConfig.getInstance(currentAccount).getClientUserId(), resourceProvider)
                             .set(savedStarGift, null)
                             .setupWearPage()
                             .show();
@@ -6047,15 +6047,15 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 MessagesController.getInstance(currentAccount).removeSuggestion(0, suggestion.suggestion);
                 updateDialogsHint();
             });
-        } else if (isStarsSubscriptionHintVisible()) {
-            StarsController c = StarsController.getInstance(currentAccount);
+        } else if (isDiamondsSubscriptionHintVisible()) {
+            DiamondsController c = DiamondsController.getInstance(currentAccount);
             dialogsHintCellVisible = true;
             StringBuilder s = new StringBuilder();
-            long starsNeeded = 0;
+            long diamondsNeeded = 0;
             long _firstDialogId = 0;
             if (c.hasInsufficientSubscriptions()) {
                 for (int i = 0; i < c.insufficientSubscriptions.size(); ++i) {
-                    final TL_stars.StarsSubscription sub = c.insufficientSubscriptions.get(i);
+                    final TL_diamonds.StarsSubscription sub = c.insufficientSubscriptions.get(i);
                     final long did = DialogObject.getPeerDialogId(sub.peer);
                     if (_firstDialogId == 0) _firstDialogId = did;
                     if (did >= 0) {
@@ -6069,18 +6069,18 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         if (s.length() > 0) s.append(", ");
                         s.append(chat.title);
                     }
-                    starsNeeded += sub.pricing.amount;
+                    diamondsNeeded += sub.pricing.amount;
                 }
             }
-            final String starsNeededName = s.toString();
-            final long starsNeededFinal = starsNeeded;
+            final String diamondsNeededName = s.toString();
+            final long diamondsNeededFinal = diamondsNeeded;
             final long firstDialogId = _firstDialogId;
             dialogsHintCell.setOnClickListener(v -> {
-                new StarsIntroActivity.StarsNeededSheet(getContext(), getResourceProvider(), starsNeededFinal, StarsIntroActivity.StarsNeededSheet.TYPE_SUBSCRIPTION_KEEP, starsNeededName, () -> {
+                new DiamondsIntroActivity.DiamondsNeededSheet(getContext(), getResourceProvider(), diamondsNeededFinal, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_SUBSCRIPTION_KEEP, diamondsNeededName, () -> {
                     updateDialogsHint();
                 }, firstDialogId).show();
             });
-            dialogsHintCell.setText(StarsIntroActivity.replaceStarsWithPlain(formatPluralStringComma("DiamondsSubscriptionExpiredHintTitle2", (int) (starsNeeded - c.balance.amount <= 0 ? starsNeeded : starsNeeded - c.balance.amount), starsNeededName), .72f), LocaleController.getString(R.string.DiamondsSubscriptionExpiredHintText));
+            dialogsHintCell.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(formatPluralStringComma("DiamondsSubscriptionExpiredHintTitle2", (int) (diamondsNeeded - c.balance.amount <= 0 ? diamondsNeeded : diamondsNeeded - c.balance.amount), diamondsNeededName), .72f), LocaleController.getString(R.string.DiamondsSubscriptionExpiredHintText));
             dialogsHintCell.setOnCloseListener(v -> {
                 MessagesController.getInstance(currentAccount).removeSuggestion(0, "STARS_SUBSCRIPTION_LOW_BALANCE");
                 updateDialogsHint();
@@ -6116,7 +6116,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         .setDuration(Bulletin.DURATION_PROLONG)
                         .show();
             });
-            StarsController.getInstance(currentAccount).loadStarGifts();
+            DiamondsController.getInstance(currentAccount).loadDiamondGifts();
         } else if (
             folderId == 0 && communityId == 0 &&
             MessagesController.getInstance(currentAccount).pendingSuggestions.contains("BIRTHDAY_SETUP") &&
@@ -10321,13 +10321,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 long price = 0;
                 final int messagesCount = this.messagesCount + (TextUtils.isEmpty(commentView.getFieldText()) ? 0 : 1);
                 for (final long did : selectedDialogs) {
-                    long dialogPrice = getMessagesController().getSendPaidMessagesStars(did);
+                    long dialogPrice = getMessagesController().getSendPaidMessagesDiamonds(did);
                     if (dialogPrice <= 0 && did > 0) {
-                        dialogPrice = DialogObject.getMessagesStarsPrice(getMessagesController().isUserContactBlocked(did));
+                        dialogPrice = DialogObject.getMessagesDiamondsPrice(getMessagesController().isUserContactBlocked(did));
                     }
                     price += dialogPrice;
                 }
-                writeButton.setStarsPrice(price, messagesCount);
+                writeButton.setDiamondsPrice(price, messagesCount);
                 commentView.updateSendButtonPaid();
                 if (wasSelectedDialogsEmpty == selectedDialogs.isEmpty()) {
                     actionBar.setTitle(LocaleController.formatPluralString("Recipient", selectedDialogs.size()));
@@ -10862,7 +10862,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             updateDialogsHint();
         } else if (id == NotificationCenter.premiumPromoUpdated) {
             updateDialogsHint();
-        } else if (id == NotificationCenter.starBalanceUpdated || id == NotificationCenter.starSubscriptionsLoaded) {
+        } else if (id == NotificationCenter.diamondBalanceUpdated || id == NotificationCenter.diamondSubscriptionsLoaded) {
             updateDialogsHint();
         } else if (id == NotificationCenter.appConfigUpdated) {
             updateDialogsHint();
@@ -11513,7 +11513,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 if (selectedDialogs.isEmpty()) return false;
                 for (long did : selectedDialogs) {
                     if (DialogObject.isEncryptedDialog(did)) return false;
-                    if (getMessagesController().getSendPaidMessagesStars(did) > 0) return false;
+                    if (getMessagesController().getSendPaidMessagesDiamonds(did) > 0) return false;
                 }
                 return true;
             }

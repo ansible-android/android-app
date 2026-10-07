@@ -66,7 +66,7 @@ import org.ansible.ui.Components.Premium.boosts.cells.statistics.GiftedUserCell;
 import org.ansible.ui.Components.Premium.boosts.cells.statistics.GiveawayCell;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.ScrollSlidingTextTabStrip;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -307,10 +307,10 @@ public class BoostsActivity extends GradientHeaderActivity implements Notificati
                     String name = LocaleController.formatPluralString("BoostingAnsiblePremiumCountPlural", prepaidGiveaway.quantity);
                     String info = LocaleController.formatPluralString("BoostingSubscriptionsCountPlural", prepaidGiveaway.quantity, LocaleController.formatPluralString("PrepaidGiveawayMonths", ((TL_stories.TL_prepaidGiveaway) prepaidGiveaway).months));
                     giveawayCell.setData(prepaidGiveaway, name, info, 0, !item.isLast);
-                } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
-                    TL_stories.TL_prepaidStarsGiveaway starsGiveaway = (TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway;
-                    String name = LocaleController.formatPluralStringComma("BoostingDiamondsCountPlural", (int) starsGiveaway.stars);
-                    String info = LocaleController.formatPluralString("AmongWinners", starsGiveaway.quantity);
+                } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
+                    TL_stories.TL_prepaidDiamondsGiveaway diamondsGiveaway = (TL_stories.TL_prepaidDiamondsGiveaway) prepaidGiveaway;
+                    String name = LocaleController.formatPluralStringComma("BoostingDiamondsCountPlural", (int) diamondsGiveaway.stars);
+                    String info = LocaleController.formatPluralString("AmongWinners", diamondsGiveaway.quantity);
                     giveawayCell.setData(prepaidGiveaway, name, info, 0, !item.isLast);
                 }
                 giveawayCell.setImage(prepaidGiveaway);
@@ -806,7 +806,7 @@ public class BoostsActivity extends GradientHeaderActivity implements Notificati
                 GiftedUserCell cell = (GiftedUserCell) view;
                 TL_stories.Boost boost = cell.getBoost();
                 if (boost.giveaway && boost.stars > 0) {
-                    StarsIntroActivity.showBoostsSheet(context, currentAccount, dialogId, boost, getResourceProvider());
+                    DiamondsIntroActivity.showBoostsSheet(context, currentAccount, dialogId, boost, getResourceProvider());
                 } else if (((boost.gift || boost.giveaway) && boost.user_id >= 0) || boost.unclaimed) {
                     TLRPC.TL_payments_checkedGiftCode giftCode = new TLRPC.TL_payments_checkedGiftCode();
                     giftCode.giveaway_msg_id = boost.giveaway_msg_id;

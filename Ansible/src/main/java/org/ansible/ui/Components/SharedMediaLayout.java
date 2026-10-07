@@ -155,7 +155,7 @@ import org.ansible.ui.ProfileActivity;
 import org.ansible.ui.ProfileActivity2;
 import org.ansible.ui.ProfileStoriesCollectionTabs;
 import org.ansible.ui.SelectStoriesBottomSheet;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Stories.StoriesController;
 import org.ansible.ui.Stories.StoriesListPlaceProvider;
 import org.ansible.ui.Stories.UserListPoller;
@@ -1324,7 +1324,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                     object.thumb = object.imageReceiver.getBitmapSafe();
                     object.parentView.getLocationInWindow(coords);
                     object.clipTopAddition = 0;
-                    object.starOffset = sharedMediaData[0].startOffset;
+                    object.diamondOffset = sharedMediaData[0].startOffset;
                     if (fragmentContextView != null && fragmentContextView.getVisibility() == View.VISIBLE) {
                         object.clipTopAddition += dp(36);
                     }
@@ -1680,7 +1680,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             .add(NotificationCenter.channelRecommendationsLoaded)
             .add(NotificationCenter.savedMessagesDialogsUpdate)
             .add(NotificationCenter.dialogsNeedReload)
-            .add(NotificationCenter.starUserGiftsLoaded)
+            .add(NotificationCenter.diamondUserGiftsLoaded)
             .add(NotificationCenter.updatedChatRanks)
             .add(NotificationCenter.didUpdatePollResults);
 
@@ -1906,7 +1906,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
 
                 if (tab == TAB_GIFTS) {
                     final ProfileGiftsContainer.Page page = giftsContainer.getCurrentPage();
-                    final StarsController.GiftsList list = page.list;
+                    final DiamondsController.GiftsList list = page.list;
                     if (list == null) return;
                     final boolean hiddenFilters = giftsContainer.canFilterHidden();
 
@@ -1980,13 +1980,13 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                             list.invalidate(true);
                         });
                     }
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unlimited, list, update, StarsController.GiftsList.INCLUDE_TYPE_UNLIMITED_FLAG);
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(limited, list, update, StarsController.GiftsList.INCLUDE_TYPE_LIMITED_FLAG);
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(upgradable, list, update, StarsController.GiftsList.INCLUDE_TYPE_UPGRADABLE_FLAG);
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unique, list, update, StarsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unlimited, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_UNLIMITED_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(limited, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_LIMITED_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(upgradable, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_UPGRADABLE_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unique, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG);
                     if (hiddenFilters) {
-                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(displayed, list, update, StarsController.GiftsList.INCLUDE_VISIBILITY_DISPLAYED_FLAG);
-                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(hidden, list, update, StarsController.GiftsList.INCLUDE_VISIBILITY_HIDDEN_FLAG);
+                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(displayed, list, update, DiamondsController.GiftsList.INCLUDE_VISIBILITY_DISPLAYED_FLAG);
+                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(hidden, list, update, DiamondsController.GiftsList.INCLUDE_VISIBILITY_HIDDEN_FLAG);
                     }
                     o
                         .setOnTopOfScrim()
@@ -6496,7 +6496,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             }
         } else if (id == NotificationCenter.dialogsNeedReload) {
             savedDialogsAdapter.update(true);
-        } else if (id == NotificationCenter.starUserGiftsLoaded) {
+        } else if (id == NotificationCenter.diamondUserGiftsLoaded) {
             long dialogId = (long) args[0];
             if (dialogId == dialog_id) {
                 updateTabs(true);

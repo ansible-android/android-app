@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Ansible launcher icon background: Default — charcoal -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#323137" />
+    <gradient
+        android:type="linear"
+        android:angle="270"
+        android:startColor="#FF3E3D44"
+        android:endColor="#FF2A292E" />
 </shape>

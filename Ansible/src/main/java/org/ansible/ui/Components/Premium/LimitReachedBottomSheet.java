@@ -860,9 +860,9 @@ public class LimitReachedBottomSheet extends BottomSheetWithRecyclerListView imp
         ArrayList<TLRPC.User> freeChats = new ArrayList<>();
         for (Object obj : selectedChats) {
             TLRPC.User user = (TLRPC.User) obj;
-            long price = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(user.id);
+            long price = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(user.id);
             if (price <= 0) {
-                price = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(user.id));
+                price = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(user.id));
             }
             (price >= 0 ? paidChats : freeChats).add(user);
         }
@@ -879,9 +879,9 @@ public class LimitReachedBottomSheet extends BottomSheetWithRecyclerListView imp
             TLRPC.User user = (TLRPC.User) obj;
             final Long price = prices == null ? 0 : prices.get(user.id);
             final SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(link, user.id, null, null, null, true, null, null, null, false, 0, 0, null, false);
-            params.payStars = price == null ? 0 : price;
+            params.payDiamonds = price == null ? 0 : price;
             SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
-            if (params.payStars > 0) {
+            if (params.payDiamonds > 0) {
                 _hadPaid = true;
             }
         }

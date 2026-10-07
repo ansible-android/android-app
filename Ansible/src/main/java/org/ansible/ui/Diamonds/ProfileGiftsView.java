@@ -1,9 +1,9 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.dpf2;
 import static org.ansible.messenger.AndroidUtilities.lerp;
-import static org.ansible.ui.Stars.StarsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
 
 import android.animation.TimeInterpolator;
 import android.content.Context;
@@ -26,7 +26,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
@@ -131,7 +131,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
 
         for (Gift gift : gifts) {
             gift.emojiDrawable.addView(this);
@@ -144,7 +144,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondUserGiftsLoaded);
 
         for (Gift gift : gifts) {
             gift.emojiDrawable.removeView(this);
@@ -153,7 +153,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.starUserGiftsLoaded) {
+        if (id == NotificationCenter.diamondUserGiftsLoaded) {
             if ((long) args[0] == dialogId) {
                 update();
             }
@@ -167,15 +167,15 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
         public final long documentId;
         public final int color;
         public final String slug;
-        private StarsReactionsSheet.Particles particles;
+        private DiamondsReactionsSheet.Particles particles;
 
         public int position = -1;
 
-        public Gift(TL_stars.TL_starGiftUnique gift) {
+        public Gift(TL_diamonds.TL_starGiftUnique gift) {
             id = gift.id;
             document = gift.getDocument();
             documentId = document == null ? 0 : document.id;
-            final TL_stars.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
+            final TL_diamonds.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
             color = backdrop.center_color | 0xFF000000;
             slug = gift.slug;
             initParticles();
@@ -191,7 +191,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
         }
 
         private void initParticles() {
-            particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 6);
+            particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 6);
             final float gsz = dp(36);
             particles.bounds.set(-gsz / 2.0f, -gsz / 2.0f, gsz / 2.0f, gsz / 2.0f);
         }
@@ -249,7 +249,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
         }
     }
 
-    private StarsController.GiftsList list;
+    private DiamondsController.GiftsList list;
 
     public final ArrayList<Gift> oldGifts = new ArrayList<>();
     public final ArrayList<Gift> gifts = new ArrayList<>();
@@ -278,12 +278,12 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
         if (emojiStatus instanceof TLRPC.TL_emojiStatusCollectible) {
             giftIds.add(((TLRPC.TL_emojiStatusCollectible) emojiStatus).collectible_id);
         }
-        list = StarsController.getInstance(currentAccount).getProfileGiftsList(dialogId);
+        list = DiamondsController.getInstance(currentAccount).getProfileGiftsList(dialogId);
         if (list != null) {
             for (int i = 0; i < list.gifts.size(); i++) {
-                final TL_stars.SavedStarGift savedGift = list.gifts.get(i);
-                if (!savedGift.unsaved && savedGift.pinned_to_top && savedGift.gift instanceof TL_stars.TL_starGiftUnique) {
-                    final Gift gift = new Gift((TL_stars.TL_starGiftUnique) savedGift.gift);
+                final TL_diamonds.SavedStarGift savedGift = list.gifts.get(i);
+                if (!savedGift.unsaved && savedGift.pinned_to_top && savedGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
+                    final Gift gift = new Gift((TL_diamonds.TL_starGiftUnique) savedGift.gift);
                     if (!giftIds.contains(gift.id)) {
                         gifts.add(gift);
                         giftIds.add(gift.id);

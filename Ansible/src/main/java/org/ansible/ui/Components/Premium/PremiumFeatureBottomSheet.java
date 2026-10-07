@@ -2,7 +2,7 @@ package org.ansible.ui.Components.Premium;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarGiftSheet.replaceUnderstood;
+import static org.ansible.ui.Diamonds.DiamondGiftSheet.replaceUnderstood;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

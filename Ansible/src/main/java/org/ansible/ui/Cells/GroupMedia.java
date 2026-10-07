@@ -42,7 +42,7 @@ import org.ansible.ui.Components.MediaActionDrawable;
 import org.ansible.ui.Components.RadialProgress2;
 import org.ansible.ui.Components.Text;
 import org.ansible.ui.Components.spoilers.SpoilerEffect2;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -189,13 +189,13 @@ public class GroupMedia {
         height = (int) (layout.height * layout.maxSizeHeight);
 
         if (hidden) {
-            buttonText = new Text(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
+            buttonText = new Text(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
             if (buttonText.getCurrentWidth() > width - dp(30)) {
-                buttonText = new Text(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContentShort", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
+                buttonText = new Text(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContentShort", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
             }
         }
         if (priceText == null || priceTextPrice != paidMedia.stars_amount) {
-            priceText = new Text(StarsIntroActivity.replaceStars(LocaleController.formatPluralStringComma("PaidMediaPrice", (int) (priceTextPrice = paidMedia.stars_amount)), .9f), 12, AndroidUtilities.bold());
+            priceText = new Text(DiamondsIntroActivity.replaceDiamonds(LocaleController.formatPluralStringComma("PaidMediaPrice", (int) (priceTextPrice = paidMedia.stars_amount)), .9f), 12, AndroidUtilities.bold());
         }
     }
 
@@ -289,9 +289,9 @@ public class GroupMedia {
         if (hidden) {
             final TLRPC.TL_messageMediaPaidMedia paidMedia = messageObject == null ? null : (TLRPC.TL_messageMediaPaidMedia) messageObject.messageOwner.media;
             if (paidMedia != null) {
-                buttonText = new Text(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
+                buttonText = new Text(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
                 if (buttonText.getCurrentWidth() > width - dp(30)) {
-                    buttonText = new Text(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContentShort", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
+                    buttonText = new Text(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContentShort", (int) (buttonTextPrice = paidMedia.stars_amount)), .7f), 14, AndroidUtilities.bold());
                 }
             }
         }

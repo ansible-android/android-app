@@ -1,10 +1,10 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.formatPluralStringComma;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsController.findAttribute;
-import static org.ansible.ui.Stars.StarsIntroActivity.setGiftImage;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.setGiftImage;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -35,7 +35,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
@@ -53,7 +53,7 @@ import java.util.ArrayList;
 
 import me.vkryl.android.animator.FactorAnimator;
 
-public class StarGiftUniqueActionLayout {
+public class DiamondGiftUniqueActionLayout {
 
     private final int currentAccount;
     private final View view;
@@ -68,9 +68,9 @@ public class StarGiftUniqueActionLayout {
 
     private final GiftSheet.RibbonDrawable ribbon;
 
-    private TL_stars.starGiftAttributeBackdrop backdrop;
-    private TL_stars.starGiftAttributePattern pattern;
-    private TL_stars.starGiftAttributeModel model;
+    private TL_diamonds.starGiftAttributeBackdrop backdrop;
+    private TL_diamonds.starGiftAttributePattern pattern;
+    private TL_diamonds.starGiftAttributeModel model;
 
     private final RectF backgroundRect = new RectF();
     private final Path backgroundPath = new Path();
@@ -95,7 +95,7 @@ public class StarGiftUniqueActionLayout {
     private final RectF buttonRect = new RectF();
     private final Path buttonPath = new Path();
     private final Paint buttonBackgroundPaint = new Paint();
-    private final StarsReactionsSheet.Particles buttonParticles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 25);
+    private final DiamondsReactionsSheet.Particles buttonParticles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 25);
     private final ButtonBounce buttonBounce;
 
     private final ButtonBounce bounce;
@@ -116,7 +116,7 @@ public class StarGiftUniqueActionLayout {
         }
     }
 
-    public StarGiftUniqueActionLayout(int currentAccount, View view, Theme.ResourcesProvider resourcesProvider) {
+    public DiamondGiftUniqueActionLayout(int currentAccount, View view, Theme.ResourcesProvider resourcesProvider) {
         this.currentAccount = currentAccount;
         this.view = view;
         this.resourcesProvider = resourcesProvider;
@@ -134,19 +134,19 @@ public class StarGiftUniqueActionLayout {
     }
 
     int width, height;
-    TLRPC.TL_messageActionStarGiftUnique action;
+    TLRPC.TL_messageActionDiamondGiftUnique action;
     MessageObject currentMessageObject;
 
     public void set(MessageObject messageObject, boolean animated) {
         widthExpanded = false;
         currentMessageObject = messageObject;
 
-        TLRPC.TL_messageActionStarGiftUnique action = null;
-        if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
-            action = ((TLRPC.TL_messageActionStarGiftUnique) messageObject.messageOwner.action);
+        TLRPC.TL_messageActionDiamondGiftUnique action = null;
+        if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
+            action = ((TLRPC.TL_messageActionDiamondGiftUnique) messageObject.messageOwner.action);
         }
 
-        if (action == null || action.refunded || !(action.gift instanceof TL_stars.TL_starGiftUnique)) {
+        if (action == null || action.refunded || !(action.gift instanceof TL_diamonds.TL_starGiftUnique)) {
             action = null;
         }
         if (attached && action != null && this.action == null) {
@@ -160,11 +160,11 @@ public class StarGiftUniqueActionLayout {
             return;
         }
 
-        final TL_stars.TL_starGiftUnique gift = (TL_stars.TL_starGiftUnique) action.gift;
-        backdrop = findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
-        pattern = findAttribute(gift.attributes, TL_stars.starGiftAttributePattern.class);
-        TL_stars.starGiftAttributeModel prevModel = model;
-        model = findAttribute(gift.attributes, TL_stars.starGiftAttributeModel.class);
+        final TL_diamonds.TL_starGiftUnique gift = (TL_diamonds.TL_starGiftUnique) action.gift;
+        backdrop = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
+        pattern = findAttribute(gift.attributes, TL_diamonds.starGiftAttributePattern.class);
+        TL_diamonds.starGiftAttributeModel prevModel = model;
+        model = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeModel.class);
 
         backgroundPaint.setShader(gradient = null);
         if (pattern != null) {
@@ -208,7 +208,7 @@ public class StarGiftUniqueActionLayout {
         checkAnimatedWidth(animated);
     }
 
-    private void setInternal(MessageObject messageObject, TLRPC.TL_messageActionStarGiftUnique action, TL_stars.TL_starGiftUnique gift, boolean animated) {
+    private void setInternal(MessageObject messageObject, TLRPC.TL_messageActionDiamondGiftUnique action, TL_diamonds.TL_starGiftUnique gift, boolean animated) {
         final float w = width;
         float h = 0;
 
@@ -346,7 +346,7 @@ public class StarGiftUniqueActionLayout {
         this.height = (int) h;
     }
 
-    public void set(TL_stars.TL_starGiftUnique gift, long fromId,
+    public void set(TL_diamonds.TL_starGiftUnique gift, long fromId,
                     TLRPC.TL_textWithEntities message, String button, boolean animated) {
         widthExpanded = false;
         this.action = null;
@@ -355,10 +355,10 @@ public class StarGiftUniqueActionLayout {
 
         if (gift == null) return;
 
-        backdrop = findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
-        pattern = findAttribute(gift.attributes, TL_stars.starGiftAttributePattern.class);
-        TL_stars.starGiftAttributeModel prevModel = model;
-        model = findAttribute(gift.attributes, TL_stars.starGiftAttributeModel.class);
+        backdrop = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
+        pattern = findAttribute(gift.attributes, TL_diamonds.starGiftAttributePattern.class);
+        TL_diamonds.starGiftAttributeModel prevModel = model;
+        model = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeModel.class);
 
         backgroundPaint.setShader(gradient = null);
         if (pattern != null) {
@@ -396,7 +396,7 @@ public class StarGiftUniqueActionLayout {
         checkAnimatedWidth(animated);
     }
 
-    private void setInternal2(TL_stars.TL_starGiftUnique gift, long fromId, TLRPC.TL_textWithEntities message, String button) {
+    private void setInternal2(TL_diamonds.TL_starGiftUnique gift, long fromId, TLRPC.TL_textWithEntities message, String button) {
         final float w = width;
         float h = 0;
 
@@ -519,7 +519,7 @@ public class StarGiftUniqueActionLayout {
         if (backdrop != null) {
             emoji.setColor(backdrop.pattern_color | 0xFF000000);
         }
-        StarGiftPatterns.drawPattern(canvas, StarGiftPatterns.TYPE_ACTION, emoji, backgroundRect.width(), backgroundRect.height(), 1.0f, 1.1f);
+        DiamondGiftPatterns.drawPattern(canvas, DiamondGiftPatterns.TYPE_ACTION, emoji, backgroundRect.width(), backgroundRect.height(), 1.0f, 1.1f);
         canvas.restore();
 
         imageReceiver.setImageCoords(cx - dp(110) / 2.0f, dp(10), dp(110), dp(110));
@@ -642,7 +642,7 @@ public class StarGiftUniqueActionLayout {
                         .show();
                 }
             } else {
-                new StarGiftSheet(view.getContext(), currentAccount, currentMessageObject.getDialogId(), resourcesProvider)
+                new DiamondGiftSheet(view.getContext(), currentAccount, currentMessageObject.getDialogId(), resourcesProvider)
                     .set(currentMessageObject)
                     .show();
             }

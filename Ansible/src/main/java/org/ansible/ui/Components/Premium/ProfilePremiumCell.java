@@ -10,11 +10,11 @@ import org.ansible.messenger.LiteMode;
 import org.ansible.messenger.utils.Choreographer60FpsContent;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.TextCell;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 
 public class ProfilePremiumCell extends TextCell {
 
-    private final StarsReactionsSheet.Particles particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 15);
+    private final DiamondsReactionsSheet.Particles particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 15);
     private final int colorKey;
 
     private final Runnable invalidateRunnable = this::invalidate;

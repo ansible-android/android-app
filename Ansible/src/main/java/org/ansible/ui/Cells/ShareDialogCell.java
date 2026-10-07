@@ -64,7 +64,7 @@ import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.Premium.PremiumGradient;
 import org.ansible.ui.Components.RLottieDrawable;
 import org.ansible.ui.Components.Text;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 public class ShareDialogCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -91,15 +91,15 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
 
     private final AnimatedFloat premiumBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private boolean premiumBlocked;
-    private final AnimatedFloat starsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
-    private long starsPriceBlocked;
+    private final AnimatedFloat diamondsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private long diamondsPriceBlocked;
 
     public boolean isBlocked() {
         return premiumBlocked;
     }
 
-    public long getStarsPrice() {
-        return starsPriceBlocked;
+    public long getDiamondsPrice() {
+        return diamondsPriceBlocked;
     }
 
     public BackupImageView getImageView() {
@@ -184,10 +184,10 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.userIsPremiumBlockedUpadted) {
             final TL_account.RequirementToContact r = user != null ? MessagesController.getInstance(currentAccount).isUserContactBlocked(user.id) : null;
-            final long starsPrice = currentDialog < 0 ? MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(currentDialog) : DialogObject.getMessagesStarsPrice(r);
-            if (premiumBlocked != DialogObject.isPremiumBlocked(r) || starsPriceBlocked != starsPrice) {
+            final long diamondsPrice = currentDialog < 0 ? MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(currentDialog) : DialogObject.getMessagesDiamondsPrice(r);
+            if (premiumBlocked != DialogObject.isPremiumBlocked(r) || diamondsPriceBlocked != diamondsPrice) {
                 premiumBlocked = DialogObject.isPremiumBlocked(r);
-                starsPriceBlocked = starsPrice;
+                diamondsPriceBlocked = diamondsPrice;
                 nameTextView.setTextColor(getThemedColor(premiumBlocked ? Theme.key_windowBackgroundWhiteGrayText5 : Theme.key_dialogTextBlack));
                 invalidate();
             }
@@ -215,10 +215,10 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
             user = MessagesController.getInstance(currentAccount).getUser(uid);
             final TL_account.RequirementToContact r = MessagesController.getInstance(currentAccount).isUserContactBlocked(uid);
             premiumBlocked = DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+            diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
             nameTextView.setTextColor(getThemedColor(premiumBlocked ? Theme.key_windowBackgroundWhiteGrayText5 : Theme.key_dialogTextBlack));
             premiumBlockedT.force(premiumBlocked);
-            starsBlockedT.force(starsPriceBlocked > 0);
+            diamondsBlockedT.force(diamondsPriceBlocked > 0);
             invalidate();
             avatarDrawable.setInfo(currentAccount, user);
             if (currentType != TYPE_CREATE && UserObject.isReplyUser(user)) {
@@ -244,8 +244,8 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
             user = null;
             premiumBlocked = false;
             premiumBlockedT.force(0);
-            starsPriceBlocked = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(uid);
-            starsBlockedT.force(false);
+            diamondsPriceBlocked = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(uid);
+            diamondsBlockedT.force(false);
             TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-uid);
             if (name != null) {
                 nameTextView.setText(name);
@@ -358,13 +358,13 @@ public class ShareDialogCell extends FrameLayout implements NotificationCenter.N
                 }
                 lastUpdateTime = newTime;
 
-                final float priceT = starsBlockedT.set(starsPriceBlocked > 0);
+                final float priceT = diamondsBlockedT.set(diamondsPriceBlocked > 0);
                 if (priceT > 0) {
                     float cx = imageView.getLeft() + imageView.getMeasuredWidth() / 2.0f + dp(18);
                     float cy = imageView.getTop() + imageView.getMeasuredHeight() / 2.0f - dp(20.83f);
 
-                    if (priceText == null || priceTextValue != starsPriceBlocked && starsPriceBlocked > 0) {
-                        priceText = new Text(StarsIntroActivity.replaceStars("⭐️" + AndroidUtilities.formatWholeNumber((int) (priceTextValue = starsPriceBlocked), 0), .65f), 9.33f, AndroidUtilities.bold());
+                    if (priceText == null || priceTextValue != diamondsPriceBlocked && diamondsPriceBlocked > 0) {
+                        priceText = new Text(DiamondsIntroActivity.replaceDiamonds("⭐️" + AndroidUtilities.formatWholeNumber((int) (priceTextValue = diamondsPriceBlocked), 0), .65f), 9.33f, AndroidUtilities.bold());
                     }
                     final float w = (priceText == null ? 0 : priceText.getCurrentWidth()) + dp(10);
                     final float h = dp(14.33f);

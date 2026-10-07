@@ -5,7 +5,7 @@ import static org.ansible.messenger.AndroidUtilities.lerp;
 import static org.ansible.messenger.AndroidUtilities.replaceSingleTag;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarGiftSheet.replaceUnderstood;
+import static org.ansible.ui.Diamonds.DiamondGiftSheet.replaceUnderstood;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -129,8 +129,8 @@ import org.ansible.ui.Components.blur3.ViewGroupPartRenderer;
 import org.ansible.ui.Components.blur3.capture.IBlur3Capture;
 import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
 import org.ansible.ui.Components.voip.VoIPHelper;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.DualCameraView;
 import org.ansible.ui.TON.TONIntroActivity;
@@ -210,7 +210,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     @Override
     public boolean onFragmentCreate() {
         getNotificationCenter().addObserver(this, NotificationCenter.updateInterfaces);
-        getNotificationCenter().addObserver(this, NotificationCenter.starBalanceUpdated);
+        getNotificationCenter().addObserver(this, NotificationCenter.diamondBalanceUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.newSuggestionsAvailable);
 
         if (arguments != null) {
@@ -503,13 +503,13 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         super.onFragmentDestroy();
 
         getNotificationCenter().removeObserver(this, NotificationCenter.updateInterfaces);
-        getNotificationCenter().removeObserver(this, NotificationCenter.starBalanceUpdated);
+        getNotificationCenter().removeObserver(this, NotificationCenter.diamondBalanceUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.newSuggestionsAvailable);
     }
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.starBalanceUpdated) {
+        if (id == NotificationCenter.diamondBalanceUpdated) {
             setInfo();
             if (listView != null) {
                 listView.adapter.update(true);
@@ -704,9 +704,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             items.add(SettingCell.Factory.of(11, 0xFFB659FF, 0xFF617CFF, R.drawable.settings_premium, getString(R.string.AnsiblePremium)));
         }
         { // Ansible: строка «Алмазы» показывается всегда (гейт starsPurchaseAvailable снят), синий квадрат + белый алмаз
-            StarsController c = StarsController.getInstance(currentAccount);
+            DiamondsController c = DiamondsController.getInstance(currentAccount);
             long balance = c.getBalance().amount;
-            items.add(SettingCell.Factory.of(12, 0xFF51C4FE, 0xFF1BA4ED, R.drawable.settings_diamond, getString(R.string.AnsibleDiamonds), null, c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : ""));
+            items.add(SettingCell.Factory.of(12, 0xFF51C4FE, 0xFF1BA4ED, R.drawable.settings_diamond, getString(R.string.AnsibleDiamonds), null, c.balanceAvailable() && balance > 0 ? DiamondsIntroActivity.formatDiamondsAmount(c.getBalance(), 0.85f, ' ') : ""));
         }
         // Ansible: TON/«GRAM» вырезан из UI (как на iOS) — строка «Мои GRAM» (id 13) не добавляется.
 
@@ -836,7 +836,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 presentSettingFragment(new PremiumPreviewFragment("settings"));
                 break;
             case 12:
-                presentSettingFragment(new StarsIntroActivity());
+                presentSettingFragment(new DiamondsIntroActivity());
                 break;
             case 13:
                 presentSettingFragment(new TONIntroActivity());

@@ -35,11 +35,11 @@ public class FireworksOverlay extends View {
     private float speedCoef = 1.0f;
     private int fallingDownCount;
     private static Drawable[] heartDrawable;
-    private static Drawable[] starsDrawable;
+    private static Drawable[] diamondsDrawable;
     private static final int particlesCount = SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW ? 50 : 60;
     private static final int fallParticlesCount = SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW ? 20 : 30;
     private boolean isFebruary14;
-    private boolean withStars;
+    private boolean withDiamonds;
 
     private static int[] colors = new int[]{
             0xff2CBCE8,
@@ -58,7 +58,7 @@ public class FireworksOverlay extends View {
             0xffE376B0
     };
 
-    private static int[] starsColors = new int[]{
+    private static int[] diamondsColors = new int[]{
             0xff1e80ff,
             0xff10c689,
             0xffff5997,
@@ -99,8 +99,8 @@ public class FireworksOverlay extends View {
                 canvas.restore();
             } else if (type == 2) {
                 Drawable drawable = null;
-                if (starsDrawable != null) {
-                    drawable = starsDrawable[colorType];
+                if (diamondsDrawable != null) {
+                    drawable = diamondsDrawable[colorType];
                 }
                 if (heartDrawable != null) {
                     drawable = heartDrawable[colorType];
@@ -191,14 +191,14 @@ public class FireworksOverlay extends View {
         }
     }
 
-    private void loadStarsDrawables() {
-        if (starsDrawable != null) {
+    private void loadDiamondsDrawables() {
+        if (diamondsDrawable != null) {
             return;
         }
-        starsDrawable = new Drawable[starsColors.length];
-        for (int a = 0; a < starsDrawable.length; a++) {
-            starsDrawable[a] = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.msg_settings_premium).mutate();
-            starsDrawable[a].setColorFilter(new PorterDuffColorFilter(starsColors[a], PorterDuff.Mode.MULTIPLY));
+        diamondsDrawable = new Drawable[diamondsColors.length];
+        for (int a = 0; a < diamondsDrawable.length; a++) {
+            diamondsDrawable[a] = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.msg_settings_premium).mutate();
+            diamondsDrawable[a].setColorFilter(new PorterDuffColorFilter(diamondsColors[a], PorterDuff.Mode.MULTIPLY));
         }
     }
 
@@ -223,9 +223,9 @@ public class FireworksOverlay extends View {
             if (isFebruary14 && particle.type == 0) {
                 particle.type = 2;
                 particle.colorType = (byte) Utilities.random.nextInt(heartColors.length);
-            } else if (withStars && Utilities.random.nextBoolean()) {
+            } else if (withDiamonds && Utilities.random.nextBoolean()) {
                 particle.type = 2;
-                particle.colorType = (byte) Utilities.random.nextInt(starsColors.length);
+                particle.colorType = (byte) Utilities.random.nextInt(diamondsColors.length);
             } else {
                 particle.colorType = (byte) Utilities.random.nextInt(colors.length);
             }
@@ -262,8 +262,8 @@ public class FireworksOverlay extends View {
         return started;
     }
 
-    public void start(boolean withStars) {
-        this.withStars = withStars;
+    public void start(boolean withDiamonds) {
+        this.withDiamonds = withDiamonds;
 //        particles.clear();
         setLayerType(View.LAYER_TYPE_HARDWARE, null);
         started = true;
@@ -277,8 +277,8 @@ public class FireworksOverlay extends View {
         isFebruary14 = month == 1 && (BuildVars.DEBUG_PRIVATE_VERSION || day == 14);
         if (isFebruary14) {
             loadHeartDrawables();
-        } else if (withStars) {
-            loadStarsDrawables();
+        } else if (withDiamonds) {
+            loadDiamondsDrawables();
         }
         int particlesToAdd = Utilities.clamp(particlesCount - particles.size(), particlesCount, particlesCount / 3);
         for (int a = 0; a < particlesToAdd; a++) {

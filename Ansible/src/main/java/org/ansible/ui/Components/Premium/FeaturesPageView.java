@@ -256,7 +256,7 @@ public class FeaturesPageView extends BaseListPageView {
         BackupImageView imageView;
         GradientTools gradientTools = new GradientTools();
 
-        StarParticlesView starParticlesView;
+        DiamondParticlesView diamondParticlesView;
         GLIconTextureView iconTextureView;
 
         int height;
@@ -292,7 +292,7 @@ public class FeaturesPageView extends BaseListPageView {
                 gradientTools.paint.setStrokeCap(Paint.Cap.ROUND);
                 gradientTools.paint.setStrokeWidth(AndroidUtilities.dpf2(3.3f));
             } else if (type == FEATURES_BUSINESS) {
-                starParticlesView = new StarParticlesView(context) {
+                diamondParticlesView = new DiamondParticlesView(context) {
                     @Override
                     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -315,7 +315,7 @@ public class FeaturesPageView extends BaseListPageView {
                         drawable.init();
                     }
                 };
-                addView(starParticlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 190, Gravity.TOP | Gravity.FILL_HORIZONTAL));
+                addView(diamondParticlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 190, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
                 iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_COIN) {
                     @Override
@@ -330,7 +330,7 @@ public class FeaturesPageView extends BaseListPageView {
                         setPaused(true);
                     }
                 };
-                iconTextureView.setStarParticlesView(starParticlesView);
+                iconTextureView.setDiamondParticlesView(diamondParticlesView);
                 Bitmap bitmap = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 canvas.drawColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_premiumGradient2, resourcesProvider), Theme.getColor(Theme.key_dialogBackground, resourcesProvider), 0.5f));

@@ -36,7 +36,7 @@ import org.ansible.ui.PremiumPreviewFragment;
 
 import java.util.ArrayList;
 
-public class StarParticlesView extends View {
+public class DiamondParticlesView extends View {
 
 
     public boolean doNotFling;
@@ -45,7 +45,7 @@ public class StarParticlesView extends View {
     public final static int TYPE_APP_ICON_REACT = 1001;
     public static final int TYPE_APP_ICON_STAR_PREMIUM = 1002;
 
-    public StarParticlesView(Context context) {
+    public DiamondParticlesView(Context context) {
         this(context, (
             SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH ?    200 :
             SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_AVERAGE ? 100 :
@@ -79,7 +79,7 @@ public class StarParticlesView extends View {
         }
     }
 
-    public StarParticlesView(Context context, int particlesCount) {
+    public DiamondParticlesView(Context context, int particlesCount) {
         super(context);
 
         drawable = new Drawable(particlesCount);
@@ -101,7 +101,7 @@ public class StarParticlesView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int sizeInternal = (getMeasuredWidth() << 16) + getMeasuredHeight();
-        drawable.rect.set(0, 0, getStarsRectWidth(), dp(140));
+        drawable.rect.set(0, 0, getDiamondsRectWidth(), dp(140));
         drawable.rect.offset((getMeasuredWidth() - drawable.rect.width()) / 2, (getMeasuredHeight() - drawable.rect.height()) / 2);
         drawable.rect2.set(-dp(15), -dp(15), getMeasuredWidth() + dp(15), getMeasuredHeight() + dp(15));
         if (size != sizeInternal) {
@@ -110,7 +110,7 @@ public class StarParticlesView extends View {
         }
     }
 
-    protected int getStarsRectWidth() {
+    protected int getDiamondsRectWidth() {
         return dp(140);
     }
 
@@ -221,7 +221,7 @@ public class StarParticlesView extends View {
         public boolean roundEffect = true;
         public int type = -1;
         public Theme.ResourcesProvider resourcesProvider;
-        public int colorKey = Theme.key_premiumStartSmallStarsColor;
+        public int colorKey = Theme.key_premiumStartSmallDiamondsColor;
 
         public long pausedTime;
 
@@ -541,25 +541,25 @@ public class StarParticlesView extends View {
             private float x2, y2;
             private float drawingX, drawingY;
             private float vecX, vecY;
-            private int starIndex;
+            private int diamondIndex;
             private int alpha;
             private float randomRotate;
             float inProgress;
             float flipProgress;
 
             public void updatePoint() {
-                final int c = pointsCount[starIndex];
-                points[starIndex][2 * c] = x;
-                points[starIndex][2 * c + 1] = y;
-                pointsCount[starIndex]++;
+                final int c = pointsCount[diamondIndex];
+                points[diamondIndex][2 * c] = x;
+                points[diamondIndex][2 * c + 1] = y;
+                pointsCount[diamondIndex]++;
             }
 
             public void draw(Canvas canvas, long time, float alpha) {
                 if (useRotate) {
-                    final int c = pointsCount[starIndex];
-                    drawingX = points[starIndex][2 * c];
-                    drawingY = points[starIndex][2 * c + 1];
-                    pointsCount[starIndex]++;
+                    final int c = pointsCount[diamondIndex];
+                    drawingX = points[diamondIndex][2 * c];
+                    drawingY = points[diamondIndex][2 * c + 1];
+                    pointsCount[diamondIndex]++;
                 } else {
                     drawingX = x;
                     drawingY = y;
@@ -572,18 +572,18 @@ public class StarParticlesView extends View {
                     canvas.save();
                     canvas.translate(drawingX, drawingY);
                     if (randomRotate != 0) {
-                        canvas.rotate(randomRotate, stars[starIndex].getWidth() / 2f, stars[starIndex].getHeight() / 2f);
+                        canvas.rotate(randomRotate, stars[diamondIndex].getWidth() / 2f, stars[diamondIndex].getHeight() / 2f);
                     }
                     float outProgress = 0f;
                     if (checkTime && lifeTime - time < 200) {
                         outProgress = 1f - (lifeTime - time) / 150f;
                         outProgress = Utilities.clamp(outProgress, 1f, 0f);
                     }
-                    if (inProgress < 1f || GLIconSettingsView.smallStarsSize != 1f) {
-                        float s = AndroidUtilities.overshootInterpolator.getInterpolation(inProgress) * GLIconSettingsView.smallStarsSize;
+                    if (inProgress < 1f || GLIconSettingsView.smallDiamondsSize != 1f) {
+                        float s = AndroidUtilities.overshootInterpolator.getInterpolation(inProgress) * GLIconSettingsView.smallDiamondsSize;
                         canvas.scale(s, s, 0, 0);
                     }
-                    if (flip[starIndex]) {
+                    if (flip[diamondIndex]) {
                         flipProgress += dt / 1000f * Math.min(speedScale, 3.5f);
                         canvas.scale((float) Math.cos(Math.PI * flipProgress), 1f, 0, 0);
                     }
@@ -596,7 +596,7 @@ public class StarParticlesView extends View {
                         paint = Drawable.this.paint;
                     }
                     paint.setAlpha((int) (this.alpha * (1f - outProgress) * alpha));
-                    final Bitmap bitmap = stars[starIndex];
+                    final Bitmap bitmap = stars[diamondIndex];
                     if (useScale) {
                         final float s = scale * (1f - outProgress) * alpha * inProgress;
                         canvas.scale(s, s);
@@ -606,7 +606,7 @@ public class StarParticlesView extends View {
                 }
                 if (!paused) {
                     float speed = dp(4) * (dt / 660f);
-                    if (flip[starIndex]) {
+                    if (flip[diamondIndex]) {
                         speed *= 4 * Math.min(speedScale, 3.5f);
                     } else {
                         speed *= speedScale;
@@ -627,12 +627,12 @@ public class StarParticlesView extends View {
             public void genPosition(long time) {
                 if (type == PremiumPreviewFragment.PREMIUM_FEATURE_BUSINESS) {
                     final float rand = Utilities.fastRandom.nextFloat();
-                    if (rand < .13f) starIndex = 0;
-                    else starIndex = (int) Math.floor(1 + rand * (stars.length - 2));
+                    if (rand < .13f) diamondIndex = 0;
+                    else diamondIndex = (int) Math.floor(1 + rand * (stars.length - 2));
                 } else {
-                    starIndex = Math.abs(Utilities.fastRandom.nextInt() % stars.length);
+                    diamondIndex = Math.abs(Utilities.fastRandom.nextInt() % stars.length);
                 }
-                lifeTime = time + minLifeTime + Utilities.fastRandom.nextInt(randLifeTime * (flip[starIndex] ? 3 : 1));
+                lifeTime = time + minLifeTime + Utilities.fastRandom.nextInt(randLifeTime * (flip[diamondIndex] ? 3 : 1));
                 randomRotate = 0;
                 if (useScale) {
                     scale = .4f + .6f * Utilities.fastRandom.nextFloat();
@@ -675,7 +675,7 @@ public class StarParticlesView extends View {
                         float r = (Math.abs(Utilities.fastRandom.nextInt() % 1000) / 1000f) * (rect.width() - excludeRadius) + excludeRadius;
                         float a = Math.abs(Utilities.fastRandom.nextInt() % 360);
                         float oy = 0;
-                        if (flip[starIndex] && !first) {
+                        if (flip[diamondIndex] && !first) {
                             r = Math.min(r, dp(10));
                             oy += dp(30);
                         }
@@ -686,12 +686,12 @@ public class StarParticlesView extends View {
                         y = rect.top + Math.abs(Utilities.fastRandom.nextInt() % rect.height());
                     }
                 }
-                if (flip[starIndex]) {
+                if (flip[diamondIndex]) {
                     flipProgress = Math.abs(Utilities.fastRandom.nextFloat() * 2);
                 }
 
                 double a;
-                if (flip[starIndex]) {
+                if (flip[diamondIndex]) {
                     float d = 100;
                     a = Math.toRadians(180 + d - 2 * d * Utilities.fastRandom.nextFloat());
                 } else if (startFromCenter) {
@@ -701,12 +701,12 @@ public class StarParticlesView extends View {
                 }
                 vecX = (float) Math.cos(a);
                 vecY = (float) Math.sin(a);
-                if (svg[starIndex]) {
+                if (svg[diamondIndex]) {
                     alpha = (int) (120 * ((50 + Utilities.fastRandom.nextInt(50)) / 100f));
                 } else {
                     alpha = (int) (255 * ((50 + Utilities.fastRandom.nextInt(50)) / 100f));
                 }
-                if ((type == PremiumPreviewFragment.PREMIUM_FEATURE_PROFILE_BADGE && (starIndex == 1 || starIndex == 2)) ||
+                if ((type == PremiumPreviewFragment.PREMIUM_FEATURE_PROFILE_BADGE && (diamondIndex == 1 || diamondIndex == 2)) ||
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_ADVANCED_CHAT_MANAGEMENT ||
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_ADS ||
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_AVATARS ||

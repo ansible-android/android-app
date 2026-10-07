@@ -101,7 +101,7 @@ public class PhotoAttachPhotoCell extends FrameLayout {
     private boolean highQuality;
 
     private long stars;
-    private boolean starsSelectedMultiple;
+    private boolean diamondsSelectedMultiple;
 
     private Path path = new Path();
     private float spoilerRevealX;
@@ -381,10 +381,10 @@ public class PhotoAttachPhotoCell extends FrameLayout {
     }
 
     private SpannableString star, lock;
-    public void setStarsPrice(long stars, boolean multiple) {
-        if (multiple != starsSelectedMultiple || stars != this.stars) {
+    public void setDiamondsPrice(long stars, boolean multiple) {
+        if (multiple != diamondsSelectedMultiple || stars != this.stars) {
             this.stars = stars;
-            this.starsSelectedMultiple = multiple;
+            this.diamondsSelectedMultiple = multiple;
 
             SpannableStringBuilder s = null;
             if (stars > 0) {
@@ -552,7 +552,7 @@ public class PhotoAttachPhotoCell extends FrameLayout {
         requestLayout();
         setHasSpoiler(entry.hasSpoiler);
         setHighQuality(entry.isHighQuality() && isChecked());
-        setStarsPrice(entry.starsAmount, selectedMultiple);
+        setDiamondsPrice(entry.starsAmount, selectedMultiple);
     }
 
     public void setPhotoEntry(MediaController.SearchImage searchImage, boolean needCheckShow, boolean last) {
@@ -593,7 +593,7 @@ public class PhotoAttachPhotoCell extends FrameLayout {
         requestLayout();
         setHasSpoiler(false);
         setHighQuality(false);
-        setStarsPrice(0, false);
+        setDiamondsPrice(0, false);
     }
 
     public boolean isChecked() {

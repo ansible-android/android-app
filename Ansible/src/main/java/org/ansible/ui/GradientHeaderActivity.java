@@ -41,7 +41,7 @@ import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkSpanDrawable;
 import org.ansible.ui.Components.NestedSizeNotifierLayout;
 import org.ansible.ui.Components.Premium.PremiumGradient;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.SimpleThemeDescription;
 import org.ansible.ui.Components.UniversalAdapter;
@@ -76,7 +76,7 @@ public abstract class GradientHeaderActivity extends BaseFragment {
     protected RecyclerListView listView;
 
     private Drawable shadowDrawable;
-    protected StarParticlesView particlesView;
+    protected DiamondParticlesView particlesView;
     private boolean isDialogVisible;
     private boolean inc;
     private float progress;
@@ -479,8 +479,8 @@ public abstract class GradientHeaderActivity extends BaseFragment {
         return true;
     }
 
-    public StarParticlesView createParticlesView() {
-        return new StarParticlesView(getContext()) {
+    public DiamondParticlesView createParticlesView() {
+        return new DiamondParticlesView(getContext()) {
             @Override
             protected void configure() {
                 drawable = new Drawable(50) {
@@ -501,7 +501,7 @@ public abstract class GradientHeaderActivity extends BaseFragment {
             }
 
             @Override
-            protected int getStarsRectWidth() {
+            protected int getDiamondsRectWidth() {
                 return getMeasuredWidth();
             }
         };
@@ -574,7 +574,7 @@ public abstract class GradientHeaderActivity extends BaseFragment {
         return SimpleThemeDescription.createThemeDescriptions(this::updateColors,
                 Theme.key_premiumGradient1, Theme.key_premiumGradient2, Theme.key_premiumGradient3, Theme.key_premiumGradient4,
                 Theme.key_premiumGradientBackground1, Theme.key_premiumGradientBackground2, Theme.key_premiumGradientBackground3, Theme.key_premiumGradientBackground4,
-                Theme.key_premiumGradientBackgroundOverlay, Theme.key_premiumStarGradient1, Theme.key_premiumStarGradient2, Theme.key_premiumStartSmallStarsColor, Theme.key_premiumStartSmallStarsColor2
+                Theme.key_premiumGradientBackgroundOverlay, Theme.key_premiumDiamondGradient1, Theme.key_premiumDiamondGradient2, Theme.key_premiumStartSmallDiamondsColor, Theme.key_premiumStartSmallDiamondsColor2
         );
     }
 

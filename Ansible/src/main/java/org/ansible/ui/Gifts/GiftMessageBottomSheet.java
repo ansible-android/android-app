@@ -31,7 +31,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.utils.DrawableUtils;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.ChatActivity;
@@ -64,7 +64,7 @@ public class GiftMessageBottomSheet extends BottomSheet {
     public static final long TRANSITION_DURATION = 350;
 
     private final SizeNotifierFrameLayout sizeNotifierFrameLayout;
-    private final StarGiftUniqueActionView starGiftUniqueActionView;
+    private final DiamondGiftUniqueActionView diamondGiftUniqueActionView;
 
     private final WallpaperBitmapProvider wallpaperBitmapProvider = new WallpaperBitmapProvider();
     private final @NonNull BlurredBackgroundSourceWrapped navbarContentSourceWallpaper;
@@ -89,10 +89,10 @@ public class GiftMessageBottomSheet extends BottomSheet {
 
     private ChatActivityEnterView.SendButton writeButton;
 
-    private final TL_stars.TL_starGiftUnique gift;
+    private final TL_diamonds.TL_starGiftUnique gift;
     private final long toDialogId;
 
-    public GiftMessageBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, TL_stars.TL_starGiftUnique gift, long toDialogId) {
+    public GiftMessageBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, TL_diamonds.TL_starGiftUnique gift, long toDialogId) {
         super(context, true, true, null);
         AndroidUtilities.enableEdgeToEdge(getWindow());
 
@@ -158,11 +158,11 @@ public class GiftMessageBottomSheet extends BottomSheet {
         backgroundDrawable = PreviewView.getBackgroundDrawable(null, currentAccount, toDialogId, Theme.isCurrentThemeDark());
         sizeNotifierFrameLayout.setBackgroundImage(backgroundDrawable, false);
 
-        starGiftUniqueActionView = new StarGiftUniqueActionView(context, currentAccount, resourcesProvider);
-        starGiftUniqueActionView.set(gift, UserConfig.getInstance(currentAccount).getClientUserId(), null, LocaleController.getString(R.string.GiftMessageSendNow), false);
-        starGiftUniqueActionView.setPadding(0, dp(4), 0, dp(4));
-        starGiftUniqueActionView.setLayoutBackground(Theme.createServiceDrawable(AndroidUtilities.dp(18), starGiftUniqueActionView, containerView, getThemedPaint(Theme.key_paint_chatActionBackground)));
-        sizeNotifierFrameLayout.addView(starGiftUniqueActionView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+        diamondGiftUniqueActionView = new DiamondGiftUniqueActionView(context, currentAccount, resourcesProvider);
+        diamondGiftUniqueActionView.set(gift, UserConfig.getInstance(currentAccount).getClientUserId(), null, LocaleController.getString(R.string.GiftMessageSendNow), false);
+        diamondGiftUniqueActionView.setPadding(0, dp(4), 0, dp(4));
+        diamondGiftUniqueActionView.setLayoutBackground(Theme.createServiceDrawable(AndroidUtilities.dp(18), diamondGiftUniqueActionView, containerView, getThemedPaint(Theme.key_paint_chatActionBackground)));
+        sizeNotifierFrameLayout.addView(diamondGiftUniqueActionView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
 
         chatInputViewsContainer = new ChatInputViewsContainer(context);
         chatInputViewsContainer.setClipChildren(false);
@@ -208,7 +208,7 @@ public class GiftMessageBottomSheet extends BottomSheet {
         containerView.addView(chatInputViewsContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         commentView.setDelegate(new ChatActivityEnterView.ChatActivityEnterViewDelegate() {
             @Override
-            public void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars) {
+            public void onMessageSend(CharSequence message, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds) {
 
             }
 
@@ -248,7 +248,7 @@ public class GiftMessageBottomSheet extends BottomSheet {
             }
 
             private void onTextChangedInternal(CharSequence text) {
-                starGiftUniqueActionView.set(gift, UserConfig.getInstance(currentAccount).getClientUserId(), commentView.getTextWithEntities(), LocaleController.getString(R.string.GiftMessageSendNow), true);
+                diamondGiftUniqueActionView.set(gift, UserConfig.getInstance(currentAccount).getClientUserId(), commentView.getTextWithEntities(), LocaleController.getString(R.string.GiftMessageSendNow), true);
 
                 int beforeLimit;
                 codepointCount = Character.codePointCount(text, 0, text.length());
@@ -433,7 +433,7 @@ public class GiftMessageBottomSheet extends BottomSheet {
         publicCheckboxView.setColor(Theme.key_chat_serviceText, Theme.key_chat_serviceText, Theme.key_checkboxCheck);
         publicCheckboxView.setDrawUnchecked(true);
         publicCheckboxView.setChecked(!hideMyName, false);
-        starGiftUniqueActionView.getLayout().setOnButtonClickListener(() -> writeButton.performClick());
+        diamondGiftUniqueActionView.getLayout().setOnButtonClickListener(() -> writeButton.performClick());
 
         // starGiftUniqueActionView.getLayout().getMessageDrawable().setAvatarVisible(!hideMyName, false);
         publicCheckboxView.setDrawBackgroundAsArc(10);
@@ -538,15 +538,15 @@ public class GiftMessageBottomSheet extends BottomSheet {
         final float bottomBase = windowInsetsStateHolder.getAnimatedMaxBottomInset() + dp(9) + chatInputViewsContainer.getInputBubbleHeight();
 
 
-        final float translationY = (containerView.getHeight() - starGiftUniqueActionView.getHeight()) / 2f
+        final float translationY = (containerView.getHeight() - diamondGiftUniqueActionView.getHeight()) / 2f
             + (top - (bottomBase + dp(7 + 32 + 7))) / 2f;
 
-        final float maxTranslationY = (containerView.getHeight() - bottomBase) - dp(14) - publicCheckboxButton.getHeight() - dp(10) - starGiftUniqueActionView.getHeight();
+        final float maxTranslationY = (containerView.getHeight() - bottomBase) - dp(14) - publicCheckboxButton.getHeight() - dp(10) - diamondGiftUniqueActionView.getHeight();
 
-        starGiftUniqueActionView.setTranslationY(Math.min(translationY, maxTranslationY));
-        starGiftUniqueActionView.invalidate();
+        diamondGiftUniqueActionView.setTranslationY(Math.min(translationY, maxTranslationY));
+        diamondGiftUniqueActionView.invalidate();
 
-        previewInChatHeader.setTranslationY(starGiftUniqueActionView.getY() - dp(33));
+        previewInChatHeader.setTranslationY(diamondGiftUniqueActionView.getY() - dp(33));
         previewInChatHeader.invalidate();
 
         publicCheckboxButton.setTranslationY(-(bottomBase + dp(14)));

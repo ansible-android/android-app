@@ -416,7 +416,7 @@ public class CheckBoxCell extends FrameLayout {
         } else {
             name = ContactsController.formatName(userOrChat);
         }
-        if (userOrChat instanceof TLRPC.User && ((TLRPC.User) userOrChat).id == MessagesController.getInstance(UserConfig.selectedAccount).telegramAntispamUserId) {
+        if (userOrChat instanceof TLRPC.User && ((TLRPC.User) userOrChat).id == MessagesController.getInstance(UserConfig.selectedAccount).ansibleAntispamUserId) {
             name = LocaleController.getString(R.string.ChannelAntiSpamUser);
         }
         if (textAnimated) {

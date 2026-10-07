@@ -3,7 +3,7 @@ package org.ansible.ui.TON;
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsIntroActivity.formatStarsAmount;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.formatDiamondsAmount;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -42,7 +42,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.browser.Browser;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.AccountFrozenAlert;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BackDrawable;
@@ -59,18 +59,18 @@ import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconRenderer;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconTextureView;
 import org.ansible.ui.Components.Premium.GLIcon.Icon3D;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.Premium.boosts.UserSelectorBottomSheet;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.GradientHeaderActivity;
 import org.ansible.ui.LaunchActivity;
-import org.ansible.ui.Stars.BotStarsActivity;
-import org.ansible.ui.Stars.BotStarsController;
-import org.ansible.ui.Stars.ExplainStarsSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BotDiamondsActivity;
+import org.ansible.ui.Diamonds.BotDiamondsController;
+import org.ansible.ui.Diamonds.ExplainDiamondsSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
 import org.ansible.ui.bots.ChannelAffiliateProgramsFragment;
@@ -82,16 +82,16 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
     private FrameLayout aboveTitleView;
     private GLIconTextureView iconTextureView;
 
-    private StarsIntroActivity.StarsTransactionsLayout transactionsLayout;
+    private DiamondsIntroActivity.DiamondsTransactionsLayout transactionsLayout;
     private View emptyLayout;
     private FireworksOverlay fireworksOverlay;
 
     private final boolean allowTopUp;
     private LinearLayout balanceLayout;
-    private LinearLayout starBalanceLayout;
-    private SpannableStringBuilder starBalanceIcon;
-    private AnimatedTextView starBalanceTextView;
-    private AnimatedTextView starBalanceTitleView;
+    private LinearLayout diamondBalanceLayout;
+    private SpannableStringBuilder diamondBalanceIcon;
+    private AnimatedTextView diamondBalanceTextView;
+    private AnimatedTextView diamondBalanceTitleView;
 
     private FrameLayout oneButtonsLayout;
     private ButtonWithCounterView buyButton;
@@ -110,32 +110,32 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
 
     @Override
     public boolean onFragmentCreate() {
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starTransactionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starSubscriptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botStarsUpdated);
-        StarsController.getTonInstance(currentAccount).invalidateTransactions(true);
-        StarsController.getTonInstance(currentAccount).invalidateSubscriptions(true);
-        StarsController.getTonInstance(currentAccount).getOptions();
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondOptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondTransactionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondSubscriptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botDiamondsUpdated);
+        DiamondsController.getTonInstance(currentAccount).invalidateTransactions(true);
+        DiamondsController.getTonInstance(currentAccount).invalidateSubscriptions(true);
+        DiamondsController.getTonInstance(currentAccount).getOptions();
         return super.onFragmentCreate();
     }
 
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starOptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starBalanceUpdated);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starTransactionsLoaded);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starSubscriptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botStarsUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondOptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondTransactionsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondSubscriptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botDiamondsUpdated);
     }
 
     private boolean hadTransactions;
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
         if (
-            id == NotificationCenter.starOptionsLoaded
+            id == NotificationCenter.diamondOptionsLoaded
 //            || id == NotificationCenter.starTransactionsLoaded
         ) {
             saveScrollPosition();
@@ -146,8 +146,8 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
                 savedScrollOffset = 0;
             }
             applyScrolledPosition();
-        } else if (id == NotificationCenter.starTransactionsLoaded) {
-            final StarsController c = StarsController.getTonInstance(currentAccount);
+        } else if (id == NotificationCenter.diamondTransactionsLoaded) {
+            final DiamondsController c = DiamondsController.getTonInstance(currentAccount);
             if (hadTransactions != c.hasTransactions()) {
                 hadTransactions = c.hasTransactions();
                 saveScrollPosition();
@@ -159,13 +159,13 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
                 }
                 applyScrolledPosition();
             }
-        } else if (id == NotificationCenter.starSubscriptionsLoaded) {
+        } else if (id == NotificationCenter.diamondSubscriptionsLoaded) {
             if (adapter != null) {
                 adapter.update(true);
             }
-        } else if (id == NotificationCenter.starBalanceUpdated) {
+        } else if (id == NotificationCenter.diamondBalanceUpdated) {
             updateBalance();
-        } else if (id == NotificationCenter.botStarsUpdated) {
+        } else if (id == NotificationCenter.botDiamondsUpdated) {
             if (getUserConfig().getClientUserId() == (long) args[0]) {
                 updateBalance();
             }
@@ -181,7 +181,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
     public View createView(Context context) {
         useFillLastLayoutManager = false;
         particlesViewHeight = dp(32 + 190 + 16);
-        transactionsLayout = new StarsIntroActivity.StarsTransactionsLayout(context, currentAccount, true, 0, getClassGuid(), getResourceProvider());
+        transactionsLayout = new DiamondsIntroActivity.DiamondsTransactionsLayout(context, currentAccount, true, 0, getClassGuid(), getResourceProvider());
         emptyLayout = new View(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -211,10 +211,10 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
         iconTextureView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconTextureView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconTextureView.mRenderer.updateColors();
-        iconTextureView.setStarParticlesView(particlesView);
+        iconTextureView.setDiamondParticlesView(particlesView);
         aboveTitleView.addView(iconTextureView, LayoutHelper.createFrame(170, 170, Gravity.CENTER, 0, 32, 0, 24));
         configureHeader(getString(R.string.TONBalanceTitle), AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.TONBalanceText), () -> {
-            new ExplainStarsSheet(context).show();
+            new ExplainDiamondsSheet(context).show();
         }), true), aboveTitleView, null);
 
         listView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -234,32 +234,32 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
         fireworksOverlay = new FireworksOverlay(getContext());
         contentView.addView(fireworksOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        final StarsController s = StarsController.getTonInstance(currentAccount);
+        final DiamondsController s = DiamondsController.getTonInstance(currentAccount);
 
         balanceLayout = new LinearLayout(getContext());
         balanceLayout.setOrientation(LinearLayout.VERTICAL);
         balanceLayout.setPadding(0, dp(20), 0, dp(10));
 
-        starBalanceTextView = new AnimatedTextView(getContext(), false, true, false);
-        starBalanceTextView.setTypeface(AndroidUtilities.bold());
-        starBalanceTextView.setTextSize(dp(32));
-        starBalanceTextView.setGravity(Gravity.CENTER);
-        starBalanceTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourceProvider));
+        diamondBalanceTextView = new AnimatedTextView(getContext(), false, true, false);
+        diamondBalanceTextView.setTypeface(AndroidUtilities.bold());
+        diamondBalanceTextView.setTextSize(dp(32));
+        diamondBalanceTextView.setGravity(Gravity.CENTER);
+        diamondBalanceTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourceProvider));
 
-        starBalanceIcon = new SpannableStringBuilder("S");
-        final ColoredImageSpan starBalanceIconSpan = new ColoredImageSpan(R.drawable.mini_gram_72);
-        starBalanceIconSpan.setOverrideColor(0xFF3391D4);
-        starBalanceIconSpan.setScale(0.5f, 0.5f);
-        starBalanceIconSpan.translate(-dp(3), 0);
-        starBalanceIcon.setSpan(starBalanceIconSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        balanceLayout.addView(starBalanceTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 40, Gravity.CENTER, 24, 0, 24, 0));
+        diamondBalanceIcon = new SpannableStringBuilder("S");
+        final ColoredImageSpan diamondBalanceIconSpan = new ColoredImageSpan(R.drawable.mini_gram_72);
+        diamondBalanceIconSpan.setOverrideColor(0xFF3391D4);
+        diamondBalanceIconSpan.setScale(0.5f, 0.5f);
+        diamondBalanceIconSpan.translate(-dp(3), 0);
+        diamondBalanceIcon.setSpan(diamondBalanceIconSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        balanceLayout.addView(diamondBalanceTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 40, Gravity.CENTER, 24, 0, 24, 0));
 
-        starBalanceTitleView = new AnimatedTextView(getContext());
-        starBalanceTitleView.setTextSize(dp(14));
-        starBalanceTitleView.setGravity(Gravity.CENTER);
-        starBalanceTitleView.setText(LocaleController.getString(R.string.YourTonBalance));
-        starBalanceTitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourceProvider));
-        balanceLayout.addView(starBalanceTitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.CENTER, 24, 0, 24, 8));
+        diamondBalanceTitleView = new AnimatedTextView(getContext());
+        diamondBalanceTitleView.setTextSize(dp(14));
+        diamondBalanceTitleView.setGravity(Gravity.CENTER);
+        diamondBalanceTitleView.setText(LocaleController.getString(R.string.YourTonBalance));
+        diamondBalanceTitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourceProvider));
+        balanceLayout.addView(diamondBalanceTitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.CENTER, 24, 0, 24, 8));
 
         FrameLayout buttonsLayout = new FrameLayout(getContext());
 
@@ -309,7 +309,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
         ssb.append(getString(R.string.TonStats));
         withdrawButton.setText(ssb, false);
         withdrawButton.setOnClickListener(v -> {
-            presentFragment(new BotStarsActivity(BotStarsActivity.TYPE_TON, getUserConfig().getClientUserId()));
+            presentFragment(new BotDiamondsActivity(BotDiamondsActivity.TYPE_TON, getUserConfig().getClientUserId()));
         });
         twoButtonsLayout.addView(withdrawButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER, 1, 0, 0, 0, 0));
 
@@ -332,24 +332,24 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
     }
 
     private void updateBalance() {
-        final StarsController s = StarsController.getTonInstance(currentAccount);
+        final DiamondsController s = DiamondsController.getTonInstance(currentAccount);
         final double ton_usd_rate = getMessagesController().config.tonUsdRate.get();
 
-        final TL_stars.StarsAmount balance = s.getBalance();
+        final TL_diamonds.StarsAmount balance = s.getBalance();
 
         final SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append(starBalanceIcon);
-        sb.append(formatStarsAmount(balance, 0.66f, ' '));
-        starBalanceTextView.setText(sb);
+        sb.append(diamondBalanceIcon);
+        sb.append(formatDiamondsAmount(balance, 0.66f, ' '));
+        diamondBalanceTextView.setText(sb);
 
         final double dollars = balance.amount / 1_000_000_000.0 * ton_usd_rate;
         if ((int) (dollars * 100) > 0) {
-            starBalanceTitleView.setText("≈" + BillingController.getInstance().formatCurrency((int) (dollars * 100), "USD"));
+            diamondBalanceTitleView.setText("≈" + BillingController.getInstance().formatCurrency((int) (dollars * 100), "USD"));
         } else {
-            starBalanceTitleView.setText(LocaleController.getString(R.string.YourTonBalance));
+            diamondBalanceTitleView.setText(LocaleController.getString(R.string.YourTonBalance));
         }
 
-        final TLRPC.TL_payments_starsRevenueStats stats = BotStarsController.getInstance(currentAccount).getTONRevenueStats(getUserConfig().getClientUserId(), true);
+        final TLRPC.TL_payments_starsRevenueStats stats = BotDiamondsController.getInstance(currentAccount).getTONRevenueStats(getUserConfig().getClientUserId(), true);
         updateButtonsLayouts(stats != null && stats.status != null && stats.status.overall_revenue.positive(), true);
     }
 
@@ -521,12 +521,12 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
     }
 
     @Override
-    public StarParticlesView createParticlesView() {
+    public DiamondParticlesView createParticlesView() {
         return makeParticlesView(getContext(), 75, 1);
     }
 
-    public static StarParticlesView makeParticlesView(Context context, int particlesCount, int type) {
-        return new StarParticlesView(context) {
+    public static DiamondParticlesView makeParticlesView(Context context, int particlesCount, int type) {
+        return new DiamondParticlesView(context) {
             Paint[] paints;
 
             @Override
@@ -557,7 +557,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
             }
 
             @Override
-            protected int getStarsRectWidth() {
+            protected int getDiamondsRectWidth() {
                 return getMeasuredWidth();
             }
 
@@ -618,7 +618,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
             return;
         }
 
-        final StarsController c = StarsController.getTonInstance(currentAccount);
+        final DiamondsController c = DiamondsController.getTonInstance(currentAccount);
 
         items.add(UItem.asFullyCustom(getHeader(getContext())));
         items.add(UItem.asCustom(balanceLayout));
@@ -639,10 +639,10 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
             expanded = !expanded;
             adapter.update(true);
         } else if (item.id == BUTTON_GIFT) {
-            StarsController.getTonInstance(currentAccount).getGiftOptions();
+            DiamondsController.getTonInstance(currentAccount).getGiftOptions();
             UserSelectorBottomSheet.open(UserSelectorBottomSheet.TYPE_STARS, 0, BirthdayController.getInstance(currentAccount).getState());
         } else if (item.id == BUTTON_SUBSCRIPTIONS_EXPAND) {
-            StarsController.getTonInstance(currentAccount).loadSubscriptions();
+            DiamondsController.getTonInstance(currentAccount).loadSubscriptions();
             adapter.update(true);
         } else if (item.id == BUTTON_AFFILIATE) {
             if (MessagesController.getInstance(currentAccount).isFrozen()) {
@@ -653,7 +653,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
         }
     }
 
-    public static class StarsNeededSheet extends BottomSheetWithRecyclerListView implements NotificationCenter.NotificationCenterDelegate {
+    public static class DiamondsNeededSheet extends BottomSheetWithRecyclerListView implements NotificationCenter.NotificationCenterDelegate {
         private final AmountUtils.Amount requiredAmount;
 
         private final HeaderView headerView;
@@ -663,12 +663,12 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
 
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
-            if (id == NotificationCenter.starOptionsLoaded || id == NotificationCenter.starBalanceUpdated) {
+            if (id == NotificationCenter.diamondOptionsLoaded || id == NotificationCenter.diamondBalanceUpdated) {
                 if (adapter != null) {
                     adapter.update(true);
                 }
 
-                AmountUtils.Amount balance = StarsController.getTonInstance(currentAccount).getBalanceAmount();
+                AmountUtils.Amount balance = DiamondsController.getTonInstance(currentAccount).getBalanceAmount();
                 headerView.titleView.setText(formatString(R.string.TonNeededTitle,
                     AmountUtils.Amount.fromNano(requiredAmount.asNano() - balance.asNano(), AmountUtils.Currency.TON).asFormatString()));
                 if (actionBar != null) {
@@ -686,7 +686,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
 
         @Override
         public void show() {
-            AmountUtils.Amount balance = StarsController.getTonInstance(currentAccount).getBalanceAmount();
+            AmountUtils.Amount balance = DiamondsController.getTonInstance(currentAccount).getBalanceAmount();
             if (balance.asNano() >= requiredAmount.asNano()) {
                 if (whenPurchased != null) {
                     whenPurchased.run();
@@ -702,18 +702,18 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
                 }
             }
             super.show();
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
         }
 
         @Override
         public void dismissInternal() {
             super.dismissInternal();
-            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondBalanceUpdated);
         }
 
-        public StarsNeededSheet(
+        public DiamondsNeededSheet(
             Context context,
             Theme.ResourcesProvider resourcesProvider,
             AmountUtils.Amount requiredAmount,
@@ -745,7 +745,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
             this.requiredAmount = requiredAmount;
             headerView = new HeaderView(context, currentAccount, resourcesProvider);
 
-            final AmountUtils.Amount balance = StarsController.getTonInstance(currentAccount).getBalanceAmount();
+            final AmountUtils.Amount balance = DiamondsController.getTonInstance(currentAccount).getBalanceAmount();
             headerView.titleView.setText(formatString(R.string.TonNeededTitle,
                 AmountUtils.Amount.fromNano(requiredAmount.asNano() - balance.asNano(), AmountUtils.Currency.TON).asFormatString()));
 
@@ -809,7 +809,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
 
         public static class HeaderView extends LinearLayout {
             private final FrameLayout topView;
-            public final StarParticlesView particlesView;
+            public final DiamondParticlesView particlesView;
             public final GLIconTextureView iconView;
             public final TextView titleView;
             public final TextView subtitleView;
@@ -829,7 +829,7 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
                 iconView.mRenderer.colorKey1 = Theme.key_starsGradient1;
                 iconView.mRenderer.colorKey2 = Theme.key_starsGradient2;
                 iconView.mRenderer.updateColors();
-                iconView.setStarParticlesView(particlesView);
+                iconView.setDiamondParticlesView(particlesView);
                 topView.addView(iconView, LayoutHelper.createFrame(170, 170, Gravity.CENTER, 0, 32, 0, 24));
                 iconView.setPaused(false);
 

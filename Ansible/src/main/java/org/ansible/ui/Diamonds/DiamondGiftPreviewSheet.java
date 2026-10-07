@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.lerp;
@@ -48,7 +48,7 @@ import org.ansible.messenger.SvgHelper;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.utils.tlutils.TlUtils;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.BackupImageView;
@@ -81,7 +81,7 @@ import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import me.vkryl.core.BitwiseUtils;
 
-public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
+public class DiamondGiftPreviewSheet extends BottomSheetWithRecyclerListView {
     private static final int TAB_MODELS = 0;
     private static final int TAB_BACKDROPS = 1;
     private static final int TAB_PATTERNS = 2;
@@ -91,13 +91,13 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
     private final LinearLayout buttonsLayout;
     public final Button[] buttons;
 
-    private final ArrayList<TL_stars.starGiftAttributeBackdrop> backdrops;
-    private final ArrayList<TL_stars.starGiftAttributePattern> patterns;
-    private final ArrayList<TL_stars.starGiftAttributeModel> models;
-    private final ArrayList<TL_stars.starGiftAttributeModel> simpleModels;
-    private final BagRandomizer<TL_stars.starGiftAttributeBackdrop> rBackdrops;
-    private final BagRandomizer<TL_stars.starGiftAttributePattern> rPatterns;
-    private final BagRandomizer<TL_stars.starGiftAttributeModel> rModels;
+    private final ArrayList<TL_diamonds.starGiftAttributeBackdrop> backdrops;
+    private final ArrayList<TL_diamonds.starGiftAttributePattern> patterns;
+    private final ArrayList<TL_diamonds.starGiftAttributeModel> models;
+    private final ArrayList<TL_diamonds.starGiftAttributeModel> simpleModels;
+    private final BagRandomizer<TL_diamonds.starGiftAttributeBackdrop> rBackdrops;
+    private final BagRandomizer<TL_diamonds.starGiftAttributePattern> rPatterns;
+    private final BagRandomizer<TL_diamonds.starGiftAttributeModel> rModels;
 
     private Mode mode = Mode.RANDOM;
 
@@ -109,7 +109,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
     private final FrameLayout headerView;
     private final ImageView backButton;
     private final ImageView headerPlay;
-    private final StarGiftSheet.TopView topView;
+    private final DiamondGiftSheet.TopView topView;
     private final TextView giftNameTextView;
     private final TextView giftStatusTextView;
     private final View gradientTop;
@@ -122,39 +122,39 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
     private @Nullable Attributes selectedAttributes;
     private final boolean crafting;
 
-    private static double getRarityIndex(TL_stars.StarGiftAttribute attr) {
-        if (attr.rarity instanceof TL_stars.TL_starGiftAttributeRarity) {
-            return ((TL_stars.TL_starGiftAttributeRarity) attr.rarity).permille;
-        } else if (attr.rarity instanceof TL_stars.TL_starGiftAttributeRarityLegendary) {
+    private static double getRarityIndex(TL_diamonds.StarGiftAttribute attr) {
+        if (attr.rarity instanceof TL_diamonds.TL_starGiftAttributeRarity) {
+            return ((TL_diamonds.TL_starGiftAttributeRarity) attr.rarity).permille;
+        } else if (attr.rarity instanceof TL_diamonds.TL_starGiftAttributeRarityLegendary) {
             return 0.01;
-        } else if (attr.rarity instanceof TL_stars.TL_starGiftAttributeRarityEpic) {
+        } else if (attr.rarity instanceof TL_diamonds.TL_starGiftAttributeRarityEpic) {
             return 0.02;
-        } else if (attr.rarity instanceof TL_stars.TL_starGiftAttributeRarityRare) {
+        } else if (attr.rarity instanceof TL_diamonds.TL_starGiftAttributeRarityRare) {
             return 0.03;
-        } else if (attr.rarity instanceof TL_stars.TL_starGiftAttributeRarityUncommon) {
+        } else if (attr.rarity instanceof TL_diamonds.TL_starGiftAttributeRarityUncommon) {
             return 0.04;
         }
         return 0;
     }
 
-    public StarGiftPreviewSheet(Context context, Theme.ResourcesProvider resourcesProvider, int currentAccount, String collectionTitle, ArrayList<TL_stars.StarGiftAttribute> attributes, boolean crafting) {
+    public DiamondGiftPreviewSheet(Context context, Theme.ResourcesProvider resourcesProvider, int currentAccount, String collectionTitle, ArrayList<TL_diamonds.StarGiftAttribute> attributes, boolean crafting) {
         super(context, null, false, false, false, resourcesProvider);
         this.currentAccount = currentAccount;
         this.crafting = crafting;
 
         this.viewGroupPartRenderer = new ViewGroupPartRenderer(recyclerListView, container, recyclerListView::drawChild);
-        this.backdrops = TlUtils.findAllInstances(attributes, TL_stars.starGiftAttributeBackdrop.class);
+        this.backdrops = TlUtils.findAllInstances(attributes, TL_diamonds.starGiftAttributeBackdrop.class);
         this.rBackdrops = new BagRandomizer<>(backdrops);
         this.rBackdrops.setReshuffleIfEnd(false);
-        this.patterns = TlUtils.findAllInstances(attributes, TL_stars.starGiftAttributePattern.class);
+        this.patterns = TlUtils.findAllInstances(attributes, TL_diamonds.starGiftAttributePattern.class);
         this.rPatterns = new BagRandomizer<>(patterns);
         this.rPatterns.setReshuffleIfEnd(false);
-        this.models = TlUtils.findAllInstances(attributes, TL_stars.starGiftAttributeModel.class);
+        this.models = TlUtils.findAllInstances(attributes, TL_diamonds.starGiftAttributeModel.class);
         this.simpleModels = new ArrayList<>();
         if (crafting) {
             for (int i = 0; i < this.models.size(); ++i) {
-                final TL_stars.starGiftAttributeModel model = this.models.get(i);
-                if (model.rarity instanceof TL_stars.TL_starGiftAttributeRarity) {
+                final TL_diamonds.starGiftAttributeModel model = this.models.get(i);
+                if (model.rarity instanceof TL_diamonds.TL_starGiftAttributeRarity) {
                     simpleModels.add(model);
                     this.models.remove(i);
                     i--;
@@ -163,10 +163,10 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
         } else {
             this.simpleModels.clear();
         }
-        this.backdrops.sort(Comparator.comparingDouble(StarGiftPreviewSheet::getRarityIndex));
-        this.patterns.sort(Comparator.comparingDouble(StarGiftPreviewSheet::getRarityIndex));
-        this.models.sort(Comparator.comparingDouble(StarGiftPreviewSheet::getRarityIndex));
-        this.simpleModels.sort(Comparator.comparingDouble(StarGiftPreviewSheet::getRarityIndex));
+        this.backdrops.sort(Comparator.comparingDouble(DiamondGiftPreviewSheet::getRarityIndex));
+        this.patterns.sort(Comparator.comparingDouble(DiamondGiftPreviewSheet::getRarityIndex));
+        this.models.sort(Comparator.comparingDouble(DiamondGiftPreviewSheet::getRarityIndex));
+        this.simpleModels.sort(Comparator.comparingDouble(DiamondGiftPreviewSheet::getRarityIndex));
         this.rModels = new BagRandomizer<>(models);
         this.rModels.setReshuffleIfEnd(false);
 
@@ -251,7 +251,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
         headerView = new FrameLayout(context);
         headerView.setClipChildren(false);
 
-        topView = new StarGiftSheet.TopView(context, resourcesProvider, this::onBackPressed, v -> {}, null, v -> {}, v -> {}, v -> {}, v -> {}, v -> {}) {
+        topView = new DiamondGiftSheet.TopView(context, resourcesProvider, this::onBackPressed, v -> {}, null, v -> {}, v -> {}, v -> {}, v -> {}, v -> {}) {
             @Override
             public float getRealHeight() {
                 return dp(315);
@@ -273,7 +273,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
                 if (headerPlay != null && Theme.setSelectorDrawableColor(headerPlay.getBackground(), color, false)) {
                     headerPlay.invalidate();
                 }
-                for (StarGiftPreviewSheet.Button btn : StarGiftPreviewSheet.this.buttons) {
+                for (DiamondGiftPreviewSheet.Button btn : DiamondGiftPreviewSheet.this.buttons) {
                     if (Theme.setSelectorDrawableColor(btn.getBackground(), color, false)) {
                         btn.invalidate();
                     }
@@ -283,8 +283,8 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
                     hsv[2] = Math.min(1f, hsv[2] * 1.1f);
                     int c = Color.HSVToColor(hsv);
 
-                    if (btn.percentView.getSizeableBackground() instanceof StarGiftSheet.RoundRectStrokeDrawable) {
-                        ((StarGiftSheet.RoundRectStrokeDrawable) btn.percentView.getSizeableBackground()).setColor(c);
+                    if (btn.percentView.getSizeableBackground() instanceof DiamondGiftSheet.RoundRectStrokeDrawable) {
+                        ((DiamondGiftSheet.RoundRectStrokeDrawable) btn.percentView.getSizeableBackground()).setColor(c);
                         btn.percentView.invalidate();
                     } else if (Theme.setSelectorDrawableColor(btn.percentView.getSizeableBackground(), c, false)) {
                         btn.percentView.invalidate();
@@ -293,7 +293,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
             }
 
             @Override
-            public void onSwitchPage(StarGiftSheet.PageTransition p) {
+            public void onSwitchPage(DiamondGiftSheet.PageTransition p) {
                 super.onSwitchPage(p);
                 updateHeaderAttributes(true);
             }
@@ -318,7 +318,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
                 canvas.restore();
             }
         };
-        topView.onSwitchPage(new StarGiftSheet.PageTransition(StarGiftSheet.PAGE_UPGRADE, StarGiftSheet.PAGE_UPGRADE, 1.0f));
+        topView.onSwitchPage(new DiamondGiftSheet.PageTransition(DiamondGiftSheet.PAGE_UPGRADE, DiamondGiftSheet.PAGE_UPGRADE, 1.0f));
         topView.setPreviewingAttributes(attributes);
         topView.hideCloseButton();
         headerView.addView(topView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -423,9 +423,9 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
         containerView.addView(tabsSelectorView, LayoutHelper.createFrame(268, 64, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0, 0, 5));
 
         selectedAttributes = new Attributes(
-            TlUtils.findFirstInstance(attributes, TL_stars.starGiftAttributeBackdrop.class),
-            TlUtils.findFirstInstance(attributes, TL_stars.starGiftAttributePattern.class),
-            TlUtils.findFirstInstance(attributes, TL_stars.starGiftAttributeModel.class)
+            TlUtils.findFirstInstance(attributes, TL_diamonds.starGiftAttributeBackdrop.class),
+            TlUtils.findFirstInstance(attributes, TL_diamonds.starGiftAttributePattern.class),
+            TlUtils.findFirstInstance(attributes, TL_diamonds.starGiftAttributeModel.class)
         );
 
         adapter.update(false);
@@ -526,7 +526,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
         buttons[0].titleView.setText(topView.getUpgradeImageViewAttribute().name, animated);
         final Integer[] rarityColor = new Integer[1];
         buttons[0].percentView.setText(
-            StarGiftSheet.getRarityName(topView.getUpgradeImageViewAttribute().rarity, rarityColor)
+            DiamondGiftSheet.getRarityName(topView.getUpgradeImageViewAttribute().rarity, rarityColor)
         );
         buttons[1].titleView.setText(topView.getUpgradeBackdropAttribute().name, animated);
         buttons[1].percentView.setText(AffiliateProgramFragment.percents(topView.getUpgradeBackdropAttribute().getRarityPermille()), animated);
@@ -548,26 +548,26 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
         int tab = tabsSelectorView.getSelectedTab();
         if (tab == TAB_MODELS) {
             items.add(UItem.asCenterShadow(replaceTags(LocaleController.formatPluralStringComma(crafting ? "GiftPreviewCountModelsCrafting" : "GiftPreviewCountModels", models.size()))));
-            for (TL_stars.starGiftAttributeModel model : models) {
+            for (TL_diamonds.starGiftAttributeModel model : models) {
                 items.add(GiftAttributeCell.Factory.asAttribute(tab, new Attributes(
                     rBackdrops.next(), rPatterns.next(), model)));
             }
             if (!simpleModels.isEmpty()) {
                 items.add(UItem.asCenterShadow(replaceTags(LocaleController.formatPluralStringComma(crafting ? "GiftPreviewCountModelsCrafting2" : "GiftPreviewCountModels", models.size()))));
-                for (TL_stars.starGiftAttributeModel model : simpleModels) {
+                for (TL_diamonds.starGiftAttributeModel model : simpleModels) {
                     items.add(GiftAttributeCell.Factory.asAttribute(tab, new Attributes(
                         rBackdrops.next(), rPatterns.next(), model)));
                 }
             }
         } else if (tab == TAB_BACKDROPS) {
             items.add(UItem.asCenterShadow(replaceTags(LocaleController.formatPluralStringComma("GiftPreviewCountBackdrops", backdrops.size()))));
-            for (TL_stars.starGiftAttributeBackdrop backdrop : backdrops) {
+            for (TL_diamonds.starGiftAttributeBackdrop backdrop : backdrops) {
                 items.add(GiftAttributeCell.Factory.asAttribute(tab, new Attributes(
                     backdrop, rPatterns.next(), rModels.next())));
             }
         } else if (tab == TAB_PATTERNS) {
             items.add(UItem.asCenterShadow(replaceTags(LocaleController.formatPluralStringComma("GiftPreviewCountSymbols", patterns.size()))));
-            for (TL_stars.starGiftAttributePattern pattern : patterns) {
+            for (TL_diamonds.starGiftAttributePattern pattern : patterns) {
                 items.add(GiftAttributeCell.Factory.asAttribute(tab, new Attributes(
                     rBackdrops.next(), pattern, rModels.next())));
             }
@@ -575,11 +575,11 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
     }
 
     public static class Attributes {
-        public final TL_stars.starGiftAttributeBackdrop backdrop;
-        public final TL_stars.starGiftAttributePattern pattern;
-        public final TL_stars.starGiftAttributeModel model;
+        public final TL_diamonds.starGiftAttributeBackdrop backdrop;
+        public final TL_diamonds.starGiftAttributePattern pattern;
+        public final TL_diamonds.starGiftAttributeModel model;
 
-        public Attributes(TL_stars.starGiftAttributeBackdrop backdrop, TL_stars.starGiftAttributePattern pattern, TL_stars.starGiftAttributeModel model) {
+        public Attributes(TL_diamonds.starGiftAttributeBackdrop backdrop, TL_diamonds.starGiftAttributePattern pattern, TL_diamonds.starGiftAttributeModel model) {
             this.backdrop = backdrop;
             this.pattern = pattern;
             this.model = model;
@@ -734,7 +734,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
                     cell.imageView.setColorFilter(null);
                     cell.cardBackground.selectedColorKey = Theme.key_featuredStickers_addButton;
 
-                    percent = StarGiftSheet.getRarityName(attributes.model.rarity, rarityColor);
+                    percent = DiamondGiftSheet.getRarityName(attributes.model.rarity, rarityColor);
                 } else if (tab == TAB_BACKDROPS) {
                     cell.cardBackground.setBackdrop(attributes.backdrop);
                     cell.cardBackground.setPattern(attributes.pattern);
@@ -744,7 +744,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
                     cell.setSticker(attributes.pattern.document, 48, item.object, false);
                     cell.imageView.setColorFilter(new PorterDuffColorFilter(ColorUtils.setAlphaComponent(attributes.backdrop.pattern_color, 64), PorterDuff.Mode.SRC_IN));
 
-                    percent = StarGiftSheet.getRarityName(attributes.backdrop.rarity, rarityColor);
+                    percent = DiamondGiftSheet.getRarityName(attributes.backdrop.rarity, rarityColor);
                 } else if (tab == TAB_PATTERNS) {
                     cell.cardBackground.setBackdrop(attributes.backdrop);
                     cell.cardBackground.setPattern(attributes.pattern);
@@ -754,7 +754,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
                     cell.setSticker(attributes.pattern.document, 64, item.object, false);
                     cell.imageView.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
 
-                    percent = StarGiftSheet.getRarityName(attributes.pattern.rarity, rarityColor);
+                    percent = DiamondGiftSheet.getRarityName(attributes.pattern.rarity, rarityColor);
                 }
 
                 cell.textView.setTextColor(tab == TAB_MODELS ? Theme.getColor(Theme.key_dialogTextBlack, cell.resourcesProvider) : Color.WHITE);
@@ -783,7 +783,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
 
             @Override
             protected boolean canHighlightChildAt(View child, float x, float y) {
-                return StarGiftPreviewSheet.this.canHighlightChildAt(child, x, y);
+                return DiamondGiftPreviewSheet.this.canHighlightChildAt(child, x, y);
             }
         };
     }
@@ -922,7 +922,7 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
             percentView.getDrawable().centerY = true;
             percentView.setTextSize(dp(11));
             percentView.setPadding(dp(4), dp(1), dp(4), dp(1));
-            percentView.setSizeableBackground(new StarGiftSheet.RoundRectStrokeDrawable(dp(10), 0x10FFFFFF));
+            percentView.setSizeableBackground(new DiamondGiftSheet.RoundRectStrokeDrawable(dp(10), 0x10FFFFFF));
             addView(percentView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 16, Gravity.TOP | Gravity.RIGHT, 0, -9, -4, 0));
         }
     }

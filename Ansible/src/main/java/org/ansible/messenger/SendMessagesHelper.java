@@ -92,8 +92,8 @@ import org.ansible.ui.Components.poll.attached.PollAttachedMediaSticker;
 import org.ansible.ui.Components.voip.AnimatedFileInfo;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.OAuthSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.BotWebViewSheet;
 import org.ansible.ui.Components.Bulletin;
@@ -927,8 +927,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     MessageObject obj = messageObjects.get(a);
                     getMessagesStorage().markMessageAsSendError(obj.messageOwner, obj.scheduled ? 1 : 0);
                     obj.messageOwner.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
-                    obj.messageOwner.errorAllowedPriceStars = 0;
-                    obj.messageOwner.errorNewPriceStars = 0;
+                    obj.messageOwner.errorAllowedPriceDiamonds = 0;
+                    obj.messageOwner.errorNewPriceDiamonds = 0;
                     getNotificationCenter().postNotificationName(NotificationCenter.messageSendError, obj.getId());
                     processSentMessage(obj.getId());
                     removeFromUploadingMessages(obj.getId(), scheduled);
@@ -937,8 +937,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             } else {
                 getMessagesStorage().markMessageAsSendError(obj.messageOwner, obj.scheduled ? 1 : 0);
                 obj.messageOwner.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
-                obj.messageOwner.errorAllowedPriceStars = 0;
-                obj.messageOwner.errorNewPriceStars = 0;
+                obj.messageOwner.errorAllowedPriceDiamonds = 0;
+                obj.messageOwner.errorNewPriceDiamonds = 0;
                 getNotificationCenter().postNotificationName(NotificationCenter.messageSendError, obj.getId());
                 processSentMessage(obj.getId());
                 removeFromUploadingMessages(obj.getId(), scheduled);
@@ -1591,7 +1591,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             if (sendingMessage != null) {
                 getConnectionsManager().cancelRequest(sendingMessage.reqId, true);
             }
-            StarsController.getInstance(currentAccount).hidePaidMessageToast(object);
+            DiamondsController.getInstance(currentAccount).hidePaidMessageToast(object);
 
             for (HashMap.Entry<String, ArrayList<DelayedMessage>> entry : delayedMessages.entrySet()) {
                 ArrayList<DelayedMessage> messages = entry.getValue();
@@ -1704,7 +1704,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
     }
 
-    public boolean retrySendMessage(MessageObject messageObject, boolean unsent, long payStars) {
+    public boolean retrySendMessage(MessageObject messageObject, boolean unsent, long payDiamonds) {
         if (messageObject.getId() >= 0) {
             if (messageObject.isEditing()) {
                 editMessage(messageObject, null, null, null, null, null, null, true, messageObject.hasMediaSpoilers(), messageObject);
@@ -1760,7 +1760,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             unsentMessages.put(messageObject.getId(), messageObject);
         }
         SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(messageObject);
-        params.payStars = payStars;
+        params.payDiamonds = payDiamonds;
         sendMessage(params);
         return true;
     }
@@ -1773,7 +1773,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
     }
 
-    public void processForwardFromMyName(MessageObject messageObject, long did, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
+    public void processForwardFromMyName(MessageObject messageObject, long did, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
         if (messageObject == null) {
             return;
         }
@@ -1785,19 +1785,19 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             }
             if (messageObject.messageOwner.media.photo instanceof TLRPC.TL_photo) {
                 SendMessagesHelper.SendMessageParams fparams = SendMessagesHelper.SendMessageParams.of((TLRPC.TL_photo) messageObject.messageOwner.media.photo, null, did, messageObject.replyMessageObject, null, messageObject.messageOwner.message, messageObject.messageOwner.entities, null, params, true, 0, 0, messageObject.messageOwner.media.ttl_seconds, messageObject, false);
-                fparams.payStars = payStars;
+                fparams.payDiamonds = payDiamonds;
                 fparams.monoForumPeer = monoForumPeerId;
                 fparams.suggestionParams = suggestionParams;
                 sendMessage(fparams);
             } else if (messageObject.messageOwner.media.document instanceof TLRPC.TL_document) {
                 SendMessagesHelper.SendMessageParams fparams = SendMessagesHelper.SendMessageParams.of((TLRPC.TL_document) messageObject.messageOwner.media.document, null, messageObject.messageOwner.attachPath, did, messageObject.replyMessageObject, null, messageObject.messageOwner.message, messageObject.messageOwner.entities, null, params, true, 0, 0, messageObject.messageOwner.media.ttl_seconds, messageObject, null, false);
-                fparams.payStars = payStars;
+                fparams.payDiamonds = payDiamonds;
                 fparams.monoForumPeer = monoForumPeerId;
                 fparams.suggestionParams = suggestionParams;
                 sendMessage(fparams);
             } else if (messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaVenue || messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaGeo) {
                 SendMessagesHelper.SendMessageParams fparams = SendMessagesHelper.SendMessageParams.of(messageObject.messageOwner.media, did, messageObject.replyMessageObject, null, null, null, true, 0, 0);
-                fparams.payStars = payStars;
+                fparams.payDiamonds = payDiamonds;
                 fparams.monoForumPeer = monoForumPeerId;
                 fparams.suggestionParams = suggestionParams;
                 sendMessage(fparams);
@@ -1810,12 +1810,12 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 SendMessagesHelper.SendMessageParams fparams = SendMessagesHelper.SendMessageParams.of(user, did, messageObject.replyMessageObject, null, null, null, true, 0, 0);
                 fparams.monoForumPeer = monoForumPeerId;
                 fparams.suggestionParams = suggestionParams;
-                fparams.payStars = payStars;
+                fparams.payDiamonds = payDiamonds;
                 sendMessage(fparams);
             } else if (!DialogObject.isEncryptedDialog(did)) {
                 ArrayList<MessageObject> arrayList = new ArrayList<>();
                 arrayList.add(messageObject);
-                sendMessage(arrayList, did, true, false, true, 0, 0, null, -1, payStars, monoForumPeerId, suggestionParams);
+                sendMessage(arrayList, did, true, false, true, 0, 0, null, -1, payDiamonds, monoForumPeerId, suggestionParams);
             }
         } else if (messageObject.messageOwner.message != null) {
             TLRPC.WebPage webPage = null;
@@ -1841,14 +1841,14 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 entities = null;
             }
             SendMessagesHelper.SendMessageParams fparams = SendMessagesHelper.SendMessageParams.of(messageObject.messageOwner.message, did, messageObject.replyMessageObject, null, webPage, true, entities, null, null, true, 0, 0, null, false);
-            fparams.payStars = payStars;
+            fparams.payDiamonds = payDiamonds;
             fparams.monoForumPeer = monoForumPeerId;
             fparams.suggestionParams = suggestionParams;
             sendMessage(fparams);
         } else if (DialogObject.isEncryptedDialog(did)) {
             ArrayList<MessageObject> arrayList = new ArrayList<>();
             arrayList.add(messageObject);
-            sendMessage(arrayList, did, true, false, true, 0, 0, null, -1, payStars, monoForumPeerId, suggestionParams);
+            sendMessage(arrayList, did, true, false, true, 0, 0, null, -1, payDiamonds, monoForumPeerId, suggestionParams);
         }
     }
 
@@ -2027,7 +2027,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     sendMessageParams.replyToStoryItem = storyItem;
                     sendMessageParams.replyQuote = quote;
                     sendMessageParams.sendMessageChatArguments = sendMessageChatArguments;
-                    sendMessageParams.payStars = stars;
+                    sendMessageParams.payDiamonds = stars;
                     sendMessageParams.monoForumPeer = monoForumPeerId;
                     sendMessageParams.suggestionParams = suggestionParams;
                     sendMessageParams.caption = caption != null ? caption.toString() : null;
@@ -2047,7 +2047,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             sendMessageParams.replyToStoryItem = storyItem;
             sendMessageParams.replyQuote = quote;
             sendMessageParams.sendMessageChatArguments = sendMessageChatArguments;
-            sendMessageParams.payStars = stars;
+            sendMessageParams.payDiamonds = stars;
             sendMessageParams.monoForumPeer = monoForumPeerId;
             sendMessageParams.suggestionParams = suggestionParams;
             sendMessageParams.invert_media = invertMedia;
@@ -2055,12 +2055,12 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
     }
 
-    public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate, long payStars) {
-        return sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, null, -1, payStars);
+    public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate, long payDiamonds) {
+        return sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, null, -1, payDiamonds);
     }
 
-    public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate, MessageObject replyToTopMsg, int video_timestamp, long payStars) {
-        return sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, 0, replyToTopMsg, video_timestamp, payStars, 0, null);
+    public int sendMessage(ArrayList<MessageObject> messages, final long peer, boolean forwardFromMyName, boolean hideCaption, boolean notify, int scheduleDate, MessageObject replyToTopMsg, int video_timestamp, long payDiamonds) {
+        return sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, 0, replyToTopMsg, video_timestamp, payDiamonds, 0, null);
     }
 
     public int sendMessage(
@@ -2073,7 +2073,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         int scheduleRepeatPeriod,
         MessageObject replyToTopMsg,
         int video_timestamp,
-        long payStars,
+        long payDiamonds,
         long monoForumPeerId,
         MessageSuggestionParams suggestionParams
     ) {
@@ -2098,13 +2098,13 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             String rank = null;
             long linkedToGroup = 0;
             TLRPC.Chat chat;
-            long currentPayStars = getMessagesController().getSendPaidMessagesStars(peer);
-            if (currentPayStars <= 0) {
-                currentPayStars = DialogObject.getMessagesStarsPrice(getMessagesController().isUserContactBlocked(peer));
+            long currentPayDiamonds = getMessagesController().getSendPaidMessagesDiamonds(peer);
+            if (currentPayDiamonds <= 0) {
+                currentPayDiamonds = DialogObject.getMessagesDiamondsPrice(getMessagesController().isUserContactBlocked(peer));
             }
-            if (currentPayStars != payStars) {
-                AlertsCreator.ensurePaidMessageConfirmation(currentAccount, peer, Math.max(1, messages.size()), newPayStars -> {
-                    sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, scheduleRepeatPeriod, replyToTopMsg, video_timestamp, newPayStars, monoForumPeerId, suggestionParams);
+            if (currentPayDiamonds != payDiamonds) {
+                AlertsCreator.ensurePaidMessageConfirmation(currentAccount, peer, Math.max(1, messages.size()), newPayDiamonds -> {
+                    sendMessage(messages, peer, forwardFromMyName, hideCaption, notify, scheduleDate, scheduleRepeatPeriod, replyToTopMsg, video_timestamp, newPayDiamonds, monoForumPeerId, suggestionParams);
                 });
                 return 0;
             }
@@ -2482,9 +2482,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         newMsg.reply_to = msgObj.messageOwner.reply_to;
                     }
                 }
-                if (payStars > 0) {
+                if (payDiamonds > 0) {
                     newMsg.flags2 |= 64;
-                    newMsg.paid_message_stars = payStars;
+                    newMsg.paid_message_stars = payDiamonds;
                 }
                 if (monoForumPeerId != 0) {
                     newMsg.saved_peer_id = getMessagesController().getPeer(monoForumPeerId);
@@ -2501,7 +2501,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 newMsgObj.wasJustSent = true;
                 objArr.add(newMsgObj);
                 arr.add(newMsg);
-                StarsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
+                DiamondsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
 
                 if (msgObj.replyMessageObject != null) {
                     for (int i = 0; i < messages.size(); i++) {
@@ -2571,9 +2571,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         req.flags |= 1048576;
                         req.video_timestamp = video_timestamp;
                     }
-                    if (payStars > 0) {
+                    if (payDiamonds > 0) {
                         req.flags |= 2097152;
-                        req.allow_paid_stars = req.id.size() * payStars;
+                        req.allow_paid_stars = req.id.size() * payDiamonds;
                     }
                     if (suggestionParams != null) {
                         req.suggested_post = suggestionParams.toTl();
@@ -2746,8 +2746,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 final TLRPC.Message newMsgObj1 = newMsgObjArr.get(a1);
                                 getMessagesStorage().markMessageAsSendError(newMsgObj1, scheduleDate != 0 ? 1 : 0);
                                 if (error != null && error.text != null && error.text.startsWith("ALLOW_PAYMENT_REQUIRED_")) {
-                                    newMsgObj1.errorAllowedPriceStars = StarsController.getInstance(currentAccount).getAllowedPaidStars(req);
-                                    newMsgObj1.errorNewPriceStars = Long.parseLong(error.text.substring("ALLOW_PAYMENT_REQUIRED_".length())) / req.id.size();
+                                    newMsgObj1.errorAllowedPriceDiamonds = DiamondsController.getInstance(currentAccount).getAllowedPaidDiamonds(req);
+                                    newMsgObj1.errorNewPriceDiamonds = Long.parseLong(error.text.substring("ALLOW_PAYMENT_REQUIRED_".length())) / req.id.size();
                                     getMessagesStorage().updateMessageCustomParams(MessageObject.getDialogId(newMsgObj1), newMsgObj1);
                                 }
                                 AndroidUtilities.runOnUIThread(() -> {
@@ -2759,7 +2759,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             }
                             if (error != null && error.text != null && error.text.startsWith("ALLOW_PAYMENT_REQUIRED_")) {
                                 AndroidUtilities.runOnUIThread(() -> {
-                                    StarsController.getInstance(currentAccount).showPriceChangedToast(newMsgArr);
+                                    DiamondsController.getInstance(currentAccount).showPriceChangedToast(newMsgArr);
                                 });
                             }
                         }, ConnectionsManager.RequestFlagCanCompress | ConnectionsManager.RequestFlagInvokeAfter);
@@ -2771,7 +2771,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         }
                     };
 
-                    if (StarsController.getInstance(currentAccount).beforeSendingFinalRequest(req, newMsgArr, send2)) {
+                    if (DiamondsController.getInstance(currentAccount).beforeSendingFinalRequest(req, newMsgArr, send2)) {
                         send2.run();
                     }
 
@@ -2812,7 +2812,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             }
             if (sendResult == 0) {
                 for (int a = 0; a < messages.size(); a++) {
-                    processForwardFromMyName(messages.get(a), peer, payStars, monoForumPeerId, suggestionParams);
+                    processForwardFromMyName(messages.get(a), peer, payDiamonds, monoForumPeerId, suggestionParams);
                 }
             }
         }
@@ -3047,8 +3047,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
 
                 newMsg.params = params;
                 newMsg.send_state = MessageObject.MESSAGE_SEND_STATE_EDITING;
-                newMsg.errorNewPriceStars = 0;
-                newMsg.errorAllowedPriceStars = 0;
+                newMsg.errorNewPriceDiamonds = 0;
+                newMsg.errorAllowedPriceDiamonds = 0;
             }
             if (newMsg.attachPath == null) {
                 newMsg.attachPath = "";
@@ -3958,9 +3958,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         AlertsCreator.showOpenUrlAlert(parentFragment, buttonTypeUrlAuth.url, false, true);
                     }
                 } else if (TLKeyboardHelper.isType(button, TL_keyboard.TL_inlineButtonTypeBuy.class)) {
-                    if (response instanceof TLRPC.TL_payments_paymentFormStars) {
+                    if (response instanceof TLRPC.TL_payments_paymentFormDiamonds) {
                         TLRPC.InputInvoice inputInvoice = ((TLRPC.TL_payments_getPaymentForm) request[0]).invoice;
-                        StarsController.getInstance(currentAccount).openPaymentForm(messageObject, inputInvoice, (TLRPC.TL_payments_paymentFormStars) response, () -> {
+                        DiamondsController.getInstance(currentAccount).openPaymentForm(messageObject, inputInvoice, (TLRPC.TL_payments_paymentFormDiamonds) response, () -> {
                             waitingForCallback.remove(key);
                             finalKeys.remove(key);
                         }, status -> {});
@@ -3968,8 +3968,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         final TLRPC.PaymentForm form = (TLRPC.PaymentForm) response;
                         getMessagesController().putUsers(form.users, false);
                         parentFragment.presentFragment(new PaymentFormActivity(form, messageObject, parentFragment));
-                    } else if (response instanceof TLRPC.TL_payments_paymentReceiptStars) {
-                        StarsIntroActivity.showTransactionSheet(LaunchActivity.instance != null ? LaunchActivity.instance : ApplicationLoader.applicationContext, false, currentAccount, (TLRPC.TL_payments_paymentReceiptStars) response, null);
+                    } else if (response instanceof TLRPC.TL_payments_paymentReceiptDiamonds) {
+                        DiamondsIntroActivity.showTransactionSheet(LaunchActivity.instance != null ? LaunchActivity.instance : ApplicationLoader.applicationContext, false, currentAccount, (TLRPC.TL_payments_paymentReceiptDiamonds) response, null);
                     } else if (response instanceof TLRPC.PaymentReceipt) {
                         parentFragment.presentFragment(new PaymentFormActivity((TLRPC.PaymentReceipt) response));
                     }
@@ -4222,13 +4222,13 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         if (fromId != UserConfig.getInstance(currentAccount).getClientUserId()) {
             request.send_as = getMessagesController().getInputPeer(fromId);
         }
-        long payStars = getMessagesController().getSendPaidMessagesStars(DialogObject.getPeerDialogId(peer));
-        if (payStars <= 0) {
-            payStars = DialogObject.getMessagesStarsPrice(getMessagesController().isUserContactBlocked(DialogObject.getPeerDialogId(peer)));
+        long payDiamonds = getMessagesController().getSendPaidMessagesDiamonds(DialogObject.getPeerDialogId(peer));
+        if (payDiamonds <= 0) {
+            payDiamonds = DialogObject.getMessagesDiamondsPrice(getMessagesController().isUserContactBlocked(DialogObject.getPeerDialogId(peer)));
         }
-        if (payStars > 0) {
+        if (payDiamonds > 0) {
             request.flags |= 2097152;
-            request.allow_paid_stars = payStars;
+            request.allow_paid_stars = payDiamonds;
         }
         final long newTaskId;
         if (taskId == 0) {
@@ -4324,9 +4324,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             caption = "";
         }
 
-        long _payStars = getMessagesController().getSendPaidMessagesStars(peer);
-        if (_payStars <= 0) {
-            _payStars = DialogObject.getMessagesStarsPrice(getMessagesController().isUserContactBlocked(peer));
+        long _payDiamonds = getMessagesController().getSendPaidMessagesDiamonds(peer);
+        if (_payDiamonds <= 0) {
+            _payDiamonds = DialogObject.getMessagesDiamondsPrice(getMessagesController().isUserContactBlocked(peer));
         }
         final boolean isGroup = params != null && params.containsKey("groupId") && !"0".equalsIgnoreCase(params.get("groupId"));
 
@@ -4344,10 +4344,10 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 );
         }
 
-        final long payStars = ephemeralReceiverBotId != 0 ? 0 : _payStars;
-        if (payStars != sendMessageParams.payStars && !isGroup && ephemeralReceiverBotId == 0) {
-            AlertsCreator.ensurePaidMessageConfirmation(currentAccount, peer, 1, newPayStars -> {
-                sendMessageParams.payStars = newPayStars;
+        final long payDiamonds = ephemeralReceiverBotId != 0 ? 0 : _payDiamonds;
+        if (payDiamonds != sendMessageParams.payDiamonds && !isGroup && ephemeralReceiverBotId == 0) {
+            AlertsCreator.ensurePaidMessageConfirmation(currentAccount, peer, 1, newPayDiamonds -> {
+                sendMessageParams.payDiamonds = newPayDiamonds;
                 sendMessage(sendMessageParams);
             });
             return;
@@ -4380,8 +4380,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 if (retryMessageObject != null) {
                     getMessagesStorage().markMessageAsSendError(retryMessageObject.messageOwner, retryMessageObject.scheduled ? 1 : 0);
                     retryMessageObject.messageOwner.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
-                    retryMessageObject.messageOwner.errorNewPriceStars = 0;
-                    retryMessageObject.messageOwner.errorAllowedPriceStars = 0;
+                    retryMessageObject.messageOwner.errorNewPriceDiamonds = 0;
+                    retryMessageObject.messageOwner.errorAllowedPriceDiamonds = 0;
                     getNotificationCenter().postNotificationName(NotificationCenter.messageSendError, retryMessageObject.getId());
                     processSentMessage(retryMessageObject.getId());
                 }
@@ -5081,11 +5081,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 newMsg.from_id = newMsg.peer_id;
             }
             newMsg.send_state = MessageObject.MESSAGE_SEND_STATE_SENDING;
-            newMsg.errorAllowedPriceStars = 0;
-            newMsg.errorNewPriceStars = 0;
-            if (payStars > 0) {
+            newMsg.errorAllowedPriceDiamonds = 0;
+            newMsg.errorNewPriceDiamonds = 0;
+            if (payDiamonds > 0) {
                 newMsg.flags2 |= 64;
-                newMsg.paid_message_stars = payStars;
+                newMsg.paid_message_stars = payDiamonds;
             }
 
             long groupId = 0;
@@ -5213,9 +5213,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         reqSend.silent = newMsg.silent;
                         reqSend.peer = sendToPeer;
                         reqSend.random_id = newMsg.random_id;
-                        if (payStars > 0) {
+                        if (payDiamonds > 0) {
                             reqSend.flags |= 2097152;
-                            reqSend.allow_paid_stars = payStars;
+                            reqSend.allow_paid_stars = payDiamonds;
                         }
                         TLRPC.TL_inputMediaWebPage inputWebPage = new TLRPC.TL_inputMediaWebPage();
                         inputWebPage.url = mediaWebPage.webpage.url;
@@ -5264,7 +5264,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             reqSend.suggested_post = retryMessageObject.messageOwner.suggested_post;
                         }
                         if (retryMessageObject == null) {
-                            StarsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
+                            DiamondsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
                         }
                         performSendMessageRequest(reqSend, newMsgObj, null, null, parentObject, params, scheduleDate != 0);
                         if (retryMessageObject == null) {
@@ -5278,9 +5278,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         reqSend.silent = newMsg.silent;
                         reqSend.peer = sendToPeer;
                         reqSend.random_id = newMsg.random_id;
-                        if (payStars > 0) {
+                        if (payDiamonds > 0) {
                             reqSend.flags |= 2097152;
-                            reqSend.allow_paid_stars = payStars;
+                            reqSend.allow_paid_stars = payDiamonds;
                         }
                         if (replyToStoryItem != null) {
                             reqSend.reply_to = createReplyInput(replyToStoryItem);
@@ -5327,7 +5327,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         reqSend.invert_media = newMsg.invert_media;
                         applyMonoForumPeerId(reqSend, sendMessageParams.monoForumPeer);
                         if (retryMessageObject == null) {
-                            StarsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
+                            DiamondsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
                         }
                         performSendMessageRequest(reqSend, newMsgObj, null, null, parentObject, params, scheduleDate != 0);
                         if (retryMessageObject == null) {
@@ -5375,9 +5375,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 reqSend.random_id = newMsg.random_id;
                 reqSend.no_webpage = true;
                 reqSend.rich_message = richMessageToInputRichMessage(newMsg.rich_message, sendMessageParams.richMessageInputUsers);
-                if (payStars > 0) {
+                if (payDiamonds > 0) {
                     reqSend.flags |= 2097152;
-                    reqSend.allow_paid_stars = payStars;
+                    reqSend.allow_paid_stars = payDiamonds;
                 }
                 if (replyToStoryItem != null) {
                     reqSend.reply_to = createReplyInput(replyToStoryItem);
@@ -5411,7 +5411,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 reqSend.invert_media = newMsg.invert_media;
                 applyMonoForumPeerId(reqSend, sendMessageParams.monoForumPeer);
                 if (retryMessageObject == null) {
-                    StarsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
+                    DiamondsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
                 }
                 performSendMessageRequest(reqSend, newMsgObj, null, null, parentObject, params, scheduleDate != 0);
                 if (retryMessageObject == null) {
@@ -5722,9 +5722,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 req.entities = pollSendParams.entities;
                                 req.flags |= 8;
                             }
-                            if (payStars > 0) {
+                            if (payDiamonds > 0) {
                                 req.flags |= 2097152;
-                                req.allow_paid_stars = payStars;
+                                req.allow_paid_stars = payDiamonds;
                             }
 
                             if (newMsg.replyStory != null) {
@@ -5773,9 +5773,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 req.entities = entities;
                                 req.flags |= 8;
                             }
-                            if (payStars > 0) {
+                            if (payDiamonds > 0) {
                                 req.flags |= 2097152;
-                                req.allow_paid_stars = payStars;
+                                req.allow_paid_stars = payDiamonds;
                             }
 
                             if (newMsg.replyStory != null) {
@@ -5890,9 +5890,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 inputSingleMedia.flags |= 1;
                             }
                             ((TLRPC.TL_messages_sendMultiMedia) request).multi_media.add(inputSingleMedia);
-                            if (payStars > 0) {
+                            if (payDiamonds > 0) {
                                 ((TLRPC.TL_messages_sendMultiMedia) request).flags |= 2097152;
-                                ((TLRPC.TL_messages_sendMultiMedia) request).allow_paid_stars += payStars;
+                                ((TLRPC.TL_messages_sendMultiMedia) request).allow_paid_stars += payDiamonds;
                             }
                         } else if (request instanceof TLRPC.TL_messages_sendMedia && ((TLRPC.TL_messages_sendMedia) request).media instanceof TLRPC.TL_inputMediaPaidMedia) {
                             ((TLRPC.TL_inputMediaPaidMedia) ((TLRPC.TL_messages_sendMedia) request).media).extended_media.add(inputMedia);
@@ -5917,9 +5917,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             request.flags |= 1;
                             request.reply_to = createReplyInput((TLRPC.TL_messageReplyHeader) newMsg.reply_to);
                         }
-                        if (payStars > 0) {
+                        if (payDiamonds > 0) {
                             request.flags |= 2097152;
-                            request.allow_paid_stars = payStars;
+                            request.allow_paid_stars = payDiamonds;
                         }
                         request.random_id = newMsg.random_id;
                         if (newMsg.from_id != null) {
@@ -5964,7 +5964,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         reqSend = request;
                     }
                     if (retryMessageObject == null) {
-                        StarsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
+                        DiamondsController.getInstance(currentAccount).beforeSendingMessage(newMsgObj);
                     }
                     if (groupId != 0) {
                         performSendDelayedMessage(delayedMessage);
@@ -6339,9 +6339,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         reqSend.id.add(retryMessageObject.messageOwner.fwd_from.channel_post);
                     }
                 }
-                if (payStars > 0) {
+                if (payDiamonds > 0) {
                     reqSend.flags |= 2097152;
-                    reqSend.allow_paid_stars = payStars;
+                    reqSend.allow_paid_stars = payDiamonds;
                 }
                 applyMonoForumPeerId(reqSend, sendMessageParams.monoForumPeer);
                 performSendMessageRequest(reqSend, newMsgObj, null, null, parentObject, params, scheduleDate != 0);
@@ -6376,9 +6376,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     reqSend.clear_draft = true;
                     getMediaDataController().cleanDraft(peer, replyToTopMsg != null ? replyToTopMsg.getId() : 0, false);
                 }
-                if (payStars > 0) {
+                if (payDiamonds > 0) {
                     reqSend.flags |= 2097152;
-                    reqSend.allow_paid_stars = payStars;
+                    reqSend.allow_paid_stars = payDiamonds;
                 }
                 applyMonoForumPeerId(reqSend, sendMessageParams.monoForumPeer);
                 performSendMessageRequest(reqSend, newMsgObj, null, null, parentObject, params, scheduleDate != 0);
@@ -6388,8 +6388,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             getMessagesStorage().markMessageAsSendError(newMsg, scheduleDate != 0 ? 1 : 0);
             if (newMsgObj != null) {
                 newMsgObj.messageOwner.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
-                newMsgObj.messageOwner.errorAllowedPriceStars = 0;
-                newMsgObj.messageOwner.errorNewPriceStars = 0;
+                newMsgObj.messageOwner.errorAllowedPriceDiamonds = 0;
+                newMsgObj.messageOwner.errorNewPriceDiamonds = 0;
             }
             getNotificationCenter().postNotificationName(NotificationCenter.messageSendError, newMsg.id);
             processSentMessage(newMsg.id);
@@ -7531,7 +7531,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         for (int a = 0, size = msgObjs.size(); a < size; a++) {
             putToSendingMessages(msgObjs.get(a).messageOwner, scheduled);
         }
-        if (!StarsController.getInstance(currentAccount).beforeSendingFinalRequest(request, msgObjs, () -> performSendMessageRequestMulti(request, msgObjs, originalPaths, parentObjects, delayedMessage, scheduled))) {
+        if (!DiamondsController.getInstance(currentAccount).beforeSendingFinalRequest(request, msgObjs, () -> performSendMessageRequestMulti(request, msgObjs, originalPaths, parentObjects, delayedMessage, scheduled))) {
             return;
         }
         if (!BotForumHelper.getInstance(currentAccount).beforeSendingFinalRequest(request, msgObjs, () -> performSendMessageRequestMulti(request, msgObjs, originalPaths, parentObjects, delayedMessage, scheduled))) {
@@ -7608,8 +7608,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 TLRPC.Message newMsgObj = msgObjs.get(i).messageOwner;
                                 getMessagesStorage().markMessageAsSendError(newMsgObj, scheduled ? 1 : 0);
                                 newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
-                                newMsgObj.errorAllowedPriceStars = 0;
-                                newMsgObj.errorNewPriceStars = 0;
+                                newMsgObj.errorAllowedPriceDiamonds = 0;
+                                newMsgObj.errorNewPriceDiamonds = 0;
                                 getNotificationCenter().postNotificationName(NotificationCenter.messageSendError, newMsgObj.id);
                                 processSentMessage(newMsgObj.id);
                                 removeFromSendingMessages(newMsgObj.id, scheduled);
@@ -7771,8 +7771,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             oldIds.add(oldId);
                             getStatsController().incrementSentItemsCount(ApplicationLoader.getCurrentNetworkType(), StatsController.TYPE_MESSAGES, 1);
                             newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SENT;
-                            newMsgObj.errorAllowedPriceStars = 0;
-                            newMsgObj.errorNewPriceStars = 0;
+                            newMsgObj.errorAllowedPriceDiamonds = 0;
+                            newMsgObj.errorNewPriceDiamonds = 0;
                             getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, currentSchedule);
                             getNotificationCenter().postNotificationName(NotificationCenter.messageReceivedByServer2, oldId, newMsgObj.id, newMsgObj, newMsgObj.dialog_id, grouped_id, existFlags, currentSchedule);
                             getMessagesStorage().getStorageQueue().postRunnable(() -> {
@@ -7821,9 +7821,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         getMessagesStorage().markMessageAsSendError(newMsgObj, scheduled ? 1 : 0);
                         newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
                         if (!scheduled && error != null && error.text != null && error.text.startsWith("ALLOW_PAYMENT_REQUIRED_")) {
-                            newMsgObj.errorAllowedPriceStars = StarsController.getInstance(currentAccount).getAllowedPaidStars(request);
-                            newMsgObj.errorNewPriceStars = Long.parseLong(error.text.substring("ALLOW_PAYMENT_REQUIRED_".length()));
-                            StarsController.getInstance(currentAccount).showPriceChangedToast(Arrays.asList(msgObj));
+                            newMsgObj.errorAllowedPriceDiamonds = DiamondsController.getInstance(currentAccount).getAllowedPaidDiamonds(request);
+                            newMsgObj.errorNewPriceDiamonds = Long.parseLong(error.text.substring("ALLOW_PAYMENT_REQUIRED_".length()));
+                            DiamondsController.getInstance(currentAccount).showPriceChangedToast(Arrays.asList(msgObj));
                             getMessagesStorage().updateMessageCustomParams(MessageObject.getDialogId(newMsgObj), newMsgObj);
                         }
                         getNotificationCenter().postNotificationName(NotificationCenter.messageSendError, newMsgObj.id);
@@ -7922,7 +7922,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
         final TLRPC.Message newMsgObj = msgObj.messageOwner;
         putToSendingMessages(newMsgObj, scheduled);
-        if (!StarsController.getInstance(currentAccount).beforeSendingFinalRequest(req, msgObj, () -> performSendMessageRequest(req, msgObj, originalPath, parentMessage, check, delayedMessage, parentObject, params, scheduled))) {
+        if (!DiamondsController.getInstance(currentAccount).beforeSendingFinalRequest(req, msgObj, () -> performSendMessageRequest(req, msgObj, originalPath, parentMessage, check, delayedMessage, parentObject, params, scheduled))) {
             return;
         }
         if (!BotForumHelper.getInstance(currentAccount).beforeSendingFinalRequest(req, msgObj, () -> performSendMessageRequest(req, msgObj, originalPath, parentMessage, check, delayedMessage, parentObject, params, scheduled))) {
@@ -8007,7 +8007,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     if (lastFragment != null) {
                         AndroidUtilities.runOnUIThread(() -> {
-                            new TONIntroActivity.StarsNeededSheet(
+                            new TONIntroActivity.DiamondsNeededSheet(
                                 lastFragment.getContext(),
                                 lastFragment.getResourceProvider(),
                                 AmountUtils.Amount.fromNano(media.ton_amount, AmountUtils.Currency.TON),
@@ -8302,8 +8302,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         if (!isSentError) {
                             getStatsController().incrementSentItemsCount(ApplicationLoader.getCurrentNetworkType(), StatsController.TYPE_MESSAGES, 1);
                             newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SENT;
-                            newMsgObj.errorNewPriceStars = 0;
-                            newMsgObj.errorAllowedPriceStars = 0;
+                            newMsgObj.errorNewPriceDiamonds = 0;
+                            newMsgObj.errorAllowedPriceDiamonds = 0;
                             if (scheduled != currentSchedule) {
                                 final boolean finalCurrentSchedule = currentSchedule;
                                 ArrayList<Integer> messageIds = new ArrayList<>();
@@ -8360,9 +8360,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         getMessagesStorage().markMessageAsSendError(newMsgObj, scheduled ? 1 : 0);
                         newMsgObj.send_state = MessageObject.MESSAGE_SEND_STATE_SEND_ERROR;
                         if (error != null && error.text != null && error.text.startsWith("ALLOW_PAYMENT_REQUIRED_")) {
-                            newMsgObj.errorAllowedPriceStars = StarsController.getInstance(currentAccount).getAllowedPaidStars(req);
-                            newMsgObj.errorNewPriceStars = Long.parseLong(error.text.substring("ALLOW_PAYMENT_REQUIRED_".length()));
-                            StarsController.getInstance(currentAccount).showPriceChangedToast(Arrays.asList(msgObj));
+                            newMsgObj.errorAllowedPriceDiamonds = DiamondsController.getInstance(currentAccount).getAllowedPaidDiamonds(req);
+                            newMsgObj.errorNewPriceDiamonds = Long.parseLong(error.text.substring("ALLOW_PAYMENT_REQUIRED_".length()));
+                            DiamondsController.getInstance(currentAccount).showPriceChangedToast(Arrays.asList(msgObj));
                             getMessagesStorage().updateMessageCustomParams(MessageObject.getDialogId(newMsgObj), newMsgObj);
                         }
                         getNotificationCenter().postNotificationName(NotificationCenter.messageSendError, newMsgObj.id);
@@ -8489,7 +8489,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 mediaDice.value = mediaDiceNew.value;
                 mediaDice.flags = mediaDiceNew.flags;
                 mediaDice.game_outcome = mediaDiceNew.game_outcome;
-                StarsController.getInstance(currentAccount, true).invalidateBalance();
+                DiamondsController.getInstance(currentAccount, true).invalidateBalance();
             } else if (newMsg.media.photo != null) {
                 strippedOld = FileLoader.getClosestPhotoSizeWithSize(newMsg.media.photo.sizes, 40);
                 if (sentMessage != null && sentMessage.media != null && sentMessage.media.photo != null) {
@@ -9230,7 +9230,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     private final static int ERROR_TYPE_UNSUPPORTED = 1;
     private final static int ERROR_TYPE_FILE_TOO_LARGE = 2;
 
-    private static int prepareSendingDocumentInternal(AccountInstance accountInstance, String path, String originalPath, Uri uri, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, final ArrayList<TLRPC.MessageEntity> entities, final MessageObject editingMessageObject, long[] groupId, boolean isGroupFinal, CharSequence caption, boolean notify, int scheduleDate, int scheduleRepeatPeriod, Integer[] docType, boolean forceDocument, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams, PollSendParams pollSendParams, int pollIndex) {
+    private static int prepareSendingDocumentInternal(AccountInstance accountInstance, String path, String originalPath, Uri uri, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, final ArrayList<TLRPC.MessageEntity> entities, final MessageObject editingMessageObject, long[] groupId, boolean isGroupFinal, CharSequence caption, boolean notify, int scheduleDate, int scheduleRepeatPeriod, Integer[] docType, boolean forceDocument, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams, PollSendParams pollSendParams, int pollIndex) {
         final long forcedPollGroupId = pollSendParams != null ? pollSendParams.groupId : 0;
 
         if ((path == null || path.length() == 0) && uri == null) {
@@ -9537,7 +9537,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 sendMessageParams.sendMessageChatArguments = sendMessageChatArguments;
                 sendMessageParams.effect_id = effectId;
                 sendMessageParams.invert_media = invertMedia;
-                sendMessageParams.payStars = payStars;
+                sendMessageParams.payDiamonds = payDiamonds;
                 sendMessageParams.monoForumPeer = monoForumPeerId;
                 sendMessageParams.suggestionParams = suggestionParams;
                 sendMessageParams.pollIndex = pollIndex;
@@ -9570,11 +9570,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     @UiThread
-    public static void prepareSendingArticle(AccountInstance accountInstance, ArrayList<TL_iv.PageBlock> blocks, boolean rtl, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, SendMessageChatArguments sendMessageChatArguments, long effectId, long monoForumPeerId, long payStars) {
-        prepareSendingArticle(accountInstance, blocks, null, null, null, rtl, dialogId, replyToMsg, replyToTopMsg, notify, scheduleDate, scheduleRepeatPeriod, sendMessageChatArguments, effectId, monoForumPeerId, payStars);
+    public static void prepareSendingArticle(AccountInstance accountInstance, ArrayList<TL_iv.PageBlock> blocks, boolean rtl, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, SendMessageChatArguments sendMessageChatArguments, long effectId, long monoForumPeerId, long payDiamonds) {
+        prepareSendingArticle(accountInstance, blocks, null, null, null, rtl, dialogId, replyToMsg, replyToTopMsg, notify, scheduleDate, scheduleRepeatPeriod, sendMessageChatArguments, effectId, monoForumPeerId, payDiamonds);
     }
 
-    public static void prepareSendingArticle(AccountInstance accountInstance, ArrayList<TL_iv.PageBlock> blocks, ArrayList<TLRPC.Photo> photos, ArrayList<TLRPC.Document> documents, ArrayList<TLRPC.InputUser> users, boolean rtl, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, SendMessageChatArguments sendMessageChatArguments, long effectId, long monoForumPeerId, long payStars) {
+    public static void prepareSendingArticle(AccountInstance accountInstance, ArrayList<TL_iv.PageBlock> blocks, ArrayList<TLRPC.Photo> photos, ArrayList<TLRPC.Document> documents, ArrayList<TLRPC.InputUser> users, boolean rtl, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, SendMessageChatArguments sendMessageChatArguments, long effectId, long monoForumPeerId, long payDiamonds) {
         if (blocks == null || blocks.isEmpty()) {
             return;
         }
@@ -9604,7 +9604,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         params.sendMessageChatArguments = sendMessageChatArguments;
         params.effect_id = effectId;
         params.monoForumPeer = monoForumPeerId;
-        params.payStars = payStars;
+        params.payDiamonds = payDiamonds;
         accountInstance.getSendMessagesHelper().sendMessage(params);
     }
 
@@ -9776,12 +9776,12 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     @UiThread
-    public static void prepareSendingAudioDocuments(AccountInstance accountInstance, ArrayList<MessageObject> messageObjects, CharSequence caption, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, boolean notify, int scheduleDate, int scheduledRepeatPeriod, MessageObject editingMessageObject, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars) {
-        prepareSendingAudioDocuments(accountInstance, messageObjects, caption, dialogId, replyToMsg, replyToTopMsg, storyItem, notify, scheduleDate, scheduledRepeatPeriod, editingMessageObject, sendMessageChatArguments, effectId, invertMedia, payStars, null, null, false, null);
+    public static void prepareSendingAudioDocuments(AccountInstance accountInstance, ArrayList<MessageObject> messageObjects, CharSequence caption, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, boolean notify, int scheduleDate, int scheduledRepeatPeriod, MessageObject editingMessageObject, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds) {
+        prepareSendingAudioDocuments(accountInstance, messageObjects, caption, dialogId, replyToMsg, replyToTopMsg, storyItem, notify, scheduleDate, scheduledRepeatPeriod, editingMessageObject, sendMessageChatArguments, effectId, invertMedia, payDiamonds, null, null, false, null);
     }
 
     @UiThread
-    public static void prepareSendingAudioDocuments(AccountInstance accountInstance, ArrayList<MessageObject> messageObjects, CharSequence caption, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, boolean notify, int scheduleDate, int scheduledRepeatPeriod, MessageObject editingMessageObject, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars, PollSendParams pollSendParams, ArrayList<Integer> pollSendIndexes, boolean forcedPollDoNotSendFinal, Runnable afterCommandsDone) {
+    public static void prepareSendingAudioDocuments(AccountInstance accountInstance, ArrayList<MessageObject> messageObjects, CharSequence caption, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, boolean notify, int scheduleDate, int scheduledRepeatPeriod, MessageObject editingMessageObject, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds, PollSendParams pollSendParams, ArrayList<Integer> pollSendIndexes, boolean forcedPollDoNotSendFinal, Runnable afterCommandsDone) {
         new Thread(() -> {
             final long forcedPollGroupId = pollSendParams != null ? pollSendParams.groupId : 0;
             final boolean forceDisableCheckSentMedia = pollSendParams != null;
@@ -9871,7 +9871,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         sendMessageParams.sendMessageChatArguments = sendMessageChatArguments;
                         sendMessageParams.effect_id = effectId;
                         sendMessageParams.invert_media = invertMedia;
-                        sendMessageParams.payStars = payStars;
+                        sendMessageParams.payDiamonds = payDiamonds;
                         sendMessageParams.pollSendParams = pollSendParams;
                         sendMessageParams.pollIndex = pollIndex;
                         accountInstance.getSendMessagesHelper().sendMessage(sendMessageParams);
@@ -9907,12 +9907,12 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     @UiThread
-    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, String caption, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars) {
-        prepareSendingDocuments(accountInstance, paths, originalPaths, uris, caption, null, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, editingMessageObject, notify, scheduleDate, 0, inputContent, sendMessageChatArguments, effectId, invertMedia, payStars, 0, null);
+    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, String caption, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds) {
+        prepareSendingDocuments(accountInstance, paths, originalPaths, uris, caption, null, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, editingMessageObject, notify, scheduleDate, 0, inputContent, sendMessageChatArguments, effectId, invertMedia, payDiamonds, 0, null);
     }
 
     @UiThread
-    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, CharSequence caption, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars) {
+    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, CharSequence caption, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds) {
         final ArrayList<TLRPC.MessageEntity> entities;
         if (caption != null) {
             final CharSequence[] cs = new CharSequence[] { caption };
@@ -9921,16 +9921,16 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         } else {
             entities = null;
         }
-        prepareSendingDocuments(accountInstance, paths, originalPaths, uris, caption == null ? null : caption.toString(), entities, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, editingMessageObject, notify, scheduleDate, 0, inputContent, sendMessageChatArguments, effectId, invertMedia, payStars, 0, null);
+        prepareSendingDocuments(accountInstance, paths, originalPaths, uris, caption == null ? null : caption.toString(), entities, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, editingMessageObject, notify, scheduleDate, 0, inputContent, sendMessageChatArguments, effectId, invertMedia, payDiamonds, 0, null);
     }
 
     @UiThread
-    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
-        prepareSendingDocuments(accountInstance, paths, originalPaths, uris, caption, captionEntities, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, editingMessageObject, notify, scheduleDate, scheduleRepeatPeriod, inputContent, sendMessageChatArguments, effectId, invertMedia, payStars, monoForumPeerId, suggestionParams, null, null, null, false);
+    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
+        prepareSendingDocuments(accountInstance, paths, originalPaths, uris, caption, captionEntities, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, editingMessageObject, notify, scheduleDate, scheduleRepeatPeriod, inputContent, sendMessageChatArguments, effectId, invertMedia, payDiamonds, monoForumPeerId, suggestionParams, null, null, null, false);
     }
 
     @UiThread
-    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams, PollSendParams pollSendParams, ArrayList<Integer> pollSendIndexes, ArrayList<Integer> pollSendUriIndexes, boolean forcedPollDoNotSendFinal) {
+    public static void prepareSendingDocuments(AccountInstance accountInstance, ArrayList<String> paths, ArrayList<String> originalPaths, ArrayList<Uri> uris, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, String mime, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, MessageObject editingMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams, PollSendParams pollSendParams, ArrayList<Integer> pollSendIndexes, ArrayList<Integer> pollSendUriIndexes, boolean forcedPollDoNotSendFinal) {
         if (paths == null && originalPaths == null && uris == null || paths != null && originalPaths != null && paths.size() != originalPaths.size()) {
             return;
         }
@@ -9955,7 +9955,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     }
                     mediaCount++;
                     long prevGroupId = groupId[0];
-                    error = prepareSendingDocumentInternal(accountInstance, paths.get(a), originalPaths.get(a), null, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, a == 0 ? captionEntities : null, editingMessageObject, groupId, !forcedPollDoNotSendFinal && (pollSendParams == null && mediaCount == 10 || a == count - 1), captionFinal, notify, scheduleDate, scheduleRepeatPeriod, docType, inputContent == null, sendMessageChatArguments, first ? effectId : 0, invertMedia, payStars, monoForumPeerId, suggestionParams, pollSendParams, pollSendIndexes!= null ? pollSendIndexes.get(a) : -1);
+                    error = prepareSendingDocumentInternal(accountInstance, paths.get(a), originalPaths.get(a), null, mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, a == 0 ? captionEntities : null, editingMessageObject, groupId, !forcedPollDoNotSendFinal && (pollSendParams == null && mediaCount == 10 || a == count - 1), captionFinal, notify, scheduleDate, scheduleRepeatPeriod, docType, inputContent == null, sendMessageChatArguments, first ? effectId : 0, invertMedia, payDiamonds, monoForumPeerId, suggestionParams, pollSendParams, pollSendIndexes!= null ? pollSendIndexes.get(a) : -1);
                     first = false;
                     if (prevGroupId != groupId[0] || groupId[0] == -1) {
                         mediaCount = 1;
@@ -9978,7 +9978,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     }
                     mediaCount++;
                     long prevGroupId = groupId[0];
-                    error = prepareSendingDocumentInternal(accountInstance, null, null, uris.get(a), mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, captionEntitiesFinal, editingMessageObject, groupId, !forcedPollDoNotSendFinal && (pollSendParams == null && mediaCount == 10 || a == count - 1), captionFinal, notify, scheduleDate, scheduleRepeatPeriod, docType, inputContent == null, sendMessageChatArguments, first ? effectId : 0, invertMedia, payStars, monoForumPeerId, suggestionParams, pollSendParams, pollSendUriIndexes != null ? pollSendUriIndexes.get(a) : -1);
+                    error = prepareSendingDocumentInternal(accountInstance, null, null, uris.get(a), mime, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, captionEntitiesFinal, editingMessageObject, groupId, !forcedPollDoNotSendFinal && (pollSendParams == null && mediaCount == 10 || a == count - 1), captionFinal, notify, scheduleDate, scheduleRepeatPeriod, docType, inputContent == null, sendMessageChatArguments, first ? effectId : 0, invertMedia, payDiamonds, monoForumPeerId, suggestionParams, pollSendParams, pollSendUriIndexes != null ? pollSendUriIndexes.get(a) : -1);
                     first = false;
                     if (prevGroupId != groupId[0] || groupId[0] == -1) {
                         mediaCount = 1;
@@ -10015,12 +10015,12 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     @UiThread
-    public static void prepareSendingPhoto(AccountInstance accountInstance, String imageFilePath, String thumbFilePath, Uri imageUri, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, ArrayList<TLRPC.MessageEntity> entities, ArrayList<TLRPC.InputDocument> stickers, InputContentInfoCompat inputContent, int ttl, MessageObject editingMessageObject, VideoEditedInfo videoEditedInfo, boolean notify, int scheduleDate, int mode, boolean forceDocument, CharSequence caption, SendMessageChatArguments sendMessageChatArguments, long effectId, long payStars) {
-        prepareSendingPhoto(accountInstance, imageFilePath, thumbFilePath, imageUri, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, entities, stickers, inputContent, ttl, editingMessageObject, videoEditedInfo, notify, scheduleDate, 0, mode, forceDocument, caption, sendMessageChatArguments, effectId, payStars, 0, null);
+    public static void prepareSendingPhoto(AccountInstance accountInstance, String imageFilePath, String thumbFilePath, Uri imageUri, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, ArrayList<TLRPC.MessageEntity> entities, ArrayList<TLRPC.InputDocument> stickers, InputContentInfoCompat inputContent, int ttl, MessageObject editingMessageObject, VideoEditedInfo videoEditedInfo, boolean notify, int scheduleDate, int mode, boolean forceDocument, CharSequence caption, SendMessageChatArguments sendMessageChatArguments, long effectId, long payDiamonds) {
+        prepareSendingPhoto(accountInstance, imageFilePath, thumbFilePath, imageUri, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, entities, stickers, inputContent, ttl, editingMessageObject, videoEditedInfo, notify, scheduleDate, 0, mode, forceDocument, caption, sendMessageChatArguments, effectId, payDiamonds, 0, null);
     }
 
     @UiThread
-    public static void prepareSendingPhoto(AccountInstance accountInstance, String imageFilePath, String thumbFilePath, Uri imageUri, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, ArrayList<TLRPC.MessageEntity> entities, ArrayList<TLRPC.InputDocument> stickers, InputContentInfoCompat inputContent, int ttl, MessageObject editingMessageObject, VideoEditedInfo videoEditedInfo, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean forceDocument, CharSequence caption, SendMessageChatArguments sendMessageChatArguments, long effectId, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
+    public static void prepareSendingPhoto(AccountInstance accountInstance, String imageFilePath, String thumbFilePath, Uri imageUri, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, ArrayList<TLRPC.MessageEntity> entities, ArrayList<TLRPC.InputDocument> stickers, InputContentInfoCompat inputContent, int ttl, MessageObject editingMessageObject, VideoEditedInfo videoEditedInfo, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean forceDocument, CharSequence caption, SendMessageChatArguments sendMessageChatArguments, long effectId, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
         SendingMediaInfo info = new SendingMediaInfo();
         info.path = imageFilePath;
         info.thumbPath = thumbFilePath;
@@ -10036,7 +10036,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         info.videoEditedInfo = videoEditedInfo;
         ArrayList<SendingMediaInfo> infos = new ArrayList<>();
         infos.add(info);
-        prepareSendingMedia(accountInstance, infos, dialogId, replyToMsg, replyToTopMsg, null, quote, forceDocument, false, editingMessageObject, notify, scheduleDate, 0, mode, false, inputContent, sendMessageChatArguments, effectId, false, payStars, monoForumPeerId, suggestionParams);
+        prepareSendingMedia(accountInstance, infos, dialogId, replyToMsg, replyToTopMsg, null, quote, forceDocument, false, editingMessageObject, notify, scheduleDate, 0, mode, false, inputContent, sendMessageChatArguments, effectId, false, payDiamonds, monoForumPeerId, suggestionParams);
     }
 
     @UiThread
@@ -10345,7 +10345,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         params2.sendMessageChatArguments = sendMessageChatArguments;
                         params2.replyToStoryItem = storyItem;
                         params2.replyQuote = quote;
-                        params2.payStars = stars;
+                        params2.payDiamonds = stars;
                         params2.monoForumPeer = monoForumPeerId;
                         accountInstance.getSendMessagesHelper().sendMessage(params2);
                     }
@@ -10366,14 +10366,14 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             final SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(result.send_message.message, dialogId, replyToMsg, replyToTopMsg, webPage, !result.send_message.no_webpage, result.send_message.entities, result.send_message.reply_markup, params, notify, scheduleDate, scheduleRepeatPeriod, null, false);
             params2.sendMessageChatArguments = sendMessageChatArguments;
             params2.replyQuote = quote;
-            params2.payStars = stars;
+            params2.payDiamonds = stars;
             params2.monoForumPeer = monoForumPeerId;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageRichMessage) {
             final SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.ofRichMessage(result.send_message.rich_message, dialogId, replyToMsg, replyToTopMsg, result.send_message.reply_markup, params, notify, scheduleDate, scheduleRepeatPeriod);
             params2.sendMessageChatArguments = sendMessageChatArguments;
             params2.replyQuote = quote;
-            params2.payStars = stars;
+            params2.payDiamonds = stars;
             params2.monoForumPeer = monoForumPeerId;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaVenue) {
@@ -10390,7 +10390,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             final SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(venue, dialogId, replyToMsg, replyToTopMsg, result.send_message.reply_markup, params, notify, scheduleDate, scheduleRepeatPeriod);
             params2.sendMessageChatArguments = sendMessageChatArguments;
             params2.replyQuote = quote;
-            params2.payStars = stars;
+            params2.payDiamonds = stars;
             params2.monoForumPeer = monoForumPeerId;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaGeo) {
@@ -10410,7 +10410,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             }
             params2.sendMessageChatArguments = sendMessageChatArguments;
             params2.replyQuote = quote;
-            params2.payStars = stars;
+            params2.payDiamonds = stars;
             params2.monoForumPeer = monoForumPeerId;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaContact) {
@@ -10426,7 +10426,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             final SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(user, dialogId, replyToMsg, replyToTopMsg, result.send_message.reply_markup, params, notify, scheduleDate, scheduleRepeatPeriod);
             params2.sendMessageChatArguments = sendMessageChatArguments;
             params2.replyQuote = quote;
-            params2.payStars = stars;
+            params2.payDiamonds = stars;
             params2.monoForumPeer = monoForumPeerId;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaInvoice) {
@@ -10449,7 +10449,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             final SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(messageMediaInvoice, dialogId, replyToMsg, replyToTopMsg, result.send_message.reply_markup, params, notify, scheduleDate, scheduleRepeatPeriod);
             params2.sendMessageChatArguments = sendMessageChatArguments;
             params2.replyQuote = quote;
-            params2.payStars = stars;
+            params2.payDiamonds = stars;
             params2.monoForumPeer = monoForumPeerId;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
         } else if (result.send_message instanceof TLRPC.TL_botInlineMessageMediaWebPage) {
@@ -10459,7 +10459,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             final SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(result.send_message.message, dialogId, replyToMsg, replyToTopMsg, webPage, !result.send_message.no_webpage, result.send_message.entities, result.send_message.reply_markup, params, notify, scheduleDate, scheduleRepeatPeriod, null, false);
             params2.sendMessageChatArguments = sendMessageChatArguments;
             params2.replyQuote = quote;
-            params2.payStars = stars;
+            params2.payDiamonds = stars;
             params2.monoForumPeer = monoForumPeerId;
             params2.invert_media = result.send_message.invert_media;
             accountInstance.getSendMessagesHelper().sendMessage(params2);
@@ -10646,17 +10646,17 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     @UiThread
-    public static void prepareSendingMedia(AccountInstance accountInstance, ArrayList<SendingMediaInfo> media, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean forceDocument, boolean groupMedia, MessageObject editingMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean updateStikcersOrder, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
-        prepareSendingMedia(accountInstance, media, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, forceDocument, groupMedia, editingMessageObject, null, notify, scheduleDate, scheduleRepeatPeriod, mode, updateStikcersOrder, inputContent, sendMessageChatArguments, effectId, invertMedia, payStars, monoForumPeerId, suggestionParams);
+    public static void prepareSendingMedia(AccountInstance accountInstance, ArrayList<SendingMediaInfo> media, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean forceDocument, boolean groupMedia, MessageObject editingMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean updateStikcersOrder, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
+        prepareSendingMedia(accountInstance, media, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, forceDocument, groupMedia, editingMessageObject, null, notify, scheduleDate, scheduleRepeatPeriod, mode, updateStikcersOrder, inputContent, sendMessageChatArguments, effectId, invertMedia, payDiamonds, monoForumPeerId, suggestionParams);
     }
 
     @UiThread
-    public static void prepareSendingMedia(AccountInstance accountInstance, ArrayList<SendingMediaInfo> media, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean forceDocument, boolean groupMedia, MessageObject editingMessageObject, TLRPC.TL_inputPollAnswer pollToAddOptionMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean updateStikcersOrder, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
-        prepareSendingMedia(accountInstance, media, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, forceDocument, groupMedia, editingMessageObject, pollToAddOptionMessageObject, notify, scheduleDate, scheduleRepeatPeriod, mode, updateStikcersOrder, inputContent, sendMessageChatArguments, effectId, invertMedia, payStars, monoForumPeerId, suggestionParams, null, false);
+    public static void prepareSendingMedia(AccountInstance accountInstance, ArrayList<SendingMediaInfo> media, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean forceDocument, boolean groupMedia, MessageObject editingMessageObject, TLRPC.TL_inputPollAnswer pollToAddOptionMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean updateStikcersOrder, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
+        prepareSendingMedia(accountInstance, media, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, forceDocument, groupMedia, editingMessageObject, pollToAddOptionMessageObject, notify, scheduleDate, scheduleRepeatPeriod, mode, updateStikcersOrder, inputContent, sendMessageChatArguments, effectId, invertMedia, payDiamonds, monoForumPeerId, suggestionParams, null, false);
     }
 
     @UiThread
-    public static void prepareSendingMedia(AccountInstance accountInstance, ArrayList<SendingMediaInfo> media, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean forceDocument, boolean groupMedia, MessageObject editingMessageObject, TLRPC.TL_inputPollAnswer pollToAddOptionMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean updateStikcersOrder, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams, PollSendParams pollSendParams, boolean forcedPollDoNotSendFinal) {
+    public static void prepareSendingMedia(AccountInstance accountInstance, ArrayList<SendingMediaInfo> media, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean forceDocument, boolean groupMedia, MessageObject editingMessageObject, TLRPC.TL_inputPollAnswer pollToAddOptionMessageObject, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int mode, boolean updateStikcersOrder, InputContentInfoCompat inputContent, SendMessageChatArguments sendMessageChatArguments, long effectId, boolean invertMedia, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams, PollSendParams pollSendParams, boolean forcedPollDoNotSendFinal) {
         if (media.isEmpty()) {
             return;
         }
@@ -10926,7 +10926,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                     sendMessageParams.effect_id = effectId;
                                 }
                                 sendMessageParams.invert_media = invertMedia;
-                                sendMessageParams.payStars = payStars;
+                                sendMessageParams.payDiamonds = payDiamonds;
                                 sendMessageParams.monoForumPeer = monoForumPeerId;
                                 sendMessageParams.suggestionParams = suggestionParams;
                                 sendMessageParams.pollIndex = info.pollIndex;
@@ -11008,7 +11008,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                     sendMessageParams.sendMessageChatArguments = sendMessageChatArguments;
                                     sendMessageParams.effect_id = effectId;
                                     sendMessageParams.invert_media = invertMedia;
-                                    sendMessageParams.payStars = payStars;
+                                    sendMessageParams.payDiamonds = payDiamonds;
                                     sendMessageParams.monoForumPeer = monoForumPeerId;
                                     sendMessageParams.suggestionParams =  suggestionParams;
                                     sendMessageParams.pollIndex = info.pollIndex;
@@ -11281,7 +11281,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                     sendMessageParams.stars = info.stars;
                                     sendMessageParams.pollIndex = info.pollIndex;
                                     sendMessageParams.cover = coverFinal;
-                                    sendMessageParams.payStars = payStars;
+                                    sendMessageParams.payDiamonds = payDiamonds;
                                     sendMessageParams.monoForumPeer = monoForumPeerId;
                                     sendMessageParams.suggestionParams = suggestionParams;
                                     sendMessageParams.isLivePhoto = info.isLivePhoto;
@@ -11494,7 +11494,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                         sendMessageParams.invert_media = invertMedia;
                                         sendMessageParams.stars = info.stars;
                                         sendMessageParams.pollIndex = info.pollIndex;
-                                        sendMessageParams.payStars = payStars;
+                                        sendMessageParams.payDiamonds = payDiamonds;
                                         sendMessageParams.monoForumPeer = monoForumPeerId;
                                         sendMessageParams.suggestionParams = suggestionParams;
                                         sendMessageParams.sendingHighQuality = highQuality;
@@ -11535,7 +11535,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         mediaCount = 0;
                     }
                     mediaCount++;
-                    int error = prepareSendingDocumentInternal(accountInstance, sendAsDocuments.get(a), sendAsDocumentsOriginal.get(a), sendAsDocumentsUri.get(a), extension, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, sendAsDocumentsEntities.get(a), editingMessageObject, groupId2, mediaCount == 10 || a == documentsCount - 1, sendAsDocumentsCaptions.get(a), notify, scheduleDate, 0, null, forceDocument, sendMessageChatArguments, effectId, invertMedia, payStars, monoForumPeerId, suggestionParams, null, -1);
+                    int error = prepareSendingDocumentInternal(accountInstance, sendAsDocuments.get(a), sendAsDocumentsOriginal.get(a), sendAsDocumentsUri.get(a), extension, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, sendAsDocumentsEntities.get(a), editingMessageObject, groupId2, mediaCount == 10 || a == documentsCount - 1, sendAsDocumentsCaptions.get(a), notify, scheduleDate, 0, null, forceDocument, sendMessageChatArguments, effectId, invertMedia, payDiamonds, monoForumPeerId, suggestionParams, null, -1);
                     handleError(error, accountInstance);
                 }
             }
@@ -11547,7 +11547,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
 
 
     @UiThread
-    public static void prepareSendingPoll(AccountInstance accountInstance, @NonNull PollSendParams pollSendParams, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean notify, int scheduleDate, SendMessageChatArguments sendMessageChatArguments, long payStars, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
+    public static void prepareSendingPoll(AccountInstance accountInstance, @NonNull PollSendParams pollSendParams, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem storyItem, ChatActivity.ReplyQuote quote, boolean notify, int scheduleDate, SendMessageChatArguments sendMessageChatArguments, long payDiamonds, long monoForumPeerId, MessageSuggestionParams suggestionParams) {
         if (pollSendParams.mediaPack != null) {
             ArrayList<SendMessagesHelper.SendingMediaInfo> mediaInfos = new ArrayList<>();
 
@@ -11604,7 +11604,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
 
             final Runnable afterMediaSendPrepared = () -> {
                 if (!documentInfos.isEmpty() || !documentUris.isEmpty()) {
-                    SendMessagesHelper.prepareSendingDocuments(accountInstance, documentInfos, originalPaths, documentUris, null, null, null, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, null, notify, scheduleDate, 0, null, sendMessageChatArguments, 0, false, payStars, monoForumPeerId, suggestionParams, pollSendParams, documentPollIndex, documentUrisPollIndex, false);
+                    SendMessagesHelper.prepareSendingDocuments(accountInstance, documentInfos, originalPaths, documentUris, null, null, null, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, null, notify, scheduleDate, 0, null, sendMessageChatArguments, 0, false, payDiamonds, monoForumPeerId, suggestionParams, pollSendParams, documentPollIndex, documentUrisPollIndex, false);
                 }
                 // done;
             };
@@ -11612,7 +11612,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             final Runnable afterMusicSendPrepared = () -> {
                 if (!mediaInfos.isEmpty()) {
                     counter[0]--;
-                    SendMessagesHelper.prepareSendingMedia(accountInstance, mediaInfos, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, false, true, null, null, notify, scheduleDate, 0, 0, false, null, sendMessageChatArguments, 0, false, payStars, monoForumPeerId, suggestionParams, pollSendParams, counter[0] > 0);
+                    SendMessagesHelper.prepareSendingMedia(accountInstance, mediaInfos, dialogId, replyToMsg, replyToTopMsg, storyItem, quote, false, true, null, null, notify, scheduleDate, 0, 0, false, null, sendMessageChatArguments, 0, false, payDiamonds, monoForumPeerId, suggestionParams, pollSendParams, counter[0] > 0);
                     mediaSendQueue.postRunnable(() -> AndroidUtilities.runOnUIThread(afterMediaSendPrepared));
                 } else {
                     afterMediaSendPrepared.run();
@@ -11621,7 +11621,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
 
             if (!musicMessageObjects.isEmpty()) {
                 counter[0]--;
-                SendMessagesHelper.prepareSendingAudioDocuments(accountInstance, musicMessageObjects, "", dialogId, replyToMsg, replyToTopMsg, storyItem, notify, scheduleDate, 0, null, sendMessageChatArguments, 0, false, payStars, pollSendParams, musicPollIndex, counter[0] > 0, afterMusicSendPrepared);
+                SendMessagesHelper.prepareSendingAudioDocuments(accountInstance, musicMessageObjects, "", dialogId, replyToMsg, replyToTopMsg, storyItem, notify, scheduleDate, 0, null, sendMessageChatArguments, 0, false, payDiamonds, pollSendParams, musicPollIndex, counter[0] > 0, afterMusicSendPrepared);
             } else {
                 afterMusicSendPrepared.run();
             }
@@ -11636,7 +11636,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         params2.invert_media = true;
         params2.entities = pollSendParams.entities;
         params2.sendMessageChatArguments = sendMessageChatArguments;
-        params2.payStars = payStars;
+        params2.payDiamonds = payDiamonds;
         params2.monoForumPeer = monoForumPeerId;
         params2.suggestionParams = suggestionParams;
         params2.pollSendParams = pollSendParams;
@@ -12073,7 +12073,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         sendMessageParams.sendMessageChatArguments = sendMessageChatArguments;
                         sendMessageParams.effect_id = effectId;
                         sendMessageParams.cover = coverFinal;
-                        sendMessageParams.payStars = stars;
+                        sendMessageParams.payDiamonds = stars;
                         sendMessageParams.monoForumPeer = monoForumPeerId;
                         sendMessageParams.suggestionParams = suggestionParams;
                         sendMessageParams.invert_media = invertMedia;
@@ -12131,7 +12131,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         public int quick_reply_shortcut_id;
         public long effect_id;
         public long stars;
-        public long payStars;
+        public long payDiamonds;
         public long monoForumPeer;
         public boolean sendingHighQuality;
         public MessageSuggestionParams suggestionParams;
@@ -12160,7 +12160,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     params.quick_reply_shortcut = ((TLRPC.TL_inputQuickReplyShortcut) retryMessageObject.messageOwner.quick_reply_shortcut).shortcut;
                 }
                 params.quick_reply_shortcut_id = retryMessageObject.getQuickReplyId();
-                params.payStars = retryMessageObject.messageOwner.paid_message_stars;
+                params.payDiamonds = retryMessageObject.messageOwner.paid_message_stars;
             }
             params.ephemeralReceiverBotId = retryMessageObject.getEphemeralReceiverBotId();
             return params;

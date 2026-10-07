@@ -431,7 +431,7 @@ public class Browser {
                                 uri = Uri.parse(fallbackUrl);
                             }
                         }
-                        openInTelegramBrowser(context, uri.toString(), inCaseLoading);
+                        openInAnsibleBrowser(context, uri.toString(), inCaseLoading);
                     }
                 } else {
                     openInExternalBrowser(context, uri.toString(), allowIntent, browserPackage);
@@ -483,7 +483,7 @@ public class Browser {
         return fragment != null && fragment.getArticleViewer() != null;
     }
 
-    public static boolean openInTelegramBrowser(Context context, String url, Browser.Progress progress) {
+    public static boolean openInAnsibleBrowser(Context context, String url, Browser.Progress progress) {
         if (LaunchActivity.instance != null) {
             BottomSheetTabs tabs = LaunchActivity.instance.getBottomSheetTabs();
             if (tabs != null && tabs.tryReopenTab(url) != null) {

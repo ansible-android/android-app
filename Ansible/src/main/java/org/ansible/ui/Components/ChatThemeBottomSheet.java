@@ -59,7 +59,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.ResultCallback;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BackDrawable;
@@ -1028,7 +1028,7 @@ public class ChatThemeBottomSheet extends BottomSheet implements NotificationCen
             EmojiThemes chatTheme = selectedItem.chatTheme;
             TLRPC.ChatTheme tlChatTheme = !chatTheme.showAsDefaultStub ? chatTheme.getChatTheme() : null;
             final long isBusyByUserId = chatTheme.getBusyByUserId();
-            final TL_stars.TL_starGiftUnique gift = chatTheme.getThemeGift();
+            final TL_diamonds.TL_starGiftUnique gift = chatTheme.getThemeGift();
             if (isBusyByUserId != 0 && gift != null && !ignoreGiftReplace) {
                 AlertsCreator.showGiftThemeApplyConfirm(getContext(), resourcesProvider,
                     currentAccount, gift, isBusyByUserId,
@@ -1344,7 +1344,7 @@ public class ChatThemeBottomSheet extends BottomSheet implements NotificationCen
             }
 
             @Override
-            public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payStars) {
+            public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payDiamonds) {
                 try {
                     HashMap<Object, Object> photos = chatAttachAlert.getPhotoLayout().getSelectedPhotos();
                     if (!photos.isEmpty()) {
@@ -1438,7 +1438,7 @@ public class ChatThemeBottomSheet extends BottomSheet implements NotificationCen
             }
 
             @Override
-            public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payStars) {
+            public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payDiamonds) {
                 try {
                     HashMap<Object, Object> photos = chatAttachAlert.getPhotoLayout().getSelectedPhotos();
                     if (!photos.isEmpty()) {

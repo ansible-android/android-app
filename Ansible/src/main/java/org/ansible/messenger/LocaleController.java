@@ -36,7 +36,7 @@ import androidx.annotation.StringRes;
 import org.ansible.messenger.time.FastDateFormat;
 import org.ansible.asnet.Vector;
 import org.ansible.ui.Components.TypefaceSpan;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
@@ -1779,7 +1779,7 @@ public class LocaleController {
         amount = Math.abs(amount);
         Currency currency = Currency.getInstance(type);
         switch (type) {
-            case StarsController.currency:
+            case DiamondsController.currency:
                 customFormat = " %.0f";
                 doubleAmount = amount;
                 break;

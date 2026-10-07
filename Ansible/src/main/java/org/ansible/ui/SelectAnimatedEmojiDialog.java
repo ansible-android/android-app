@@ -2,7 +2,7 @@ package org.ansible.ui;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.translitSafe;
-import static org.ansible.ui.Stars.StarsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -96,7 +96,7 @@ import org.ansible.messenger.utils.ViewOutlineProviderImpl;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
 import org.ansible.ui.ActionBar.AlertDialog;
@@ -129,8 +129,8 @@ import org.ansible.ui.Components.RecyclerAnimationScrollHelper;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.SearchStateDrawable;
 import org.ansible.ui.Components.StickerCategoriesListView;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -441,7 +441,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
     private ArrayList<Long> installedEmojiSets = new ArrayList<>();
     private boolean recentExpanded = false;
     private ArrayList<AnimatedEmojiSpan> recent = new ArrayList<>();
-    private ArrayList<TL_stars.TL_starGiftUnique> gifts = new ArrayList<>();
+    private ArrayList<TL_diamonds.TL_starGiftUnique> gifts = new ArrayList<>();
     private ArrayList<TLRPC.Document> recentStickers = new ArrayList<>();
     private ArrayList<String> standardEmojis = new ArrayList<>();
     private ArrayList<ReactionsLayoutInBubble.VisibleReaction> topReactions = new ArrayList<>();
@@ -499,7 +499,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
 
         selectorPaint.setColor(Theme.getColor(Theme.key_listSelector, resourcesProvider));
         selectorAccentPaint.setColor(ColorUtils.setAlphaComponent(accentColor, 30));
-        premiumStarColorFilter = new PorterDuffColorFilter(accentColor, PorterDuff.Mode.SRC_IN);
+        premiumDiamondColorFilter = new PorterDuffColorFilter(accentColor, PorterDuff.Mode.SRC_IN);
 
         this.emojiX = emojiX;
         final Integer bubbleX = emojiX == null ? null : MathUtils.clamp(emojiX, AndroidUtilities.dp(26), AndroidUtilities.dp(340 - 48));
@@ -654,7 +654,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
 
                 @Override
                 protected ColorFilter getEmojiColorFilter() {
-                    return premiumStarColorFilter;
+                    return premiumDiamondColorFilter;
                 }
 
                 @Override
@@ -996,7 +996,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     return true;
                 }
                 if (view instanceof ImageViewEmoji && ((ImageViewEmoji) view).span != null && (type == TYPE_EMOJI_STATUS || type == TYPE_EMOJI_STATUS_TOP || type == TYPE_EMOJI_STATUS_CHANNEL || type == TYPE_EMOJI_STATUS_CHANNEL_TOP)) {
-                    final TL_stars.TL_starGiftUnique gift = ((ImageViewEmoji) view).starGift;
+                    final TL_diamonds.TL_starGiftUnique gift = ((ImageViewEmoji) view).starGift;
                     SelectStatusDurationDialog dialog = selectStatusDateDialog = new SelectStatusDurationDialog(context, dismiss, SelectAnimatedEmojiDialog.this, (ImageViewEmoji) view, resourcesProvider) {
                         @Override
                         protected boolean getOutBounds(Rect rect) {
@@ -1068,7 +1068,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         RecyclerListView.OnItemClickListener onItemClick = (view, position) -> {
             if (view instanceof ImageViewEmoji) {
                 ImageViewEmoji viewEmoji = (ImageViewEmoji) view;
-                if (viewEmoji.isDefaultReaction || viewEmoji.reaction != null && viewEmoji.reaction.isStar || type == TYPE_STICKER_SET_EMOJI || type == TYPE_EFFECTS) {
+                if (viewEmoji.isDefaultReaction || viewEmoji.reaction != null && viewEmoji.reaction.isDiamond || type == TYPE_STICKER_SET_EMOJI || type == TYPE_EFFECTS) {
                     incrementHintUse();
                     onReactionClick(viewEmoji, viewEmoji.reaction);
                 } else if (viewEmoji.isStaticIcon && viewEmoji.document != null) {
@@ -1196,7 +1196,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         }
         this.bigReactionAnimatedEmoji = animatedEmojiDrawable;
         if (bigReactionAnimatedEmoji != null) {
-            bigReactionAnimatedEmoji.setColorFilter(premiumStarColorFilter);
+            bigReactionAnimatedEmoji.setColorFilter(premiumDiamondColorFilter);
             bigReactionAnimatedEmoji.addView(this);
         }
     }
@@ -1309,19 +1309,19 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         }
     }
 
-    private Drawable premiumStar;
-    private ColorFilter premiumStarColorFilter;
+    private Drawable premiumDiamond;
+    private ColorFilter premiumDiamondColorFilter;
 
-    private Drawable getPremiumStar() {
-        if (premiumStar == null) {
+    private Drawable getPremiumDiamond() {
+        if (premiumDiamond == null) {
             if (type == TYPE_SET_REPLY_ICON || type == TYPE_EMOJI_STATUS_CHANNEL || type == TYPE_EMOJI_STATUS_CHANNEL_TOP || type == TYPE_SET_REPLY_ICON_BOTTOM) {
-                premiumStar = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.msg_filled_blocked).mutate();
+                premiumDiamond = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.msg_filled_blocked).mutate();
             } else {
-                premiumStar = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.msg_settings_premium).mutate();
+                premiumDiamond = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.msg_settings_premium).mutate();
             }
-            premiumStar.setColorFilter(premiumStarColorFilter);
+            premiumDiamond.setColorFilter(premiumDiamondColorFilter);
         }
-        return premiumStar;
+        return premiumDiamond;
     }
 
     private float scrimAlpha = 1f;
@@ -2832,12 +2832,12 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     }
                 } else if (!gifts.isEmpty() && position - giftsStartRow >= 0 && position - giftsStartRow < gifts.size()) {
                     final int index = position - giftsStartRow;
-                    final TL_stars.TL_starGiftUnique gift = gifts.get(index);
+                    final TL_diamonds.TL_starGiftUnique gift = gifts.get(index);
                     final TLRPC.Document doc = gift.getDocument();
                     imageView.span = new AnimatedEmojiSpan(doc, null);
                     imageView.document = doc;
                     imageView.starGift = gift;
-                    final TL_stars.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
+                    final TL_diamonds.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
                     if (backdrop != null) {
                         imageView.particlesColor = backdrop.pattern_color | 0x90000000;
                     }
@@ -3176,10 +3176,10 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
     private int animateExpandFromPosition = -1, animateExpandToPosition = -1;
     private long animateExpandStartTime = -1;
 
-    private StarsReactionsSheet.Particles collectionParticles;
-    public StarsReactionsSheet.Particles getCollectionParticles() {
+    private DiamondsReactionsSheet.Particles collectionParticles;
+    public DiamondsReactionsSheet.Particles getCollectionParticles() {
         if (collectionParticles == null) {
-            collectionParticles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 8);
+            collectionParticles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 8);
         }
         return collectionParticles;
     }
@@ -3209,7 +3209,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         public ImageReceiver preloadEffectImageReceiver = new ImageReceiver();
         public ImageReceiver imageReceiverToDraw;
         public boolean isDefaultReaction;
-        public TL_stars.TL_starGiftUnique starGift;
+        public TL_diamonds.TL_starGiftUnique starGift;
         public Integer particlesColor;
         public ReactionsLayoutInBubble.VisibleReaction reaction;
         public boolean isFirstReactions;
@@ -3602,11 +3602,11 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
 
     }
 
-    protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+    protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
         return true;
     }
 
-    protected void onEmojiSelected(View view, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+    protected void onEmojiSelected(View view, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
 
     }
 
@@ -3982,19 +3982,19 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         }
         gifts.clear();
         if (type == TYPE_EMOJI_STATUS || type == TYPE_EMOJI_STATUS_TOP || type == TYPE_EMOJI_STATUS_CHANNEL || type == TYPE_EMOJI_STATUS_CHANNEL_TOP) {
-            final StarsController.GiftsList profileGifts = StarsController.getInstance(currentAccount).getProfileGiftsList(getDialogId());
+            final DiamondsController.GiftsList profileGifts = DiamondsController.getInstance(currentAccount).getProfileGiftsList(getDialogId());
             profileGifts.load();
-            final ArrayList<TL_stars.TL_starGiftUnique> uniqueGifts = new ArrayList<>();
-            for (TL_stars.SavedStarGift gift : profileGifts.gifts) {
-                if (gift.gift instanceof TL_stars.TL_starGiftUnique) {
-                    uniqueGifts.add((TL_stars.TL_starGiftUnique) gift.gift);
+            final ArrayList<TL_diamonds.TL_starGiftUnique> uniqueGifts = new ArrayList<>();
+            for (TL_diamonds.SavedStarGift gift : profileGifts.gifts) {
+                if (gift.gift instanceof TL_diamonds.TL_starGiftUnique) {
+                    uniqueGifts.add((TL_diamonds.TL_starGiftUnique) gift.gift);
                 }
             }
             if (!uniqueGifts.isEmpty()) {
                 giftsSectionRow = totalCount++;
                 rowHashCodes.add(22L);
                 giftsStartRow = totalCount;
-                for (final TL_stars.TL_starGiftUnique gift : uniqueGifts) {
+                for (final TL_diamonds.TL_starGiftUnique gift : uniqueGifts) {
                     rowHashCodes.add(13334 + 322L * gift.id);
                     totalCount++;
                     gifts.add(gift);
@@ -4384,7 +4384,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                         canvas.save();
                         canvas.translate(imageViewEmoji.getX(), imageViewEmoji.getY());
                         if (imageViewEmoji.particlesColor != null) {
-                            StarsReactionsSheet.Particles particles = getCollectionParticles();
+                            DiamondsReactionsSheet.Particles particles = getCollectionParticles();
                             particles.setBounds(0, 0, imageViewEmoji.getWidth(), imageViewEmoji.getHeight());
                             if (!particlesUpdated) {
                                 particles.process();
@@ -4633,7 +4633,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     }
                     ImageReceiver imageReceiver;
                     if (imageView.empty) {
-                        Drawable drawable = getPremiumStar();
+                        Drawable drawable = getPremiumDiamond();
                         float scale = type == TYPE_SET_REPLY_ICON || type == TYPE_EMOJI_STATUS_CHANNEL_TOP || type == TYPE_EMOJI_STATUS_CHANNEL || type == TYPE_SET_REPLY_ICON_BOTTOM ? 1.3f : 1f;
                         if (imageView.pressedProgress != 0 || imageView.selectedProgress > 0) {
                             scale *= 0.8f + 0.2f * (1f - Math.max(imageView.selectedProgress * .8f, imageView.pressedProgress));
@@ -4696,7 +4696,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                             imageReceiver = drawable.getImageReceiver();
                             drawable.setAlpha((int) (255 * alpha));
                             imageView.setDrawable(drawable);
-                            imageView.drawable.setColorFilter(premiumStarColorFilter);
+                            imageView.drawable.setColorFilter(premiumDiamondColorFilter);
                         } else {
                             imageReceiver = imageView.imageReceiver;
                             imageReceiver.setAlpha(alpha);
@@ -4801,7 +4801,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                         }
                         Drawable drawable = null;
                         if (imageView.empty) {
-                            drawable = getPremiumStar();
+                            drawable = getPremiumDiamond();
                             if (type == TYPE_SET_REPLY_ICON || type == TYPE_EMOJI_STATUS_CHANNEL_TOP || type == TYPE_EMOJI_STATUS_CHANNEL || type == TYPE_SET_REPLY_ICON_BOTTOM) {
                                 AndroidUtilities.rectTmp2.inset((int) (-AndroidUtilities.rectTmp2.width() * .15f), (int) (-AndroidUtilities.rectTmp2.height() * .15f));
                             }
@@ -4821,8 +4821,8 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                         } else if (imageView.imageReceiver != null) {
                             imageView.imageReceiver.setImageCoords(AndroidUtilities.rectTmp2);
                         }
-                        if (premiumStarColorFilter != null && imageView.drawable instanceof AnimatedEmojiDrawable) {
-                            imageView.drawable.setColorFilter(premiumStarColorFilter);
+                        if (premiumDiamondColorFilter != null && imageView.drawable instanceof AnimatedEmojiDrawable) {
+                            imageView.drawable.setColorFilter(premiumDiamondColorFilter);
                         }
                         imageView.skewAlpha = skewAlpha;
                         imageView.skewIndex = i;
@@ -4865,7 +4865,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                 if (drawable != null) {
                     drawable.setAlpha((int) (255 * alpha));
                     drawable.draw(canvas);
-                    drawable.setColorFilter(premiumStarColorFilter);
+                    drawable.setColorFilter(premiumDiamondColorFilter);
                 } else if ((imageView.isDefaultReaction || imageView.isStaticIcon) && imageView.imageReceiver != null) {
                     canvas.save();
                     canvas.clipRect(imageView.imageReceiver.getImageX(), imageView.imageReceiver.getImageY(), imageView.imageReceiver.getImageX2(), imageView.imageReceiver.getImageY2());
@@ -4953,7 +4953,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.groupStickersDidLoad);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         if (type == TYPE_EMOJI_STATUS || type == TYPE_EMOJI_STATUS_TOP) {
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starUserGiftsLoaded);
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
         }
 
         if (scrimDrawable != null) {
@@ -4972,7 +4972,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.groupStickersDidLoad);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
         if (type == TYPE_EMOJI_STATUS || type == TYPE_EMOJI_STATUS_TOP) {
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starUserGiftsLoaded);
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
         }
 
         if (scrimDrawable != null) {
@@ -5008,7 +5008,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
             if (emojiGridView != null) {
                 emojiGridView.invalidate();
             }
-        } else if (id == NotificationCenter.starUserGiftsLoaded) {
+        } else if (id == NotificationCenter.diamondUserGiftsLoaded) {
             final long did = (long) args[0];
             if (did == UserConfig.getInstance(currentAccount).getClientUserId()) {
                 updateRowsDelayed();
@@ -5867,7 +5867,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                         if (changeToScrimColor) {
                             drawable.setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(scrimColor, accentColor, showT), PorterDuff.Mode.MULTIPLY));
                         } else {
-                            drawable.setColorFilter(premiumStarColorFilter);
+                            drawable.setColorFilter(premiumDiamondColorFilter);
                         }
                         drawable.setAlpha((int) (255 * (1f - showT)));
                         AndroidUtilities.rectTmp.set(current);
@@ -6085,7 +6085,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                 }
                 imageReceiver.setImage(mediaLocation, mediaFilter, ImageLocation.getForDocument(thumb, document), filter, null, null, thumbDrawable, document.size, null, document, 1);
                 if (imageViewEmoji.drawable instanceof AnimatedEmojiDrawable && (MessageObject.isTextColorEmoji(document) || ((AnimatedEmojiDrawable) imageViewEmoji.drawable).canOverrideColor())) {
-                    imageReceiver.setColorFilter(MessageObject.isTextColorEmoji(document) || AnimatedEmojiDrawable.isDefaultStatusEmoji((AnimatedEmojiDrawable) imageViewEmoji.drawable) ? premiumStarColorFilter : Theme.getAnimatedEmojiColorFilter(resourcesProvider));
+                    imageReceiver.setColorFilter(MessageObject.isTextColorEmoji(document) || AnimatedEmojiDrawable.isDefaultStatusEmoji((AnimatedEmojiDrawable) imageViewEmoji.drawable) ? premiumDiamondColorFilter : Theme.getAnimatedEmojiColorFilter(resourcesProvider));
                 }
             }
 

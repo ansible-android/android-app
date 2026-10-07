@@ -10,8 +10,8 @@ package org.ansible.ui;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsIntroActivity.formatStarsAmount;
-import static org.ansible.ui.Stars.StarsIntroActivity.formatStarsAmountShort;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.formatDiamondsAmount;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.formatDiamondsAmountShort;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -100,9 +100,9 @@ import org.ansible.ui.Components.Reactions.ReactionsUtils;
 import org.ansible.ui.Components.SectionsScrollView;
 import org.ansible.ui.Components.SizeNotifierFrameLayout;
 import org.ansible.ui.Components.UndoView;
-import org.ansible.ui.Stars.BotStarsActivity;
-import org.ansible.ui.Stars.BotStarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BotDiamondsActivity;
+import org.ansible.ui.Diamonds.BotDiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.bots.AffiliateProgramFragment;
 import org.ansible.ui.bots.BotVerifySheet;
 import org.ansible.ui.bots.ChannelAffiliateProgramsFragment;
@@ -190,7 +190,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
 
     private TextCell publicLinkCell;
     private TextCell tonBalanceCell;
-    private TextCell starsBalanceCell;
+    private TextCell diamondsBalanceCell;
     private TextCell botAffiliateProgramCell;
     private TextCell editIntroCell;
     private TextCell editCommandsCell;
@@ -399,7 +399,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
             canForum = false;
             getNotificationCenter().addObserver(this, NotificationCenter.userInfoDidLoad);
             if (currentUser.bot) {
-                getNotificationCenter().addObserver(this, NotificationCenter.botStarsUpdated);
+                getNotificationCenter().addObserver(this, NotificationCenter.botDiamondsUpdated);
             }
         }
         imageUpdater.parentFragment = this;
@@ -443,7 +443,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
         } else {
             getNotificationCenter().removeObserver(this, NotificationCenter.userInfoDidLoad);
             if (currentUser.bot) {
-                getNotificationCenter().removeObserver(this, NotificationCenter.botStarsUpdated);
+                getNotificationCenter().removeObserver(this, NotificationCenter.botDiamondsUpdated);
             }
         }
         getNotificationCenter().removeObserver(this, NotificationCenter.updateInterfaces);
@@ -880,7 +880,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                     if (info != null && info.location instanceof TLRPC.TL_channelLocation) {
                         fragment.setInitialLocation((TLRPC.TL_channelLocation) info.location);
                     }
-                    fragment.setDelegate((location, live, notify, scheduleDate, payStars) -> {
+                    fragment.setDelegate((location, live, notify, scheduleDate, payDiamonds) -> {
                         TLRPC.TL_channelLocation channelLocation = new TLRPC.TL_channelLocation();
                         channelLocation.address = location.address;
                         channelLocation.geo_point = location.geo;
@@ -1448,11 +1448,11 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 tonBalanceCell.setBackground(Theme.getSelectorDrawable(false));
                 tonBalanceCell.setPrioritizeTitleOverValue(true);
                 balanceContainer.addView(tonBalanceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                BotStarsController c = BotStarsController.getInstance(currentAccount);
+                BotDiamondsController c = BotDiamondsController.getInstance(currentAccount);
                 tonBalanceCell.setOnClickListener(v -> {
-                    if (!c.isStarsBalanceAvailable(userId))
+                    if (!c.isDiamondsBalanceAvailable(userId))
                         return;
-                    presentFragment(new BotStarsActivity(BotStarsActivity.TYPE_TON, userId));
+                    presentFragment(new BotDiamondsActivity(BotDiamondsActivity.TYPE_TON, userId));
                 });
                 if (!c.isTONBalanceAvailable(userId)) {
                     SpannableStringBuilder loadingStr = new SpannableStringBuilder("x");
@@ -1478,31 +1478,31 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 }
                 tonBalanceCell.setVisibility(c.botHasTON(userId) ? View.VISIBLE : View.GONE);
 
-                starsBalanceCell = new TextCell(context);
-                starsBalanceCell.setBackground(Theme.getSelectorDrawable(false));
-                starsBalanceCell.setPrioritizeTitleOverValue(true);
-                balanceContainer.addView(starsBalanceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                starsBalanceCell.setOnClickListener(v -> {
-                    if (!c.isStarsBalanceAvailable(userId))
+                diamondsBalanceCell = new TextCell(context);
+                diamondsBalanceCell.setBackground(Theme.getSelectorDrawable(false));
+                diamondsBalanceCell.setPrioritizeTitleOverValue(true);
+                balanceContainer.addView(diamondsBalanceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+                diamondsBalanceCell.setOnClickListener(v -> {
+                    if (!c.isDiamondsBalanceAvailable(userId))
                         return;
-                    presentFragment(new BotStarsActivity(BotStarsActivity.TYPE_STARS, userId));
+                    presentFragment(new BotDiamondsActivity(BotDiamondsActivity.TYPE_STARS, userId));
                 });
-                if (!c.isStarsBalanceAvailable(userId)) {
+                if (!c.isDiamondsBalanceAvailable(userId)) {
                     SpannableStringBuilder loadingStr = new SpannableStringBuilder("x");
-                    loadingStr.setSpan(new LoadingSpan(starsBalanceCell.valueTextView, dp(30)), 0, loadingStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    starsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), loadingStr, R.drawable.menu_premium_main, false);
+                    loadingStr.setSpan(new LoadingSpan(diamondsBalanceCell.valueTextView, dp(30)), 0, loadingStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    diamondsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), loadingStr, R.drawable.menu_premium_main, false);
                 } else {
 
-                    starsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), c.getBotStarsBalance(userId).amount <= 0?"":StarsIntroActivity.replaceStarsWithPlain(TextUtils.concat("XTR", formatStarsAmountShort(c.getBotStarsBalance(userId), .85f, ' ')), .85f), R.drawable.menu_premium_main, false);
+                    diamondsBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), c.getBotDiamondsBalance(userId).amount <= 0?"":DiamondsIntroActivity.replaceDiamondsWithPlain(TextUtils.concat("XTR", formatDiamondsAmountShort(c.getBotDiamondsBalance(userId), .85f, ' ')), .85f), R.drawable.menu_premium_main, false);
                 }
-                starsBalanceCell.setVisibility(c.botHasStars(userId) ? View.VISIBLE : View.GONE);
+                diamondsBalanceCell.setVisibility(c.botHasDiamonds(userId) ? View.VISIBLE : View.GONE);
 
                 TextInfoPrivacyCell gap = new TextInfoPrivacyCell(context, 12, getResourceProvider());
                 gap.setFixedSize(12);
                 gap.setTag(R.id.fit_width_tag, 1);
                 linearLayout1.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 12));
 
-                balanceContainer.setVisibility(starsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
+                balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
             }
         }
 
@@ -1863,19 +1863,19 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 }
                 updateReactionsCell(true);
             }
-        } else if (id == NotificationCenter.botStarsUpdated) {
+        } else if (id == NotificationCenter.botDiamondsUpdated) {
             if ((long) args[0] == userId) {
-                if (starsBalanceCell != null) {
-                    BotStarsController c = BotStarsController.getInstance(currentAccount);
-                    starsBalanceCell.setVisibility(c.botHasStars(userId) ? View.VISIBLE : View.GONE);
-                    starsBalanceCell.setValue(StarsIntroActivity.replaceStarsWithPlain(TextUtils.concat("XTR", formatStarsAmount(c.getBotStarsBalance(userId), .8f, ' ')), .85f), true);
+                if (diamondsBalanceCell != null) {
+                    BotDiamondsController c = BotDiamondsController.getInstance(currentAccount);
+                    diamondsBalanceCell.setVisibility(c.botHasDiamonds(userId) ? View.VISIBLE : View.GONE);
+                    diamondsBalanceCell.setValue(DiamondsIntroActivity.replaceDiamondsWithPlain(TextUtils.concat("XTR", formatDiamondsAmount(c.getBotDiamondsBalance(userId), .8f, ' ')), .85f), true);
                     if (publicLinkCell != null) {
-                        publicLinkCell.setNeedDivider(c.botHasStars(userId) || c.botHasTON(userId));
+                        publicLinkCell.setNeedDivider(c.botHasDiamonds(userId) || c.botHasTON(userId));
                     }
-                    balanceContainer.setVisibility(starsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
+                    balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
                 }
                 if (tonBalanceCell != null) {
-                    BotStarsController c = BotStarsController.getInstance(currentAccount);
+                    BotDiamondsController c = BotDiamondsController.getInstance(currentAccount);
                     tonBalanceCell.setVisibility(c.botHasTON(userId) ? View.VISIBLE : View.GONE);
                     long ton_balance = c.getTONBalance(userId);
                     SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -1894,9 +1894,9 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                     }
                     tonBalanceCell.setValue(ssb, true);
                     if (publicLinkCell != null) {
-                        publicLinkCell.setNeedDivider(c.botHasStars(userId) || c.botHasTON(userId));
+                        publicLinkCell.setNeedDivider(c.botHasDiamonds(userId) || c.botHasTON(userId));
                     }
-                    balanceContainer.setVisibility(starsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
+                    balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
                 }
             }
         } else if (id == NotificationCenter.userInfoDidLoad) {
@@ -2507,7 +2507,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
             final long stars = forced != null ? forced : (mfChat != null ? mfChat.send_paid_messages_stars : 0);
             suggestedCell.setTextAndValueAndIcon(
                 (LocaleController.getString(R.string.PostSuggestions)),
-                StarsIntroActivity.replaceStarsWithPlain(
+                DiamondsIntroActivity.replaceDiamondsWithPlain(
                     LocaleController.formatString(R.string.PostSuggestionsDiamonds, stars),
                     0.66f),
                 R.drawable.msg_markunread, true);

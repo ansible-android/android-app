@@ -7,7 +7,7 @@ import static org.ansible.messenger.LocaleController.formatPluralString;
 import static org.ansible.messenger.LocaleController.formatSpannable;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarGiftSheet.replaceUnderstood;
+import static org.ansible.ui.Diamonds.DiamondGiftSheet.replaceUnderstood;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -44,7 +44,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.messenger.utils.tlutils.TlUtils;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenu;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
@@ -66,17 +66,17 @@ import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.PremiumFeatureCell;
 import org.ansible.ui.PremiumPreviewFragment;
-import org.ansible.ui.Stars.BagRandomizer;
-import org.ansible.ui.Stars.StarGiftPreviewSheet;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BagRandomizer;
+import org.ansible.ui.Diamonds.DiamondGiftPreviewSheet;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
 
 public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements GiftAuctionController.OnAuctionUpdateListener {
-    private final TL_stars.StarGift starGift;
+    private final TL_diamonds.StarGift starGift;
     private final long giftId;
     private final LinearLayout linearLayout;
 
@@ -106,7 +106,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
 
     private final CharSequence emojiGiftText;
 
-    private AuctionJoinSheet(Context context, Theme.ResourcesProvider resourcesProvider, long dialogId, TL_stars.StarGift starGift, Runnable closeParentSheet) {
+    private AuctionJoinSheet(Context context, Theme.ResourcesProvider resourcesProvider, long dialogId, TL_diamonds.StarGift starGift, Runnable closeParentSheet) {
         super(context, null, false, false, false, false, ActionBarType.FADING, resourcesProvider);
         this.starGift = starGift;
         this.giftId = starGift.id;
@@ -140,7 +140,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
             }
         };
         giftCell.setPriorityAuction();
-        giftCell.setStarsGift(starGift, false, false, false, false, false);
+        giftCell.setDiamondsGift(starGift, false, false, false, false, false);
         giftCell.setImageSize(dp(100));
         giftCell.setImageLayer(7);
         giftCell.hidePrice();
@@ -301,7 +301,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
         if (auction != null && auction.auctionStateActive != null && auction.auctionStateActive.rounds != null) {
             final int N = auction.auctionStateActive.rounds.size();
             for (int a = 0; a < N; a++) {
-                final TL_stars.StarGiftAuctionRound round = auction.auctionStateActive.rounds.get(a);
+                final TL_diamonds.StarGiftAuctionRound round = auction.auctionStateActive.rounds.get(a);
                 final int nextRound = (a < N - 1) ?
                     (auction.auctionStateActive.rounds.get(a + 1).num - 1) :
                     (auction.auctionStateActive.total_rounds);
@@ -322,7 +322,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
         }
 
         if (auction != null && auction.previewAttributes != null) {
-            StarGiftSheet.TopView topView = new StarGiftSheet.TopView(context, resourcesProvider, this::onBackPressed, v -> {}, null, v -> {}, v -> {}, v -> {}, v -> {}, v -> {}) {
+            DiamondGiftSheet.TopView topView = new DiamondGiftSheet.TopView(context, resourcesProvider, this::onBackPressed, v -> {}, null, v -> {}, v -> {}, v -> {}, v -> {}, v -> {}) {
                 @Override
                 public float getRealHeight() {
                     return dp(288);
@@ -362,7 +362,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
                 }
             };
 
-            topView.onSwitchPage(new StarGiftSheet.PageTransition(StarGiftSheet.PAGE_UPGRADE, StarGiftSheet.PAGE_UPGRADE, 1.0f));
+            topView.onSwitchPage(new DiamondGiftSheet.PageTransition(DiamondGiftSheet.PAGE_UPGRADE, DiamondGiftSheet.PAGE_UPGRADE, 1.0f));
             topView.setPreviewingAttributes(auction.previewAttributes);
             topView.hideCloseButton();
 
@@ -417,17 +417,17 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
             itemsVariants.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteLinkText, resourcesProvider));
             itemsVariants.setLinkTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteLinkText, resourcesProvider));
             itemsVariants.setOnClickListener((v) -> {
-                new StarGiftPreviewSheet(context, resourcesProvider, currentAccount, auction.gift.title, auction.previewAttributes, false).show();
+                new DiamondGiftPreviewSheet(context, resourcesProvider, currentAccount, auction.gift.title, auction.previewAttributes, false).show();
                 dismiss();
             });
             ScaleStateListAnimator.apply(itemsVariants, 0.02f, 1.5f);
             linearLayout.addView(itemsVariants, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 16, 0, 14, 18));
 
-            BagRandomizer<TL_stars.starGiftAttributeModel> r = new BagRandomizer<>(TlUtils.findAllInstances(auction.previewAttributes, TL_stars.starGiftAttributeModel.class));
+            BagRandomizer<TL_diamonds.starGiftAttributeModel> r = new BagRandomizer<>(TlUtils.findAllInstances(auction.previewAttributes, TL_diamonds.starGiftAttributeModel.class));
             final long variantsCount = starGift.upgrade_variants;
             SpannableStringBuilder ssb = new SpannableStringBuilder();
             for (int i = 0; i < 3; i++) {
-                TL_stars.starGiftAttributeModel m = r.next();
+                TL_diamonds.starGiftAttributeModel m = r.next();
                 if (m == null) continue;
                 ssb.append('*');
                 ssb.setSpan(new AnimatedEmojiSpan(m.document, itemsVariants.getPaint().getFontMetricsInt()), i, i + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -451,7 +451,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
             auctionRowStartTimeText.setText(LocaleController.formatDateTime(auction.auctionStateFinished.start_date, true));
             auctionRowEndTimeText.setText(LocaleController.formatDateTime(auction.auctionStateFinished.end_date, true));
 
-            SpannableStringBuilder ssb = new SpannableStringBuilder(StarsIntroActivity.replaceStarsWithPlain("⭐️ " + LocaleController.formatNumber(auction.auctionStateFinished.average_price, ','), .8f));
+            SpannableStringBuilder ssb = new SpannableStringBuilder(DiamondsIntroActivity.replaceDiamondsWithPlain("⭐️ " + LocaleController.formatNumber(auction.auctionStateFinished.average_price, ','), .8f));
             ssb.append(" ").append(ButtonSpan.make("?", this::showAveragePriceHint, resourcesProvider));
             auctionRowAveragePriceText.setText(ssb);
         } else if (auction != null && auction.auctionStateActive != null) {
@@ -542,7 +542,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
         items.add(UItem.asCustom(-1, linearLayout));
     }
 
-    public static void showMoreInfo(Context context, Theme.ResourcesProvider resourcesProvider, TL_stars.StarGift starGift) {
+    public static void showMoreInfo(Context context, Theme.ResourcesProvider resourcesProvider, TL_diamonds.StarGift starGift) {
         if (context == null || starGift == null) {
             return;
         }
@@ -663,7 +663,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
         new AuctionJoinSheet(context, resourcesProvider, dialogId, auction.gift, closeParentSheet).show();
     }
 
-    public static void initActionBar(ActionBar actionBar, Context context, Theme.ResourcesProvider resourcesProvider, int currentAccount, TL_stars.StarGift starGift) {
+    public static void initActionBar(ActionBar actionBar, Context context, Theme.ResourcesProvider resourcesProvider, int currentAccount, TL_diamonds.StarGift starGift) {
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -712,7 +712,7 @@ public class AuctionJoinSheet extends BottomSheetWithRecyclerListView implements
 
         final LinearLayout topView = new LinearLayout(context);
         topView.setOrientation(LinearLayout.VERTICAL);
-        topView.addView(new StarGiftSheet.UserToUserTransferTopView(context, fromObj, toObj), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
+        topView.addView(new DiamondGiftSheet.UserToUserTransferTopView(context, fromObj, toObj), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
         {
             TextView titleTextView = new TextView(context);
             NotificationCenter.listenEmojiLoading(titleTextView);

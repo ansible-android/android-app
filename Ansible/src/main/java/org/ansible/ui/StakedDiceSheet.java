@@ -2,8 +2,8 @@ package org.ansible.ui;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsIntroActivity.formatTON;
-import static org.ansible.ui.Stars.StarsIntroActivity.replaceDiamond;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.formatTON;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.replaceDiamond;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -55,9 +55,9 @@ import org.ansible.ui.Components.Text;
 import org.ansible.ui.Components.TextHelper;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
-import org.ansible.ui.Stars.BalanceCloud;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BalanceCloud;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.TON.TONIntroActivity;
 
@@ -92,7 +92,7 @@ public class StakedDiceSheet extends BottomSheetWithRecyclerListView {
         container.addView(balanceCloud, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 48, 0, 0));
         ScaleStateListAnimator.apply(balanceCloud);
         balanceCloud.setOnClickListener(v -> {
-            new StarsIntroActivity.StarsOptionsSheet(context, resourcesProvider).show();
+            new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
         });
 
         final TLRPC.EmojiGameInfo stakeDiceInfo = MessagesController.getInstance(currentAccount).stakeDiceInfo;
@@ -246,10 +246,10 @@ public class StakedDiceSheet extends BottomSheetWithRecyclerListView {
         editText.setOnFocusChangeListener((v, hasFocus) -> editTextContainer.animateSelection(hasFocus, !TextUtils.isEmpty(editText.getText())));
         LinearLayout editTextLayout = new LinearLayout(context);
         editTextLayout.setOrientation(LinearLayout.HORIZONTAL);
-        ImageView starImage = new ImageView(context);
-        starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.diamond);
-        editTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
+        ImageView diamondImage = new ImageView(context);
+        diamondImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        diamondImage.setImageResource(R.drawable.diamond);
+        editTextLayout.addView(diamondImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         editTextLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         editTextContainer.attachEditText(editText);
         editTextContainer.addView(editTextLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
@@ -367,9 +367,9 @@ public class StakedDiceSheet extends BottomSheetWithRecyclerListView {
                 return;
             }
 
-            final StarsController sc = StarsController.getInstance(currentAccount, true);
+            final DiamondsController sc = DiamondsController.getInstance(currentAccount, true);
             if (sc.balance.toDouble() < ton) {
-                new TONIntroActivity.StarsNeededSheet(
+                new TONIntroActivity.DiamondsNeededSheet(
                     context,
                     resourcesProvider,
                     AmountUtils.Amount.fromNano((long) (ton * 1_000_000_000L), AmountUtils.Currency.TON),
@@ -489,7 +489,7 @@ public class StakedDiceSheet extends BottomSheetWithRecyclerListView {
         }
 
         final SpannableStringBuilder sb = new SpannableStringBuilder(getString(R.string.StakeDiceToast));
-        sb.append(StarsIntroActivity.formatTON(stake));
+        sb.append(DiamondsIntroActivity.formatTON(stake));
         sb.append("  ").append(ButtonSpan.make(getString(R.string.StakeDiceToastChange), () -> {
             new StakedDiceSheet(f.getContext(), f.getCurrentAccount(), f.getResourceProvider(), send).show();
         }, fragment.getResourceProvider()));

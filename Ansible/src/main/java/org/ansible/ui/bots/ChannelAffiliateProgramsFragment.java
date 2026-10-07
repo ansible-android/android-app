@@ -5,9 +5,9 @@ import static org.ansible.messenger.LocaleController.formatPluralString;
 import static org.ansible.messenger.LocaleController.formatSpannable;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsIntroActivity.formatStarsAmount;
-import static org.ansible.ui.Stars.StarsIntroActivity.formatStarsAmountShort;
-import static org.ansible.ui.Stars.StarsIntroActivity.replaceStarsWithPlain;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.formatDiamondsAmount;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.formatDiamondsAmountShort;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.replaceDiamondsWithPlain;
 import static org.ansible.ui.bots.AffiliateProgramFragment.percents;
 
 import android.content.Context;
@@ -68,7 +68,7 @@ import org.ansible.ui.Components.LinkSpanDrawable;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconRenderer;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconTextureView;
 import org.ansible.ui.Components.Premium.GLIcon.Icon3D;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.ScaleStateListAnimator;
 import org.ansible.ui.Components.TypefaceSpan;
@@ -79,8 +79,8 @@ import org.ansible.ui.FilterCreateActivity;
 import org.ansible.ui.GradientHeaderActivity;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.BotStarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BotDiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -134,7 +134,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
         iconTextureView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconTextureView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconTextureView.mRenderer.updateColors();
-        iconTextureView.setStarParticlesView(particlesView);
+        iconTextureView.setDiamondParticlesView(particlesView);
         aboveTitleView.addView(iconTextureView, LayoutHelper.createFrame(190, 190, Gravity.CENTER, 0, 32, 0, 12));
         configureHeader(getString(R.string.ChannelAffiliateProgramTitle), AndroidUtilities.replaceTags(getString(R.string.ChannelAffiliateProgramText)), aboveTitleView, null);
 
@@ -196,8 +196,8 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
                                 getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                                     if (res instanceof TL_payments.connectedStarRefBots) {
                                         TL_payments.connectedStarRefBots r = (TL_payments.connectedStarRefBots) res;
-                                        BotStarsController.getInstance(currentAccount).getChannelConnectedBots(dialogId).applyEdit(r);
-                                        BotStarsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId).reload();
+                                        BotDiamondsController.getInstance(currentAccount).getChannelConnectedBots(dialogId).applyEdit(r);
+                                        BotDiamondsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId).reload();
                                         adapter.update(true);
                                     }
                                     progressDialog.dismiss();
@@ -223,8 +223,8 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (isLoadingVisible() || !recyclerView.canScrollVertically(1)) {
-                    BotStarsController.getInstance(currentAccount).getChannelConnectedBots(dialogId).load();
-                    BotStarsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId).load();
+                    BotDiamondsController.getInstance(currentAccount).getChannelConnectedBots(dialogId).load();
+                    BotDiamondsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId).load();
                 }
             }
         });
@@ -269,7 +269,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
         items.add(AffiliateProgramFragment.FeatureCell.Factory.as(R.drawable.menu_feature_simple, getString(R.string.ChannelAffiliateProgramFeature3Title), getString(R.string.ChannelAffiliateProgramFeature3)));
         items.add(UItem.asShadow(1, null));
 
-        final BotStarsController.ChannelConnectedBots connectedBots = BotStarsController.getInstance(currentAccount).getChannelConnectedBots(dialogId);
+        final BotDiamondsController.ChannelConnectedBots connectedBots = BotDiamondsController.getInstance(currentAccount).getChannelConnectedBots(dialogId);
         if (!connectedBots.bots.isEmpty() || connectedBots.count > 0) {
             items.add(UItem.asHeader(getString(R.string.ChannelAffiliateProgramMyPrograms)));
             for (int i = 0; i < connectedBots.bots.size(); ++i) {
@@ -284,7 +284,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
             items.add(UItem.asShadow(2, null));
         }
 
-        final BotStarsController.ChannelSuggestedBots suggestedBots = BotStarsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId);
+        final BotDiamondsController.ChannelSuggestedBots suggestedBots = BotDiamondsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId);
         if (!suggestedBots.bots.isEmpty() || suggestedBots.count > 0) {
             items.add(HeaderSortCell.Factory.as(getString(R.string.ChannelAffiliateProgramPrograms), sortText(suggestedBots.getSort())));
             for (int i = 0; i < suggestedBots.bots.size(); ++i) {
@@ -302,40 +302,40 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
 
     }
 
-    private CharSequence sortText(BotStarsController.ChannelSuggestedBots.Sort sort) {
+    private CharSequence sortText(BotDiamondsController.ChannelSuggestedBots.Sort sort) {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         ssb.append(getString(R.string.ChannelAffiliateProgramProgramsSort)).append(" ");
         SpannableString type;
-        if (sort == BotStarsController.ChannelSuggestedBots.Sort.BY_PROFITABILITY) {
+        if (sort == BotDiamondsController.ChannelSuggestedBots.Sort.BY_PROFITABILITY) {
             type = new SpannableString(getString(R.string.ChannelAffiliateProgramProgramsSortProfitability) + "v");
-        } else if (sort == BotStarsController.ChannelSuggestedBots.Sort.BY_REVENUE) {
+        } else if (sort == BotDiamondsController.ChannelSuggestedBots.Sort.BY_REVENUE) {
             type = new SpannableString(getString(R.string.ChannelAffiliateProgramProgramsSortRevenue) + "v");
-        } else if (sort == BotStarsController.ChannelSuggestedBots.Sort.BY_DATE) {
+        } else if (sort == BotDiamondsController.ChannelSuggestedBots.Sort.BY_DATE) {
             type = new SpannableString(getString(R.string.ChannelAffiliateProgramProgramsSortDate) + "v");
         } else return ssb;
         ColoredImageSpan arrowSpan = new ColoredImageSpan(R.drawable.arrow_more);
         arrowSpan.useLinkPaintColor = true;
         arrowSpan.setScale(.6f, .6f);
         type.setSpan(arrowSpan, type.length() - 1, type.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        final BotStarsController.ChannelSuggestedBots suggestedBots = BotStarsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId);
+        final BotDiamondsController.ChannelSuggestedBots suggestedBots = BotDiamondsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId);
         type.setSpan(new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
                 ItemOptions.makeOptions(ChannelAffiliateProgramsFragment.this, widget)
                     .addChecked(
-                        sort == BotStarsController.ChannelSuggestedBots.Sort.BY_DATE,
+                        sort == BotDiamondsController.ChannelSuggestedBots.Sort.BY_DATE,
                         getString(R.string.ChannelAffiliateProgramProgramsSortDate),
-                        () -> suggestedBots.setSort(BotStarsController.ChannelSuggestedBots.Sort.BY_DATE)
+                        () -> suggestedBots.setSort(BotDiamondsController.ChannelSuggestedBots.Sort.BY_DATE)
                     )
                     .addChecked(
-                        sort == BotStarsController.ChannelSuggestedBots.Sort.BY_REVENUE,
+                        sort == BotDiamondsController.ChannelSuggestedBots.Sort.BY_REVENUE,
                         getString(R.string.ChannelAffiliateProgramProgramsSortRevenue),
-                        () -> suggestedBots.setSort(BotStarsController.ChannelSuggestedBots.Sort.BY_REVENUE)
+                        () -> suggestedBots.setSort(BotDiamondsController.ChannelSuggestedBots.Sort.BY_REVENUE)
                     )
                     .addChecked(
-                        sort == BotStarsController.ChannelSuggestedBots.Sort.BY_PROFITABILITY,
+                        sort == BotDiamondsController.ChannelSuggestedBots.Sort.BY_PROFITABILITY,
                         getString(R.string.ChannelAffiliateProgramProgramsSortProfitability),
-                        () -> suggestedBots.setSort(BotStarsController.ChannelSuggestedBots.Sort.BY_PROFITABILITY)
+                        () -> suggestedBots.setSort(BotDiamondsController.ChannelSuggestedBots.Sort.BY_PROFITABILITY)
                     )
                     .setGravity(Gravity.RIGHT)
                     .setDrawScrim(false)
@@ -355,12 +355,12 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
     }
 
     @Override
-    public StarParticlesView createParticlesView() {
+    public DiamondParticlesView createParticlesView() {
         return makeParticlesView(getContext(), 75, 1);
     }
 
-    public static StarParticlesView makeParticlesView(Context context, int particlesCount, int type) {
-        return new StarParticlesView(context) {
+    public static DiamondParticlesView makeParticlesView(Context context, int particlesCount, int type) {
+        return new DiamondParticlesView(context) {
             @Override
             protected void configure() {
                 super.configure();
@@ -372,7 +372,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
             }
 
             @Override
-            protected int getStarsRectWidth() {
+            protected int getDiamondsRectWidth() {
                 return getMeasuredWidth();
             }
 
@@ -406,7 +406,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
                 if (adapter != null) {
                     adapter.update(true);
                 }
-                BotStarsController.getInstance(currentAccount).getChannelConnectedBots(dialogId).load();
+                BotDiamondsController.getInstance(currentAccount).getChannelConnectedBots(dialogId).load();
             }
         } else if (id == NotificationCenter.channelSuggestedBotsUpdate) {
             Long did = (Long) args[0];
@@ -692,7 +692,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
             badge1.setTextColor(Color.WHITE);
             badge1.setGravity(Gravity.CENTER);
             ColoredImageSpan[] spans = new ColoredImageSpan[1];
-            badge1.setText(StarsIntroActivity.replaceStars("⭐️ " + formatStarsAmountShort(bot.daily_revenue_per_user, 1.0f, ','), 0.75f, spans));
+            badge1.setText(DiamondsIntroActivity.replaceDiamonds("⭐️ " + formatDiamondsAmountShort(bot.daily_revenue_per_user, 1.0f, ','), 0.75f, spans));
             badge1Outer.addView(badge1, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 15.66f));
             fromView.addView(badge1Outer, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0, 0, -4));
         }
@@ -766,9 +766,9 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setGravity(Gravity.CENTER);
         NotificationCenter.listenEmojiLoading(textView);
-        SpannableString revenueStars = new SpannableString(formatStarsAmountShort(bot.daily_revenue_per_user, 0.95f, ','));
-        revenueStars.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, revenueStars.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textView.setText(StarsIntroActivity.replaceStarsWithPlain(formatSpannable(R.string.ChannelAffiliateProgramJoinRevenue, revenueStars), .725f));
+        SpannableString revenueDiamonds = new SpannableString(formatDiamondsAmountShort(bot.daily_revenue_per_user, 0.95f, ','));
+        revenueDiamonds.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, revenueDiamonds.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(formatSpannable(R.string.ChannelAffiliateProgramJoinRevenue, revenueDiamonds), .725f));
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 10, 0, 20));
 
         textView = new TextView(context);
@@ -848,7 +848,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
                 button.setLoading(false);
                 if (res instanceof TL_payments.connectedStarRefBots) {
                     TL_payments.connectedStarRefBots r = (TL_payments.connectedStarRefBots) res;
-                    BotStarsController.getInstance(currentAccount).getChannelConnectedBots(finalDialogId).apply(r);
+                    BotDiamondsController.getInstance(currentAccount).getChannelConnectedBots(finalDialogId).apply(r);
                     sheet.dismiss();
                     TL_payments.connectedBotStarRef connectedBot = null;
                     for (int i = 0; i < r.connected_bots.size(); ++i) {
@@ -865,7 +865,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
                         }
                     }
                     if (connectedBot != null) {
-                        BotStarsController.getInstance(currentAccount).getChannelSuggestedBots(finalDialogId).remove(connectedBot.bot_id);
+                        BotDiamondsController.getInstance(currentAccount).getChannelSuggestedBots(finalDialogId).remove(connectedBot.bot_id);
                         BottomSheet shareSheet = showShareAffiliateAlert(context, currentAccount, connectedBot, finalDialogId, resourcesProvider);
                         BulletinFactory.of(shareSheet.topBulletinContainer, resourcesProvider)
                             .createUsersBulletin(botUser, getString(R.string.AffiliateProgramJoinedTitle), getString(R.string.AffiliateProgramJoinedText))
@@ -913,11 +913,11 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
         };
         updateDialog.run();
         if (chipLayout != null) {
-            BotStarsController.getInstance(currentAccount).loadAdminedBots();
-            BotStarsController.getInstance(currentAccount).loadAdminedChannels();
+            BotDiamondsController.getInstance(currentAccount).loadAdminedBots();
+            BotDiamondsController.getInstance(currentAccount).loadAdminedChannels();
             final View chip = chipLayout;
             chipLayout.setOnClickListener(v -> {
-                ArrayList<TLObject> chats = BotStarsController.getInstance(currentAccount).getAdmined();
+                ArrayList<TLObject> chats = BotDiamondsController.getInstance(currentAccount).getAdmined();
                 chats.add(0, UserConfig.getInstance(currentAccount).getCurrentUser());
 
                 ItemOptions i = ItemOptions.makeOptions(sheet.getContainerView(), resourcesProvider, chip);
@@ -1164,11 +1164,11 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
         });
 
         if (chipLayout != null) {
-            BotStarsController.getInstance(currentAccount).loadAdminedBots();
-            BotStarsController.getInstance(currentAccount).loadAdminedChannels();
+            BotDiamondsController.getInstance(currentAccount).loadAdminedBots();
+            BotDiamondsController.getInstance(currentAccount).loadAdminedChannels();
             final View chip = chipLayout;
             chipLayout.setOnClickListener(v -> {
-                ArrayList<TLObject> chats = BotStarsController.getInstance(currentAccount).getAdmined();
+                ArrayList<TLObject> chats = BotDiamondsController.getInstance(currentAccount).getAdmined();
                 chats.add(0, UserConfig.getInstance(currentAccount).getCurrentUser());
 
                 ItemOptions i = ItemOptions.makeOptions(sheet.getContainerView(), resourcesProvider, chip);
@@ -1183,7 +1183,7 @@ public class ChannelAffiliateProgramsFragment extends GradientHeaderActivity imp
                         did = -chat.id;
                     } else continue;
                     i.addChat(obj, did == dialogId, () -> {
-                        BotStarsController.getInstance(currentAccount).getConnectedBot(context, did, bot.bot_id, connectedBot -> {
+                        BotDiamondsController.getInstance(currentAccount).getConnectedBot(context, did, bot.bot_id, connectedBot -> {
                             if (connectedBot == null) {
                                 TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(bot.bot_id);
                                 if (user != null) {

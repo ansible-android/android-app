@@ -87,7 +87,7 @@ public class GiveawayResultsMessageCell {
     private StaticLayout countriesLayout;
 
     private TextPaint counterTextPaint;
-    private TextPaint counterStarsTextPaint;
+    private TextPaint counterDiamondsTextPaint;
     private TextPaint chatTextPaint;
     private TextPaint textPaint;
     private TextPaint textDividerPaint;
@@ -106,7 +106,7 @@ public class GiveawayResultsMessageCell {
     private int selectorColor;
     private Drawable selectorDrawable;
     private MessageObject messageObject;
-    private boolean isStars;
+    private boolean isDiamonds;
     private int pressedPos = -1;
     private boolean isButtonPressed = false;
     private boolean isContainerPressed = false;
@@ -124,7 +124,7 @@ public class GiveawayResultsMessageCell {
             return;
         }
         counterTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        counterStarsTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        counterDiamondsTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         chatTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textDividerPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -154,10 +154,10 @@ public class GiveawayResultsMessageCell {
         counterTextPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
         counterTextPaint.setTextSize(dp(12));
         counterTextPaint.setTextAlign(Paint.Align.CENTER);
-        counterStarsTextPaint.setTypeface(AndroidUtilities.bold());
-        counterStarsTextPaint.setTextSize(dp(12));
-        counterStarsTextPaint.setTextAlign(Paint.Align.CENTER);
-        counterStarsTextPaint.setColor(0xFFFFFFFF);
+        counterDiamondsTextPaint.setTypeface(AndroidUtilities.bold());
+        counterDiamondsTextPaint.setTextSize(dp(12));
+        counterDiamondsTextPaint.setTextAlign(Paint.Align.CENTER);
+        counterDiamondsTextPaint.setColor(0xFFFFFFFF);
         chatTextPaint.setTypeface(AndroidUtilities.bold());
         chatTextPaint.setTextSize(dp(13));
         countriesTextPaint.setTextSize(dp(13));
@@ -291,7 +291,7 @@ public class GiveawayResultsMessageCell {
         countriesLayout = null;
         measuredHeight = 0;
         measuredWidth = 0;
-        isStars = false;
+        isDiamonds = false;
         if (!messageObject.isGiveawayResults()) {
             return;
         }
@@ -340,8 +340,8 @@ public class GiveawayResultsMessageCell {
             bottomStringBuilder.setSpan(new RelativeSizeSpan(1.05f), 0, bottomStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             bottomStringBuilder.append("\n");
         }
-        isStars = (giveaway.flags & 32) != 0;
-        if (isStars) {
+        isDiamonds = (giveaway.flags & 32) != 0;
+        if (isDiamonds) {
             bottomStringBuilder.append(LocaleController.formatPluralStringSpaced("BoostingDiamondsGiveawayResultsMsgAllWinnersReceivedLinks", (int) giveaway.stars));
         } else {
             bottomStringBuilder.append(LocaleController.getString(R.string.BoostingGiveawayResultsMsgAllWinnersReceivedLinks));
@@ -368,7 +368,7 @@ public class GiveawayResultsMessageCell {
         measuredHeight += dp(32 + 96); //gift
         measuredWidth = maxWidth;
 
-        if (isStars) {
+        if (isDiamonds) {
             if (counterIcon == null) {
                 counterIcon = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.filled_giveaway_stars).mutate();
             }
@@ -378,7 +378,7 @@ public class GiveawayResultsMessageCell {
             counterStr = "x" + giveaway.winners_count;
         }
         counterTextPaint.getTextBounds(counterStr, 0, counterStr.length(), counterTextBounds);
-        if (isStars) {
+        if (isDiamonds) {
             counterTextBounds.right += dp(20);
         }
 
@@ -474,7 +474,7 @@ public class GiveawayResultsMessageCell {
             chatBgPaint.setColor(Theme.getColor(Theme.key_chat_inReplyLine, resourcesProvider));
         }
 
-        if (isStars) {
+        if (isDiamonds) {
             counterBgPaint.setColor(Theme.getColor(Theme.key_starsGradient1, resourcesProvider));
         }
 
@@ -511,7 +511,7 @@ public class GiveawayResultsMessageCell {
             counterIcon.setBounds((int) countRect.left + dp(5), (int) countRect.centerY() - dp(12 * s), (int) countRect.left + dp(5 + 28 * s), (int) countRect.centerY() + dp(12 * s));
             counterIcon.draw(canvas);
         }
-        canvas.drawText(counterStr, countRect.centerX() + dp(isStars ? 8 : 0), countRect.centerY() + dp(4), isStars ? counterStarsTextPaint : counterTextPaint);
+        canvas.drawText(counterStr, countRect.centerX() + dp(isDiamonds ? 8 : 0), countRect.centerY() + dp(4), isDiamonds ? counterDiamondsTextPaint : counterTextPaint);
         canvas.restore();
 
         canvas.translate(0, dp(32 + 96));

@@ -28,7 +28,7 @@ import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Components.CombinedDrawable;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RadialProgressView;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -191,7 +191,7 @@ public class LegendSignatureView extends FrameLayout {
                 if (formatter == ChartData.FORMATTER_TON) {
                     h.signature.setText(LocaleController.formatString(formatterIndex == 0 ? R.string.ChartInTON : R.string.ChartInUSD, l.line.name));
                 } else if (formatter == ChartData.FORMATTER_XTR) {
-                    h.signature.setText(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatString(formatterIndex == 0 ? R.string.ChartInXTR : R.string.ChartInUSD, l.line.name), .7f));
+                    h.signature.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatString(formatterIndex == 0 ? R.string.ChartInXTR : R.string.ChartInUSD, l.line.name), .7f));
                 } else {
                     h.signature.setText(l.line.name);
                 }
@@ -254,7 +254,7 @@ public class LegendSignatureView extends FrameLayout {
             }
         } else if (formatter == ChartData.FORMATTER_XTR) {
             if (formatterIndex == 0) {
-                return StarsIntroActivity.replaceStarsWithPlain("XTR " + LocaleController.formatNumber(v, ' '), .7f);
+                return DiamondsIntroActivity.replaceDiamondsWithPlain("XTR " + LocaleController.formatNumber(v, ' '), .7f);
             } else {
                 return "≈" + BillingController.getInstance().formatCurrency((long) (v / k), "USD");
             }

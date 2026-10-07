@@ -323,7 +323,7 @@ public abstract class Brush {
         public static List<Shape> SHAPES_LIST = Arrays.asList(
             new Circle(),
             new Rectangle(),
-            new Star(),
+            new Diamond(),
             new Bubble(),
             new Arrow()
         );
@@ -408,7 +408,7 @@ public abstract class Brush {
             }
         }
 
-        public static class Star extends Shape {
+        public static class Diamond extends Shape {
             @Override
             public int getShapeShaderType() {
                 return SHAPE_TYPE_STAR;

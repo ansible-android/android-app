@@ -113,7 +113,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
 import org.ansible.asnet.tl.TL_ephemeral;
 import org.ansible.asnet.tl.TL_phone;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
@@ -145,9 +145,9 @@ import org.ansible.ui.PrivacyControlActivity;
 import org.ansible.ui.ProfileActivity;
 import org.ansible.ui.ProfileNotificationsActivity;
 import org.ansible.ui.SelectChatUserSheet;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.DarkThemeResourceProvider;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
@@ -290,15 +290,15 @@ public class AlertsCreator {
             return null;
         }
         if ("BALANCE_TOO_LOW".equalsIgnoreCase(error.text)) {
-            final long price = StarsController.getAllowedPaidStars(request);
-            final long dialogId = StarsController.getPeer(request);
+            final long price = DiamondsController.getAllowedPaidDiamonds(request);
+            final long dialogId = DiamondsController.getPeer(request);
             if (price > 0) {
-                StarsController.getInstance(currentAccount).getBalance(true, () -> {
+                DiamondsController.getInstance(currentAccount).getBalance(true, () -> {
                     final Activity activity = AndroidUtilities.getActivity();
                     final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     final Theme.ResourcesProvider resourcesProvider = PhotoViewer.getInstance().isVisible() || lastFragment != null && lastFragment.hasShownSheet() ? new DarkThemeResourceProvider() : (lastFragment != null ? lastFragment.getResourceProvider() : null);
 
-                    new StarsIntroActivity.StarsNeededSheet(activity, resourcesProvider, price, StarsIntroActivity.StarsNeededSheet.TYPE_PRIVATE_MESSAGE, DialogObject.getShortName(currentAccount, dialogId), () -> {
+                    new DiamondsIntroActivity.DiamondsNeededSheet(activity, resourcesProvider, price, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_PRIVATE_MESSAGE, DialogObject.getShortName(currentAccount, dialogId), () -> {
 
                     }, dialogId).show();
                 }, true);
@@ -2335,13 +2335,13 @@ public class AlertsCreator {
         HashMap<Long, Long> prices = new HashMap<>();
         int _totalChatsCount = 0;
         for (long did : dialogIds) {
-            long price = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
+            long price = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(did);
             if (price <= 0 && did > 0) {
-                price = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
+                price = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
             }
             prices.put(did, price);
             _totalPrice += price;
-            StarsController.getInstance(currentAccount).sendingMessagesCount.put(did, messagesCount);
+            DiamondsController.getInstance(currentAccount).sendingMessagesCount.put(did, messagesCount);
 
             if (price > 0) {
                 _totalChatsCount++;
@@ -2373,29 +2373,29 @@ public class AlertsCreator {
             if (dontAsk) {
                 SharedPreferences.Editor e = MessagesController.getInstance(currentAccount).getMainSettings().edit();
                 for (long dialogId : dialogIds) {
-                    long price = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId);
+                    long price = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId);
                     if (price <= 0 && dialogId > 0) {
-                        price = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId));
+                        price = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId));
                     }
                     e.putLong("ask_paid_message_" + dialogId + "_price", price);
-                    StarsController.getInstance(currentAccount).justAgreedToNotAskDialogs.put(dialogId, System.currentTimeMillis());
+                    DiamondsController.getInstance(currentAccount).justAgreedToNotAskDialogs.put(dialogId, System.currentTimeMillis());
                 }
                 e.apply();
             }
             final Runnable gotBalance = () -> {
-                final long balance = StarsController.getInstance(currentAccount).getBalance().amount;
+                final long balance = DiamondsController.getInstance(currentAccount).getBalance().amount;
                 if (balance < totalPrice) {
                     if (activity == null) return;
                     final long dialogId = dialogIds.get(0);
-                    new StarsIntroActivity.StarsNeededSheet(activity, resourcesProvider, totalPrice, StarsIntroActivity.StarsNeededSheet.TYPE_PRIVATE_MESSAGE, DialogObject.getShortName(currentAccount, dialogId), () -> {
+                    new DiamondsIntroActivity.DiamondsNeededSheet(activity, resourcesProvider, totalPrice, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_PRIVATE_MESSAGE, DialogObject.getShortName(currentAccount, dialogId), () -> {
                         confirmed.run(prices);
                     }, dialogId).show();
                 } else {
                     confirmed.run(prices);
                 }
             };
-            if (!StarsController.getInstance(currentAccount).balanceAvailable()) {
-                StarsController.getInstance(currentAccount).invalidateBalance(gotBalance);
+            if (!DiamondsController.getInstance(currentAccount).balanceAvailable()) {
+                DiamondsController.getInstance(currentAccount).invalidateBalance(gotBalance);
             } else {
                 gotBalance.run();
             }
@@ -2404,11 +2404,11 @@ public class AlertsCreator {
     }
 
     public static boolean needsPaidMessageAlert(int currentAccount, long dialogId) {
-        long _send_paid_messages_stars = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId);
-        if (_send_paid_messages_stars <= 0 && dialogId > 0) {
-            _send_paid_messages_stars = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId));
+        long _send_paid_messages_diamonds = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId);
+        if (_send_paid_messages_diamonds <= 0 && dialogId > 0) {
+            _send_paid_messages_diamonds = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId));
         }
-        final long send_paid_messages_stars = _send_paid_messages_stars;
+        final long send_paid_messages_stars = _send_paid_messages_diamonds;
         return (
             send_paid_messages_stars > 0 &&
             send_paid_messages_stars > MessagesController.getInstance(currentAccount).getMainSettings().getLong("ask_paid_message_" + dialogId + "_price", 0L)
@@ -2422,14 +2422,14 @@ public class AlertsCreator {
     public static boolean ensurePaidMessageConfirmation(int currentAccount, long dialogId, int count, Utilities.Callback<Long> confirmedPrice, long stars) {
         if (confirmedPrice == null) return false;
 
-        long _send_paid_messages_stars = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId);
-        if (_send_paid_messages_stars <= 0 && dialogId > 0) {
-            _send_paid_messages_stars = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId));
+        long _send_paid_messages_diamonds = MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId);
+        if (_send_paid_messages_diamonds <= 0 && dialogId > 0) {
+            _send_paid_messages_diamonds = DialogObject.getMessagesDiamondsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(dialogId));
         }
-        final long send_paid_messages_stars = _send_paid_messages_stars;
+        final long send_paid_messages_stars = _send_paid_messages_diamonds;
         final long price = count * send_paid_messages_stars;
 
-        StarsController.getInstance(currentAccount).sendingMessagesCount.put(dialogId, count);
+        DiamondsController.getInstance(currentAccount).sendingMessagesCount.put(dialogId, count);
         if (price <= 0 || stars == price) {
             confirmedPrice.run(price);
             return false;
@@ -2437,22 +2437,22 @@ public class AlertsCreator {
 
         showPayForMessageAlert(currentAccount, dialogId, send_paid_messages_stars, count, () -> {
             final Runnable gotBalance = () -> {
-                final long balance = StarsController.getInstance(currentAccount).getBalance().amount;
+                final long balance = DiamondsController.getInstance(currentAccount).getBalance().amount;
                 if (balance < price) {
                     final Activity activity = AndroidUtilities.getActivity();
                     final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     final Theme.ResourcesProvider resourcesProvider = PhotoViewer.getInstance().isVisible() || lastFragment != null && lastFragment.hasShownSheet() ? new DarkThemeResourceProvider() : (lastFragment != null ? lastFragment.getResourceProvider() : null);
 
                     if (activity == null) return;
-                    new StarsIntroActivity.StarsNeededSheet(activity, resourcesProvider, price, StarsIntroActivity.StarsNeededSheet.TYPE_PRIVATE_MESSAGE, DialogObject.getShortName(currentAccount, dialogId), () -> {
+                    new DiamondsIntroActivity.DiamondsNeededSheet(activity, resourcesProvider, price, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_PRIVATE_MESSAGE, DialogObject.getShortName(currentAccount, dialogId), () -> {
                         confirmedPrice.run(send_paid_messages_stars);
                     }, dialogId).show();
                 } else {
                     confirmedPrice.run(send_paid_messages_stars);
                 }
             };
-            if (!StarsController.getInstance(currentAccount).balanceAvailable()) {
-                StarsController.getInstance(currentAccount).invalidateBalance(gotBalance);
+            if (!DiamondsController.getInstance(currentAccount).balanceAvailable()) {
+                DiamondsController.getInstance(currentAccount).invalidateBalance(gotBalance);
             } else {
                 gotBalance.run();
             }
@@ -2495,7 +2495,7 @@ public class AlertsCreator {
         showAlertWithCheckboxWithBalance(activity, getString(R.string.MessageLockedDiamondsConfirmTitle), sb, getString(R.string.MessageLockedDiamondsConfirmMessageDontAsk), LocaleController.formatPluralStringComma("MessageLockedDiamondsConfirmMessagePay", messagesCount), dontAsk -> {
             if (dontAsk) {
                 MessagesController.getInstance(currentAccount).getMainSettings().edit().putLong("ask_paid_message_" + dialogId + "_price", stars).apply();
-                StarsController.getInstance(currentAccount).justAgreedToNotAskDialogs.put(dialogId, System.currentTimeMillis());
+                DiamondsController.getInstance(currentAccount).justAgreedToNotAskDialogs.put(dialogId, System.currentTimeMillis());
             }
             AndroidUtilities.runOnUIThread(confirmed);
         }, resourcesProvider);
@@ -2582,7 +2582,7 @@ public class AlertsCreator {
         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
         AlertDialog d = builder.create();
         if (withBalance) {
-            d.setShowStarsBalance(true);
+            d.setShowDiamondsBalance(true);
         }
         d.show();
         return d;
@@ -7872,13 +7872,13 @@ public class AlertsCreator {
         int currentDate = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
         boolean hasNonDiceMessages = false;
 
-        final long unsafePaidSuggestedPostTime = MessagesController.getInstance(currentAccount).config.starsSuggestedPostAgeMin.get(TimeUnit.SECONDS);
-        boolean hasUnsafePaidSuggestedPostStars = false;
+        final long unsafePaidSuggestedPostTime = MessagesController.getInstance(currentAccount).config.diamondsSuggestedPostAgeMin.get(TimeUnit.SECONDS);
+        boolean hasUnsafePaidSuggestedPostDiamonds = false;
         boolean hasUnsafePaidSuggestedPostTon = false;
         if (selectedMessage != null) {
             hasNonDiceMessages = !selectedMessage.isDice() || Math.abs(currentDate - selectedMessage.messageOwner.date) > 24 * 60 * 60;
             if (selectedMessage.isPaidSuggestedPostProtected()) {
-                hasUnsafePaidSuggestedPostStars |= selectedMessage.messageOwner.paid_suggested_post_stars;
+                hasUnsafePaidSuggestedPostDiamonds |= selectedMessage.messageOwner.paid_suggested_post_stars;
                 hasUnsafePaidSuggestedPostTon |= selectedMessage.messageOwner.paid_suggested_post_ton;
             }
 
@@ -7890,7 +7890,7 @@ public class AlertsCreator {
                         hasNonDiceMessages = true;
                     }
                     if (msg.isPaidSuggestedPostProtected()) {
-                        hasUnsafePaidSuggestedPostStars |= msg.messageOwner.paid_suggested_post_stars;
+                        hasUnsafePaidSuggestedPostDiamonds |= msg.messageOwner.paid_suggested_post_stars;
                         hasUnsafePaidSuggestedPostTon |= msg.messageOwner.paid_suggested_post_ton;
                     }
                 }
@@ -7900,7 +7900,7 @@ public class AlertsCreator {
             for (int a = 0; a < selectedGroup.messages.size(); a++) {
                 MessageObject messageObject = selectedGroup.messages.get(a);
                 if (messageObject.isPaidSuggestedPostProtected()) {
-                    hasUnsafePaidSuggestedPostStars |= messageObject.messageOwner.paid_suggested_post_stars;
+                    hasUnsafePaidSuggestedPostDiamonds |= messageObject.messageOwner.paid_suggested_post_stars;
                     hasUnsafePaidSuggestedPostTon |= messageObject.messageOwner.paid_suggested_post_ton;
                 }
             }
@@ -8267,14 +8267,14 @@ public class AlertsCreator {
             }
         }
 
-        if (hasUnsafePaidSuggestedPostStars) {
-            final int hours = (int) MessagesController.getInstance(currentAccount).config.starsSuggestedPostAgeMin.get(TimeUnit.HOURS);
+        if (hasUnsafePaidSuggestedPostDiamonds) {
+            final int hours = (int) MessagesController.getInstance(currentAccount).config.diamondsSuggestedPostAgeMin.get(TimeUnit.HOURS);
 
             builder.setTitle(getString(R.string.SuggestionDiamondsWillBeLost));
             builder.setMessage(replaceTags(LocaleController.formatString(R.string.SuggestionDiamondsWillBeLostInfo, hours)));
             builder.setPositiveButton(LocaleController.getString(R.string.SuggestionDiamondsWillBeLostDelete), deleteAction);
         } else if (hasUnsafePaidSuggestedPostTon) {
-            final int hours = (int) MessagesController.getInstance(currentAccount).config.starsSuggestedPostAgeMin.get(TimeUnit.HOURS);
+            final int hours = (int) MessagesController.getInstance(currentAccount).config.diamondsSuggestedPostAgeMin.get(TimeUnit.HOURS);
 
             builder.setTitle(getString(R.string.SuggestionTONWillBeLost));
             builder.setMessage(replaceTags(LocaleController.formatString(R.string.SuggestionTONWillBeLostInfo, hours)));
@@ -8970,8 +8970,8 @@ public class AlertsCreator {
         calendar.setTimeInMillis(currentTime);
         int currentYear = calendar.get(Calendar.YEAR);
 
-        final long minDateSeconds = MessagesController.getInstance(UserConfig.selectedAccount).config.starsSuggestedPostFutureMin.get(TimeUnit.SECONDS) * 2;
-        final long maxDateSeconds = MessagesController.getInstance(UserConfig.selectedAccount).config.starsSuggestedPostFutureMax.get(TimeUnit.SECONDS) - 86400;
+        final long minDateSeconds = MessagesController.getInstance(UserConfig.selectedAccount).config.diamondsSuggestedPostFutureMin.get(TimeUnit.SECONDS) * 2;
+        final long maxDateSeconds = MessagesController.getInstance(UserConfig.selectedAccount).config.diamondsSuggestedPostFutureMax.get(TimeUnit.SECONDS) - 86400;
 
         TextView buttonTextView = new TextView(context) {
             @Override
@@ -9196,11 +9196,11 @@ public class AlertsCreator {
         sheet.show();
     }
 
-    public static void showGiftThemeApplyConfirm(Context context, Theme.ResourcesProvider resourcesProvider, int currentAccount, TL_stars.StarGift gift, long dialogId, Runnable onConfirm) {
+    public static void showGiftThemeApplyConfirm(Context context, Theme.ResourcesProvider resourcesProvider, int currentAccount, TL_diamonds.StarGift gift, long dialogId, Runnable onConfirm) {
         TLObject user = MessagesController.getInstance(currentAccount).getUserOrChat(dialogId);
         final LinearLayout topView = new LinearLayout(context);
         topView.setOrientation(LinearLayout.VERTICAL);
-        topView.addView(new StarGiftSheet.GiftThemeReuseTopView(context, gift, user), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
+        topView.addView(new DiamondGiftSheet.GiftThemeReuseTopView(context, gift, user), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
         final TextView textView = new TextView(context);
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);

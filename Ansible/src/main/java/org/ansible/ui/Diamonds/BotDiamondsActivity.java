@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.REPLACING_TAG_TYPE_LINK_NBSP;
 import static org.ansible.messenger.AndroidUtilities.dp;
@@ -52,7 +52,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stats;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AlertDialog;
@@ -86,7 +86,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class BotStarsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
+public class BotDiamondsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public static final int TYPE_STARS = 0;
     public static final int TYPE_TON = 1;
@@ -112,7 +112,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
 
     private final CharSequence withdrawInfo;
 
-    private StarsIntroActivity.StarsTransactionsLayout transactionsLayout;
+    private DiamondsIntroActivity.DiamondsTransactionsLayout transactionsLayout;
 
     private int balanceBlockedUntil;
     private LinearLayout balanceLayout;
@@ -126,7 +126,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
     private long balanceEditTextValue;
     private EditTextBoldCursor balanceEditText;
     private ButtonWithCounterView balanceButton, adsButton;
-    private ColoredImageSpan[] starRef = new ColoredImageSpan[1];
+    private ColoredImageSpan[] diamondRef = new ColoredImageSpan[1];
     private int shakeDp = 4;
 
     private LinearLayout tonBalanceLayout;
@@ -137,21 +137,21 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
 
     private double rate;
 
-    public BotStarsActivity(int type, long botId) {
+    public BotDiamondsActivity(int type, long botId) {
         this.type = type;
         this.bot_id = botId;
         this.self = botId == getUserConfig().getClientUserId();
 
         if (type == TYPE_STARS) {
-            BotStarsController.getInstance(currentAccount).preloadStarsStats(bot_id);
+            BotDiamondsController.getInstance(currentAccount).preloadDiamondsStats(bot_id);
             if (!self) {
-                BotStarsController.getInstance(currentAccount).invalidateTransactions(bot_id, true);
+                BotDiamondsController.getInstance(currentAccount).invalidateTransactions(bot_id, true);
             }
         } else if (type == TYPE_TON) {
-            BotStarsController.getInstance(currentAccount).preloadTonStats(bot_id);
+            BotDiamondsController.getInstance(currentAccount).preloadTonStats(bot_id);
         }
 
-        withdrawInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? formatPluralStringComma("SelfDiamondsWithdrawInfo", (int) getMessagesController().starsRevenueWithdrawalMin) : getString(R.string.BotDiamondsWithdrawInfo), () -> {
+        withdrawInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? formatPluralStringComma("SelfDiamondsWithdrawInfo", (int) getMessagesController().diamondsRevenueWithdrawalMin) : getString(R.string.BotDiamondsWithdrawInfo), () -> {
             Browser.openUrl(getContext(), getString(R.string.BotDiamondsWithdrawInfoLink));
         }), true);
     }
@@ -171,7 +171,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         TLRPC.User bot = getMessagesController().getUser(bot_id);
         avatarContainer.setUserAvatar(bot, true);
         avatarContainer.setTitle(UserObject.getUserName(bot));
-        if (type == BotStarsActivity.TYPE_STARS) {
+        if (type == BotDiamondsActivity.TYPE_STARS) {
             avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsDiamonds));
         } else {
             avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsTON));
@@ -192,7 +192,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), false);
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
-        transactionsLayout = new StarsIntroActivity.StarsTransactionsLayout(context, currentAccount, false, bot_id, getClassGuid(), getResourceProvider());
+        transactionsLayout = new DiamondsIntroActivity.DiamondsTransactionsLayout(context, currentAccount, false, bot_id, getClassGuid(), getResourceProvider());
 
         balanceLayout = new LinearLayout(context) {
             @Override
@@ -268,7 +268,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
-                long balance = BotStarsController.getInstance(currentAccount).getAvailableBalance(bot_id);
+                long balance = BotDiamondsController.getInstance(currentAccount).getAvailableBalance(bot_id);
                 balanceEditTextValue = TextUtils.isEmpty(s) ? 0 : Long.parseLong(s.toString());
                 if (balanceEditTextValue > balance) {
                     balanceEditTextValue = balance;
@@ -286,10 +286,10 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         });
         LinearLayout balanceEditTextLayout = new LinearLayout(context);
         balanceEditTextLayout.setOrientation(LinearLayout.HORIZONTAL);
-        ImageView starImage = new ImageView(context);
-        starImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        starImage.setImageResource(R.drawable.diamond);
-        balanceEditTextLayout.addView(starImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
+        ImageView diamondImage = new ImageView(context);
+        diamondImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        diamondImage.setImageResource(R.drawable.diamond);
+        balanceEditTextLayout.addView(diamondImage, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
         balanceEditTextLayout.addView(balanceEditText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.FILL));
         balanceEditTextContainer.attachEditText(balanceEditText);
         balanceEditTextContainer.addView(balanceEditTextLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
@@ -325,7 +325,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             if (!v.isEnabled() || adsButton.isLoading()) return;
 
             adsButton.setLoading(true);
-            TLRPC.TL_payments_getStarsRevenueAdsAccountUrl req = new TLRPC.TL_payments_getStarsRevenueAdsAccountUrl();
+            TLRPC.TL_payments_getDiamondsRevenueAdsAccountUrl req = new TLRPC.TL_payments_getDiamondsRevenueAdsAccountUrl();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                 if (res instanceof TLRPC.TL_payments_starsRevenueAdsAccountUrl) {
@@ -418,17 +418,17 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             return;
         }
 
-        if (balanceEditTextValue < getMessagesController().starsRevenueWithdrawalMin) {
-            Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
-            BulletinFactory.of(this).createSimpleBulletin(starDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotDiamondsWithdrawMinLimit", (int) getMessagesController().starsRevenueWithdrawalMin), () -> {
+        if (balanceEditTextValue < getMessagesController().diamondsRevenueWithdrawalMin) {
+            Drawable diamondDrawable = getContext().getResources().getDrawable(R.drawable.diamond).mutate();
+            BulletinFactory.of(this).createSimpleBulletin(diamondDrawable, AndroidUtilities.replaceSingleTag(LocaleController.formatPluralString("BotDiamondsWithdrawMinLimit", (int) getMessagesController().diamondsRevenueWithdrawalMin), () -> {
                 Bulletin.hideVisible();
-                long balance = BotStarsController.getInstance(currentAccount).getAvailableBalance(bot_id);
-                if (balance < getMessagesController().starsRevenueWithdrawalMin) {
+                long balance = BotDiamondsController.getInstance(currentAccount).getAvailableBalance(bot_id);
+                if (balance < getMessagesController().diamondsRevenueWithdrawalMin) {
                     balanceEditTextAll = true;
                     balanceEditTextValue = balance;
                 } else {
                     balanceEditTextAll = false;
-                    balanceEditTextValue = getMessagesController().starsRevenueWithdrawalMin;
+                    balanceEditTextValue = getMessagesController().diamondsRevenueWithdrawalMin;
                 }
                 balanceEditTextIgnore = true;
                 balanceEditText.setText(Long.toString(balanceEditTextValue));
@@ -462,7 +462,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
     private StatisticActivity.ChartViewData revenueChart;
 
     private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-        final BotStarsController s = BotStarsController.getInstance(currentAccount);
+        final BotDiamondsController s = BotDiamondsController.getInstance(currentAccount);
         if (type == TYPE_STARS) {
             items.add(UItem.asChart(StatisticActivity.VIEW_TYPE_STACKBAR, stats_dc, revenueChartData));
             items.add(UItem.asShadow(-1, null));
@@ -487,7 +487,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
                 totalProceedsValue.crypto_currency2 = "XTR";
                 totalProceedsValue.amount2 = (long) (stats.status.overall_revenue.amount * rate * 100.0);
                 totalProceedsValue.currency = "USD";
-                setStarsBalance(stats.status.available_balance, stats.status.next_withdrawal_at);
+                setDiamondsBalance(stats.status.available_balance, stats.status.next_withdrawal_at);
 
                 balanceButtonsLayout.setVisibility(stats.status.withdrawal_enabled ? View.VISIBLE : View.GONE);
             }
@@ -576,8 +576,8 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             items.add(UItem.asShadow(-5, balanceInfo));
             if (!tonTransactionsEndReached || !tonTransactions.isEmpty()) {
                 items.add(UItem.asBlackHeader(getString(R.string.BotMonetizationTransactions)));
-                for (TL_stars.StarsTransaction t : tonTransactions) {
-                    items.add(StarsIntroActivity.StarsTransactionView.Factory.asTransaction(t, true));
+                for (TL_diamonds.StarsTransaction t : tonTransactions) {
+                    items.add(DiamondsIntroActivity.DiamondsTransactionView.Factory.asTransaction(t, true));
                 }
                 if (!tonTransactionsEndReached) {
                     items.add(UItem.asFlicker(1, FlickerLoadingView.DIALOG_CELL_TYPE));
@@ -591,19 +591,19 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
 
     private boolean tonTransactionsLoading = false;
     private boolean tonTransactionsEndReached = false;
-    private final ArrayList<TL_stars.StarsTransaction> tonTransactions = new ArrayList<>();
+    private final ArrayList<TL_diamonds.StarsTransaction> tonTransactions = new ArrayList<>();
     private String tonTransactionsLastOffset = "";
     private void loadTonTransactions() {
         if (tonTransactionsLoading || tonTransactionsEndReached || tonTransactionsLastOffset == null) return;
         tonTransactionsLoading = true;
-        TL_stars.TL_payments_getStarsTransactions req = new TL_stars.TL_payments_getStarsTransactions();
+        TL_diamonds.TL_payments_getDiamondsTransactions req = new TL_diamonds.TL_payments_getDiamondsTransactions();
         req.ton = true;
         req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
         req.offset = tonTransactionsLastOffset;
         req.limit = tonTransactions.isEmpty() ? 5 : 20;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            if (res instanceof TL_stars.StarsStatus) {
-                TL_stars.StarsStatus r = (TL_stars.StarsStatus) res;
+            if (res instanceof TL_diamonds.StarsStatus) {
+                TL_diamonds.StarsStatus r = (TL_diamonds.StarsStatus) res;
                 MessagesController.getInstance(currentAccount).putUsers(r.users, false);
                 MessagesController.getInstance(currentAccount).putChats(r.chats, false);
                 tonTransactionsLastOffset = r.next_offset;
@@ -629,9 +629,9 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
     }
 
     private void onItemClick(UItem item, View view, int pos, float x, float y) {
-        if (item.instanceOf(StarsIntroActivity.StarsTransactionView.Factory.class)) {
-            TL_stars.StarsTransaction t = (TL_stars.StarsTransaction) item.object;
-            StarsIntroActivity.showTransactionSheet(getContext(), true, bot_id, currentAccount, t, getResourceProvider());
+        if (item.instanceOf(DiamondsIntroActivity.DiamondsTransactionView.Factory.class)) {
+            TL_diamonds.StarsTransaction t = (TL_diamonds.StarsTransaction) item.object;
+            DiamondsIntroActivity.showTransactionSheet(getContext(), true, bot_id, currentAccount, t, getResourceProvider());
         } else if (item.object instanceof TL_stats.BroadcastRevenueTransaction) {
             ChannelMonetizationLayout.showTransactionSheet(getContext(), currentAccount, (TL_stats.BroadcastRevenueTransaction) item.object, bot_id, resourceProvider);
         } else if (item.id == BUTTON_AFFILIATE) {
@@ -639,11 +639,11 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
         }
     }
 
-    private void setStarsBalance(TL_stars.StarsAmount crypto_amount, int blockedUntil) {
+    private void setDiamondsBalance(TL_diamonds.StarsAmount crypto_amount, int blockedUntil) {
         if (balanceTitle == null || balanceSubtitle == null)
             return;
         long amount = (long) (rate * crypto_amount.amount * 100.0);
-        SpannableStringBuilder ssb = new SpannableStringBuilder(StarsIntroActivity.replaceStarsWithPlain(TextUtils.concat("XTR ", StarsIntroActivity.formatStarsAmount(crypto_amount, 0.8f, ' ')), 1f));
+        SpannableStringBuilder ssb = new SpannableStringBuilder(DiamondsIntroActivity.replaceDiamondsWithPlain(TextUtils.concat("XTR ", DiamondsIntroActivity.formatDiamondsAmount(crypto_amount, 0.8f, ' ')), 1f));
         int index = TextUtils.indexOf(ssb, ".");
         if (index >= 0) {
             ssb.setSpan(balanceTitleSizeSpan, index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -710,7 +710,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             AndroidUtilities.runOnUIThread(this.setBalanceButtonText, 1000);
         } else {
             balanceButton.setSubText(null, true);
-            balanceButton.setText(StarsIntroActivity.replaceStars(balanceEditTextAll ? getString(R.string.BotDiamondsButtonWithdrawShortAll) : LocaleController.formatPluralStringSpaced("BotDiamondsButtonWithdrawShort", (int) balanceEditTextValue), starRef), true);
+            balanceButton.setText(DiamondsIntroActivity.replaceDiamonds(balanceEditTextAll ? getString(R.string.BotDiamondsButtonWithdrawShortAll) : LocaleController.formatPluralStringSpaced("BotDiamondsButtonWithdrawShort", (int) balanceEditTextValue), diamondRef), true);
         }
     };
 
@@ -739,13 +739,13 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
     private int stats_dc = -1;
     @Override
     public boolean onFragmentCreate() {
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botStarsUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botDiamondsUpdated);
         checkStats();
         return super.onFragmentCreate();
     }
 
     private void checkStats() {
-        TLRPC.TL_payments_starsRevenueStats stats = BotStarsController.getInstance(currentAccount).getStarsRevenueStats(bot_id);
+        TLRPC.TL_payments_starsRevenueStats stats = BotDiamondsController.getInstance(currentAccount).getStarsRevenueStats(bot_id);
         if (stats == lastStats && (stats == null ? null : stats.status) == lastStatsStatus) {
             return;
         }
@@ -760,7 +760,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
                 revenueChartData.chartData.lines.get(0).colorKey = Theme.key_color_yellow;
                 revenueChartData.chartData.yRate = (float) (1.0 / rate / 100.0);
             }
-            setStarsBalance(stats.status.available_balance, stats.status.next_withdrawal_at);
+            setDiamondsBalance(stats.status.available_balance, stats.status.next_withdrawal_at);
             if (listView != null) {
                 listView.adapter.update(true);
             }
@@ -769,13 +769,13 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
 
     @Override
     public void onFragmentDestroy() {
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botStarsUpdated);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botDiamondsUpdated);
         super.onFragmentDestroy();
     }
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.botStarsUpdated) {
+        if (id == NotificationCenter.botDiamondsUpdated) {
             if ((long) args[0] == bot_id) {
                 checkStats();
             }
@@ -919,7 +919,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
 
         TLObject r;
         if (stars) {
-            TLRPC.TL_payments_getStarsRevenueWithdrawalUrl req = new TLRPC.TL_payments_getStarsRevenueWithdrawalUrl();
+            TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl req = new TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl();
             req.ton = false;
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
             req.password = password != null ? password : new TLRPC.TL_inputCheckPasswordEmpty();
@@ -927,7 +927,7 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             req.amount = stars_amount;
             r = req;
         } else {
-            TLRPC.TL_payments_getStarsRevenueWithdrawalUrl req = new TLRPC.TL_payments_getStarsRevenueWithdrawalUrl();
+            TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl req = new TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl();
             req.ton = true;
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
             req.password = password != null ? password : new TLRPC.TL_inputCheckPasswordEmpty();

@@ -44,7 +44,7 @@ import org.ansible.ui.Components.LinkSpanDrawable;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconRenderer;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconTextureView;
 import org.ansible.ui.Components.Premium.GLIcon.Icon3D;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.TableView;
 import org.ansible.ui.Components.UItem;
@@ -110,7 +110,7 @@ public class AffiliateProgramFragment extends GradientHeaderActivity implements 
         iconTextureView.mRenderer.colorKey1 = Theme.key_starsGradient1;
         iconTextureView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconTextureView.mRenderer.updateColors();
-        iconTextureView.setStarParticlesView(particlesView);
+        iconTextureView.setDiamondParticlesView(particlesView);
         aboveTitleView.addView(iconTextureView, LayoutHelper.createFrame(190, 190, Gravity.CENTER, 0, 32, 0, 24));
         configureHeader(getString(R.string.BotAffiliateProgramTitle), getString(R.string.BotAffiliateProgramText), aboveTitleView, null);
 
@@ -428,12 +428,12 @@ public class AffiliateProgramFragment extends GradientHeaderActivity implements 
     }
 
     @Override
-    public StarParticlesView createParticlesView() {
+    public DiamondParticlesView createParticlesView() {
         return makeParticlesView(getContext(), 75, 1);
     }
 
-    public static StarParticlesView makeParticlesView(Context context, int particlesCount, int type) {
-        return new StarParticlesView(context) {
+    public static DiamondParticlesView makeParticlesView(Context context, int particlesCount, int type) {
+        return new DiamondParticlesView(context) {
             @Override
             protected void configure() {
                 super.configure();
@@ -445,7 +445,7 @@ public class AffiliateProgramFragment extends GradientHeaderActivity implements 
             }
 
             @Override
-            protected int getStarsRectWidth() {
+            protected int getDiamondsRectWidth() {
                 return getMeasuredWidth();
             }
 

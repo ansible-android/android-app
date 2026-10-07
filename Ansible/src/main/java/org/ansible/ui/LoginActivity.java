@@ -180,7 +180,7 @@ import org.ansible.ui.Components.OutlineTextContainerView;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconRenderer;
 import org.ansible.ui.Components.Premium.GLIcon.GLIconTextureView;
 import org.ansible.ui.Components.Premium.GLIcon.Icon3D;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.ProxyDrawable;
 import org.ansible.ui.Components.RLottieDrawable;
 import org.ansible.ui.Components.RLottieImageView;
@@ -196,7 +196,7 @@ import org.ansible.ui.Components.URLSpanNoUnderline;
 import org.ansible.ui.Components.VerticalPositionAutoAnimator;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.Components.spoilers.SpoilersTextView;
-import org.ansible.ui.Stars.ExplainStarsSheet;
+import org.ansible.ui.Diamonds.ExplainDiamondsSheet;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.bots.BotWebViewSheet;
 
@@ -3583,9 +3583,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private TextView missedCallDescriptionSubtitle2;
         private ImageView missedCallArrowIcon, missedCallPhoneIcon;
 
-        private RLottieDrawable starsToDotsDrawable;
+        private RLottieDrawable diamondsToDotsDrawable;
         private RLottieDrawable dotsDrawable;
-        private RLottieDrawable dotsToStarsDrawable;
+        private RLottieDrawable dotsToDiamondsDrawable;
         private boolean isDotsAnimationVisible;
 
         private Timer timeTimer;
@@ -3746,9 +3746,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 } else {
                     hintDrawable = new RLottieDrawable(R.raw.sms_incoming_info, String.valueOf(R.raw.sms_incoming_info), AndroidUtilities.dp(size), AndroidUtilities.dp(size), true, null);
 
-                    starsToDotsDrawable = new RLottieDrawable(R.raw.phone_stars_to_dots, String.valueOf(R.raw.phone_stars_to_dots), AndroidUtilities.dp(size), AndroidUtilities.dp(size), true, null);
+                    diamondsToDotsDrawable = new RLottieDrawable(R.raw.phone_stars_to_dots, String.valueOf(R.raw.phone_stars_to_dots), AndroidUtilities.dp(size), AndroidUtilities.dp(size), true, null);
                     dotsDrawable = new RLottieDrawable(R.raw.phone_dots, String.valueOf(R.raw.phone_dots), AndroidUtilities.dp(size), AndroidUtilities.dp(size), true, null);
-                    dotsToStarsDrawable = new RLottieDrawable(R.raw.phone_dots_to_stars, String.valueOf(R.raw.phone_dots_to_stars), AndroidUtilities.dp(size), AndroidUtilities.dp(size), true, null);
+                    dotsToDiamondsDrawable = new RLottieDrawable(R.raw.phone_dots_to_stars, String.valueOf(R.raw.phone_dots_to_stars), AndroidUtilities.dp(size), AndroidUtilities.dp(size), true, null);
                 }
                 blueImageView = new RLottieImageView(context);
                 blueImageView.setAnimation(hintDrawable);
@@ -4119,9 +4119,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
 
             applyLottieColors(hintDrawable);
-            applyLottieColors(starsToDotsDrawable);
+            applyLottieColors(diamondsToDotsDrawable);
             applyLottieColors(dotsDrawable);
-            applyLottieColors(dotsToStarsDrawable);
+            applyLottieColors(dotsToDiamondsDrawable);
 
             if (codeFieldContainer != null) {
                 codeFieldContainer.invalidate();
@@ -4226,7 +4226,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         private void tryShowProgress(int reqId, boolean animate) {
-            if (starsToDotsDrawable != null) {
+            if (diamondsToDotsDrawable != null) {
                 if (isDotsAnimationVisible) {
                     return;
                 }
@@ -4236,7 +4236,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     return;
                 }
 
-                starsToDotsDrawable.setOnAnimationEndListener(()-> AndroidUtilities.runOnUIThread(()->{
+                diamondsToDotsDrawable.setOnAnimationEndListener(()-> AndroidUtilities.runOnUIThread(()->{
                     blueImageView.setAutoRepeat(true);
                     dotsDrawable.setCurrentFrame(0, false);
                     dotsDrawable.setAutoRepeat(1);
@@ -4244,8 +4244,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     blueImageView.playAnimation();
                 }));
                 blueImageView.setAutoRepeat(false);
-                starsToDotsDrawable.setCurrentFrame(0, false);
-                blueImageView.setAnimation(starsToDotsDrawable);
+                diamondsToDotsDrawable.setCurrentFrame(0, false);
+                blueImageView.setAnimation(diamondsToDotsDrawable);
                 blueImageView.playAnimation();
                 return;
             }
@@ -4257,7 +4257,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         private void tryHideProgress(boolean cancel, boolean animate) {
-            if (starsToDotsDrawable != null) {
+            if (diamondsToDotsDrawable != null) {
                 if (!isDotsAnimationVisible) {
                     return;
                 }
@@ -4265,14 +4265,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 blueImageView.setAutoRepeat(false);
                 dotsDrawable.setAutoRepeat(0);
                 dotsDrawable.setOnFinishCallback(()-> AndroidUtilities.runOnUIThread(()->{
-                    dotsToStarsDrawable.setOnAnimationEndListener(()-> AndroidUtilities.runOnUIThread(()->{
+                    dotsToDiamondsDrawable.setOnAnimationEndListener(()-> AndroidUtilities.runOnUIThread(()->{
                         blueImageView.setAutoRepeat(false);
                         blueImageView.setAnimation(hintDrawable);
                     }));
 
                     blueImageView.setAutoRepeat(false);
-                    dotsToStarsDrawable.setCurrentFrame(0, false);
-                    blueImageView.setAnimation(dotsToStarsDrawable);
+                    dotsToDiamondsDrawable.setCurrentFrame(0, false);
+                    blueImageView.setAnimation(dotsToDiamondsDrawable);
                     blueImageView.playAnimation();
                 }), dotsDrawable.getFramesCount() - 1);
                 return;
@@ -9745,11 +9745,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     public class LoginPayView extends SlideView {
 
-        private StarParticlesView starParticlesView;
+        private DiamondParticlesView diamondParticlesView;
         private ImageView optionsButton;
         private ButtonWithCounterView button;
 
-        private ExplainStarsSheet.FeatureCell[] cells = new ExplainStarsSheet.FeatureCell[3];
+        private ExplainDiamondsSheet.FeatureCell[] cells = new ExplainDiamondsSheet.FeatureCell[3];
 
         public LoginPayView(Context context) {
             super(context);
@@ -9764,7 +9764,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             topView.setClipToPadding(false);
             addView(topView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 200));
 
-            starParticlesView = new StarParticlesView(context) {
+            diamondParticlesView = new DiamondParticlesView(context) {
                 @Override
                 protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -9787,7 +9787,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     drawable.init();
                 }
             };
-            topView.addView(starParticlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 200, Gravity.FILL));
+            topView.addView(diamondParticlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 200, Gravity.FILL));
 
             optionsButton = new ImageView(context);
             optionsButton.setImageResource(R.drawable.ic_ab_other);
@@ -9809,7 +9809,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     setPaused(true);
                 }
             };
-            iconTextureView.setStarParticlesView(starParticlesView);
+            iconTextureView.setDiamondParticlesView(diamondParticlesView);
             Bitmap bitmap = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             canvas.drawColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_premiumGradient2), Theme.getColor(Theme.key_dialogBackground), 0.5f));
@@ -9828,15 +9828,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             textView.setGravity(Gravity.CENTER);
             topView.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 16, 152, 16, 0));
 
-            cells[0] = new ExplainStarsSheet.FeatureCell(context, ExplainStarsSheet.FeatureCell.STYLE_SHEET, resourceProvider);
+            cells[0] = new ExplainDiamondsSheet.FeatureCell(context, ExplainDiamondsSheet.FeatureCell.STYLE_SHEET, resourceProvider);
             cells[0].set(R.drawable.menu_high_price, getString(R.string.SMSFee1Title), getString(R.string.SMSFee1Text));
             addView(cells[0], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP, 0, 0, 0, 6));
 
-            cells[1] = new ExplainStarsSheet.FeatureCell(context, ExplainStarsSheet.FeatureCell.STYLE_SHEET, resourceProvider);
+            cells[1] = new ExplainDiamondsSheet.FeatureCell(context, ExplainDiamondsSheet.FeatureCell.STYLE_SHEET, resourceProvider);
             cells[1].set(R.drawable.menu_feature_code, getString(R.string.SMSFee2Title), getString(R.string.SMSFee2Text));
             addView(cells[1], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP, 0, 0, 0, 6));
 
-            cells[2] = new ExplainStarsSheet.FeatureCell(context, ExplainStarsSheet.FeatureCell.STYLE_SHEET, resourceProvider);
+            cells[2] = new ExplainDiamondsSheet.FeatureCell(context, ExplainDiamondsSheet.FeatureCell.STYLE_SHEET, resourceProvider);
             cells[2].set(R.drawable.menu_feature_hands, AndroidUtilities.replaceArrows(replaceSingleTag(getString(R.string.SMSFee3Title), () -> {
                 final PremiumPreviewFragment fragment = new PremiumPreviewFragment("sms");
                 fragment.setCurrentAccount(currentAccount);

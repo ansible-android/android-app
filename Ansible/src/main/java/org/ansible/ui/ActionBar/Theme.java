@@ -3334,7 +3334,7 @@ public class Theme {
     public static final int key_chat_outReactionButtonTextSelected = colorsCount++;
     public static final int key_chat_reactionServiceButtonBackgroundSelected = colorsCount++;
     public static final int key_chat_reactionServiceButtonTextSelected = colorsCount++;
-    public static final int key_reactionStarSelector = colorsCount++;
+    public static final int key_reactionDiamondSelector = colorsCount++;
 
     public static final int key_premiumGradient0 = colorsCount++;
     public static final int key_premiumGradient1 = colorsCount++;
@@ -3346,12 +3346,12 @@ public class Theme {
     public static final int key_premiumGradientBackground3 = colorsCount++;
     public static final int key_premiumGradientBackground4 = colorsCount++;
     public static final int key_premiumGradientBackgroundOverlay = colorsCount++;
-    public static final int key_premiumStartSmallStarsColor = colorsCount++;
-    public static final int key_premiumStarGradient1 = colorsCount++;
-    public static final int key_premiumStarGradient2 = colorsCount++;
+    public static final int key_premiumStartSmallDiamondsColor = colorsCount++;
+    public static final int key_premiumDiamondGradient1 = colorsCount++;
+    public static final int key_premiumDiamondGradient2 = colorsCount++;
     public static final int key_premiumCoinGradient1 = colorsCount++;
     public static final int key_premiumCoinGradient2 = colorsCount++;
-    public static final int key_premiumStartSmallStarsColor2 = colorsCount++;
+    public static final int key_premiumStartSmallDiamondsColor2 = colorsCount++;
     public static final int key_premiumGradientBottomSheet1 = colorsCount++;
     public static final int key_premiumGradientBottomSheet2 = colorsCount++;
     public static final int key_premiumGradientBottomSheet3 = colorsCount++;
@@ -3869,9 +3869,9 @@ public class Theme {
         themeAccentExclusionKeys.add(key_premiumGradientBackground2);
         themeAccentExclusionKeys.add(key_premiumGradientBackground3);
         themeAccentExclusionKeys.add(key_premiumGradientBackground4);
-        themeAccentExclusionKeys.add(key_premiumStartSmallStarsColor);
-        themeAccentExclusionKeys.add(key_premiumStarGradient1);
-        themeAccentExclusionKeys.add(key_premiumStarGradient2);
+        themeAccentExclusionKeys.add(key_premiumStartSmallDiamondsColor);
+        themeAccentExclusionKeys.add(key_premiumDiamondGradient1);
+        themeAccentExclusionKeys.add(key_premiumDiamondGradient2);
         themeAccentExclusionKeys.add(key_stories_circle1);
         themeAccentExclusionKeys.add(key_stories_circle2);
         themeAccentExclusionKeys.add(key_stories_circle_dialog1);

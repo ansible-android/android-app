@@ -43,7 +43,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
@@ -232,7 +232,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
         enableReactionsCell.setColors(Theme.key_windowBackgroundCheckText, Theme.key_switchTrackBlue, Theme.key_switchTrackBlueChecked, Theme.key_switchTrackBlueThumb, Theme.key_switchTrackBlueThumbChecked);
         enableReactionsCell.setOnClickListener(v -> {
             if (enableReactionsCell.isChecked() && paidCheckCell != null && paidCheckCell.isChecked()) {
-                toggleStarsEnabled();
+                toggleDiamondsEnabled();
             }
             setCheckedEnableReactionCell(enableReactionsCell.isChecked() ? SELECT_TYPE_NONE : SELECT_TYPE_SOME, enableReactionsCell.isChecked() ? false : paid, true);
         });
@@ -319,7 +319,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
             paidCheckCell.setTextAndCheck(LocaleController.getString(R.string.ChannelEnablePaidReactions), false, false);
             switchLayout.addView(paidCheckCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
             paidCheckCell.setOnClickListener(v -> {
-                toggleStarsEnabled();
+                toggleDiamondsEnabled();
             });
 
             infoCell = new TextInfoPrivacyCell(context, 12, resourceProvider);
@@ -457,7 +457,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
         editText.addReactionsSpan();
 
         if (info.paid_media_allowed && info.paid_reactions_available) {
-            toggleStarsEnabled();
+            toggleDiamondsEnabled();
         }
         initialSelectedEmojis.putAll(selectedEmojisMap);
         initialPaid = paid;
@@ -488,7 +488,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
                 }
             }
 
-            protected void onEmojiSelected(View view, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+            protected void onEmojiSelected(View view, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                 if (selectedEmojisMap.containsKey(documentId)) {
                     selectedEmojisIds.remove(documentId);
                     AnimatedEmojiSpan removedSpan = selectedEmojisMap.remove(documentId);
@@ -907,7 +907,7 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
         }
     }
 
-    public void toggleStarsEnabled() {
+    public void toggleDiamondsEnabled() {
         if (paidCheckCell.isChecked()) {
             paidCheckCell.setChecked(false);
             selectedEmojisIds.remove(-1L);

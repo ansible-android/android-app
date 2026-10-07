@@ -44,8 +44,8 @@ import org.ansible.ui.Components.Premium.PremiumPreviewBottomSheet;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PhotoViewer;
 import org.ansible.ui.PremiumPreviewFragment;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.DarkThemeResourceProvider;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
@@ -328,12 +328,12 @@ public class PostsSearchContainer extends FrameLayout {
                 final Matcher matcher = pattern.matcher(err.text);
                 if (matcher != null && matcher.matches()) {
                     final int waitSeconds = Integer.parseInt(matcher.group(1));
-                    final int starsPrice = Integer.parseInt(matcher.group(2));
+                    final int diamondsPrice = Integer.parseInt(matcher.group(2));
 
                     if (flood != null) {
                         flood.flags |= 2;
                         flood.wait_till = connectionsManager.getCurrentTime() + waitSeconds;
-                        flood.stars_amount = starsPrice;
+                        flood.stars_amount = diamondsPrice;
                     }
 
                     updateEmptyView();
@@ -345,11 +345,11 @@ public class PostsSearchContainer extends FrameLayout {
             } else if (err != null && "BALANCE_TOO_LOW".equalsIgnoreCase(err.text)) {
                 updateEmptyView();
                 listView.adapter.update(true);
-                StarsController.getInstance(currentAccount).getBalance(true, () -> {
+                DiamondsController.getInstance(currentAccount).getBalance(true, () -> {
                     final Activity activity = AndroidUtilities.getActivity();
                     final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     final Theme.ResourcesProvider resourcesProvider = PhotoViewer.getInstance().isVisible() || lastFragment != null && lastFragment.hasShownSheet() ? new DarkThemeResourceProvider() : (lastFragment != null ? lastFragment.getResourceProvider() : null);
-                    new StarsIntroActivity.StarsNeededSheet(activity, resourcesProvider, paying, StarsIntroActivity.StarsNeededSheet.TYPE_SEARCH, "", () -> {
+                    new DiamondsIntroActivity.DiamondsNeededSheet(activity, resourcesProvider, paying, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_SEARCH, "", () -> {
                         load(true);
                     }, 0).show();
                 }, true);
@@ -442,7 +442,7 @@ public class PostsSearchContainer extends FrameLayout {
                 .putInt("searchpostsnew", MessagesController.getGlobalMainSettings().getInt("searchpostsnew", 0) + 1)
                 .apply();
 
-            StarsController.getInstance(currentAccount).getBalance();
+            DiamondsController.getInstance(currentAccount).getBalance();
         }
     }
 
@@ -501,7 +501,7 @@ public class PostsSearchContainer extends FrameLayout {
     private ColoredImageSpan searchSpan;
     private ColoredImageSpan arrowSpan;
     private ForegroundColorAlphaSpan colorSpan;
-    private ColoredImageSpan[] starSpan = new ColoredImageSpan[1];
+    private ColoredImageSpan[] diamondSpan = new ColoredImageSpan[1];
     private final Runnable updateEmptyViewRunnable = this::updateEmptyView;
     private void updateEmptyView() {
         AndroidUtilities.cancelRunOnUIThread(updateEmptyViewRunnable);
@@ -541,7 +541,7 @@ public class PostsSearchContainer extends FrameLayout {
             final int s = S - h * 3600 - m * 60;
 
             emptyButton.setVisibility(View.VISIBLE);
-            emptyButton.setText(StarsIntroActivity.replaceStars(formatPluralStringComma("SearchPostsButtonPay", (int) flood.stars_amount), 1.13f, starSpan), true);
+            emptyButton.setText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("SearchPostsButtonPay", (int) flood.stars_amount), 1.13f, diamondSpan), true);
             emptyButton.setSubText(formatString(R.string.SearchPostsFreeSearchUnlocksIn, (h > 0 ? h + ":" : "") + (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s)), true);
             emptyButton.subText.setHacks(false, true, true);
             emptyButton.setOnClickListener(v -> {

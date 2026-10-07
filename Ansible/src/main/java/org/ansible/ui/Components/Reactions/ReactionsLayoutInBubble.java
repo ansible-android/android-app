@@ -59,7 +59,7 @@ import org.ansible.ui.Components.ButtonBounce;
 import org.ansible.ui.Components.CounterView;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.RLottieDrawable;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -187,7 +187,7 @@ public class ReactionsLayoutInBubble {
                 for (int i = 0; i < messageObject.messageOwner.reactions.results.size(); i++) {
                     totalCount += messageObject.messageOwner.reactions.results.get(i).count;
                 }
-                boolean includeEmptyStarButton = false;
+                boolean includeEmptyDiamondButton = false;
                 boolean includeEmptyLikeButton = forceLikeDislikeReactions;
                 boolean includeEmptyDislikeButton = forceLikeDislikeReactions;
 
@@ -210,12 +210,12 @@ public class ReactionsLayoutInBubble {
                         }
                     }
                     if (!hasPaidReaction) {
-                        includeEmptyStarButton = true;
+                        includeEmptyDiamondButton = true;
                     }
                 }
 
                 ArrayList<TLRPC.Reaction> forcedReactions = new ArrayList<>();
-                if (includeEmptyStarButton) {
+                if (includeEmptyDiamondButton) {
                     forcedReactions.add(new TLRPC.TL_reactionPaid());
                 }
                 if (includeEmptyLikeButton) {
@@ -704,7 +704,7 @@ public class ReactionsLayoutInBubble {
 
     public ReactionButton getReactionButton(VisibleReaction visibleReaction) {
         String hash;
-        if (visibleReaction.isStar) {
+        if (visibleReaction.isDiamond) {
             hash = "stars";
         } else if (visibleReaction.emojicon != null) {
             hash = visibleReaction.emojicon;
@@ -842,9 +842,9 @@ public class ReactionsLayoutInBubble {
         private final Theme.ResourcesProvider resourcesProvider;
 
         public final ButtonBounce bounce;
-        private StarsReactionsSheet.Particles particles;
+        private DiamondsReactionsSheet.Particles particles;
 
-        private RLottieDrawable starDrawable;
+        private RLottieDrawable diamondDrawable;
 
         protected int getCacheType() {
             if (isTag) {
@@ -908,15 +908,15 @@ public class ReactionsLayoutInBubble {
             counterDrawable.shortFormat = true;
 
             if (reaction != null) {
-                if (visibleReaction.isStar) {
+                if (visibleReaction.isDiamond) {
                     paid = true;
                     if (LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS)) {
-                        if (reuseFrom != null && reuseFrom.starDrawable != null) {
-                            starDrawable = reuseFrom.starDrawable;
+                        if (reuseFrom != null && reuseFrom.diamondDrawable != null) {
+                            diamondDrawable = reuseFrom.diamondDrawable;
                         } else {
-                            starDrawable = new RLottieDrawable(R.raw.star_reaction_click, "star_reaction_click", dp(40), dp(40));
+                            diamondDrawable = new RLottieDrawable(R.raw.star_reaction_click, "star_reaction_click", dp(40), dp(40));
                         }
-                        imageReceiver.setImageBitmap(starDrawable);
+                        imageReceiver.setImageBitmap(diamondDrawable);
                     } else {
                         imageReceiver.setImageBitmap(ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.star_reaction).mutate());
                     }
@@ -925,7 +925,7 @@ public class ReactionsLayoutInBubble {
 //                    } else {
 //                        imageReceiver.setImageBitmap(ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.star_small_inner));
 //                    }
-                    particles = reuseFrom != null && reuseFrom.particles != null ? reuseFrom.particles : new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH ? 18 : 8);
+                    particles = reuseFrom != null && reuseFrom.particles != null ? reuseFrom.particles : new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH ? 18 : 8);
                 } else if (visibleReaction.emojicon != null) {
                     TLRPC.TL_availableReaction r = MediaDataController.getInstance(currentAccount).getReactionsMap().get(visibleReaction.emojicon);
                     if (r != null) {
@@ -1392,7 +1392,7 @@ public class ReactionsLayoutInBubble {
             if (previewImageReceiver != null || previewAnimatedEmojiDrawable != null) return;
             View parent = parentView != null && parentView.getParent() instanceof View ? (View) parentView.getParent() : parentView;
             if (reaction != null) {
-                if (visibleReaction.isStar) {
+                if (visibleReaction.isDiamond) {
 
                 } else if (visibleReaction.emojicon != null) {
                     TLRPC.TL_availableReaction r = MediaDataController.getInstance(currentAccount).getReactionsMap().get(visibleReaction.emojicon);
@@ -1647,7 +1647,7 @@ public class ReactionsLayoutInBubble {
 
     public static class VisibleReaction {
 
-        public boolean isStar;
+        public boolean isDiamond;
         public boolean isEffect;
         public long effectId;
         public boolean premium;
@@ -1658,16 +1658,16 @@ public class ReactionsLayoutInBubble {
 
         public long hash;
 
-        public static VisibleReaction asStar() {
+        public static VisibleReaction asDiamond() {
             VisibleReaction visibleReaction = new VisibleReaction();
-            visibleReaction.isStar = true;
+            visibleReaction.isDiamond = true;
             return visibleReaction;
         }
 
         public static VisibleReaction fromTL(TLRPC.Reaction reaction) {
             VisibleReaction visibleReaction = new VisibleReaction();
             if (reaction instanceof TLRPC.TL_reactionPaid) {
-                visibleReaction.isStar = true;
+                visibleReaction.isDiamond = true;
             } else if (reaction instanceof TLRPC.TL_reactionEmoji) {
                 visibleReaction.emojicon = ((TLRPC.TL_reactionEmoji) reaction).emoticon;
                 visibleReaction.hash = visibleReaction.emojicon.hashCode();
@@ -1692,7 +1692,7 @@ public class ReactionsLayoutInBubble {
         }
 
         public TLRPC.Reaction toTLReaction() {
-            if (isStar) {
+            if (isDiamond) {
                 return new TLRPC.TL_reactionPaid();
             }
             if (emojicon != null) {

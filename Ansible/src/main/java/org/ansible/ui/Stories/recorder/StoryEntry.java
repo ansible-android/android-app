@@ -211,7 +211,7 @@ public class StoryEntry {
         }
         if (messageObjects != null && messageObjects.size() == 1) {
             final MessageObject messageObject = messageObjects.get(0);
-            if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
+            if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
                 return true;
             }
         }

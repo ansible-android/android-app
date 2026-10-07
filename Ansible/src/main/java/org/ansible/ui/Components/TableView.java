@@ -2,7 +2,7 @@ package org.ansible.ui.Components;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsIntroActivity.StarsTransactionView.getPlatformDrawable;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.DiamondsTransactionView.getPlatformDrawable;
 
 import android.content.Context;
 import android.graphics.Canvas;

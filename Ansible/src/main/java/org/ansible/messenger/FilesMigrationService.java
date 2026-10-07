@@ -97,14 +97,14 @@ public class FilesMigrationService extends Service {
         }
 
         File newPath = ApplicationLoader.applicationContext.getExternalFilesDir(null);
-        File telegramPath = new File(newPath, "Ansible");
+        File ansiblePath = new File(newPath, "Ansible");
         File oldPath = new File(path, "Ansible");
 
         totalFilesCount = getFilesCount(oldPath);
 
         long moveStart = System.currentTimeMillis();
         if (oldPath.canRead() && oldPath.canWrite()) {
-            moveDirectory(oldPath, telegramPath);
+            moveDirectory(oldPath, ansiblePath);
         }
         long dt = System.currentTimeMillis() - moveStart;
 

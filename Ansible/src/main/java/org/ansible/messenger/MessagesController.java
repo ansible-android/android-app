@@ -14,7 +14,7 @@ import static org.ansible.messenger.NotificationsController.TYPE_CHANNEL;
 import static org.ansible.messenger.NotificationsController.TYPE_PRIVATE;
 import static org.ansible.messenger.NotificationsController.TYPE_REACTIONS_MESSAGES;
 import static org.ansible.messenger.Utilities.tryParseLong;
-import static org.ansible.ui.Stars.StarsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
 import static org.ansible.ui.Stories.HighlightMessageSheet.parseTiers;
 import static org.ansible.ui.Stories.HighlightMessageSheet.parseTiersString;
 import static org.ansible.ui.Stories.HighlightMessageSheet.tiersEqual;
@@ -77,7 +77,7 @@ import org.ansible.asnet.tl.TL_communities;
 import org.ansible.asnet.tl.TL_ephemeral;
 import org.ansible.asnet.tl.TL_forum;
 import org.ansible.asnet.tl.TL_phone;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.asnet.tl.TL_chatlists;
 import org.ansible.asnet.tl.TL_update;
@@ -108,8 +108,8 @@ import org.ansible.ui.MainTabsActivity;
 import org.ansible.ui.PremiumPreviewFragment;
 import org.ansible.ui.ProfileActivity;
 import org.ansible.ui.SecretMediaViewer;
-import org.ansible.ui.Stars.BotStarsController;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.BotDiamondsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Stories.StoriesController;
 import org.ansible.ui.ThemeActivity;
 import org.ansible.ui.TopicsFragment;
@@ -621,8 +621,8 @@ public class MessagesController extends BaseController implements NotificationCe
     public int reactionsInChatMax;
     public int forumUpgradeParticipantsMin;
     public int topicsPinnedLimit;
-    public long telegramAntispamUserId;
-    public int telegramAntispamGroupSizeMin;
+    public long ansibleAntispamUserId;
+    public int ansibleAntispamGroupSizeMin;
     public int hiddenMembersGroupSizeMin;
     private int chatlistUpdatePeriod;
     public int storyExpiringLimitDefault;
@@ -660,18 +660,18 @@ public class MessagesController extends BaseController implements NotificationCe
     public boolean showAnnualPerMonth = false;
     public boolean canEditFactcheck;
     public int factcheckLengthLimit;
-    public long starsRevenueWithdrawalMin;
-    public long starsPaidPostAmountMax;
+    public long diamondsRevenueWithdrawalMin;
+    public long diamondsPaidPostAmountMax;
     public int botPreviewMediasMax;
     public String tonProxyAddress;
     public String weatherSearchUsername;
     public boolean storyWeatherPreload;
-    public boolean starsGiftsEnabled;
+    public boolean diamondsGiftsEnabled;
     public boolean stargiftsBlocked;
-    public long starsPaidReactionAmountMax;
-    public long starsSubscriptionAmountMax;
-    public float starsUsdSellRate1000;
-    public float starsUsdWithdrawRate1000;
+    public long diamondsPaidReactionAmountMax;
+    public long diamondsSubscriptionAmountMax;
+    public float diamondsUsdSellRate1000;
+    public float diamondsUsdWithdrawRate1000;
     public boolean sponsoredLinksInappAllow;
     public Set<String> starrefStartParamPrefixes = new HashSet<>();
     public boolean starrefProgramAllowed;
@@ -703,10 +703,10 @@ public class MessagesController extends BaseController implements NotificationCe
     public boolean videoIgnoreAltDocuments;
     public boolean disableBotFullscreenBlur;
     public String tonBlockchainExplorerUrl;
-    public long starsPaidMessageAmountMax;
-    public int starsPaidMessageCommissionPermille;
+    public long diamondsPaidMessageAmountMax;
+    public int diamondsPaidMessageCommissionPermille;
     public int stargiftsPinnedToTopLimit;
-    public boolean starsPaidMessagesAvailable;
+    public boolean diamondsPaidMessagesAvailable;
     public long freezeSinceDate;
     public long freezeUntilDate;
     public String freezeAppealUrl;
@@ -718,8 +718,8 @@ public class MessagesController extends BaseController implements NotificationCe
     public String translationsManualEnabled; // "enabled", "alternative", "system", "disabled"
     public String translationsAutoEnabled; // "enabled", "alternative", "system", "disabled"
     public HashSet<Long> whitelistedBots;
-    public int[] starsGroupcallMessageLimits;
-    public int starsGroupcallMessageAmountMax;
+    public int[] diamondsGroupcallMessageLimits;
+    public int diamondsGroupcallMessageAmountMax;
     public long tonStakeddiceStakeAmountMin;
     public long tonStakeddiceStakeAmountMax;
     public long[] tonStakediceStakeSuggestedAmounts;
@@ -732,10 +732,10 @@ public class MessagesController extends BaseController implements NotificationCe
     public volatile boolean ignoreSetOnline;
     public boolean premiumLocked;
     public int transcribeButtonPressed;
-    public boolean starsLocked;
+    public boolean diamondsLocked;
 
-    public boolean starsPurchaseAvailable() {
-        return !starsLocked;
+    public boolean diamondsPurchaseAvailable() {
+        return !diamondsLocked;
     }
     public boolean premiumFeaturesBlocked() {
         return premiumLocked && !getUserConfig().isPremium();
@@ -1672,12 +1672,12 @@ public class MessagesController extends BaseController implements NotificationCe
         verifyAgeMin = mainPreferences.getInt("verifyAgeMin", 18);
         premiumBotUsername = mainPreferences.getString("premiumBotUsername", null);
         premiumLocked = mainPreferences.getBoolean("premiumLocked", false);
-        starsLocked = mainPreferences.getBoolean("starsLocked", true);
+        diamondsLocked = mainPreferences.getBoolean("starsLocked", true);
         transcribeButtonPressed = mainPreferences.getInt("transcribeButtonPressed", 0);
         forumUpgradeParticipantsMin = mainPreferences.getInt("forumUpgradeParticipantsMin", 200);
         topicsPinnedLimit = mainPreferences.getInt("topicsPinnedLimit", 3);
-        telegramAntispamUserId = mainPreferences.getLong("telegramAntispamUserId", -1);
-        telegramAntispamGroupSizeMin = mainPreferences.getInt("telegramAntispamGroupSizeMin", 100);
+        ansibleAntispamUserId = mainPreferences.getLong("telegramAntispamUserId", -1);
+        ansibleAntispamGroupSizeMin = mainPreferences.getInt("telegramAntispamGroupSizeMin", 100);
         hiddenMembersGroupSizeMin = mainPreferences.getInt("hiddenMembersGroupSizeMin", 100);
         chatlistUpdatePeriod = mainPreferences.getInt("chatlistUpdatePeriod", 3600);
         uploadMarkupVideo = mainPreferences.getBoolean("uploadMarkupVideo", true);
@@ -1725,10 +1725,10 @@ public class MessagesController extends BaseController implements NotificationCe
         videoIgnoreAltDocuments = mainPreferences.getBoolean("videoIgnoreAltDocuments", false);
         disableBotFullscreenBlur = mainPreferences.getBoolean("disableBotFullscreenBlur", false);
         tonBlockchainExplorerUrl = mainPreferences.getString("tonBlockchainExplorerUrl", "https://tonviewer.com/");
-        starsPaidMessageAmountMax = mainPreferences.getLong("starsPaidMessageAmountMax", 10_000L);
-        starsPaidMessageCommissionPermille = mainPreferences.getInt("starsPaidMessageCommissionPermille", 850);
+        diamondsPaidMessageAmountMax = mainPreferences.getLong("starsPaidMessageAmountMax", 10_000L);
+        diamondsPaidMessageCommissionPermille = mainPreferences.getInt("starsPaidMessageCommissionPermille", 850);
         stargiftsPinnedToTopLimit = mainPreferences.getInt("stargiftsPinnedToTopLimit", 6);
-        starsPaidMessagesAvailable = mainPreferences.getBoolean("starsPaidMessagesAvailable", true);
+        diamondsPaidMessagesAvailable = mainPreferences.getBoolean("starsPaidMessagesAvailable", true);
         freezeSinceDate = mainPreferences.getLong("freezeSinceDate", 0L);
         freezeUntilDate = mainPreferences.getLong("freezeUntilDate", 0L);
         conferenceCallSizeLimit = mainPreferences.getInt("conferenceCallSizeLimit", isTest ? 5 : 100);
@@ -1739,8 +1739,8 @@ public class MessagesController extends BaseController implements NotificationCe
         translationsManualEnabled = mainPreferences.getString("translationsManualEnabled", "enabled");
         translationsAutoEnabled = mainPreferences.getString("translationsAutoEnabled", "enabled");
         whitelistedBots = mainPreferences.getStringSet("whitelistedBots", new HashSet<>()).stream().map(s -> tryParseLong(s, 0)).collect(Collectors.toCollection(HashSet::new));
-        starsGroupcallMessageAmountMax = mainPreferences.getInt("starsGroupcallMessageAmountMax", 10_000);
-        starsGroupcallMessageLimits = parseTiersString(mainPreferences.getString("starsGroupcallMessageLimits", null));
+        diamondsGroupcallMessageAmountMax = mainPreferences.getInt("starsGroupcallMessageAmountMax", 10_000);
+        diamondsGroupcallMessageLimits = parseTiersString(mainPreferences.getString("starsGroupcallMessageLimits", null));
         freezeAppealUrl = mainPreferences.getString("freezeAppealUrl", "asme.su/spambot");
         enableGiftsInProfile = mainPreferences.getBoolean("enableGiftsInProfile", true);
         storiesPosting = mainPreferences.getString("storiesPosting", "enabled");
@@ -1780,20 +1780,20 @@ public class MessagesController extends BaseController implements NotificationCe
         showAnnualPerMonth = mainPreferences.getBoolean("showAnnualPerMonth", false);
         canEditFactcheck = mainPreferences.getBoolean("canEditFactcheck", false);
         factcheckLengthLimit = mainPreferences.getInt("factcheckLengthLimit", 1024);
-        starsRevenueWithdrawalMin = mainPreferences.getLong("starsRevenueWithdrawalMin", 1000);
-        starsPaidPostAmountMax = mainPreferences.getLong("starsPaidPostAmountMax", 10_000);
+        diamondsRevenueWithdrawalMin = mainPreferences.getLong("starsRevenueWithdrawalMin", 1000);
+        diamondsPaidPostAmountMax = mainPreferences.getLong("starsPaidPostAmountMax", 10_000);
         botPreviewMediasMax = mainPreferences.getInt("botPreviewMediasMax", 10);
         webAppAllowedProtocols = mainPreferences.getStringSet("webAppAllowedProtocols", new HashSet<>(Arrays.asList("http", "https")));
         ignoreRestrictionReasons = mainPreferences.getStringSet("ignoreRestrictionReasons", new HashSet<>(Arrays.asList()));
         tonProxyAddress = mainPreferences.getString("tonProxyAddress", "magic.org");
         weatherSearchUsername = mainPreferences.getString("weatherSearchUsername", "izweatherbot");
         storyWeatherPreload = mainPreferences.getBoolean("storyWeatherPreload", true);
-        starsGiftsEnabled = mainPreferences.getBoolean("starsGiftsEnabled", true);
+        diamondsGiftsEnabled = mainPreferences.getBoolean("starsGiftsEnabled", true);
         stargiftsBlocked = mainPreferences.getBoolean("stargiftsBlocked", true); // !BuildVars.DEBUG_VERSION);
-        starsPaidReactionAmountMax = mainPreferences.getLong("starsPaidReactionAmountMax", 10_000L);
-        starsSubscriptionAmountMax = mainPreferences.getLong("starsSubscriptionAmountMax", 2500L);
-        starsUsdSellRate1000 = mainPreferences.getFloat("starsUsdSellRate1000", 2000);
-        starsUsdWithdrawRate1000 = mainPreferences.getFloat("starsUsdWithdrawRate1000", 1200);
+        diamondsPaidReactionAmountMax = mainPreferences.getLong("starsPaidReactionAmountMax", 10_000L);
+        diamondsSubscriptionAmountMax = mainPreferences.getLong("starsSubscriptionAmountMax", 2500L);
+        diamondsUsdSellRate1000 = mainPreferences.getFloat("starsUsdSellRate1000", 2000);
+        diamondsUsdWithdrawRate1000 = mainPreferences.getFloat("starsUsdWithdrawRate1000", 1200);
         sponsoredLinksInappAllow = mainPreferences.getBoolean("sponsoredLinksInappAllow", false);
         starrefProgramAllowed = mainPreferences.getBoolean("starrefProgramAllowed", false);
         starrefConnectAllowed = mainPreferences.getBoolean("starrefConnectAllowed", false);
@@ -2569,12 +2569,12 @@ public class MessagesController extends BaseController implements NotificationCe
         lockFiltersInternal();
     }
 
-    public static TLRPC.TL_emojiStatusCollectible emojiStatusCollectibleFromGift(TL_stars.TL_starGiftUnique gift) {
+    public static TLRPC.TL_emojiStatusCollectible emojiStatusCollectibleFromGift(TL_diamonds.TL_starGiftUnique gift) {
         final TLRPC.TL_emojiStatusCollectible status = new TLRPC.TL_emojiStatusCollectible();
         status.collectible_id = gift.id;
-        final TL_stars.starGiftAttributeModel model = findAttribute(gift.attributes, TL_stars.starGiftAttributeModel.class);
-        final TL_stars.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
-        final TL_stars.starGiftAttributePattern pattern = findAttribute(gift.attributes, TL_stars.starGiftAttributePattern.class);
+        final TL_diamonds.starGiftAttributeModel model = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeModel.class);
+        final TL_diamonds.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
+        final TL_diamonds.starGiftAttributePattern pattern = findAttribute(gift.attributes, TL_diamonds.starGiftAttributePattern.class);
         status.title = gift.title + " #" + gift.num;
         if (model != null) {
             status.document_id = model.document.id;
@@ -2594,15 +2594,15 @@ public class MessagesController extends BaseController implements NotificationCe
     public void updateEmojiStatus(TLRPC.EmojiStatus newStatus) {
         updateEmojiStatus(newStatus, null);
     }
-    public void updateEmojiStatus(TLRPC.EmojiStatus newStatus, TL_stars.StarGift gift) {
+    public void updateEmojiStatus(TLRPC.EmojiStatus newStatus, TL_diamonds.StarGift gift) {
         updateEmojiStatus(0, newStatus, gift);
     }
 
-    public void updateEmojiStatus(long dialogId, TLRPC.EmojiStatus newStatus, TL_stars.StarGift gift) {
+    public void updateEmojiStatus(long dialogId, TLRPC.EmojiStatus newStatus, TL_diamonds.StarGift gift) {
         final boolean myself = dialogId == 0 || dialogId == getUserConfig().getClientUserId();
         TLRPC.EmojiStatus new_emoji_status = newStatus;
-        if (new_emoji_status instanceof TLRPC.TL_inputEmojiStatusCollectible && gift instanceof TL_stars.TL_starGiftUnique) {
-            new_emoji_status = emojiStatusCollectibleFromGift((TL_stars.TL_starGiftUnique) gift);
+        if (new_emoji_status instanceof TLRPC.TL_inputEmojiStatusCollectible && gift instanceof TL_diamonds.TL_starGiftUnique) {
+            new_emoji_status = emojiStatusCollectibleFromGift((TL_diamonds.TL_starGiftUnique) gift);
         }
 
         TLObject r;
@@ -2865,9 +2865,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 }
                 case "stars_purchase_blocked": {
                     if (value.value instanceof TLRPC.TL_jsonBool) {
-                        if (starsLocked != ((TLRPC.TL_jsonBool) value.value).value) {
-                            starsLocked = ((TLRPC.TL_jsonBool) value.value).value;
-                            editor.putBoolean("starsLocked", starsLocked);
+                        if (diamondsLocked != ((TLRPC.TL_jsonBool) value.value).value) {
+                            diamondsLocked = ((TLRPC.TL_jsonBool) value.value).value;
+                            editor.putBoolean("starsLocked", diamondsLocked);
                             changed = true;
                         }
                     }
@@ -3764,9 +3764,9 @@ public class MessagesController extends BaseController implements NotificationCe
                         TLRPC.TL_jsonString string = (TLRPC.TL_jsonString) value.value;
                         try {
                             long number = Long.parseLong(string.value);
-                            if (number != telegramAntispamUserId) {
-                                telegramAntispamUserId = number;
-                                editor.putLong("telegramAntispamUserId", telegramAntispamUserId);
+                            if (number != ansibleAntispamUserId) {
+                                ansibleAntispamUserId = number;
+                                editor.putLong("telegramAntispamUserId", ansibleAntispamUserId);
                                 changed = true;
                             }
                         } catch (Exception e) {
@@ -3778,9 +3778,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "telegram_antispam_group_size_min": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber number = (TLRPC.TL_jsonNumber) value.value;
-                        if (number.value != telegramAntispamGroupSizeMin) {
-                            telegramAntispamGroupSizeMin = (int) number.value;
-                            editor.putInt("telegramAntispamGroupSizeMin", telegramAntispamGroupSizeMin);
+                        if (number.value != ansibleAntispamGroupSizeMin) {
+                            ansibleAntispamGroupSizeMin = (int) number.value;
+                            editor.putInt("telegramAntispamGroupSizeMin", ansibleAntispamGroupSizeMin);
                             changed = true;
                         }
                     }
@@ -4020,9 +4020,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_paid_message_amount_max": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if (starsPaidMessageAmountMax != (long) num.value) {
-                            starsPaidMessageAmountMax = (long) num.value;
-                            editor.putLong("starsPaidMessageAmountMax", starsPaidMessageAmountMax);
+                        if (diamondsPaidMessageAmountMax != (long) num.value) {
+                            diamondsPaidMessageAmountMax = (long) num.value;
+                            editor.putLong("starsPaidMessageAmountMax", diamondsPaidMessageAmountMax);
                             changed = true;
                         }
                     }
@@ -4031,9 +4031,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_paid_message_commission_permille": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if (starsPaidMessageCommissionPermille != (int) num.value) {
-                            starsPaidMessageCommissionPermille = (int) num.value;
-                            editor.putInt("starsPaidMessageCommissionPermille", starsPaidMessageCommissionPermille);
+                        if (diamondsPaidMessageCommissionPermille != (int) num.value) {
+                            diamondsPaidMessageCommissionPermille = (int) num.value;
+                            editor.putInt("starsPaidMessageCommissionPermille", diamondsPaidMessageCommissionPermille);
                             changed = true;
                         }
                     }
@@ -4053,9 +4053,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_paid_messages_available": {
                     if (value.value instanceof TLRPC.TL_jsonBool) {
                         TLRPC.TL_jsonBool num = (TLRPC.TL_jsonBool) value.value;
-                        if (starsPaidMessagesAvailable != num.value) {
-                            starsPaidMessagesAvailable = num.value;
-                            editor.putBoolean("starsPaidMessagesAvailable", starsPaidMessagesAvailable);
+                        if (diamondsPaidMessagesAvailable != num.value) {
+                            diamondsPaidMessagesAvailable = num.value;
+                            editor.putBoolean("starsPaidMessagesAvailable", diamondsPaidMessagesAvailable);
                             changed = true;
                         }
                     }
@@ -4550,9 +4550,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_revenue_withdrawal_min": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if ((long) num.value != starsRevenueWithdrawalMin) {
-                            starsRevenueWithdrawalMin = (long) num.value;
-                            editor.putLong("starsRevenueWithdrawalMin", starsRevenueWithdrawalMin);
+                        if ((long) num.value != diamondsRevenueWithdrawalMin) {
+                            diamondsRevenueWithdrawalMin = (long) num.value;
+                            editor.putLong("starsRevenueWithdrawalMin", diamondsRevenueWithdrawalMin);
                             changed = true;
                         }
                     }
@@ -4561,9 +4561,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_paid_post_amount_max": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if ((long) num.value != starsPaidPostAmountMax) {
-                            starsPaidPostAmountMax = (long) num.value;
-                            editor.putLong("starsPaidPostAmountMax", starsPaidPostAmountMax);
+                        if ((long) num.value != diamondsPaidPostAmountMax) {
+                            diamondsPaidPostAmountMax = (long) num.value;
+                            editor.putLong("starsPaidPostAmountMax", diamondsPaidPostAmountMax);
                             changed = true;
                         }
                     }
@@ -4654,9 +4654,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_gifts_enabled": {
                     if (value.value instanceof TLRPC.TL_jsonBool) {
                         TLRPC.TL_jsonBool bool = (TLRPC.TL_jsonBool) value.value;
-                        if (bool.value != starsGiftsEnabled) {
-                            starsGiftsEnabled = bool.value;
-                            editor.putBoolean("starsGiftsEnabled", starsGiftsEnabled);
+                        if (bool.value != diamondsGiftsEnabled) {
+                            diamondsGiftsEnabled = bool.value;
+                            editor.putBoolean("starsGiftsEnabled", diamondsGiftsEnabled);
                             changed = true;
                         }
                     }
@@ -4676,9 +4676,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_paid_reaction_amount_max": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if ((long) num.value != starsPaidReactionAmountMax) {
-                            starsPaidReactionAmountMax = (long) num.value;
-                            editor.putLong("starsPaidReactionAmountMax", starsPaidReactionAmountMax);
+                        if ((long) num.value != diamondsPaidReactionAmountMax) {
+                            diamondsPaidReactionAmountMax = (long) num.value;
+                            editor.putLong("starsPaidReactionAmountMax", diamondsPaidReactionAmountMax);
                             changed = true;
                         }
                     }
@@ -4687,9 +4687,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_subscription_amount_max": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if ((long) num.value != starsSubscriptionAmountMax) {
-                            starsSubscriptionAmountMax = (long) num.value;
-                            editor.putLong("starsSubscriptionAmountMax", starsSubscriptionAmountMax);
+                        if ((long) num.value != diamondsSubscriptionAmountMax) {
+                            diamondsSubscriptionAmountMax = (long) num.value;
+                            editor.putLong("starsSubscriptionAmountMax", diamondsSubscriptionAmountMax);
                             changed = true;
                         }
                     }
@@ -4698,9 +4698,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_usd_sell_rate_x1000": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if (Math.abs(num.value - starsUsdSellRate1000) > 0.001f) {
-                            starsUsdSellRate1000 = (float) num.value;
-                            editor.putFloat("starsUsdSellRate1000", starsUsdSellRate1000);
+                        if (Math.abs(num.value - diamondsUsdSellRate1000) > 0.001f) {
+                            diamondsUsdSellRate1000 = (float) num.value;
+                            editor.putFloat("starsUsdSellRate1000", diamondsUsdSellRate1000);
                             changed = true;
                         }
                     }
@@ -4709,9 +4709,9 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_usd_withdraw_rate_x1000": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if (Math.abs(num.value - starsUsdWithdrawRate1000) > 0.001f) {
-                            starsUsdWithdrawRate1000 = (float) num.value;
-                            editor.putFloat("starsUsdWithdrawRate1000", starsUsdWithdrawRate1000);
+                        if (Math.abs(num.value - diamondsUsdWithdrawRate1000) > 0.001f) {
+                            diamondsUsdWithdrawRate1000 = (float) num.value;
+                            editor.putFloat("starsUsdWithdrawRate1000", diamondsUsdWithdrawRate1000);
                             changed = true;
                         }
                     }
@@ -4932,8 +4932,8 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_groupcall_message_amount_max": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         final TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if (starsGroupcallMessageAmountMax != (int) num.value) {
-                            editor.putInt("starsGroupcallMessageAmountMax", starsGroupcallMessageAmountMax = (int) num.value);
+                        if (diamondsGroupcallMessageAmountMax != (int) num.value) {
+                            editor.putInt("starsGroupcallMessageAmountMax", diamondsGroupcallMessageAmountMax = (int) num.value);
                             changed = true;
                         }
                     }
@@ -4942,8 +4942,8 @@ public class MessagesController extends BaseController implements NotificationCe
                 case "stars_groupcall_message_limits": {
                     if (value.value instanceof TLRPC.TL_jsonArray) {
                         final int[] tiers = parseTiers((TLRPC.TL_jsonArray) value.value);
-                        if (!tiersEqual(tiers, starsGroupcallMessageLimits)) {
-                            editor.putString("starsGroupcallMessageLimits", tiersToString(starsGroupcallMessageLimits = tiers));
+                        if (!tiersEqual(tiers, diamondsGroupcallMessageLimits)) {
+                            editor.putString("starsGroupcallMessageLimits", tiersToString(diamondsGroupcallMessageLimits = tiers));
                             changed = true;
                         }
                     }
@@ -5578,7 +5578,7 @@ public class MessagesController extends BaseController implements NotificationCe
         smsjobsStickyNotificationEnabled = false;
         showAnnualPerMonth = false;
         canEditFactcheck = false;
-        starsLocked = true;
+        diamondsLocked = true;
         factcheckLengthLimit = 1024;
         videoIgnoreAltDocuments = false;
         freezeSinceDate = 0L;
@@ -7249,7 +7249,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
     }
 
-    public long getSendPaidMessagesStars(long did) {
+    public long getSendPaidMessagesDiamonds(long did) {
         if (did > 0) {
             if (did == getUserConfig().getClientUserId()) {
                 return 0;
@@ -7260,7 +7260,7 @@ public class MessagesController extends BaseController implements NotificationCe
             }
             final TLRPC.User user = getUser(did);
             if (user != null && user.send_paid_messages_stars > 0) {
-                return DialogObject.getMessagesStarsPrice(isUserContactBlocked(user.id));
+                return DialogObject.getMessagesDiamondsPrice(isUserContactBlocked(user.id));
             }
         } else if (did < 0) {
             final TLRPC.Chat chat = getChat(-did);
@@ -7834,7 +7834,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                     fullUsers.put(user.id, userFull);
                     getTranslateController().updateDialogFull(user.id);
-                    StarsController.getInstance(currentAccount).invalidateProfileGifts(userFull);
+                    DiamondsController.getInstance(currentAccount).invalidateProfileGifts(userFull);
                     loadingFullUsers.remove(user.id);
                     loadedFullUsers.put(user.id, System.currentTimeMillis());
                     String names = user.first_name + user.last_name + UserObject.getPublicUsername(user);
@@ -10494,7 +10494,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 if (fullUsers.get(user.id) == null) {
                     fullUsers.put(user.id, info);
                     getTranslateController().updateDialogFull(user.id);
-                    StarsController.getInstance(currentAccount).invalidateProfileGifts(info);
+                    DiamondsController.getInstance(currentAccount).invalidateProfileGifts(info);
 
                     int index = blockePeers.indexOfKey(user.id);
                     if (info.blocked) {
@@ -18744,7 +18744,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     markContentAsReadMessages.put(dialogId, ids);
                 }
                 ids.addAll(update.messages);
-            } else if (baseUpdate instanceof TL_update.TL_updateStarGiftAuctionState || baseUpdate instanceof TL_update.TL_updateStarGiftAuctionUserState) {
+            } else if (baseUpdate instanceof TL_update.TL_updateDiamondGiftAuctionState || baseUpdate instanceof TL_update.TL_updateDiamondGiftAuctionUserState) {
                 if (updatesOnMainThread == null) {
                     updatesOnMainThread = new ArrayList<>();
                 }
@@ -19895,15 +19895,15 @@ public class MessagesController extends BaseController implements NotificationCe
                             getContactsController().setPrivacyRules(update.rules, ContactsController.PRIVACY_RULES_TYPE_BIO);
                         } else if (update.key instanceof TLRPC.TL_privacyKeyBirthday) {
                             getContactsController().setPrivacyRules(update.rules, ContactsController.PRIVACY_RULES_TYPE_BIRTHDAY);
-                        } else if (update.key instanceof TLRPC.TL_privacyKeyStarGiftsAutoSave) {
+                        } else if (update.key instanceof TLRPC.TL_privacyKeyDiamondGiftsAutoSave) {
                             getContactsController().setPrivacyRules(update.rules, ContactsController.PRIVACY_RULES_TYPE_GIFTS);
                         }
-                    } else if (baseUpdate instanceof TL_update.TL_updateStarGiftAuctionState) {
-                        GiftAuctionController.getInstance(currentAccount).processUpdate((TL_update.TL_updateStarGiftAuctionState) baseUpdate);
-                    } else if (baseUpdate instanceof TL_update.TL_updateStarGiftAuctionUserState) {
-                        GiftAuctionController.getInstance(currentAccount).processUpdate((TL_update.TL_updateStarGiftAuctionUserState) baseUpdate);
-                    } else if (baseUpdate instanceof TL_update.TL_updateStarsRevenueStatus) {
-                        BotStarsController.getInstance(currentAccount).onUpdate((TL_update.TL_updateStarsRevenueStatus) baseUpdate);
+                    } else if (baseUpdate instanceof TL_update.TL_updateDiamondGiftAuctionState) {
+                        GiftAuctionController.getInstance(currentAccount).processUpdate((TL_update.TL_updateDiamondGiftAuctionState) baseUpdate);
+                    } else if (baseUpdate instanceof TL_update.TL_updateDiamondGiftAuctionUserState) {
+                        GiftAuctionController.getInstance(currentAccount).processUpdate((TL_update.TL_updateDiamondGiftAuctionUserState) baseUpdate);
+                    } else if (baseUpdate instanceof TL_update.TL_updateDiamondsRevenueStatus) {
+                        BotDiamondsController.getInstance(currentAccount).onUpdate((TL_update.TL_updateDiamondsRevenueStatus) baseUpdate);
                     } else if (baseUpdate instanceof TL_update.TL_updateUserStatus) {
                         TL_update.TL_updateUserStatus update = (TL_update.TL_updateUserStatus) baseUpdate;
                         TLRPC.User currentUser = getUser(update.user_id);
@@ -19928,7 +19928,7 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
                     } else if (baseUpdate instanceof TL_update.TL_updateMonoForumNoPaidException) {
                         TL_update.TL_updateMonoForumNoPaidException update = (TL_update.TL_updateMonoForumNoPaidException) baseUpdate;
-                        StarsController.getInstance(currentAccount).processUpdateMonoForumNoPaidException(
+                        DiamondsController.getInstance(currentAccount).processUpdateMonoForumNoPaidException(
                             update.channel_id,
                             DialogObject.getPeerDialogId(update.saved_peer_id),
                             update.exception
@@ -20074,11 +20074,11 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
                         messageObjects.add(message);
                         getNotificationsController().processNewMessages(messageObjects, true, false, null);
-                    } else if (baseUpdate instanceof TL_update.TL_updateStarsBalance) {
-                        TL_update.TL_updateStarsBalance update = (TL_update.TL_updateStarsBalance) baseUpdate;
-                        final boolean ton = update.balance instanceof TL_stars.TL_starsTonAmount;
-                        StarsController.getInstance(currentAccount, ton).updateBalance(update.balance);
-                        StarsController.getInstance(currentAccount, ton).invalidateTransactions(false);
+                    } else if (baseUpdate instanceof TL_update.TL_updateDiamondsBalance) {
+                        TL_update.TL_updateDiamondsBalance update = (TL_update.TL_updateDiamondsBalance) baseUpdate;
+                        final boolean ton = update.balance instanceof TL_diamonds.TL_starsTonAmount;
+                        DiamondsController.getInstance(currentAccount, ton).updateBalance(update.balance);
+                        DiamondsController.getInstance(currentAccount, ton).invalidateTransactions(false);
                     } else if (baseUpdate instanceof TL_update.TL_updateUser) {
                         TL_update.TL_updateUser update = (TL_update.TL_updateUser) baseUpdate;
                         TLRPC.User currentUser = getUser(update.user_id);
@@ -20578,10 +20578,10 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else if (baseUpdate instanceof TL_update.TL_updateMessageReactions) {
                         TL_update.TL_updateMessageReactions update = (TL_update.TL_updateMessageReactions) baseUpdate;
                         long dialogId = MessageObject.getPeerId(update.peer);
-                        long pendingPaid = StarsController.getInstance(currentAccount).getPendingPaidReactions(dialogId, update.msg_id);
+                        long pendingPaid = DiamondsController.getInstance(currentAccount).getPendingPaidReactions(dialogId, update.msg_id);
                         if (pendingPaid != 0) {
-                            final StarsController starsController = StarsController.getInstance(currentAccount);
-                            MessageObject.addPaidReactions(currentAccount, update.reactions, (int) pendingPaid, starsController.getPaidReactionsDialogId(StarsController.MessageId.from(dialogId, update.msg_id), update.reactions), true);
+                            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
+                            MessageObject.addPaidReactions(currentAccount, update.reactions, (int) pendingPaid, diamondsController.getPaidReactionsDialogId(DiamondsController.MessageId.from(dialogId, update.msg_id), update.reactions), true);
                         }
                         getNotificationCenter().postNotificationName(NotificationCenter.didUpdateReactions, dialogId, update.msg_id, update.reactions);
                     } else if (baseUpdate instanceof TL_update.TL_updateMessageExtendedMedia) {
@@ -24694,11 +24694,11 @@ public class MessagesController extends BaseController implements NotificationCe
         getMainSettings().edit().putInt("movecaptionhint", getMainSettings().getInt("movecaptionhint", 0) + 1).apply();
     }
 
-    private final HashSet<StarsController.MessageId> reportedMessageDelivery = new HashSet<>();
-    private final HashSet<Pair<StarsController.MessageId, AtomicBoolean>> pendingReportMessageDelivery = new HashSet<>();
+    private final HashSet<DiamondsController.MessageId> reportedMessageDelivery = new HashSet<>();
+    private final HashSet<Pair<DiamondsController.MessageId, AtomicBoolean>> pendingReportMessageDelivery = new HashSet<>();
     private final Runnable sendReportMessageDeliver = () -> {
         final LongSparseArray<Pair<HashSet<Integer>, AtomicBoolean>> arr = new LongSparseArray<>();
-        for (Pair<StarsController.MessageId, AtomicBoolean> id : pendingReportMessageDelivery) {
+        for (Pair<DiamondsController.MessageId, AtomicBoolean> id : pendingReportMessageDelivery) {
             Pair<HashSet<Integer>, AtomicBoolean> darr = arr.get(id.first.did);
             if (darr == null) {
                 arr.put(id.first.did, darr = new Pair<>(new HashSet<>(), id.second));
@@ -24724,7 +24724,7 @@ public class MessagesController extends BaseController implements NotificationCe
     };
 
     public void reportMessageDelivery(long dialogId, int messageId, boolean push) {
-        final StarsController.MessageId key = StarsController.MessageId.from(dialogId, messageId);
+        final DiamondsController.MessageId key = DiamondsController.MessageId.from(dialogId, messageId);
         if (reportedMessageDelivery.contains(key)) return;
         reportedMessageDelivery.add(key);
         pendingReportMessageDelivery.add(new Pair<>(key, new AtomicBoolean(push)));

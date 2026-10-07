@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.dpf2;
@@ -20,7 +20,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.BatchParticlesDrawHelper;
 
-public class StarGiftPatterns {
+public class DiamondGiftPatterns {
 
     public static final int TYPE_DEFAULT = 0;
     public static final int TYPE_ACTION = 1;

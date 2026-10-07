@@ -127,8 +127,8 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
     private int currentType;
     private int currentSubType;
 
-    private long initialStars;
-    private long currentStars = 10;
+    private long initialDiamonds;
+    private long currentDiamonds = 10;
 
     private boolean prevSubtypeContacts;
 
@@ -663,7 +663,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                 BotWebViewVibrationEffect.APP_ERROR.vibrate();
                 AndroidUtilities.shakeViewSpring(view, shakeDp = -shakeDp);
             } else if (position == nobodyRow || position == everybodyRow || position == myContactsRow || position == payRow) {
-                if (rulesType == PRIVACY_RULES_TYPE_GIFTS && areAllStarGiftsDisabled()) {
+                if (rulesType == PRIVACY_RULES_TYPE_GIFTS && areAllDiamondGiftsDisabled()) {
                     AndroidUtilities.shakeViewSpring(view, shakeDp = -shakeDp);
                     return;
                 }
@@ -698,7 +698,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                 updateDoneButton();
                 updateRows(true);
             } else if (position == neverShareRow || position == alwaysShareRow) {
-                if (rulesType == PRIVACY_RULES_TYPE_GIFTS && areAllStarGiftsDisabled()) {
+                if (rulesType == PRIVACY_RULES_TYPE_GIFTS && areAllDiamondGiftsDisabled()) {
                     AndroidUtilities.shakeViewSpring(view, shakeDp = -shakeDp);
                     return;
                 }
@@ -768,14 +768,14 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     showPremiumBulletin();
                     return;
                 }
-                final boolean wereDisabled = areAllStarGiftsDisabled();
+                final boolean wereDisabled = areAllDiamondGiftsDisabled();
                 selectedGiftLimitedValue = !selectedGiftLimitedValue;
                 updateDoneButton();
                 ((TextCheckCell) view).setChecked(selectedGiftLimitedValue);
                 if (selectedGiftLimitedValue && !getUserConfig().isPremium()) {
                     ((TextCheckCell) view).setCheckBoxIcon(R.drawable.permission_locked);
                 }
-                if (wereDisabled != areAllStarGiftsDisabled()) {
+                if (wereDisabled != areAllDiamondGiftsDisabled()) {
                     updateRows(true);
                     AndroidUtilities.updateVisibleRows(listView);
                 }
@@ -785,14 +785,14 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     showPremiumBulletin();
                     return;
                 }
-                final boolean wereDisabled = areAllStarGiftsDisabled();
+                final boolean wereDisabled = areAllDiamondGiftsDisabled();
                 selectedGiftUnlimitedValue = !selectedGiftUnlimitedValue;
                 updateDoneButton();
                 ((TextCheckCell) view).setChecked(selectedGiftUnlimitedValue);
                 if (selectedGiftUnlimitedValue && !getUserConfig().isPremium()) {
                     ((TextCheckCell) view).setCheckBoxIcon(R.drawable.permission_locked);
                 }
-                if (wereDisabled != areAllStarGiftsDisabled()) {
+                if (wereDisabled != areAllDiamondGiftsDisabled()) {
                     updateRows(true);
                     AndroidUtilities.updateVisibleRows(listView);
                 }
@@ -802,14 +802,14 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     showPremiumBulletin();
                     return;
                 }
-                final boolean wereDisabled = areAllStarGiftsDisabled();
+                final boolean wereDisabled = areAllDiamondGiftsDisabled();
                 selectedGiftUniqueValue = !selectedGiftUniqueValue;
                 updateDoneButton();
                 ((TextCheckCell) view).setChecked(selectedGiftUniqueValue);
                 if (selectedGiftUniqueValue && !getUserConfig().isPremium()) {
                     ((TextCheckCell) view).setCheckBoxIcon(R.drawable.permission_locked);
                 }
-                if (wereDisabled != areAllStarGiftsDisabled()) {
+                if (wereDisabled != areAllDiamondGiftsDisabled()) {
                     updateRows(true);
                     AndroidUtilities.updateVisibleRows(listView);
                 }
@@ -819,14 +819,14 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     showPremiumBulletin();
                     return;
                 }
-                final boolean wereDisabled = areAllStarGiftsDisabled();
+                final boolean wereDisabled = areAllDiamondGiftsDisabled();
                 selectedGiftChannelsValue = !selectedGiftChannelsValue;
                 updateDoneButton();
                 ((TextCheckCell) view).setChecked(selectedGiftChannelsValue);
                 if (selectedGiftChannelsValue && !getUserConfig().isPremium()) {
                     ((TextCheckCell) view).setCheckBoxIcon(R.drawable.permission_locked);
                 }
-                if (wereDisabled != areAllStarGiftsDisabled()) {
+                if (wereDisabled != areAllDiamondGiftsDisabled()) {
                     updateRows(true);
                     AndroidUtilities.updateVisibleRows(listView);
                 }
@@ -836,14 +836,14 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     showPremiumBulletin();
                     return;
                 }
-                final boolean wereDisabled = areAllStarGiftsDisabled();
+                final boolean wereDisabled = areAllDiamondGiftsDisabled();
                 selectedGiftPremiumValue = !selectedGiftPremiumValue;
                 updateDoneButton();
                 ((TextCheckCell) view).setChecked(selectedGiftPremiumValue);
                 if (selectedGiftPremiumValue && !getUserConfig().isPremium()) {
                     ((TextCheckCell) view).setCheckBoxIcon(R.drawable.permission_locked);
                 }
-                if (wereDisabled != areAllStarGiftsDisabled()) {
+                if (wereDisabled != areAllDiamondGiftsDisabled()) {
                     updateRows(true);
                     AndroidUtilities.updateVisibleRows(listView);
                 }
@@ -986,7 +986,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             }
             if (currentType == TYPE_PAY) {
                 req2.settings.flags |= 32;
-                req2.settings.noncontact_peers_paid_stars = currentStars;
+                req2.settings.noncontact_peers_paid_stars = currentDiamonds;
                 req2.settings.new_noncontact_peers_require_premium = false;
             } else {
                 req2.settings.flags |= 32;
@@ -1065,7 +1065,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
         } else if (rulesType == PRIVACY_RULES_TYPE_BIRTHDAY) {
             req.key = new TLRPC.TL_inputPrivacyKeyBirthday();
         } else if (rulesType == PRIVACY_RULES_TYPE_GIFTS) {
-            req.key = new TLRPC.TL_inputPrivacyKeyStarGiftsAutoSave();
+            req.key = new TLRPC.TL_inputPrivacyKeyDiamondGiftsAutoSave();
         } else {
             req.key = new TLRPC.TL_inputPrivacyKeyStatusTimestamp();
         }
@@ -1224,7 +1224,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
         showDialog(builder.create());
     }
 
-    private boolean areAllStarGiftsDisabled() {
+    private boolean areAllDiamondGiftsDisabled() {
         return !selectedGiftUniqueValue && !selectedGiftUnlimitedValue && !selectedGiftLimitedValue;
     }
 
@@ -1235,10 +1235,10 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             currentMinus = new ArrayList<>();
             currentPlus = new ArrayList<>();
             if (settings != null && (settings.flags & 32) != 0) {
-                initialStars = currentStars = Utilities.clamp(settings.noncontact_peers_paid_stars, getMessagesController().starsPaidMessageAmountMax, 1);
+                initialDiamonds = currentDiamonds = Utilities.clamp(settings.noncontact_peers_paid_stars, getMessagesController().diamondsPaidMessageAmountMax, 1);
                 initialRulesType = currentType = TYPE_PAY;
             } else {
-                initialStars = currentStars = 10;
+                initialDiamonds = currentDiamonds = 10;
             }
 
             ArrayList<TLRPC.PrivacyRule> privacyRules = ContactsController.getInstance(currentAccount).getPrivacyRules(ContactsController.PRIVACY_RULES_TYPE_NO_PAID_MESSAGES);
@@ -1411,7 +1411,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
         if (currentType != 0 && initialPlusPremium[currentType == TYPE_CONTACTS ? 0 : 1] != currentPlusPremium[currentType == TYPE_CONTACTS ? 0 : 1]) {
             return true;
         }
-        if (rulesType == PRIVACY_RULES_TYPE_MESSAGES && currentType == TYPE_PAY && currentStars != initialStars) {
+        if (rulesType == PRIVACY_RULES_TYPE_MESSAGES && currentType == TYPE_PAY && currentDiamonds != initialDiamonds) {
             return true;
         }
         if (initialPlusMiniapps[currentType] != currentPlusMiniapps[currentType]) {
@@ -1515,7 +1515,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
         ) {
             nobodyRow = rowCount++;
         }
-        if (getMessagesController().starsPaidMessagesAvailable && rulesType == PRIVACY_RULES_TYPE_MESSAGES) {
+        if (getMessagesController().diamondsPaidMessagesAvailable && rulesType == PRIVACY_RULES_TYPE_MESSAGES) {
             payRow = rowCount++;
         }
         if (rulesType == PRIVACY_RULES_TYPE_PHONE && currentType == TYPE_NOBODY) {
@@ -1739,7 +1739,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             return position == p2pRow && !ContactsController.getInstance(currentAccount).getLoadingPrivacyInfo(ContactsController.PRIVACY_RULES_TYPE_P2P) ||
                     position == currentPhotoForRestRow || position == photoForRestDescriptionRow || position == photoForRestRow || position == readRow || position == showGiftIconRow || position == readPremiumRow ||
                     position == giftTypeUniqueRow || position == giftTypeChannelsRow || position == giftTypePremiumRow || position == giftTypeLimitedRow || position == giftTypeUnlimitedRow ||
-                    (rulesType != PRIVACY_RULES_TYPE_GIFTS || !areAllStarGiftsDisabled()) && (position == nobodyRow || position == myContactsRow || position == payRow || position == everybodyRow || position == neverShareRow || position == alwaysShareRow);
+                    (rulesType != PRIVACY_RULES_TYPE_GIFTS || !areAllDiamondGiftsDisabled()) && (position == nobodyRow || position == myContactsRow || position == payRow || position == everybodyRow || position == neverShareRow || position == alwaysShareRow);
         }
 
         @Override
@@ -1897,7 +1897,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                             textCell.setTextAndValue(LocaleController.getString(R.string.AlwaysShareWith), value, neverShareRow != -1);
                         }
                         if (rulesType == PRIVACY_RULES_TYPE_GIFTS) {
-                            textCell.setEnabled(!areAllStarGiftsDisabled());
+                            textCell.setEnabled(!areAllDiamondGiftsDisabled());
                         }
                     } else if (position == neverShareRow) {
                         String value;
@@ -1920,7 +1920,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                             textCell.setTextAndValue(LocaleController.getString(R.string.NeverShareWith), value, false);
                         }
                         if (rulesType == PRIVACY_RULES_TYPE_GIFTS) {
-                            textCell.setEnabled(!areAllStarGiftsDisabled());
+                            textCell.setEnabled(!areAllDiamondGiftsDisabled());
                         }
                     } else if (position == p2pRow) {
                         String value;
@@ -2086,9 +2086,9 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     } else if (position == readPremiumDetailRow) {
                         privacyCell.setText(LocaleController.getString(getUserConfig().isPremium() ? R.string.PrivacyLastSeenPremiumInfoForPremium : R.string.PrivacyLastSeenPremiumInfo));
                     } else if (position == priceInfoRow) {
-                        final float revenuePercent = getMessagesController().starsPaidMessageCommissionPermille / 1000.0f;
-                        final String income = String.valueOf((int) ((currentStars * revenuePercent / 1000.0 * getMessagesController().starsUsdWithdrawRate1000)) / 100.0);
-                        privacyCell.setText(formatString(R.string.PrivateMessagesPriceInfo, percents(getMessagesController().starsPaidMessageCommissionPermille), income));
+                        final float revenuePercent = getMessagesController().diamondsPaidMessageCommissionPermille / 1000.0f;
+                        final String income = String.valueOf((int) ((currentDiamonds * revenuePercent / 1000.0 * getMessagesController().diamondsUsdWithdrawRate1000)) / 100.0);
+                        privacyCell.setText(formatString(R.string.PrivateMessagesPriceInfo, percents(getMessagesController().diamondsPaidMessageCommissionPermille), income));
                     } else if (position == showGiftIconInfoRow) {
                         final SpannableString giftIcon = new SpannableString("g");
                         final ColoredImageSpan span = new ColoredImageSpan(R.drawable.msg_input_gift);
@@ -2190,7 +2190,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                         }
                     }
                     if (rulesType == PRIVACY_RULES_TYPE_GIFTS) {
-                        radioCell.setEnabled(!areAllStarGiftsDisabled(), null);
+                        radioCell.setEnabled(!areAllDiamondGiftsDisabled(), null);
                     }
                     break;
                 case 8:
@@ -2220,7 +2220,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                 case 9:
                     SlideIntChooseView cell = (SlideIntChooseView) holder.itemView;
                     if (position == priceRow) {
-                        final int[] steps = SlideIntChooseView.cut(new int[] { 1, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().starsPaidMessageAmountMax);
+                        final int[] steps = SlideIntChooseView.cut(new int[] { 1, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().diamondsPaidMessageAmountMax);
                         final SlideIntChooseView.Options options = SlideIntChooseView.Options.make(1, steps, 20, (type, val) -> {
                             if (type == 0) {
                                 if (!getUserConfig().isPremium()) {
@@ -2241,8 +2241,8 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                             }
                             return LocaleController.formatNumber(val, ',');
                         });
-                        cell.set((int) Utilities.clamp(currentStars, getMessagesController().starsPaidMessageAmountMax, 1), options, newValue -> {
-                            currentStars = newValue;
+                        cell.set((int) Utilities.clamp(currentDiamonds, getMessagesController().diamondsPaidMessageAmountMax, 1), options, newValue -> {
+                            currentDiamonds = newValue;
                             AndroidUtilities.updateVisibleRow(listView, priceInfoRow);
                             updateDoneButton();
                         });

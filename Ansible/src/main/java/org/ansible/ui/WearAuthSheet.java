@@ -395,8 +395,8 @@ public class WearAuthSheet {
                 if (res instanceof TLRPC.TL_urlAuthResultAccepted) {
                     final Uri uri = Uri.parse(((TLRPC.TL_urlAuthResultAccepted) res).url);
                     final Uri query = Uri.parse("?" + uri.getFragment());
-                    final String tgWebAuthToken = query.getQueryParameter("tgWebAuthToken");
-                    if (tgWebAuthToken == null) {
+                    final String asWebAuthToken = query.getQueryParameter("tgWebAuthToken");
+                    if (asWebAuthToken == null) {
                         BulletinFactory.of(sheet.topBulletinContainer, sheet.getResourcesProvider())
                             .showForError("NO_TOKEN");
                         return;
@@ -409,7 +409,7 @@ public class WearAuthSheet {
                     final Context ctx = v.getContext().getApplicationContext();
                     final byte[] wire;
                     try {
-                        wire = buildEncryptedTokenWire(session, tgWebAuthToken, dcId, isTest);
+                        wire = buildEncryptedTokenWire(session, asWebAuthToken, dcId, isTest);
                     } catch (Exception e) {
                         FileLog.e(e);
                         BulletinFactory.of(sheet.topBulletinContainer, sheet.getResourcesProvider())

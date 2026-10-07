@@ -937,8 +937,8 @@ public class PhonebookShareAlert extends BottomSheet {
                     if (parentFragment instanceof ChatActivity) {
                         dialogId = ((ChatActivity) parentFragment).getDialogId();
                     }
-                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payStars -> {
-                        delegate.didSelectContact(currentUser, true, 0, 0, false, payStars);
+                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, dialogId, 1, payDiamonds -> {
+                        delegate.didSelectContact(currentUser, true, 0, 0, false, payDiamonds);
                         dismiss();
                     });
                 }

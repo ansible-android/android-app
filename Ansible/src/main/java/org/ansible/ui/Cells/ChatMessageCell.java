@@ -151,7 +151,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_keyboard;
 import org.ansible.asnet.tl.TL_iv;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.MessageDrawable;
 import org.ansible.ui.ActionBar.Theme;
@@ -237,11 +237,11 @@ import org.ansible.ui.MultiLayoutTypingAnimator;
 import org.ansible.ui.PhotoViewer;
 import org.ansible.ui.PinchToZoomHelper;
 import org.ansible.ui.SecretMediaViewer;
-import org.ansible.ui.Stars.StarGiftPatterns;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondGiftPatterns;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 import org.ansible.ui.Stories.StoriesUtilities;
 import org.ansible.ui.Stories.StoryViewer;
 import org.ansible.ui.Stories.recorder.CaptionContainerView;
@@ -1036,11 +1036,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     public final GiveawayResultsMessageCell giveawayResultsMessageCell = new GiveawayResultsMessageCell(this);
 
     private boolean playedDice;
-    private long starsPrice;
-    private Text starsPriceText;
-    private LinkPath starsPriceTextPath;
-    private CornerPathEffect starsPriceTextPathEffect;
-    public int starsPriceTopPadding;
+    private long diamondsPrice;
+    private Text diamondsPriceText;
+    private LinkPath diamondsPriceTextPath;
+    private CornerPathEffect diamondsPriceTextPathEffect;
+    public int diamondsPriceTopPadding;
 
     private long diceStakeOutcome;
     private Text bottomActionText;
@@ -1655,7 +1655,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     private Drawable groupCallDrawable;
 
     public boolean drawSummaryReply;
-    public StarsReactionsSheet.Particles summaryParticles;
+    public DiamondsReactionsSheet.Particles summaryParticles;
     public int summarySelectorColor;
     public Drawable summaryReplySelector;
     public Text summaryTitle, summarySubtitle;
@@ -2386,7 +2386,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     private boolean checkRichLayoutMotionEvent(MotionEvent event) {
         if (currentMessageObject == null || currentMessageObject.richLayout == null) return false;
         if (currentMessageObject.type != MessageObject.TYPE_ARTICLE) return false;
-        final float textY = getStarsPriceTopPadding() + suggestionOfferTopPadding + getTopicSeparatorTopPadding() + this.textY;
+        final float textY = getDiamondsPriceTopPadding() + suggestionOfferTopPadding + getTopicSeparatorTopPadding() + this.textY;
         event.offsetLocation(-textX, -textY);
         currentMessageObject.richLayout.setChatMessageCellDelegate(this, this.delegate);
         final boolean handled = currentMessageObject.richLayout.onTouchEvent(event);
@@ -7413,7 +7413,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 hasInvoicePrice = hasInvoicePreview = MessageObject.getMedia(messageObject.messageOwner) instanceof TLRPC.TL_messageMediaInvoice;
                 if (hasInvoicePrice) {
                     TLRPC.TL_messageMediaInvoice invoice = (TLRPC.TL_messageMediaInvoice) MessageObject.getMedia(messageObject.messageOwner);
-                    if (StarsController.currency.equals(invoice.currency)) {
+                    if (DiamondsController.currency.equals(invoice.currency)) {
                         hasInvoicePrice = false;
                     }
                 }
@@ -7434,8 +7434,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 TLRPC.ThemeSettings androidThemeSettings = null;
                 ArrayList<TLRPC.Document> stickers = null;
                 long emoji_id = 0;
-                TLRPC.TL_webPageAttributeStarGiftAuction starGiftAuction = null;
-                TL_stars.StarGift stargift = null;
+                TLRPC.TL_webPageAttributeDiamondGiftAuction diamondGiftAuction = null;
+                TL_diamonds.StarGift stargift = null;
                 boolean stickersTextColor = false;
                 if (messageObject.isGiveawayOrGiveawayResults()) {
                     hasLinkPreview = true;
@@ -7500,11 +7500,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     } else if ("telegram_nft".equals(webpageType)) {
                         for (int b = 0, N2 = webpage.attributes.size(); b < N2; b++) {
                             final TLRPC.WebPageAttribute attribute_ = webpage.attributes.get(b);
-                            if (!(attribute_ instanceof TLRPC.TL_webPageAttributeUniqueStarGift)) {
+                            if (!(attribute_ instanceof TLRPC.TL_webPageAttributeUniqueDiamondGift)) {
                                 continue;
                             }
-                            final TLRPC.TL_webPageAttributeUniqueStarGift attribute = (TLRPC.TL_webPageAttributeUniqueStarGift) attribute_;
-                            if (attribute.gift instanceof TL_stars.TL_starGiftUnique) {
+                            final TLRPC.TL_webPageAttributeUniqueDiamondGift attribute = (TLRPC.TL_webPageAttributeUniqueDiamondGift) attribute_;
+                            if (attribute.gift instanceof TL_diamonds.TL_starGiftUnique) {
                                 drawInstantView = true;
                                 drawInstantViewType = 26;
                                 stargift = attribute.gift;
@@ -7639,14 +7639,14 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
                         }
                     } else if ("telegram_auction".equals(webpageType)) {
-                        final TLRPC.TL_webPageAttributeStarGiftAuction attr =
-                            TlUtils.findFirstInstance(webpage.attributes, TLRPC.TL_webPageAttributeStarGiftAuction.class);
+                        final TLRPC.TL_webPageAttributeDiamondGiftAuction attr =
+                            TlUtils.findFirstInstance(webpage.attributes, TLRPC.TL_webPageAttributeDiamondGiftAuction.class);
                         drawInstantView = true;
                         drawInstantViewType = 26;
                         if (attr != null) {
                             instantViewTypeIsGiftAuction = attr.gift;
                             stargift = attr.gift;
-                            starGiftAuction = attr;
+                            diamondGiftAuction = attr;
                         }
                     } else if ("telegram_stickerset".equals(webpageType)) {
                         final TLRPC.TL_webPageAttributeStickerSet attr =
@@ -7663,8 +7663,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                             stickersTextColor = attr.text_color;
                         }
                     } else if ("telegram_collection".equals(webpageType)) {
-                        TLRPC.TL_webPageAttributeStarGiftCollection attr =
-                            TlUtils.findFirstInstance(webpage.attributes, TLRPC.TL_webPageAttributeStarGiftCollection.class);
+                        TLRPC.TL_webPageAttributeDiamondGiftCollection attr =
+                            TlUtils.findFirstInstance(webpage.attributes, TLRPC.TL_webPageAttributeDiamondGiftCollection.class);
                         drawInstantView = true;
                         drawInstantViewType = 28;
                         isSmallImage = true;
@@ -8494,14 +8494,14 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                             currentPhotoFilter = "220_220";
                             currentPhotoFilterThumb = "220_220_b";
 
-                            StarGiftSheet.StarGiftDrawableIcon starGiftDrawableIcon = new StarGiftSheet.StarGiftDrawableIcon(this, stargift, 220, 1.0f).setRounding(dp(12)).setPatternsType(StarGiftPatterns.TYPE_LINK_PREVIEW);
-                            if (starGiftAuction != null) {
-                                starGiftDrawableIcon.setGradient(starGiftAuction.center_color, starGiftAuction.edge_color);
-                                starGiftDrawableIcon.setAuctionStateTextColor(starGiftAuction.text_color);
-                                starGiftDrawableIcon.setCountdownRemainingTime(starGiftAuction.gift.auction_start_date, starGiftAuction.end_date);
+                            DiamondGiftSheet.DiamondGiftDrawableIcon diamondGiftDrawableIcon = new DiamondGiftSheet.DiamondGiftDrawableIcon(this, stargift, 220, 1.0f).setRounding(dp(12)).setPatternsType(DiamondGiftPatterns.TYPE_LINK_PREVIEW);
+                            if (diamondGiftAuction != null) {
+                                diamondGiftDrawableIcon.setGradient(diamondGiftAuction.center_color, diamondGiftAuction.edge_color);
+                                diamondGiftDrawableIcon.setAuctionStateTextColor(diamondGiftAuction.text_color);
+                                diamondGiftDrawableIcon.setCountdownRemainingTime(diamondGiftAuction.gift.auction_start_date, diamondGiftAuction.end_date);
                             }
 
-                            photoImage.setImageBitmap(starGiftDrawableIcon);
+                            photoImage.setImageBitmap(diamondGiftDrawableIcon);
                             clearBlurredImage(blurredPhotoImage);
                         } else if (currentPhotoObject != null || currentPhotoLocation != null || webDocument != null || documentAttachType == DOCUMENT_ATTACH_TYPE_WALLPAPER || documentAttachType == DOCUMENT_ATTACH_TYPE_THEME || (drawInstantViewType == 23 || drawInstantViewType == 24 || drawInstantViewType == 28) && stickers != null && !stickers.isEmpty() || emoji_id != 0) {
                             drawImageButton = photo != null && !smallImage || type != null && (type.equals("photo") || type.equals("document") && documentAttachType != DOCUMENT_ATTACH_TYPE_STICKER || type.equals("gif") || documentAttachType == DOCUMENT_ATTACH_TYPE_VIDEO || documentAttachType == DOCUMENT_ATTACH_TYPE_WALLPAPER);
@@ -8794,7 +8794,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                             }
                             String price = LocaleController.getInstance().formatCurrencyString(MessageObject.getMedia(messageObject.messageOwner).total_amount, MessageObject.getMedia(messageObject.messageOwner).currency);
                             SpannableStringBuilder stringBuilder = new SpannableStringBuilder(price + " " + str);
-                            stringBuilder = StarsIntroActivity.replaceStars(stringBuilder);
+                            stringBuilder = DiamondsIntroActivity.replaceDiamonds(stringBuilder);
                             stringBuilder.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, price.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                             videoInfoLayout = new StaticLayout(stringBuilder, Theme.chat_shipmentPaint, maxWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
                             durationWidth = (int) (videoInfoLayout.getLineCount() > 0 ? videoInfoLayout.getLineWidth(0) : 0);
@@ -10884,7 +10884,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                             }
 
                             if (TLKeyboardHelper.isType(botButton.button, TL_keyboard.TL_inlineButtonTypeBuy.class) && MessageObject.getMedia(messageObject.messageOwner) instanceof TLRPC.TL_messageMediaInvoice) {
-                                buttonText = StarsIntroActivity.replaceStars(buttonText);
+                                buttonText = DiamondsIntroActivity.replaceDiamonds(buttonText);
                             }
                             if (TLKeyboardHelper.isType(botButton.button, TL_keyboard.TL_inlineButtonTypeCopy.class)) {
                                 buttonText = new SpannableStringBuilder("c ").append(buttonText);
@@ -11068,12 +11068,12 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
             prevCaptionLayout = null;
 
-            final int starsPriceMessagesCount;
-            final long starsPrice;
+            final int diamondsPriceMessagesCount;
+            final long diamondsPrice;
             final long diceStakeOutcome = currentMessageObject == null || !playedDice ? 0 : currentMessageObject.getStakedDiceWinAmount();
             if (currentMessageObject != null && currentMessageObject.getDialogId() < 0) {
-                starsPrice = 0;
-                starsPriceMessagesCount = 0;
+                diamondsPrice = 0;
+                diamondsPriceMessagesCount = 0;
             } else if (currentMessagesGroup != null) {
                 long totalPrice = 0;
                 int totalCount = 0;
@@ -11084,21 +11084,21 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         totalCount++;
                     }
                 }
-                starsPrice = totalPrice;
-                starsPriceMessagesCount = totalCount;
+                diamondsPrice = totalPrice;
+                diamondsPriceMessagesCount = totalCount;
             } else {
-                starsPriceMessagesCount = 1;
-                starsPrice = currentMessageObject == null || currentMessageObject.messageOwner == null ? 0 : currentMessageObject.messageOwner.paid_message_stars;
+                diamondsPriceMessagesCount = 1;
+                diamondsPrice = currentMessageObject == null || currentMessageObject.messageOwner == null ? 0 : currentMessageObject.messageOwner.paid_message_stars;
             }
-            if (this.starsPrice != starsPrice) {
-                this.starsPrice = starsPrice;
-                if (starsPrice > 0 && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0)) {
+            if (this.diamondsPrice != diamondsPrice) {
+                this.diamondsPrice = diamondsPrice;
+                if (diamondsPrice > 0 && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0)) {
                     final CharSequence text;
                     if (currentMessageObject.isOutOwner()) {
-                        if (starsPriceMessagesCount > 1) {
-                            text = formatPluralStringComma("PaidMessageActionOutMany", (int) starsPrice, formatPluralStringComma("PaidMessageActionMessages", starsPriceMessagesCount));
+                        if (diamondsPriceMessagesCount > 1) {
+                            text = formatPluralStringComma("PaidMessageActionOutMany", (int) diamondsPrice, formatPluralStringComma("PaidMessageActionMessages", diamondsPriceMessagesCount));
                         } else {
-                            text = formatPluralStringComma("PaidMessageActionOut", (int) starsPrice);
+                            text = formatPluralStringComma("PaidMessageActionOut", (int) diamondsPrice);
                         }
                     } else {
                         TLObject fromObject = currentMessageObject.getForwardedFromPeerObject();
@@ -11106,35 +11106,35 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                             fromObject = currentMessageObject.getFromPeerObject();
                         }
                         if (currentMessageObject.getDialogId() > 0) {
-                            text = replaceWithLink(formatPluralStringComma("PaidMessageActionIn", (int) starsPrice), "un1", fromObject);
+                            text = replaceWithLink(formatPluralStringComma("PaidMessageActionIn", (int) diamondsPrice), "un1", fromObject);
                         } else {
-                            if (starsPriceMessagesCount > 1) {
-                                text = replaceWithLink(formatPluralStringComma("PaidMessageAction", (int) starsPrice), "un1", fromObject);
+                            if (diamondsPriceMessagesCount > 1) {
+                                text = replaceWithLink(formatPluralStringComma("PaidMessageAction", (int) diamondsPrice), "un1", fromObject);
                             } else {
-                                text = replaceWithLink(formatPluralStringComma("PaidMessageActionMany", (int) starsPrice, formatPluralStringComma("PaidMessageActionMessages", starsPriceMessagesCount)), "un1", fromObject);
+                                text = replaceWithLink(formatPluralStringComma("PaidMessageActionMany", (int) diamondsPrice, formatPluralStringComma("PaidMessageActionMessages", diamondsPriceMessagesCount)), "un1", fromObject);
                             }
                         }
                     }
-                    starsPriceText = new Text(text, 14, AndroidUtilities.bold())
+                    diamondsPriceText = new Text(text, 14, AndroidUtilities.bold())
                         .multiline(3)
                         .setMaxWidth(currentMessageObject.getMaxMessageTextWidth())
                         .align(Layout.Alignment.ALIGN_CENTER)
                         .lineSpacing(dp(2));
-                    if (starsPriceTextPath == null) {
-                        starsPriceTextPath = new LinkPath();
-                        starsPriceTextPath.setUseCornerPathImplementation(true);
-                        starsPriceTextPathEffect = new CornerPathEffect(dp(16));
+                    if (diamondsPriceTextPath == null) {
+                        diamondsPriceTextPath = new LinkPath();
+                        diamondsPriceTextPath.setUseCornerPathImplementation(true);
+                        diamondsPriceTextPathEffect = new CornerPathEffect(dp(16));
                     } else {
-                        starsPriceTextPath.rewind();
+                        diamondsPriceTextPath.rewind();
                     }
-                    starsPriceTextPath.setPadding(dp(9), dp(2.66f));
-                    starsPriceTopPadding = (int) (starsPriceText.getHeight() + dp(6.66f + 9));
-                    starsPriceTextPath.setCurrentLayout(starsPriceText.getLayout(), 0, 0);
-                    starsPriceText.getLayout().getSelectionPath(0, text.length(), starsPriceTextPath);
-                    starsPriceTextPath.closeRects();
+                    diamondsPriceTextPath.setPadding(dp(9), dp(2.66f));
+                    diamondsPriceTopPadding = (int) (diamondsPriceText.getHeight() + dp(6.66f + 9));
+                    diamondsPriceTextPath.setCurrentLayout(diamondsPriceText.getLayout(), 0, 0);
+                    diamondsPriceText.getLayout().getSelectionPath(0, text.length(), diamondsPriceTextPath);
+                    diamondsPriceTextPath.closeRects();
                 } else {
-                    starsPriceText = null;
-                    starsPriceTopPadding = 0;
+                    diamondsPriceText = null;
+                    diamondsPriceTopPadding = 0;
                 }
             }
             if (this.diceStakeOutcome != diceStakeOutcome) {
@@ -11143,16 +11143,16 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     final CharSequence text;
                     if (currentMessageObject.isOutOwner() && !currentMessageObject.isForwarded()) {
                         if (diceStakeOutcome > 0) {
-                            text = StarsIntroActivity.replaceDiamond(formatString(R.string.StakeDiceActionYouWon, StarsIntroActivity.formatTON(diceStakeOutcome)), 0.825f);
+                            text = DiamondsIntroActivity.replaceDiamond(formatString(R.string.StakeDiceActionYouWon, DiamondsIntroActivity.formatTON(diceStakeOutcome)), 0.825f);
                         } else {
-                            text = StarsIntroActivity.replaceDiamond(formatString(R.string.StakeDiceActionYouLost, StarsIntroActivity.formatTON(-diceStakeOutcome)), 0.825f);
+                            text = DiamondsIntroActivity.replaceDiamond(formatString(R.string.StakeDiceActionYouLost, DiamondsIntroActivity.formatTON(-diceStakeOutcome)), 0.825f);
                         }
                     } else {
                         final TLObject fromObject = currentMessageObject.getFromPeerObject();
                         if (diceStakeOutcome > 0) {
-                            text = StarsIntroActivity.replaceDiamond(replaceWithLink(formatString(R.string.StakeDiceActionWon, StarsIntroActivity.formatTON(diceStakeOutcome)), "un1", fromObject), 0.825f);
+                            text = DiamondsIntroActivity.replaceDiamond(replaceWithLink(formatString(R.string.StakeDiceActionWon, DiamondsIntroActivity.formatTON(diceStakeOutcome)), "un1", fromObject), 0.825f);
                         } else {
-                            text = StarsIntroActivity.replaceDiamond(replaceWithLink(formatString(R.string.StakeDiceActionLost, StarsIntroActivity.formatTON(-diceStakeOutcome)), "un1", fromObject), 0.825f);
+                            text = DiamondsIntroActivity.replaceDiamond(replaceWithLink(formatString(R.string.StakeDiceActionLost, DiamondsIntroActivity.formatTON(-diceStakeOutcome)), "un1", fromObject), 0.825f);
                         }
                     }
                     bottomActionText = new Text(text, 14, AndroidUtilities.bold())
@@ -11227,8 +11227,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
                 topicSeparatorTopPadding = 0;
             }
-            if ((getPaddingTop() != starsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding) || (getPaddingBottom() != askBotForumBottomPadding)) {
-                setPadding(0, starsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding, 0, askBotForumBottomPadding);
+            if ((getPaddingTop() != diamondsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding) || (getPaddingBottom() != askBotForumBottomPadding)) {
+                setPadding(0, diamondsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding, 0, askBotForumBottomPadding);
             }
             oldPollButtons.clear();
 
@@ -13677,7 +13677,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         }
         updateSelectionTextPosition();
 
-        final int normHeight = starsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding + totalHeight + keyboardHeight + askBotForumBottomPadding + bottomActionPadding;
+        final int normHeight = diamondsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding + totalHeight + keyboardHeight + askBotForumBottomPadding + bottomActionPadding;
         int resultHeight = normHeight;
         ChatActivityDraftMessageMeasureController botDraftHeightController = getDraftMessageMeasureController();
         if (botDraftHeightController != null) {
@@ -18489,13 +18489,13 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             currentTimeString = timeString;
         }
         if (currentMessageObject.isStakedDice()) {
-            currentTimeString = TextUtils.concat("💎", StarsIntroActivity.formatTON(currentMessageObject.getStakedDiceAmount()), "  ", currentTimeString);
-            currentTimeString = StarsIntroActivity.replaceDiamond(currentTimeString, 0.55f, null, 0, dp(-.33f), 1.05f);
+            currentTimeString = TextUtils.concat("💎", DiamondsIntroActivity.formatTON(currentMessageObject.getStakedDiceAmount()), "  ", currentTimeString);
+            currentTimeString = DiamondsIntroActivity.replaceDiamond(currentTimeString, 0.55f, null, 0, dp(-.33f), 1.05f);
         }
-        final long starsPrice = currentMessageObject.getDialogId() < 0 ? getStarsPrice() : 0;
-        if (starsPrice > 0) {
-            currentTimeString = TextUtils.concat("⭐️", AndroidUtilities.formatWholeNumber((int) starsPrice, 0), "  ", currentTimeString);
-            currentTimeString = StarsIntroActivity.replaceStars(currentTimeString, 0.8f, null, 0, dp(-.33f), 0.94f);
+        final long diamondsPrice = currentMessageObject.getDialogId() < 0 ? getDiamondsPrice() : 0;
+        if (diamondsPrice > 0) {
+            currentTimeString = TextUtils.concat("⭐️", AndroidUtilities.formatWholeNumber((int) diamondsPrice, 0), "  ", currentTimeString);
+            currentTimeString = DiamondsIntroActivity.replaceDiamonds(currentTimeString, 0.8f, null, 0, dp(-.33f), 0.94f);
         }
         if (currentMessageObject.messageOwner != null && currentMessageObject.messageOwner.schedule_repeat_period != 0) {
             final int period = currentMessageObject.messageOwner.schedule_repeat_period;
@@ -20078,8 +20078,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
             left = Math.min(left, buttonMostLeft);
         }
-        if (starsPriceText != null) {
-            left = Math.min(left, (int) (getParentWidth() - starsPriceText.getWidth() - dp(18)) / 2);
+        if (diamondsPriceText != null) {
+            left = Math.min(left, (int) (getParentWidth() - diamondsPriceText.getWidth() - dp(18)) / 2);
         }
         if (topicSeparator != null) {
             left = Math.min(sideMenuWidth, left);
@@ -20107,8 +20107,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
             right = Math.max(right, buttonMostRight);
         }
-        if (starsPriceText != null) {
-            right = Math.max(right, (int) (getParentWidth() + starsPriceText.getWidth() + dp(18)) / 2);
+        if (diamondsPriceText != null) {
+            right = Math.max(right, (int) (getParentWidth() + diamondsPriceText.getWidth() + dp(18)) / 2);
         }
         if (topicSeparator != null) {
             right = Math.max(right, getWidth());
@@ -20153,9 +20153,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
         setupTextColors();
 
-        if (getStarsPriceTopPadding() + suggestionOfferTopPadding + getTopicSeparatorTopPadding() > 0) {
+        if (getDiamondsPriceTopPadding() + suggestionOfferTopPadding + getTopicSeparatorTopPadding() > 0) {
             canvas.save();
-            canvas.translate(0, getStarsPriceTopPadding() + suggestionOfferTopPadding + getTopicSeparatorTopPadding());
+            canvas.translate(0, getDiamondsPriceTopPadding() + suggestionOfferTopPadding + getTopicSeparatorTopPadding());
         }
 
         if (isWidthAdaptive()) {
@@ -20985,9 +20985,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
     public void applyServiceShaderMatrix(int measuredWidth, int backgroundHeight, float x, float viewTop) {
         if (resourcesProvider != null) {
-            resourcesProvider.applyServiceShaderMatrix(measuredWidth, backgroundHeight, x, viewTop + starsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding);
+            resourcesProvider.applyServiceShaderMatrix(measuredWidth, backgroundHeight, x, viewTop + diamondsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding);
         } else {
-            Theme.applyServiceShaderMatrix(measuredWidth, backgroundHeight, x, viewTop + starsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding);
+            Theme.applyServiceShaderMatrix(measuredWidth, backgroundHeight, x, viewTop + diamondsPriceTopPadding + topicSeparatorTopPadding + suggestionOfferTopPadding);
         }
     }
 
@@ -21007,7 +21007,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         if ((drawTopic || transitionParams.animateDrawTopic) && topicButton != null) {
             return true;
         }
-        if (starsPriceText != null && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0 && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0)) {
+        if (diamondsPriceText != null && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0 && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0)) {
             return true;
         }
         if (bottomActionText != null && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_BOTTOM) != 0 && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0)) {
@@ -21058,11 +21058,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         return topicSeparatorTopPadding;
     }
 
-    public int getStarsPriceTopPadding() {
-        if (transitionParams.animateStarsPriceTopPadding) {
-            return lerp(transitionParams.animateStarsPriceTopPaddingFrom, starsPriceTopPadding, transitionParams.animateChangeProgress);
+    public int getDiamondsPriceTopPadding() {
+        if (transitionParams.animateDiamondsPriceTopPadding) {
+            return lerp(transitionParams.animateDiamondsPriceTopPaddingFrom, diamondsPriceTopPadding, transitionParams.animateChangeProgress);
         }
-        return starsPriceTopPadding;
+        return diamondsPriceTopPadding;
     }
 
     public int getBottomActionPadding() {
@@ -21088,34 +21088,34 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
         }
 
-        if (starsPriceText != null && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0 && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0)) {
-            final float appear = transitionParams.animateStarsPriceText ? transitionParams.animateChangeProgress : 1.0f;
+        if (diamondsPriceText != null && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0 && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0)) {
+            final float appear = transitionParams.animateDiamondsPriceText ? transitionParams.animateChangeProgress : 1.0f;
             final float alpha = transitionParams.ignoreAlpha ? timeAlpha : getAlpha() * appear;
             final float scale = lerp(0.6f, 1.0f, appear);
             canvas.save();
-            canvas.translate((getParentWidth() - starsPriceText.getWidth()) / 2.0f, -getStarsPriceTopPadding() + dp(4.5f) + dp(3.33f));
+            canvas.translate((getParentWidth() - diamondsPriceText.getWidth()) / 2.0f, -getDiamondsPriceTopPadding() + dp(4.5f) + dp(3.33f));
             canvas.scale(scale, scale, getParentWidth() / 2.0f, dp(6.83f) - dp(4.5f) - dp(3.33f));
-            applyServiceShaderMatrix(getMeasuredWidth(), backgroundHeight, getX(), viewTop - getStarsPriceTopPadding() + dp(4.5f) + dp(3.33f));
+            applyServiceShaderMatrix(getMeasuredWidth(), backgroundHeight, getX(), viewTop - getDiamondsPriceTopPadding() + dp(4.5f) + dp(3.33f));
             final Paint backgroundPaint = getThemedPaint(Theme.key_paint_chatActionBackground);
             int oldAlpha = backgroundPaint.getAlpha();
-            backgroundPaint.setPathEffect(starsPriceTextPathEffect);
+            backgroundPaint.setPathEffect(diamondsPriceTextPathEffect);
             backgroundPaint.setAlpha((int) (oldAlpha * alpha));
-            canvas.drawPath(starsPriceTextPath, backgroundPaint);
+            canvas.drawPath(diamondsPriceTextPath, backgroundPaint);
             backgroundPaint.setPathEffect(null);
             backgroundPaint.setAlpha(oldAlpha);
             if (hasGradientService()) {
                 final Paint darkenPaint = getThemedPaint(Theme.key_paint_chatActionBackgroundDarken);
                 oldAlpha = darkenPaint.getAlpha();
-                darkenPaint.setPathEffect(starsPriceTextPathEffect);
+                darkenPaint.setPathEffect(diamondsPriceTextPathEffect);
                 darkenPaint.setAlpha((int) (oldAlpha * alpha));
-                canvas.drawPath(starsPriceTextPath, darkenPaint);
+                canvas.drawPath(diamondsPriceTextPath, darkenPaint);
                 darkenPaint.setPathEffect(null);
                 darkenPaint.setAlpha(oldAlpha);
             }
             canvas.restore();
             canvas.save();
-            canvas.scale(scale, scale, getParentWidth() / 2.0f, -getStarsPriceTopPadding() + dp(6.83f));
-            starsPriceText.draw(canvas, (getParentWidth() - starsPriceText.getWidth()) / 2.0f, -getStarsPriceTopPadding() + dp(6.83f), getThemedColor(Theme.key_chat_serviceText), alpha);
+            canvas.scale(scale, scale, getParentWidth() / 2.0f, -getDiamondsPriceTopPadding() + dp(6.83f));
+            diamondsPriceText.draw(canvas, (getParentWidth() - diamondsPriceText.getWidth()) / 2.0f, -getDiamondsPriceTopPadding() + dp(6.83f), getThemedColor(Theme.key_chat_serviceText), alpha);
             canvas.restore();
         }
         if (bottomActionText != null && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_BOTTOM) != 0 && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0)) {
@@ -21155,14 +21155,14 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             if (transitionParams.animateMonoforumPadding) {
                 alpha *= showTopicSeparator ? transitionParams.animateChangeProgress : (1.0f - transitionParams.animateChangeProgress);
             }
-            final float top = -starsPriceTopPadding - topicSeparatorTopPadding - suggestionOfferTopPadding;
+            final float top = -diamondsPriceTopPadding - topicSeparatorTopPadding - suggestionOfferTopPadding;
             applyServiceShaderMatrix(getMeasuredWidth(), backgroundHeight, sideMenuWidth / 2f + getX(), viewTop + top);
             topicSeparator.draw(canvas, getParentWidth(), sideMenuWidth, top, 1.0f, alpha, showTopicSeparator);
         }
 
         if (suggestionOffer != null && (currentPosition == null || (currentPosition.flags & MessageObject.POSITION_FLAG_TOP) != 0 && (currentPosition.flags & MessageObject.POSITION_FLAG_LEFT) != 0)) {
             float alpha = transitionParams.ignoreAlpha ? timeAlpha : getAlpha();
-            final float top = -starsPriceTopPadding - suggestionOfferTopPadding + dp(4);
+            final float top = -diamondsPriceTopPadding - suggestionOfferTopPadding + dp(4);
             applyServiceShaderMatrix(getMeasuredWidth(), backgroundHeight, sideMenuWidth / 2f + getX(),
                     viewTop + top);
 
@@ -21180,7 +21180,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
                 final int textColor = summaryLine.getColor();
                 if (summaryParticles == null) {
-                    summaryParticles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL_INSIDE, 30);
+                    summaryParticles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL_INSIDE, 30);
                 }
                 summaryParticles.setBounds(summarySelectorRect);
                 summaryParticles.process();
@@ -22173,15 +22173,15 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     } else if (nameStatusSelectorColor != selectorColor) {
                         Theme.setSelectorDrawableColor(nameStatusSelector, nameStatusSelectorColor = selectorColor, true);
                     }
-                    boolean isStarDrawable = currentNameStatus instanceof Drawable;
+                    boolean isDiamondDrawable = currentNameStatus instanceof Drawable;
                     //star has smaller size than other emoji
-                    float starVerticalOffset = isStarDrawable ? 1.5f : 0f;
-                    float starHorizontalOffset = isStarDrawable ? -5 : 0;
+                    float diamondVerticalOffset = isDiamondDrawable ? 1.5f : 0f;
+                    float diamondHorizontalOffset = isDiamondDrawable ? -5 : 0;
                     nameStatusSelector.setBounds(
                         (int) (nx + nameOffsetX + (viaNameWidth > 0 ? viaNameWidth - dp(4 + 28) : nameLayoutWidth)),
-                        (int) (ny - dp(1.33f + 2 - starVerticalOffset)),
-                        (int) (nx + nameOffsetX + (viaNameWidth > 0 ? viaNameWidth - dp(4 + 28) : nameLayoutWidth) + dp(4 + 12 + 4 + 4 + starHorizontalOffset)),
-                        (int) (ny + nameLayout.getHeight() + dp(1.33f + 2 - starVerticalOffset))
+                        (int) (ny - dp(1.33f + 2 - diamondVerticalOffset)),
+                        (int) (nx + nameOffsetX + (viaNameWidth > 0 ? viaNameWidth - dp(4 + 28) : nameLayoutWidth) + dp(4 + 12 + 4 + 4 + diamondHorizontalOffset)),
+                        (int) (ny + nameLayout.getHeight() + dp(1.33f + 2 - diamondVerticalOffset))
                     );
                     nameStatusSelector.setAlpha((int) (0xFF * nameAlpha));
                     nameStatusSelector.draw(canvas);
@@ -26644,7 +26644,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     }
     
     public float getEventY(MotionEvent event) {
-        return event.getY() - starsPriceTopPadding - topicSeparatorTopPadding - suggestionOfferTopPadding;
+        return event.getY() - diamondsPriceTopPadding - topicSeparatorTopPadding - suggestionOfferTopPadding;
     }
 
     @Override
@@ -28070,7 +28070,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     }
 
     public float getPaddingTopAnimated() {
-        return getTopicSeparatorTopPadding() + starsPriceTopPadding + suggestionOfferTopPadding;
+        return getTopicSeparatorTopPadding() + diamondsPriceTopPadding + suggestionOfferTopPadding;
     }
 
     public TransitionParams getTransitionParams() {
@@ -28138,9 +28138,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         public float animateFromReplyY;
         public boolean lastDrawingSmallImage;
         public int lastDrawnMonoforumPadding;
-        public int lastDrawnStarsPriceTopPadding;
+        public int lastDrawnDiamondsPriceTopPadding;
         public int lastDrawnBottomActionPadding;
-        public boolean lastDrawnStarsPriceText;
+        public boolean lastDrawnDiamondsPriceText;
         public boolean lastDrawnBottomActionText;
 
         public boolean lastIsPinned;
@@ -28255,9 +28255,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         public boolean animateMonoforumPadding;
         public boolean needsStopClipping;
 
-        public boolean animateStarsPriceText;
-        public int animateStarsPriceTopPaddingFrom;
-        public boolean animateStarsPriceTopPadding;
+        public boolean animateDiamondsPriceText;
+        public int animateDiamondsPriceTopPaddingFrom;
+        public boolean animateDiamondsPriceTopPadding;
 
         public boolean animateBottomActionText;
         public int animateBottomActionPaddingFrom;
@@ -28414,9 +28414,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
             lastDrawingSmallImage = isSmallImage;
             lastDrawnMonoforumPadding = topicSeparatorTopPadding;
-            lastDrawnStarsPriceTopPadding = starsPriceTopPadding;
+            lastDrawnDiamondsPriceTopPadding = diamondsPriceTopPadding;
             lastDrawnBottomActionPadding = bottomActionPadding;
-            lastDrawnStarsPriceText = starsPriceText != null;
+            lastDrawnDiamondsPriceText = diamondsPriceText != null;
             lastDrawnBottomActionText = bottomActionText != null;
             lastDrawingLinkPreviewHeight = linkPreviewHeight;
             lastDrawingLinkAbove = linkPreviewAbove;
@@ -28674,16 +28674,16 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 changed = true;
             }
 
-            animateStarsPriceTopPadding = false;
-            if (starsPriceTopPadding != lastDrawnStarsPriceTopPadding) {
-                animateStarsPriceTopPaddingFrom = lastDrawnStarsPriceTopPadding;
-                animateStarsPriceTopPadding = true;
+            animateDiamondsPriceTopPadding = false;
+            if (diamondsPriceTopPadding != lastDrawnDiamondsPriceTopPadding) {
+                animateDiamondsPriceTopPaddingFrom = lastDrawnDiamondsPriceTopPadding;
+                animateDiamondsPriceTopPadding = true;
                 changed = true;
             }
 
-            animateStarsPriceText = false;
-            if ((starsPriceText != null) != lastDrawnStarsPriceText) {
-                animateStarsPriceText = true;
+            animateDiamondsPriceText = false;
+            if ((diamondsPriceText != null) != lastDrawnDiamondsPriceText) {
+                animateDiamondsPriceText = true;
                 changed = true;
             }
 
@@ -29059,8 +29059,8 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             animateSign = false;
             animateSmallImage = false;
             animateMonoforumPadding = false;
-            animateStarsPriceTopPadding = false;
-            animateStarsPriceText = false;
+            animateDiamondsPriceTopPadding = false;
+            animateDiamondsPriceText = false;
             animateBottomActionText = false;
             animateBottomActionPadding = false;
             needsStopClipping = false;
@@ -29420,7 +29420,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         }
     }
 
-    public long getStarsPrice() {
+    public long getDiamondsPrice() {
         if (currentMessagesGroup != null) {
             long totalPrice = 0;
             for (MessageObject msg : currentMessagesGroup.messages) {
@@ -29459,7 +29459,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         );
     }
 
-    private TL_stars.StarGift instantViewTypeIsGiftAuction;
+    private TL_diamonds.StarGift instantViewTypeIsGiftAuction;
 
     
     

@@ -52,7 +52,7 @@ public class PremiumPreviewGiftSentBottomSheet extends PremiumPreviewBottomSheet
         }
         PremiumPreviewGiftSentBottomSheet sheet = new PremiumPreviewGiftSentBottomSheet(fragment, UserConfig.selectedAccount, selectedUsers, fragment.getResourceProvider());
         sheet.setAnimateConfetti(true);
-        sheet.setAnimateConfettiWithStars(true);
+        sheet.setAnimateConfettiWithDiamonds(true);
         sheet.show();
     }
 

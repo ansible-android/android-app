@@ -5128,7 +5128,7 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
             Browser.openAsInternalIntent(parentActivity, link);
         } else if (!Browser.openInExternalApp(parentActivity, link, false)) {
             if (pages[0] == null || pages[0].getWebView() == null) {
-                Browser.openInTelegramBrowser(parentActivity, link, null);
+                Browser.openInAnsibleBrowser(parentActivity, link, null);
             } else {
                 pages[0].getWebView().loadUrl(link);
             }
@@ -5139,7 +5139,7 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
         if (parentActivity == null || entry == null) return;
         actionBar.showAddress(false, true);
         if (pages[0] == null || pages[0].getWebView() == null) {
-            Browser.openInTelegramBrowser(parentActivity, entry.url, null);
+            Browser.openInAnsibleBrowser(parentActivity, entry.url, null);
         } else {
             pages[0].getWebView().loadUrl(entry.url, entry.meta);
         }

@@ -18,7 +18,7 @@ import org.ansible.ui.Components.SeekBarView;
 
 public class GLIconSettingsView extends LinearLayout {
 
-    public static float smallStarsSize = 1f;
+    public static float smallDiamondsSize = 1f;
 
     public GLIconSettingsView(Context context, GLIconRenderer mRenderer) {
         super(context);
@@ -231,7 +231,7 @@ public class GLIconSettingsView extends LinearLayout {
         seekBar.setDelegate(new SeekBarView.SeekBarViewDelegate() {
             @Override
             public void onSeekBarDrag(boolean stop, float progress) {
-                smallStarsSize = progress * 2;
+                smallDiamondsSize = progress * 2;
             }
 
             @Override
@@ -239,7 +239,7 @@ public class GLIconSettingsView extends LinearLayout {
 
             }
         });
-        seekBar.setProgress(smallStarsSize / 2);
+        seekBar.setProgress(smallDiamondsSize / 2);
         seekBar.setReportChanges(true);
         addView(seekBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 38, 0, 5, 4, 5, 0));
 

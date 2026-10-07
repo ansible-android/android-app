@@ -15,10 +15,10 @@ import androidx.core.graphics.ColorUtils;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.Theme;
 
-public class StarRatingView extends View {
+public class DiamondRatingView extends View {
     private final BadgeLevelDrawable drawable;
     private final Colors colors = new Colors();
 
@@ -27,7 +27,7 @@ public class StarRatingView extends View {
 
     private Delegate delegate;
 
-    public StarRatingView(Context context) {
+    public DiamondRatingView(Context context) {
         super(context);
 
         drawable = new BadgeLevelDrawable(context);
@@ -54,7 +54,7 @@ public class StarRatingView extends View {
         this.delegate = delegate;
     }
 
-    public void set(TL_stars.Tl_starsRating starsRating) {
+    public void set(TL_diamonds.Tl_starsRating starsRating) {
         isVisibleInternal = starsRating != null;
         checkVisibility();
         if (starsRating == null) {

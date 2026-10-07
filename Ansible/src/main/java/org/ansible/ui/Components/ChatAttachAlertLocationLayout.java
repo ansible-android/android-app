@@ -263,8 +263,8 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
                         parentAlert.dismiss(true);
                     }, resourcesProvider);
                 } else {
-                    AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payStars -> {
-                        delegate.didSelectLocation(location.venue, locationType, true, 0, payStars);
+                    AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payDiamonds -> {
+                        delegate.didSelectLocation(location.venue, locationType, true, 0, payDiamonds);
                         parentAlert.dismiss(true);
                     });
                 }
@@ -366,7 +366,7 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
     }
 
     public interface LocationActivityDelegate {
-        void didSelectLocation(TLRPC.MessageMedia location, int live, boolean notify, int scheduleDate, long payStars);
+        void didSelectLocation(TLRPC.MessageMedia location, int live, boolean notify, int scheduleDate, long payDiamonds);
     }
 
     public ChatAttachAlertLocationLayout(ChatAttachAlert alert, Context context, Theme.ResourcesProvider resourcesProvider, boolean allowLiveLocation) {
@@ -730,14 +730,14 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
                         location.geo = new TLRPC.TL_geoPoint();
                         location.geo.lat = AndroidUtilities.fixLocationCoord(userLocation.getLatitude());
                         location.geo._long = AndroidUtilities.fixLocationCoord(userLocation.getLongitude());
-                        AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payStars -> {
+                        AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payDiamonds -> {
                             if (chatActivity != null && chatActivity.isInScheduleMode()) {
                                 AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), chatActivity.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> {
-                                    delegate.didSelectLocation(location, locationType, notify, scheduleDate, payStars);
+                                    delegate.didSelectLocation(location, locationType, notify, scheduleDate, payDiamonds);
                                     parentAlert.dismiss(true);
                                 }, resourcesProvider);
                             } else {
-                                delegate.didSelectLocation(location, locationType, true, 0, payStars);
+                                delegate.didSelectLocation(location, locationType, true, 0, payDiamonds);
                                 parentAlert.dismiss(true);
                             }
                         });
@@ -762,7 +762,7 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
 
             Object object = adapter.getItem(position);
             if (object instanceof TLRPC.TL_messageMediaVenue) {
-                AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payStars -> {
+                AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payDiamonds -> {
                     if (chatActivity != null && chatActivity.isInScheduleMode()) {
                         AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), chatActivity.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> {
                             delegate.didSelectLocation((TLRPC.TL_messageMediaVenue) object, locationType, notify, scheduleDate, 0);
@@ -1141,13 +1141,13 @@ public class ChatAttachAlertLocationLayout extends ChatAttachAlert.AttachAlertLa
             user = parentAlert.baseFragment.getMessagesController().getUser(dialogId);
         }
         AlertsCreator.createLocationUpdateDialog(getParentActivity(), false, user, param -> {
-            AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payStars -> {
+            AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), 1 + parentAlert.getAdditionalMessagesCount(), payDiamonds -> {
                 final TLRPC.TL_messageMediaGeoLive location = new TLRPC.TL_messageMediaGeoLive();
                 location.geo = new TLRPC.TL_geoPoint();
                 location.geo.lat = AndroidUtilities.fixLocationCoord(myLocation.getLatitude());
                 location.geo._long = AndroidUtilities.fixLocationCoord(myLocation.getLongitude());
                 location.period = param;
-                delegate.didSelectLocation(location, locationType, true, 0, payStars);
+                delegate.didSelectLocation(location, locationType, true, 0, payDiamonds);
                 parentAlert.dismiss(true);
             });
         }, resourcesProvider).show();

@@ -194,16 +194,16 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
             tmpRectF.inset(gap, gap);
 
             if (usePremiumCounter) {
-                if (premiumStarDrawable == null) {
-                    premiumStarDrawable = getContext().getResources().getDrawable(R.drawable.star).mutate();
+                if (premiumDiamondDrawable == null) {
+                    premiumDiamondDrawable = getContext().getResources().getDrawable(R.drawable.star).mutate();
                 }
 
                 PremiumGradient.getInstance().updateMainGradientMatrix(0, 0, dp(96), dp(16), 0, 0);
                 canvas.drawRoundRect(tmpRectF, rInner, rInner, PremiumGradient.getInstance().getMainGradientPaint());
                 int x = (int)(cx - dpf2(7f));
                 int y = (int)(cy - dpf2(7f));
-                premiumStarDrawable.setBounds(x, y, x + dp(14), y + dp(14));
-                premiumStarDrawable.draw(canvas);
+                premiumDiamondDrawable.setBounds(x, y, x + dp(14), y + dp(14));
+                premiumDiamondDrawable.draw(canvas);
             } else {
                 paintCounterBackground.setColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_telegram_color), Theme.getColor(Theme.key_fill_RedNormal), isHasCounterErrorAnimator.getFloatValue()));
                 canvas.drawRoundRect(tmpRectF, rInner, rInner, paintCounterBackground);
@@ -218,7 +218,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         }
     }
 
-    private Drawable premiumStarDrawable;
+    private Drawable premiumDiamondDrawable;
 
     public void setCounter(String text, boolean isError, boolean animated) {
         counter.setText(text, animated);

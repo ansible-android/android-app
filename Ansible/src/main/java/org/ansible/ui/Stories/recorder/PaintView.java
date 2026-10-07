@@ -5,7 +5,7 @@ import static org.ansible.messenger.AndroidUtilities.dpf2;
 import static org.ansible.messenger.AndroidUtilities.lerp;
 import static org.ansible.messenger.LocaleController.formatPluralString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -85,7 +85,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.messenger.VideoEditedInfo;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
@@ -2139,7 +2139,7 @@ public class PaintView extends SizeNotifierFrameLayoutPhoto implements IPhotoPai
             }
 
             @Override
-            public void didSelectLocation(TLRPC.MessageMedia location, int locationType, boolean notify, int scheduleDate, long payStars) {
+            public void didSelectLocation(TLRPC.MessageMedia location, int locationType, boolean notify, int scheduleDate, long payDiamonds) {
                 TL_stories.MediaArea mediaArea;
                 if (location instanceof TLRPC.TL_messageMediaGeo) {
                     TL_stories.TL_mediaAreaGeoPoint areaGeo = new TL_stories.TL_mediaAreaGeoPoint();
@@ -2180,7 +2180,7 @@ public class PaintView extends SizeNotifierFrameLayoutPhoto implements IPhotoPai
         }, false, true, false, resourcesProvider);
         locationAlert.setDelegate(new ChatAttachAlert.ChatAttachViewDelegate() {
             @Override
-            public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payStars) {
+            public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payDiamonds) {
 
             }
         });
@@ -2891,11 +2891,11 @@ public class PaintView extends SizeNotifierFrameLayoutPhoto implements IPhotoPai
                         mediaEntity.width = mediaEntity.viewWidth = messageView.getWidth();
                         mediaEntity.height = mediaEntity.viewHeight = messageView.getHeight();
                         final MessageObject message = messageView.messageObjects.size() > 0 ? messageView.messageObjects.get(0) : null;
-                        if (message != null && message.messageOwner != null && message.messageOwner.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
-                            final TLRPC.TL_messageActionStarGiftUnique action = (TLRPC.TL_messageActionStarGiftUnique) message.messageOwner.action;
-                            final TL_stars.StarGift starGift = action.gift;
-                            mediaEntity.mediaArea = new TL_stories.TL_mediaAreaStarGift();
-                            ((TL_stories.TL_mediaAreaStarGift) mediaEntity.mediaArea).slug = starGift.slug;
+                        if (message != null && message.messageOwner != null && message.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
+                            final TLRPC.TL_messageActionDiamondGiftUnique action = (TLRPC.TL_messageActionDiamondGiftUnique) message.messageOwner.action;
+                            final TL_diamonds.StarGift starGift = action.gift;
+                            mediaEntity.mediaArea = new TL_stories.TL_mediaAreaDiamondGift();
+                            ((TL_stories.TL_mediaAreaDiamondGift) mediaEntity.mediaArea).slug = starGift.slug;
                             mediaEntity.mediaArea.coordinates = new TL_stories.TL_mediaAreaCoordinates();
                             ChatActionCell cell = null;
                             for (int j = 0; j < messageView.listView.getChildCount(); ++j) {
@@ -2905,16 +2905,16 @@ public class PaintView extends SizeNotifierFrameLayoutPhoto implements IPhotoPai
                                     break;
                                 }
                             }
-                            if (cell != null && cell.starGiftLayout != null && cell.starGiftLayout.imageReceiver != null) {
-                                final ImageReceiver imageReceiver = cell.starGiftLayout.imageReceiver;
+                            if (cell != null && cell.diamondGiftLayout != null && cell.diamondGiftLayout.imageReceiver != null) {
+                                final ImageReceiver imageReceiver = cell.diamondGiftLayout.imageReceiver;
                                 imageReceiver.setVisible(false, false);
                                 makeVisibleAfterwards = imageReceiver;
 
-                                final TL_stars.starGiftAttributeModel model = findAttribute(starGift.attributes, TL_stars.starGiftAttributeModel.class);
+                                final TL_diamonds.starGiftAttributeModel model = findAttribute(starGift.attributes, TL_diamonds.starGiftAttributeModel.class);
                                 if (model != null) {
                                     final float size = dp(110);
-                                    final float cx = messageView.listView.getX() + cell.getX() + cell.starGiftLayoutX + imageReceiver.getCenterX();
-                                    final float cy = messageView.listView.getY() + cell.getY() + cell.starGiftLayoutY + imageReceiver.getCenterY();
+                                    final float cx = messageView.listView.getX() + cell.getX() + cell.diamondGiftLayoutX + imageReceiver.getCenterX();
+                                    final float cy = messageView.listView.getY() + cell.getY() + cell.diamondGiftLayoutY + imageReceiver.getCenterY();
 
                                     final VideoEditedInfo.MediaEntity stickerEntity = new VideoEditedInfo.MediaEntity();
                                     stickerEntity.type = VideoEditedInfo.MediaEntity.TYPE_STICKER;

@@ -128,8 +128,8 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
     private boolean showPremiumBlocked;
     private final AnimatedFloat premiumBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private boolean premiumBlocked;
-    private final AnimatedFloat starsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
-    private long starsPriceBlocked;
+    private final AnimatedFloat diamondsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private long diamondsPriceBlocked;
     private boolean openBot;
 
     private int statusLeft;
@@ -218,7 +218,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             contact = null;
             final TL_account.RequirementToContact r = showPremiumBlocked && user != null ? MessagesController.getInstance(currentAccount).isUserContactBlocked(user.id) : null;
             premiumBlocked = DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+            diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
             setOpenBotButton(allowBotOpenButton && user.bot_has_main_app);
         } else if (object instanceof TLRPC.Chat) {
             chat = (TLRPC.Chat) object;
@@ -226,7 +226,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             contact = null;
             final TL_account.RequirementToContact r = ChatObject.getRequirementToContact(chat);
             premiumBlocked = DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+            diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
             setOpenBotButton(false);
         } else if (object instanceof ContactsController.Contact) {
             contact = (ContactsController.Contact) object;
@@ -234,7 +234,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             user = null;
             final TL_account.RequirementToContact r = showPremiumBlocked && contact != null && contact.user != null ? MessagesController.getInstance(currentAccount).isUserContactBlocked(contact.user.id) : null;
             premiumBlocked = DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+            diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
             setOpenBotButton(false);
         } else {
             setOpenBotButton(false);
@@ -367,9 +367,9 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             } else if (contact != null) {
                 r = showPremiumBlocked && contact.user != null ? MessagesController.getInstance(currentAccount).isUserContactBlocked(contact.user.id) : null;
             } else return;
-            if (premiumBlocked != DialogObject.isPremiumBlocked(r) || starsPriceBlocked != DialogObject.getMessagesStarsPrice(r)) {
+            if (premiumBlocked != DialogObject.isPremiumBlocked(r) || diamondsPriceBlocked != DialogObject.getMessagesDiamondsPrice(r)) {
                 premiumBlocked = DialogObject.isPremiumBlocked(r);
-                starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+                diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
                 invalidate();
             }
         }
@@ -797,7 +797,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(chat.emoji_status), animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
         } else if (allowEmojiStatus && user != null && !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
-            statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
+            statusDrawable.set(PremiumGradient.getInstance().premiumDiamondDrawableMini, animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
         } else {
             statusDrawable.set((Drawable) null, animated);

@@ -80,8 +80,8 @@ import org.ansible.ui.Components.RecyclerItemsEnterAnimator;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.ShareAlert;
 import org.ansible.ui.Components.TimerParticles;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
@@ -1340,12 +1340,12 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                 priceLayout.setVisibility(View.VISIBLE);
                 optionsView.setVisibility(View.GONE);
 
-                priceTitleView.setText(StarsIntroActivity.replaceStarsWithPlain("⭐️ " + LocaleController.formatNumber(invite.subscription_pricing.amount, ','), .75f));
-                if (invite.subscription_pricing.period == StarsController.PERIOD_MONTHLY) {
+                priceTitleView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain("⭐️ " + LocaleController.formatNumber(invite.subscription_pricing.amount, ','), .75f));
+                if (invite.subscription_pricing.period == DiamondsController.PERIOD_MONTHLY) {
                     priceSubitleView.setText(getString(R.string.DiamondsParticipantSubscriptionPerMonth));
-                } else if (invite.subscription_pricing.period == StarsController.PERIOD_5MINUTES) {
+                } else if (invite.subscription_pricing.period == DiamondsController.PERIOD_5MINUTES) {
                     priceSubitleView.setText("per 5 minutes");
-                } else if (invite.subscription_pricing.period == StarsController.PERIOD_MINUTE) {
+                } else if (invite.subscription_pricing.period == DiamondsController.PERIOD_MINUTE) {
                     priceSubitleView.setText("each minute");
                 }
                 rightMargin = dp(18 + 10) + (int) Math.max(HintView2.measureCorrectly(priceTitleView.getText(), priceTitleView.getPaint()), HintView2.measureCorrectly(priceSubitleView.getText(), priceSubitleView.getPaint()));

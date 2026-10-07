@@ -1673,7 +1673,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             }
         }
 
-        if (message.currentEvent != null && (message.currentEvent.action instanceof TLRPC.TL_channelAdminLogEventActionDeleteMessage && message.currentEvent.user_id == getMessagesController().telegramAntispamUserId || message.currentEvent.action instanceof TLRPC.TL_channelAdminLogEventActionToggleAntiSpam)) {
+        if (message.currentEvent != null && (message.currentEvent.action instanceof TLRPC.TL_channelAdminLogEventActionDeleteMessage && message.currentEvent.user_id == getMessagesController().ansibleAntispamUserId || message.currentEvent.action instanceof TLRPC.TL_channelAdminLogEventActionToggleAntiSpam)) {
             if (v instanceof ChatActionCell) {
                 SpannableString arrow = new SpannableString(">");
                 Drawable arrowDrawable = getContext().getResources().getDrawable(R.drawable.attach_arrow_right).mutate();
@@ -2451,9 +2451,9 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                     TLRPC.ChatFull chatFull = getMessagesController().getChatFull(currentChat.id);
                     if (chatFull != null && chatFull.antispam) {
                         TLRPC.ChannelParticipant antispamParticipant = new TLRPC.ChannelParticipant() {};
-                        antispamParticipant.user_id = getMessagesController().telegramAntispamUserId;
+                        antispamParticipant.user_id = getMessagesController().ansibleAntispamUserId;
                         antispamParticipant.peer = getMessagesController().getPeer(antispamParticipant.user_id);
-                        loadAntispamUser(getMessagesController().telegramAntispamUserId);
+                        loadAntispamUser(getMessagesController().ansibleAntispamUserId);
                         admins.add(0, antispamParticipant);
                     }
                 }
@@ -4531,7 +4531,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                     ChatMessageCell cell = (ChatMessageCell) child;
                     if (cell.drawBackgroundInParent()) {
                         blurCanvas.save();
-                        blurCanvas.translate(0, cell.starsPriceTopPadding);
+                        blurCanvas.translate(0, cell.diamondsPriceTopPadding);
                         cell.drawBackgroundInternal(blurCanvas, true);
                         blurCanvas.restore();
                     }

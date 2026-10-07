@@ -12,31 +12,31 @@ import java.util.concurrent.TimeUnit;
 public class AppGlobalConfig {
     private final HashMap<String, ConfigInternal> map = new HashMap<>();
 
-    public final ConfigInt starsPaidMessagesChannelAmountDefault = ofInt("stars_paid_messages_channel_amount_default", 10);
+    public final ConfigInt diamondsPaidMessagesChannelAmountDefault = ofInt("stars_paid_messages_channel_amount_default", 10);
 
-    public final ConfigInt starsSuggestedPostCommissionPermille = ofInt("stars_suggested_post_commission_permille", 850);
-    public final ConfigInt starsSuggestedPostAmountMin = ofInt("stars_suggested_post_amount_min", 5);
-    public final ConfigInt starsSuggestedPostAmountMax = ofInt("stars_suggested_post_amount_max", 100000);
+    public final ConfigInt diamondsSuggestedPostCommissionPermille = ofInt("stars_suggested_post_commission_permille", 850);
+    public final ConfigInt diamondsSuggestedPostAmountMin = ofInt("stars_suggested_post_amount_min", 5);
+    public final ConfigInt diamondsSuggestedPostAmountMax = ofInt("stars_suggested_post_amount_max", 100000);
 
     public final ConfigInt tonSuggestedPostCommissionPermille = ofInt("ton_suggested_post_commission_permille", 850);
     public final ConfigLong tonSuggestedPostAmountMin = ofLong("ton_suggested_post_amount_min", 10_000_000L); // 0.01 TON
     public final ConfigLong tonSuggestedPostAmountMax = ofLong("ton_suggested_post_amount_max", 10_000_000_000_000L); // 10000 TON
 
-    public final ConfigTime starsSuggestedPostAgeMin = ofTime("stars_suggested_post_age_min", 86400, TimeUnit.SECONDS);
-    public final ConfigTime starsSuggestedPostFutureMin = ofTime("stars_suggested_post_future_min", 300, TimeUnit.SECONDS);
-    public final ConfigTime starsSuggestedPostFutureMax = ofTime("stars_suggested_post_future_max", 2678400, TimeUnit.SECONDS);
+    public final ConfigTime diamondsSuggestedPostAgeMin = ofTime("stars_suggested_post_age_min", 86400, TimeUnit.SECONDS);
+    public final ConfigTime diamondsSuggestedPostFutureMin = ofTime("stars_suggested_post_future_min", 300, TimeUnit.SECONDS);
+    public final ConfigTime diamondsSuggestedPostFutureMax = ofTime("stars_suggested_post_future_max", 2678400, TimeUnit.SECONDS);
 
     public final ConfigDouble tonUsdRate = ofDouble("ton_usd_rate", 3);
 
-    public final ConfigString starsRatingLearnMoreUrl = ofString("stars_rating_learnmore_url", "https://core.ansible.su/blog/telegram-stars");
+    public final ConfigString diamondsRatingLearnMoreUrl = ofString("stars_rating_learnmore_url", "https://core.ansible.su/blog/telegram-stars");
     public final ConfigBoolean needAgeVideoVerification = ofBoolean("need_age_video_verification", false);
 
-    public final ConfigInt starsStarGiftResaleCommissionPermille = ofInt("stars_stargift_resale_commission_permille", 800);
-    public final ConfigInt tonStarGiftResaleCommissionPermille = ofInt("ton_stargift_resale_commission_permille", 800);
-    public final ConfigInt starsStarGiftResaleAmountMin = ofInt("stars_stargift_resale_amount_min", 125);
-    public final ConfigInt starsStarGiftResaleAmountMax = ofInt("stars_stargift_resale_amount_max", 35000);
-    public final ConfigLong tonStarGiftResaleAmountMin = ofLong("ton_stargift_resale_amount_min", 10_000_000L);
-    public final ConfigLong tonStarGiftResaleAmountMax = ofLong("ton_stargift_resale_amount_max", 10_000_000_000_000L);
+    public final ConfigInt diamondsDiamondGiftResaleCommissionPermille = ofInt("stars_stargift_resale_commission_permille", 800);
+    public final ConfigInt tonDiamondGiftResaleCommissionPermille = ofInt("ton_stargift_resale_commission_permille", 800);
+    public final ConfigInt diamondsDiamondGiftResaleAmountMin = ofInt("stars_stargift_resale_amount_min", 125);
+    public final ConfigInt diamondsDiamondGiftResaleAmountMax = ofInt("stars_stargift_resale_amount_max", 35000);
+    public final ConfigLong tonDiamondGiftResaleAmountMin = ofLong("ton_stargift_resale_amount_min", 10_000_000L);
+    public final ConfigLong tonDiamondGiftResaleAmountMax = ofLong("ton_stargift_resale_amount_max", 10_000_000_000_000L);
 
     public final ConfigInt stargiftsCollectionsLimit = ofInt("stargifts_collections_limit", 100);
     public final ConfigInt stargiftsCollectionGiftsLimit = ofInt("stargifts_collection_gifts_limit", 100);
@@ -100,7 +100,7 @@ public class AppGlobalConfig {
     public final ConfigInt quickReplyMessagesLimit = ofInt("quick_reply_messages_limit", 20);
     public final ConfigInt ephemeralWelcomeMessagesMax = ofInt("ephemeral_welcome_messages_max", 5);
 
-    public final ConfigBoolean starsSpendTopUpInvoiceDisabled = ofBoolean("stars_spend_topup_invoice_disabled", false);
+    public final ConfigBoolean diamondsSpendTopUpInvoiceDisabled = ofBoolean("stars_spend_topup_invoice_disabled", false);
 
     /* * */
 

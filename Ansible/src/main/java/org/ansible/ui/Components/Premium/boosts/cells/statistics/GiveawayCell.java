@@ -69,9 +69,9 @@ public class GiveawayCell extends UserCell {
 
     public void setImage(TL_stories.PrepaidGiveaway prepaidGiveaway) {
         this.prepaidGiveaway = prepaidGiveaway;
-        if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
+        if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
             avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_STARS);
-            TL_stories.TL_prepaidStarsGiveaway prepaid = (TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway;
+            TL_stories.TL_prepaidDiamondsGiveaway prepaid = (TL_stories.TL_prepaidDiamondsGiveaway) prepaidGiveaway;
             String counterStr = String.valueOf(prepaid.stars / 500L);
             counterDrawable.setText(counterStr);
         } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidGiveaway) {

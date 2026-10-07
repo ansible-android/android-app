@@ -13,7 +13,7 @@ public class TL_update {
 
     }
 
-    public static class TL_updateStarsRevenueStatus extends TLRPC.Update {
+    public static class TL_updateDiamondsRevenueStatus extends TLRPC.Update {
         public static final int constructor = 0xa584b019;
 
         public TLRPC.Peer peer;
@@ -55,10 +55,10 @@ public class TL_update {
     public static class TL_updatePaidReactionPrivacy extends TLRPC.Update {
         public static final int constructor = 0x8b725fce;
 
-        public TL_stars.PaidReactionPrivacy privacy;
+        public TL_diamonds.PaidReactionPrivacy privacy;
 
         public void readParams(InputSerializedData stream, boolean exception) {
-            privacy = TL_stars.PaidReactionPrivacy.TLdeserialize(stream, stream.readInt32(exception), exception);
+            privacy = TL_diamonds.PaidReactionPrivacy.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -229,16 +229,16 @@ public class TL_update {
         }
     }
 
-    public static class TL_updateStarGiftAuctionState extends TLRPC.Update {
+    public static class TL_updateDiamondGiftAuctionState extends TLRPC.Update {
         public static final int constructor = 0x48E246C2;
 
         public long gift_id;
-        public TL_stars.StarGiftAuctionState state;
+        public TL_diamonds.StarGiftAuctionState state;
 
         @Override
         public void readParams(InputSerializedData stream, boolean exception) {
             gift_id = stream.readInt64(exception);
-            state = TL_stars.StarGiftAuctionState.TLdeserialize(stream, stream.readInt32(exception), exception);
+            state = TL_diamonds.StarGiftAuctionState.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
 
         @Override
@@ -249,16 +249,16 @@ public class TL_update {
         }
     }
 
-    public static class TL_updateStarGiftAuctionUserState extends TLRPC.Update {
+    public static class TL_updateDiamondGiftAuctionUserState extends TLRPC.Update {
         public static final int constructor = 0xDC58F31E;
 
         public long gift_id;
-        public TL_stars.TL_StarGiftAuctionUserState user_state;
+        public TL_diamonds.TL_StarGiftAuctionUserState user_state;
 
         @Override
         public void readParams(InputSerializedData stream, boolean exception) {
             gift_id = stream.readInt64(exception);
-            user_state = TL_stars.TL_StarGiftAuctionUserState.TLdeserialize(stream, stream.readInt32(exception), exception);
+            user_state = TL_diamonds.TL_StarGiftAuctionUserState.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
 
         @Override
@@ -286,7 +286,7 @@ public class TL_update {
         }
     }
 
-    public static class TL_updateStarGiftCraftFail extends TLRPC.Update {
+    public static class TL_updateDiamondGiftCraftFail extends TLRPC.Update {
         public static final int constructor = 0xac072444;
 
         @Override
@@ -1099,13 +1099,13 @@ public class TL_update {
         }
     }
 
-    public static class TL_updateStarsBalance extends TLRPC.Update {
+    public static class TL_updateDiamondsBalance extends TLRPC.Update {
         public static final int constructor = 0x4e80a379;
 
-        public TL_stars.StarsAmount balance;
+        public TL_diamonds.StarsAmount balance;
 
         public void readParams(InputSerializedData stream, boolean exception) {
-            balance = TL_stars.StarsAmount.TLdeserialize(stream, stream.readInt32(exception), exception);
+            balance = TL_diamonds.StarsAmount.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
 
         public void serializeToStream(OutputSerializedData stream) {

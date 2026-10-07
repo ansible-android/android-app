@@ -32,7 +32,7 @@ public class PremiumLockIconView extends ImageView {
     private final int type;
     public boolean isEnter;
     private float[] colorFloat = new float[3];
-    StarParticlesView.Drawable starParticles;
+    DiamondParticlesView.Drawable diamondParticles;
     private boolean locked;
     private Theme.ResourcesProvider resourcesProvider;
     boolean attachedToWindow;
@@ -48,13 +48,13 @@ public class PremiumLockIconView extends ImageView {
         this.resourcesProvider = resourcesProvider;
         setImageResource(type == TYPE_REACTIONS ? R.drawable.msg_premium_lock2 : R.drawable.msg_mini_premiumlock);
         if (type == TYPE_REACTIONS) {
-            starParticles = new StarParticlesView.Drawable(5);
-            starParticles.updateColors();
-            starParticles.roundEffect = false;
-            starParticles.size3 = starParticles.size2 = 4;
-            starParticles.size1 = 2;
-            starParticles.speedScale = 0.1f;
-            starParticles.init();
+            diamondParticles = new DiamondParticlesView.Drawable(5);
+            diamondParticles.updateColors();
+            diamondParticles.roundEffect = false;
+            diamondParticles.size3 = diamondParticles.size2 = 4;
+            diamondParticles.size1 = 2;
+            diamondParticles.speedScale = 0.1f;
+            diamondParticles.init();
         } else if (type == TYPE_REACTIONS_LOCK) {
             iconScale = .8f;
             paint.setColor(Theme.getColor(Theme.key_windowBackgroundGray));
@@ -95,8 +95,8 @@ public class PremiumLockIconView extends ImageView {
             path.addRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(2f), AndroidUtilities.dp(2f), Path.Direction.CW);
             path.close();
 
-            starParticles.rect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-            starParticles.rect.inset(AndroidUtilities.dp(6), AndroidUtilities.dp(6));
+            diamondParticles.rect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+            diamondParticles.rect.inset(AndroidUtilities.dp(6), AndroidUtilities.dp(6));
         } else {
             updateGradient();
         }
@@ -167,7 +167,7 @@ public class PremiumLockIconView extends ImageView {
                 cellFlickerDrawable.draw(canvas, path, this);
                 canvas.save();
                 canvas.clipPath(path);
-                starParticles.onDraw(canvas);
+                diamondParticles.onDraw(canvas);
                 canvas.restore();
                 invalidate();
             } else {

@@ -262,8 +262,8 @@ public class StoryMediaAreasView extends FrameLayout implements View.OnClickList
                 selectedArea = null;
                 invalidate();
                 return;
-            } else if (selectedArea.mediaArea instanceof TL_stories.TL_mediaAreaStarGift) {
-                final String slug = ((TL_stories.TL_mediaAreaStarGift) selectedArea.mediaArea).slug;
+            } else if (selectedArea.mediaArea instanceof TL_stories.TL_mediaAreaDiamondGift) {
+                final String slug = ((TL_stories.TL_mediaAreaDiamondGift) selectedArea.mediaArea).slug;
                 Browser.openUrl(getContext(), "https://" + MessagesController.getInstance(UserConfig.selectedAccount).linkPrefix + "/nft/" + slug);
                 selectedArea = null;
                 invalidate();
@@ -330,7 +330,7 @@ public class StoryMediaAreasView extends FrameLayout implements View.OnClickList
         SpannableStringBuilder text = new SpannableStringBuilder();
         if (selectedArea.mediaArea instanceof TL_stories.TL_mediaAreaChannelPost) {
             text.append(LocaleController.getString(R.string.StoryViewMessage));
-        } else if (selectedArea.mediaArea instanceof TL_stories.TL_mediaAreaStarGift) {
+        } else if (selectedArea.mediaArea instanceof TL_stories.TL_mediaAreaDiamondGift) {
             text.append(LocaleController.getString(R.string.StoryViewGift));
         } else if (selectedArea.mediaArea instanceof TL_stories.TL_mediaAreaUrl) {
             thisHint.setMultilineText(multiline = true);

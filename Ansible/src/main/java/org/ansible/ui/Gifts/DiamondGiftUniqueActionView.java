@@ -15,20 +15,20 @@ import androidx.annotation.NonNull;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.Stars.StarGiftUniqueActionLayout;
+import org.ansible.ui.Diamonds.DiamondGiftUniqueActionLayout;
 
 @SuppressLint("ViewConstructor")
-public class StarGiftUniqueActionView extends View {
-    private final StarGiftUniqueActionLayout layout;
+public class DiamondGiftUniqueActionView extends View {
+    private final DiamondGiftUniqueActionLayout layout;
     private final Theme.ResourcesProvider resourcesProvider;
     private float layoutX, layoutY;
 
-    public StarGiftUniqueActionView(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
+    public DiamondGiftUniqueActionView(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
         super(context);
         this.resourcesProvider = resourcesProvider;
-        layout = new StarGiftUniqueActionLayout(currentAccount, this, resourcesProvider);
+        layout = new DiamondGiftUniqueActionLayout(currentAccount, this, resourcesProvider);
         // layout.getMessageDrawable().setUseAvatarAnimator(true);
         layout.getMessageDrawable().setCallback(this);
 
@@ -40,14 +40,14 @@ public class StarGiftUniqueActionView extends View {
         return super.verifyDrawable(who) || who == layout.getMessageDrawable();
     }
 
-    public void set(TL_stars.TL_starGiftUnique gift, long fromId,
+    public void set(TL_diamonds.TL_starGiftUnique gift, long fromId,
                     TLRPC.TL_textWithEntities message, String button, boolean animated) {
         layout.set(gift, fromId, message, button, animated);
         requestLayout();
         invalidate();
     }
 
-    public StarGiftUniqueActionLayout getLayout() {
+    public DiamondGiftUniqueActionLayout getLayout() {
         return layout;
     }
 

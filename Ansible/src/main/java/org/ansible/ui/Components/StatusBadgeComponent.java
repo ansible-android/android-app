@@ -46,7 +46,7 @@ public class StatusBadgeComponent {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(user.emoji_status), animated);
             statusDrawable.setColor(colorFilter);
         } else if (user != null && user.premium) {
-            statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
+            statusDrawable.set(PremiumGradient.getInstance().premiumDiamondDrawableMini, animated);
             statusDrawable.setColor(colorFilter);
         } else {
             statusDrawable.set((Drawable) null, animated);

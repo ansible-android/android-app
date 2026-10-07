@@ -48,7 +48,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.Vector;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.SelectAnimatedEmojiDialog;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1176,19 +1176,19 @@ public class AnimatedEmojiDrawable extends Drawable {
         }
 
         private boolean hasParticles;
-        private StarsReactionsSheet.Particles particles;
+        private DiamondsReactionsSheet.Particles particles;
         public void setParticles(boolean show, boolean animated) {
             if (hasParticles == show) return;
             if (animated) {
                 if (particles == null) {
-                    particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 8);
+                    particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 8);
                 }
                 hasParticles = show;
                 invalidate();
             } else {
                 hasParticles = show;
                 if (show && particles == null) {
-                    particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 8);
+                    particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 8);
                 } else if (!show && particles != null) {
                     particles = null;
                 }

@@ -75,7 +75,7 @@ import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;
@@ -115,7 +115,7 @@ import org.ansible.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.ansible.ui.Components.Premium.PremiumGradient;
 import org.ansible.ui.Components.Premium.PremiumNotAvailableBottomSheet;
 import org.ansible.ui.Components.Premium.PremiumTierCell;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.ScaleStateListAnimator;
 import org.ansible.ui.Components.SimpleThemeDescription;
@@ -190,7 +190,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
     Matrix matrix = new Matrix();
     Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     BackgroundView backgroundView;
-    StarParticlesView particlesView;
+    DiamondParticlesView particlesView;
     boolean isLandscapeMode;
 
     public final static int FEATURES_PREMIUM = 0;
@@ -810,7 +810,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
         });
 
         backgroundView = new BackgroundView(context);
-        particlesView = new StarParticlesView(context);
+        particlesView = new DiamondParticlesView(context);
         particlesView.setClipWithGradient();
         if (type == FEATURES_BUSINESS) {
             if (whiteBackground) {
@@ -835,7 +835,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
                 particlesView.drawable.type = PREMIUM_FEATURE_BUSINESS;
             }
         }
-        backgroundView.imageView.setStarParticlesView(particlesView);
+        backgroundView.imageView.setDiamondParticlesView(particlesView);
         contentView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         contentView.addView(backgroundView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
@@ -2194,7 +2194,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
         return SimpleThemeDescription.createThemeDescriptions(this::updateColors,
                 Theme.key_premiumGradient1, Theme.key_premiumGradient2, Theme.key_premiumGradient3, Theme.key_premiumGradient4,
                 Theme.key_premiumGradientBackground1, Theme.key_premiumGradientBackground2, Theme.key_premiumGradientBackground3, Theme.key_premiumGradientBackground4,
-                Theme.key_premiumGradientBackgroundOverlay, Theme.key_premiumStarGradient1, Theme.key_premiumStarGradient2, Theme.key_premiumStartSmallStarsColor, Theme.key_premiumStartSmallStarsColor2
+                Theme.key_premiumGradientBackgroundOverlay, Theme.key_premiumDiamondGradient1, Theme.key_premiumDiamondGradient2, Theme.key_premiumStartSmallDiamondsColor, Theme.key_premiumStartSmallDiamondsColor2
         );
     }
 
@@ -2531,7 +2531,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
         int type = down ? SelectAnimatedEmojiDialog.TYPE_EMOJI_STATUS_TOP : SelectAnimatedEmojiDialog.TYPE_EMOJI_STATUS;
         SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(PremiumPreviewFragment.this, getContext(), true, xoff, type, true, getResourceProvider(), down ? 24 : 16) {
             @Override
-            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                 if (onSet != null) {
                     onSet.run(documentId, until);
                 }

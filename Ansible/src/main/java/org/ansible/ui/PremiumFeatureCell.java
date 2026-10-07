@@ -103,7 +103,7 @@ public class PremiumFeatureCell extends FrameLayout {
         this.drawDivider = drawDivider;
     }
 
-    private Drawable premiumStar;
+    private Drawable premiumDiamond;
     public void setEmoji(long documentId, boolean animated) {
         if (imageDrawable == null) {
             imageDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, false, dp(24), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
@@ -112,11 +112,11 @@ public class PremiumFeatureCell extends FrameLayout {
             }
         }
         if (documentId == 0) {
-            if (premiumStar == null) {
-                premiumStar = getContext().getResources().getDrawable(R.drawable.msg_premium_prolfilestar).mutate();
-                premiumStar.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlueIcon), PorterDuff.Mode.SRC_IN));
+            if (premiumDiamond == null) {
+                premiumDiamond = getContext().getResources().getDrawable(R.drawable.msg_premium_prolfilestar).mutate();
+                premiumDiamond.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlueIcon), PorterDuff.Mode.SRC_IN));
             }
-            imageDrawable.set(premiumStar, animated);
+            imageDrawable.set(premiumDiamond, animated);
         } else {
             imageDrawable.set(documentId, animated);
         }

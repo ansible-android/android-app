@@ -63,7 +63,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.ResultCallback;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
@@ -841,7 +841,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
     }
 
     private SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow selectAnimatedEmojiDialog;
-    public void showSelectStatusDialog(EmojiCell cell, long documentId, boolean emojiStatus, Utilities.Callback3<Long, Integer, TL_stars.TL_starGiftUnique> onSet, int accentColor) {
+    public void showSelectStatusDialog(EmojiCell cell, long documentId, boolean emojiStatus, Utilities.Callback3<Long, Integer, TL_diamonds.TL_starGiftUnique> onSet, int accentColor) {
         if (selectAnimatedEmojiDialog != null || cell == null) {
             return;
         }
@@ -877,7 +877,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
         }
         SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(ChannelColorActivity.this, getContext(), true, xoff, type, true, getResourceProvider(), down ? 24 : 16, accentColor) {
             @Override
-            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                 if (onSet != null) {
                     onSet.run(documentId == null ? 0 : documentId, until, gift);
                 }

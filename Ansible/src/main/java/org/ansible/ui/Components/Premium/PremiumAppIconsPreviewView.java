@@ -127,7 +127,7 @@ public class PremiumAppIconsPreviewView extends FrameLayout implements PagerHead
 
     private class AdaptiveIconImageView extends AppIconsSelectorCell.AdaptiveIconImageView {
 
-        StarParticlesView.Drawable drawable = new StarParticlesView.Drawable(20);
+        DiamondParticlesView.Drawable drawable = new DiamondParticlesView.Drawable(20);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         float particlesScale;
 
@@ -137,12 +137,12 @@ public class PremiumAppIconsPreviewView extends FrameLayout implements PagerHead
             drawable.size2 = 8;
             drawable.size3 = 6;
             if (i == 1) {
-                drawable.type = StarParticlesView.TYPE_APP_ICON_REACT;
+                drawable.type = DiamondParticlesView.TYPE_APP_ICON_REACT;
             }  if (i == 0) {
-                drawable.type = StarParticlesView.TYPE_APP_ICON_STAR_PREMIUM;
+                drawable.type = DiamondParticlesView.TYPE_APP_ICON_STAR_PREMIUM;
             }
             drawable.resourcesProvider = resourcesProvider;
-            drawable.colorKey = Theme.key_premiumStartSmallStarsColor2;
+            drawable.colorKey = Theme.key_premiumStartSmallDiamondsColor2;
             drawable.init();
             paint.setColor(Color.WHITE);
         }

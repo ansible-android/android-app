@@ -75,7 +75,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_aicompose;
 import org.ansible.asnet.tl.TL_iv;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.iv.RichTextStyle;
 import org.ansible.ui.ActionBar.ActionBarMenuSubItem;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
@@ -89,7 +89,7 @@ import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PremiumPreviewFragment;
 import org.ansible.ui.ProfileActivity;
 import org.ansible.ui.SelectAnimatedEmojiDialog;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
 
@@ -2162,16 +2162,16 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
             final SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow[] popup = new SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow[1];
             SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(null, getContext(), true, dp(150), SelectAnimatedEmojiDialog.TYPE_AI_STYLE_ICON, resourcesProvider) {
                 @Override
-                protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+                protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                     if (gift != null) {
-                        final TL_stars.SavedStarGift savedStarGift = StarsController.getInstance(currentAccount).findUserStarGift(gift.id);
+                        final TL_diamonds.SavedStarGift savedStarGift = DiamondsController.getInstance(currentAccount).findUserDiamondGift(gift.id);
                         return savedStarGift == null || MessagesController.getGlobalMainSettings().getInt("statusgiftpage", 0) >= 2;
                     }
                     return true;
                 }
 
                 @Override
-                protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+                protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                     emoji_id = documentId;
                     updateIcon();
                     updateButton();

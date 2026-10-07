@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
@@ -36,19 +36,19 @@ import org.ansible.ui.Components.OutlineTextContainerView;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 public class SellGiftEnterPriceSheet extends BottomSheet {
-    private final OutlineTextContainerView starsCountEditOutline;
-    private final EditTextBoldCursor starsCountEditField;
-    private final TextView starsCountEditHint;
+    private final OutlineTextContainerView diamondsCountEditOutline;
+    private final EditTextBoldCursor diamondsCountEditField;
+    private final TextView diamondsCountEditHint;
 
     private final AnimatedTextView titleView;
     private final ButtonWithCounterView buttonView;
     private final AnimatedTextView dollarsEqView;
     private final TextCheckbox2Cell radioButtonCell;
-    private final ImageView iconStars;
+    private final ImageView iconDiamonds;
     private final ImageView iconTon;
 
-    private final AmountUtils.Amount inputAmountMinStars;
-    private final AmountUtils.Amount inputAmountMaxStars;
+    private final AmountUtils.Amount inputAmountMinDiamonds;
+    private final AmountUtils.Amount inputAmountMaxDiamonds;
     private final AmountUtils.Amount inputAmountMinTON;
     private final AmountUtils.Amount inputAmountMaxTON;
     private AmountUtils.Amount inputAmount;
@@ -73,10 +73,10 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         waitingKeyboard = true;
 
         final AppGlobalConfig config = MessagesController.getInstance(currentAccount).config;
-        inputAmountMinTON = AmountUtils.Amount.fromNano(Math.max(config.tonStarGiftResaleAmountMin.get(), 10_000_000L), AmountUtils.Currency.TON);
-        inputAmountMaxTON = AmountUtils.Amount.fromNano(config.tonStarGiftResaleAmountMax.get(), AmountUtils.Currency.TON);
-        inputAmountMinStars = AmountUtils.Amount.fromDecimal(config.starsStarGiftResaleAmountMin.get(), AmountUtils.Currency.STARS);
-        inputAmountMaxStars = AmountUtils.Amount.fromDecimal(config.starsStarGiftResaleAmountMax.get(), AmountUtils.Currency.STARS);
+        inputAmountMinTON = AmountUtils.Amount.fromNano(Math.max(config.tonDiamondGiftResaleAmountMin.get(), 10_000_000L), AmountUtils.Currency.TON);
+        inputAmountMaxTON = AmountUtils.Amount.fromNano(config.tonDiamondGiftResaleAmountMax.get(), AmountUtils.Currency.TON);
+        inputAmountMinDiamonds = AmountUtils.Amount.fromDecimal(config.diamondsDiamondGiftResaleAmountMin.get(), AmountUtils.Currency.STARS);
+        inputAmountMaxDiamonds = AmountUtils.Amount.fromDecimal(config.diamondsDiamondGiftResaleAmountMax.get(), AmountUtils.Currency.STARS);
 
         fixNavigationBar(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
 
@@ -106,48 +106,48 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         layout.addView(bodyLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1f));
 
         {
-            starsCountEditOutline = new OutlineTextContainerView(context);
-            starsCountEditField = new EditTextBoldCursor(context);
-            starsCountEditField.setCursorSize(dp(20));
-            starsCountEditField.setCursorWidth(1.5f);
-            starsCountEditField.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-            starsCountEditField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
-            starsCountEditField.setMaxLines(1);
-            starsCountEditField.setBackground(null);
-            starsCountEditField.setPadding(dp(42), dp(16), dp(16), dp(16));
-            starsCountEditField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            starsCountEditField.requestFocus();
+            diamondsCountEditOutline = new OutlineTextContainerView(context);
+            diamondsCountEditField = new EditTextBoldCursor(context);
+            diamondsCountEditField.setCursorSize(dp(20));
+            diamondsCountEditField.setCursorWidth(1.5f);
+            diamondsCountEditField.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+            diamondsCountEditField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+            diamondsCountEditField.setMaxLines(1);
+            diamondsCountEditField.setBackground(null);
+            diamondsCountEditField.setPadding(dp(42), dp(16), dp(16), dp(16));
+            diamondsCountEditField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            diamondsCountEditField.requestFocus();
 
-            starsCountEditOutline.setLeftPadding(dp(28));
-            starsCountEditOutline.attachEditText(starsCountEditField);
-            starsCountEditOutline.animateSelection(true, startParams != null && !startParams.isZero(), false);
-            starsCountEditOutline.setForceUseCenter2(true);
+            diamondsCountEditOutline.setLeftPadding(dp(28));
+            diamondsCountEditOutline.attachEditText(diamondsCountEditField);
+            diamondsCountEditOutline.animateSelection(true, startParams != null && !startParams.isZero(), false);
+            diamondsCountEditOutline.setForceUseCenter2(true);
 
-            starsCountEditField.setOnFocusChangeListener((v, hasFocus) ->
-                    starsCountEditOutline.animateSelection(hasFocus, !TextUtils.isEmpty(starsCountEditField.getText())));
+            diamondsCountEditField.setOnFocusChangeListener((v, hasFocus) ->
+                    diamondsCountEditOutline.animateSelection(hasFocus, !TextUtils.isEmpty(diamondsCountEditField.getText())));
 
-            starsCountEditOutline.addView(starsCountEditField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
-            bodyLayout.addView(starsCountEditOutline, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 18, 0, 18, 0));
+            diamondsCountEditOutline.addView(diamondsCountEditField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+            bodyLayout.addView(diamondsCountEditOutline, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 18, 0, 18, 0));
 
-            iconStars = new ImageView(context);
-            iconStars.setImageResource(R.drawable.diamond);
-            starsCountEditOutline.addView(iconStars, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
+            iconDiamonds = new ImageView(context);
+            iconDiamonds.setImageResource(R.drawable.diamond);
+            diamondsCountEditOutline.addView(iconDiamonds, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
             iconTon = new ImageView(context);
             iconTon.setImageResource(R.drawable.mini_gram_72);
             iconTon.setColorFilter(0xFF3391d4);
-            starsCountEditOutline.addView(iconTon, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
+            diamondsCountEditOutline.addView(iconTon, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
             dollarsEqView = new AnimatedTextView(context);
             dollarsEqView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
             dollarsEqView.setTextSize(dp(13));
             dollarsEqView.setGravity(Gravity.RIGHT);
-            starsCountEditOutline.addView(dollarsEqView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0, 0, 16, 0));
+            diamondsCountEditOutline.addView(dollarsEqView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0, 0, 16, 0));
 
-            starsCountEditHint = new TextView(context);
-            starsCountEditHint.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
-            starsCountEditHint.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-            bodyLayout.addView(starsCountEditHint, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 33, 4, 33, 0));
+            diamondsCountEditHint = new TextView(context);
+            diamondsCountEditHint.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+            diamondsCountEditHint.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+            bodyLayout.addView(diamondsCountEditHint, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 33, 4, 33, 0));
         }
         {
             radioButtonCell = new TextCheckbox2Cell(context);
@@ -159,7 +159,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
                         AmountUtils.Currency.TON;
 
                 setAmount(AmountUtils.Amount.fromNano(0, newCurrency), true, false, true);
-                starsCountEditField.setText("");
+                diamondsCountEditField.setText("");
             });
 
             bodyLayout.addView(radioButtonCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 16, 0, 16));
@@ -177,7 +177,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
             if (!buttonView.isEnabled() || buttonView.isLoading()) {
                 return;
             }
-            AndroidUtilities.hideKeyboard(starsCountEditField);
+            AndroidUtilities.hideKeyboard(diamondsCountEditField);
             buttonView.setLoading(true);
             callback.run(inputAmount);
         });
@@ -192,7 +192,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         }
         setCustomView(layout);
 
-        starsCountEditField.addTextChangedListener(new TextWatcher() {
+        diamondsCountEditField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -224,7 +224,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
                         AmountUtils.Amount.fromNano(0, inputAmount.currency);
 
                 setAmount(newAmount, false, false, true);
-                starsCountEditOutline.animateSelection(starsCountEditField.isFocused(), !TextUtils.isEmpty(starsCountEditField.getText()));
+                diamondsCountEditOutline.animateSelection(diamondsCountEditField.isFocused(), !TextUtils.isEmpty(diamondsCountEditField.getText()));
             }
         });
     }
@@ -256,7 +256,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         final boolean amountErrorChanged = force || oldAmountError != inputAmountError;
 
         if (amountErrorChanged) {
-            starsCountEditOutline.animateError((inputAmountError & (~ERROR_FLAG_AMOUNT_NOT_ENOUGH)) == 0 ? 0 : 1);
+            diamondsCountEditOutline.animateError((inputAmountError & (~ERROR_FLAG_AMOUNT_NOT_ENOUGH)) == 0 ? 0 : 1);
         }
         if (currencyChanged) {
             onCurrencyChanged(animated);
@@ -273,8 +273,8 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
 
         if (updateEditField && amountChanged) {
             String textToSet = inputAmount.asDecimalString();
-            starsCountEditField.setText(textToSet);
-            starsCountEditField.setSelection(textToSet.length());
+            diamondsCountEditField.setText(textToSet);
+            diamondsCountEditField.setSelection(textToSet.length());
         }
     }
 
@@ -282,22 +282,22 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         if (inputAmount.currency == AmountUtils.Currency.STARS) {
             titleView.setText(getString(R.string.ResellGiftTitle), animated);
 
-            starsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
-            starsCountEditField.setFilters(new InputFilter[]{
+            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
+            diamondsCountEditField.setFilters(new InputFilter[]{
                     new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length())
             });
         } else if (inputAmount.currency == AmountUtils.Currency.TON) {
             titleView.setText(getString(R.string.ResellGiftTitleTON), animated);
 
-            starsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            starsCountEditField.setFilters(new InputFilter[]{
+            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            diamondsCountEditField.setFilters(new InputFilter[]{
                     new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length() + 3)
             });
         }
         radioButtonCell.checkbox.setChecked(inputAmount.currency == AmountUtils.Currency.TON, animated);
 
         if (animated) {
-            iconStars.animate()
+            iconDiamonds.animate()
                     .alpha(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f)
                     .scaleX(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f)
                     .scaleY(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f)
@@ -310,7 +310,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
                     .setDuration(180L)
                     .start();
         } else {
-            iconStars.setAlpha(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f);
+            iconDiamonds.setAlpha(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f);
             iconTon.setAlpha(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f);
         }
     }
@@ -330,15 +330,15 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
 
     private void checkAmountInputText(boolean ignoredAnimated) {
         if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_BIG) != 0) {
-            starsCountEditOutline.setText(LocaleController.formatString(R.string.ResellGiftPriceTooMuch, getInputAmountMax().formatAsDecimalSpaced()));
+            diamondsCountEditOutline.setText(LocaleController.formatString(R.string.ResellGiftPriceTooMuch, getInputAmountMax().formatAsDecimalSpaced()));
         } else if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_SMALL) != 0) {
-            starsCountEditOutline.setText(LocaleController.formatString(R.string.ResellGiftPriceTooSmall, getInputAmountMin().formatAsDecimalSpaced()));
+            diamondsCountEditOutline.setText(LocaleController.formatString(R.string.ResellGiftPriceTooSmall, getInputAmountMin().formatAsDecimalSpaced()));
         } else {
             final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
                     R.string.ResellGiftPriceTitle:
                     R.string.ResellGiftPriceTitleTON;
 
-            starsCountEditOutline.setText(getString(key));
+            diamondsCountEditOutline.setText(getString(key));
         }
     }
 
@@ -346,13 +346,13 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         final AppGlobalConfig config = MessagesController.getInstance(currentAccount).config;
 
         if (inputAmount.currency == AmountUtils.Currency.STARS) {
-            final AmountUtils.Amount amount = inputAmount.applyPerMille(config.starsStarGiftResaleCommissionPermille.get());
+            final AmountUtils.Amount amount = inputAmount.applyPerMille(config.diamondsDiamondGiftResaleCommissionPermille.get());
             final CharSequence s = AndroidUtilities.replaceTags(LocaleController.formatPluralString("ResellGiftInfo", (int) amount.asDecimal()));
-            starsCountEditHint.setText(s);
+            diamondsCountEditHint.setText(s);
         } else if (inputAmount.currency == AmountUtils.Currency.TON) {
-            final AmountUtils.Amount amount = inputAmount.applyPerMille(config.tonStarGiftResaleCommissionPermille.get());
+            final AmountUtils.Amount amount = inputAmount.applyPerMille(config.tonDiamondGiftResaleCommissionPermille.get());
             final CharSequence s = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.ResellGiftInfoTON, amount.asDecimalString()));
-            starsCountEditHint.setText(s);
+            diamondsCountEditHint.setText(s);
         }
 
 
@@ -360,7 +360,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
 
         final double rate = inputAmount.currency == AmountUtils.Currency.TON ?
                 (MessagesController.getInstance(currentAccount).config.tonUsdRate.get()):
-                (MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000 * 0.00001);
+                (MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * 0.00001);
 
         sb.append(BillingController.getInstance().formatCurrency((long) (inputAmount.asDouble() * rate * 100), "USD", 2));
 
@@ -368,16 +368,16 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
     }
 
     private AmountUtils.Amount getInputAmountMin() {
-        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMinTON : inputAmountMinStars;
+        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMinTON : inputAmountMinDiamonds;
     }
 
     private AmountUtils.Amount getInputAmountMax() {
-        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMaxTON : inputAmountMaxStars;
+        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMaxTON : inputAmountMaxDiamonds;
     }
 
     @Override
     public void show() {
         super.show();
-        AndroidUtilities.runOnUIThread(() -> AndroidUtilities.showKeyboard(starsCountEditField), 50);
+        AndroidUtilities.runOnUIThread(() -> AndroidUtilities.showKeyboard(diamondsCountEditField), 50);
     }
 }

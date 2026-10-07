@@ -46,7 +46,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
@@ -77,7 +77,7 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
     int currentAccount;
     protected TLRPC.User user;
     protected GiftPremiumBottomSheet.GiftTier giftTier;
-    protected TL_stars.StarGift gift;
+    protected TL_diamonds.StarGift gift;
     boolean isOutboundGift;
 
     PremiumFeatureCell dummyCell;
@@ -96,7 +96,7 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
 
     FireworksOverlay fireworksOverlay;
     PremiumGradient.PremiumGradientTools gradientTools;
-    StarParticlesView starParticlesView;
+    DiamondParticlesView diamondParticlesView;
     GLIconTextureView iconTextureView;
     ViewGroup iconContainer;
     BaseFragment fragment;
@@ -119,7 +119,7 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
     ValueAnimator enterAnimator;
 
     boolean animateConfetti;
-    boolean animateConfettiWithStars;
+    boolean animateConfettiWithDiamonds;
     FrameLayout buttonContainer;
     FrameLayout bulletinContainer;
 
@@ -127,7 +127,7 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
         this(fragment, currentAccount, user, null, null, resourcesProvider);
     }
 
-    public PremiumPreviewBottomSheet(BaseFragment fragment, int currentAccount, TLRPC.User user, GiftPremiumBottomSheet.GiftTier gift, TL_stars.StarGift stargift, Theme.ResourcesProvider resourcesProvider) {
+    public PremiumPreviewBottomSheet(BaseFragment fragment, int currentAccount, TLRPC.User user, GiftPremiumBottomSheet.GiftTier gift, TL_diamonds.StarGift stargift, Theme.ResourcesProvider resourcesProvider) {
         super(fragment, false, false, false, resourcesProvider);
         fixNavigationBar();
         this.fragment = fragment;
@@ -199,8 +199,8 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
         return this;
     }
 
-    public PremiumPreviewBottomSheet setAnimateConfettiWithStars(boolean animateConfettiWithStars) {
-        this.animateConfettiWithStars = animateConfettiWithStars;
+    public PremiumPreviewBottomSheet setAnimateConfettiWithDiamonds(boolean animateConfettiWithDiamonds) {
+        this.animateConfettiWithDiamonds = animateConfettiWithDiamonds;
         return this;
     }
 
@@ -209,12 +209,12 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
         if (iconTextureView != null) {
             iconTextureView.setDialogVisible(true);
         }
-        starParticlesView.setPaused(true);
+        diamondParticlesView.setPaused(true);
         dialog.setOnDismissListener(dialog1 -> {
             if (iconTextureView != null) {
                 iconTextureView.setDialogVisible(false);
             }
-            starParticlesView.setPaused(false);
+            diamondParticlesView.setPaused(false);
         });
         dialog.show();
         return true;
@@ -553,7 +553,7 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
 
                     setTitle(false);
 
-                    starParticlesView = new StarParticlesView(context) {
+                    diamondParticlesView = new DiamondParticlesView(context) {
                         @Override
                         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -580,15 +580,15 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
                             } else if (overrideTitleIcon != null) {
                                 y = overrideTitleIcon.getTop() + overrideTitleIcon.getMeasuredHeight() / 2f;
                             }
-                            starParticlesView.setTranslationY(y - starParticlesView.getMeasuredHeight() / 2f);
+                            diamondParticlesView.setTranslationY(y - diamondParticlesView.getMeasuredHeight() / 2f);
                         }
                     };
                     frameLayout.setClipChildren(false);
-                    frameLayout.addView(starParticlesView);
+                    frameLayout.addView(diamondParticlesView);
                     frameLayout.addView(linearLayout);
 
                     if (iconTextureView != null) {
-                        iconTextureView.setStarParticlesView(starParticlesView);
+                        iconTextureView.setDiamondParticlesView(diamondParticlesView);
                     }
 
                     view = frameLayout;
@@ -718,7 +718,7 @@ public class PremiumPreviewBottomSheet extends BottomSheetWithRecyclerListView i
                 try {
                     container.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 } catch (Exception ignored) {}
-                fireworksOverlay.start(animateConfettiWithStars);
+                fireworksOverlay.start(animateConfettiWithDiamonds);
             }, 200);
         }
     }

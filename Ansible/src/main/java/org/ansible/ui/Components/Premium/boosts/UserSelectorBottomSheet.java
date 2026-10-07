@@ -78,8 +78,8 @@ import org.ansible.ui.Gifts.GiftSheet;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PrivacyControlActivity;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -443,7 +443,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
                     if (searchField != null) {
                         AndroidUtilities.hideKeyboard(searchField.getEditText());
                     }
-                    StarsIntroActivity.GiftStarsSheet sheet = new StarsIntroActivity.GiftStarsSheet(getContext(), resourcesProvider, user, this::dismiss);
+                    DiamondsIntroActivity.GiftDiamondsSheet sheet = new DiamondsIntroActivity.GiftDiamondsSheet(getContext(), resourcesProvider, user, this::dismiss);
                     if (!AndroidUtilities.isTablet()) {
                         sheet.makeAttached(attachedFragment);
                     }
@@ -590,7 +590,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             });
         }
         if (type == TYPE_PREMIUM || type == TYPE_STAR_GIFT) {
-            StarsController.getInstance(currentAccount).loadStarGifts();
+            DiamondsController.getInstance(currentAccount).loadDiamondGifts();
         }
     }
 

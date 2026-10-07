@@ -64,7 +64,7 @@ import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.spoilers.SpoilerEffect2;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PhotoViewer;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2582,16 +2582,16 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
                     }
                 }
 
-                drawStarsButton(canvas);
+                drawDiamondsButton(canvas);
 
                 return update;
             }
 
-            public void drawStarsButton(Canvas canvas) {
+            public void drawDiamondsButton(Canvas canvas) {
                 if (stars <= 0) return;
 
                 if (buttonText == null || buttonTextPrice != stars) {
-                    buttonText = new Text(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) (buttonTextPrice = stars)), .7f), 14, AndroidUtilities.bold());
+                    buttonText = new Text(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatPluralStringComma("UnlockPaidContent", (int) (buttonTextPrice = stars)), .7f), 14, AndroidUtilities.bold());
                 }
                 final float buttonWidth = dp(14 + 14) + buttonText.getCurrentWidth();
                 final float buttonHeight = dp(32);

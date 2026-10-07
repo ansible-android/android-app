@@ -69,7 +69,7 @@ import org.ansible.ui.DialogsActivity;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PaymentFormActivity;
 import org.ansible.ui.ReportBottomSheet;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.web.BotWebViewContainer;
 
 import java.util.List;
@@ -405,10 +405,10 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
             public void onWebAppOpenInvoice(TLRPC.InputInvoice inputInvoice, String slug, TLObject response) {
                 ChatActivity parentFragment = parentEnterView.getParentFragment();
                 PaymentFormActivity paymentFormActivity = null;
-                if (response instanceof TLRPC.TL_payments_paymentFormStars) {
+                if (response instanceof TLRPC.TL_payments_paymentFormDiamonds) {
                     final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
                     progressDialog.showDelayed(150);
-                    StarsController.getInstance(currentAccount).openPaymentForm(null, inputInvoice, (TLRPC.TL_payments_paymentFormStars) response, () -> {
+                    DiamondsController.getInstance(currentAccount).openPaymentForm(null, inputInvoice, (TLRPC.TL_payments_paymentFormDiamonds) response, () -> {
                         progressDialog.dismiss();
                     }, status -> {
                         webViewContainer.onInvoiceStatusUpdate(slug, status);

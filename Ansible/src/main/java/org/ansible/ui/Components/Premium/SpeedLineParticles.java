@@ -47,7 +47,7 @@ public class SpeedLineParticles {
         }
 
         public void updateColors() {
-            int c = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_premiumStartSmallStarsColor2), 80);
+            int c = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_premiumStartSmallDiamondsColor2), 80);
             if (lastColor != c) {
                 lastColor = c;
                 paint.setColor(lastColor);
@@ -84,7 +84,7 @@ public class SpeedLineParticles {
         private class Particle {
             private float x, y;
             private float vecX, vecY;
-            private int starIndex;
+            private int diamondIndex;
             private long lifeTime;
             private int alpha;
             float inProgress;

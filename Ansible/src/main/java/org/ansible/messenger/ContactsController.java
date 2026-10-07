@@ -1335,7 +1335,7 @@ public class ContactsController extends BaseController {
                             }
                             getMessagesStorage().putCachedPhoneBook(contactsMap, false, false);
                             AndroidUtilities.runOnUIThread(() -> {
-                                mergePhonebookAndTelegramContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal);
+                                mergePhonebookAndAnsibleContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal);
                                 updateUnregisteredContacts();
                                 getNotificationCenter().postNotificationName(NotificationCenter.contactsDidLoad);
                                 getNotificationCenter().postNotificationName(NotificationCenter.contactsImported);
@@ -1423,7 +1423,7 @@ public class ContactsController extends BaseController {
                                         delayedContactsUpdate.clear();
                                     }
                                     AndroidUtilities.runOnUIThread(() -> {
-                                        mergePhonebookAndTelegramContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal);
+                                        mergePhonebookAndAnsibleContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal);
                                         getNotificationCenter().postNotificationName(NotificationCenter.contactsImported);
                                     });
                                     if (hasErrors[0]) {
@@ -1447,7 +1447,7 @@ public class ContactsController extends BaseController {
                             delayedContactsUpdate.clear();
                         }
                         AndroidUtilities.runOnUIThread(() -> {
-                            mergePhonebookAndTelegramContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal);
+                            mergePhonebookAndAnsibleContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal);
                             updateUnregisteredContacts();
                             getNotificationCenter().postNotificationName(NotificationCenter.contactsDidLoad);
                             getNotificationCenter().postNotificationName(NotificationCenter.contactsImported);
@@ -1467,7 +1467,7 @@ public class ContactsController extends BaseController {
                         applyContactsUpdates(delayedContactsUpdate, null, null, null);
                         delayedContactsUpdate.clear();
                     }
-                    AndroidUtilities.runOnUIThread(() -> mergePhonebookAndTelegramContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal));
+                    AndroidUtilities.runOnUIThread(() -> mergePhonebookAndAnsibleContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal, phoneBookByShortPhonesFinal));
                 });
                 if (!contactsMap.isEmpty()) {
                     getMessagesStorage().putCachedPhoneBook(contactsMap, false, false);
@@ -1792,11 +1792,11 @@ public class ContactsController extends BaseController {
         }
     }
 
-    private void mergePhonebookAndTelegramContacts(final HashMap<String, ArrayList<Object>> phoneBookSectionsDictFinal, final ArrayList<String> phoneBookSectionsArrayFinal, final HashMap<String, Contact> phoneBookByShortPhonesFinal) {
-        mergePhonebookAndTelegramContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal,phoneBookByShortPhonesFinal, true);
+    private void mergePhonebookAndAnsibleContacts(final HashMap<String, ArrayList<Object>> phoneBookSectionsDictFinal, final ArrayList<String> phoneBookSectionsArrayFinal, final HashMap<String, Contact> phoneBookByShortPhonesFinal) {
+        mergePhonebookAndAnsibleContacts(phoneBookSectionsDictFinal, phoneBookSectionsArrayFinal,phoneBookByShortPhonesFinal, true);
     }
 
-    private void mergePhonebookAndTelegramContacts(final HashMap<String, ArrayList<Object>> phoneBookSectionsDictFinal, final ArrayList<String> phoneBookSectionsArrayFinal, final HashMap<String, Contact> phoneBookByShortPhonesFinal, boolean needUpdateLists) {
+    private void mergePhonebookAndAnsibleContacts(final HashMap<String, ArrayList<Object>> phoneBookSectionsDictFinal, final ArrayList<String> phoneBookSectionsArrayFinal, final HashMap<String, Contact> phoneBookByShortPhonesFinal, boolean needUpdateLists) {
         final ArrayList<TLRPC.TL_contact> contactsCopy = new ArrayList<>(contacts);
         Utilities.globalQueue.postRunnable(() -> {
             if(needUpdateLists) {
@@ -2470,7 +2470,7 @@ public class ContactsController extends BaseController {
                 }
                 buildContactsSectionsArrays(true);
                 if (needResort) {
-                    mergePhonebookAndTelegramContacts(phoneBookSectionsDict, phoneBookSectionsArray, phoneBookByShortPhones, false);
+                    mergePhonebookAndAnsibleContacts(phoneBookSectionsDict, phoneBookSectionsArray, phoneBookByShortPhones, false);
                 }
                 getNotificationCenter().postNotificationName(NotificationCenter.contactsDidLoad);
             });
@@ -2713,7 +2713,7 @@ public class ContactsController extends BaseController {
                     req.key = new TLRPC.TL_inputPrivacyKeyBirthday();
                     break;
                 case PRIVACY_RULES_TYPE_GIFTS:
-                    req.key = new TLRPC.TL_inputPrivacyKeyStarGiftsAutoSave();
+                    req.key = new TLRPC.TL_inputPrivacyKeyDiamondGiftsAutoSave();
                     break;
                 case PRIVACY_RULES_TYPE_NO_PAID_MESSAGES:
                     req.key = new TLRPC.TL_inputPrivacyKeyNoPaidMessages();

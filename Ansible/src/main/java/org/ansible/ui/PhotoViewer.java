@@ -319,7 +319,7 @@ import org.ansible.ui.Components.blur3.utils.Blur3Utils;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.Components.spoilers.SpoilersTextView;
 import org.ansible.ui.Components.voip.AnimatedFileInfo;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Stories.DarkThemeResourceProvider;
 import org.ansible.ui.Stories.recorder.CaptionContainerView;
 import org.ansible.ui.Stories.recorder.HintView2;
@@ -2752,7 +2752,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         public int animatingImageViewYOffset;
         public boolean allowTakeAnimation = true;
         public boolean canEdit;
-        public int starOffset;
+        public int diamondOffset;
         public boolean fadeIn;
         public boolean keepImageReceiverVisible;
     }
@@ -7368,7 +7368,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         parentChatActivity.messageSuggestionParams :
                         MessageSuggestionParams.of(parentChatActivity.editingMessageObject.messageOwner.suggested_post);
 
-                if (!StarsController.isEnoughAmount(currentAccount, params.amount)) {
+                if (!DiamondsController.isEnoughAmount(currentAccount, params.amount)) {
                     if (parentChatActivity != null) {
                         parentChatActivity.showSuggestionOfferForEditMessage(params);
                     }
@@ -13808,8 +13808,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 dialogId = placeProvider.getDialogId();
             if (dialogId == 0 && currentMessageObject != null)
                 dialogId = currentMessageObject.getDialogId();
-            pickerViewSendButton.setStarsPrice(
-                (placeProvider != null && placeProvider.isEditingMessage() && !placeProvider.isEditingMessageResend()) ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId),
+            pickerViewSendButton.setDiamondsPrice(
+                (placeProvider != null && placeProvider.isEditingMessage() && !placeProvider.isEditingMessageResend()) ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId),
                 Math.max(1, placeProvider == null ? 1 : placeProvider.getSelectedCount())
             );
         }
@@ -14224,7 +14224,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     openedFromProfile = true;
                 }
                 if (object != null) {
-                    startOffset = object.starOffset;
+                    startOffset = object.diamondOffset;
                 }
                 menuItem.showSubItem(gallery_menu_showinchat);
                 boolean canWrite = true;
@@ -16038,8 +16038,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 dialogId = placeProvider.getDialogId();
             if (dialogId == 0 && currentMessageObject != null)
                 dialogId = currentMessageObject.getDialogId();
-            pickerViewSendButton.setStarsPrice(
-                (placeProvider != null && placeProvider.isEditingMessage() && !placeProvider.isEditingMessageResend()) ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId),
+            pickerViewSendButton.setDiamondsPrice(
+                (placeProvider != null && placeProvider.isEditingMessage() && !placeProvider.isEditingMessageResend()) ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId),
                 Math.max(1, placeProvider == null ? 1 : placeProvider.getSelectedCount())
             );
         }

@@ -91,8 +91,8 @@ public class GroupCreateUserCell extends FrameLayout {
 
     private final AnimatedFloat premiumBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private boolean premiumBlocked;
-    private final AnimatedFloat starsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
-    private long starsPriceBlocked;
+    private final AnimatedFloat diamondsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private long diamondsPriceBlocked;
     private TL_account.RequirementToContact blockedOverridden;
     private boolean showPremiumBlocked;
 
@@ -111,9 +111,9 @@ public class GroupCreateUserCell extends FrameLayout {
 
     private void updatePremiumBlocked(boolean animated) {
         final TL_account.RequirementToContact r = showPremiumBlocked ? (blockedOverridden != null ? blockedOverridden : currentObject instanceof TLRPC.User ? MessagesController.getInstance(currentAccount).isUserContactBlocked(((TLRPC.User) currentObject).id) : null) : null;
-        if (premiumBlocked != DialogObject.isPremiumBlocked(r) || starsPriceBlocked != DialogObject.getMessagesStarsPrice(r)) {
+        if (premiumBlocked != DialogObject.isPremiumBlocked(r) || diamondsPriceBlocked != DialogObject.getMessagesDiamondsPrice(r)) {
             premiumBlocked = DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+            diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
             if (!animated) {
                 premiumBlockedT.set(premiumBlocked, true);
             }
@@ -239,8 +239,8 @@ public class GroupCreateUserCell extends FrameLayout {
                 return PixelFormat.TRANSPARENT;
             }
         };
-        Drawable starDrawable = context.getResources().getDrawable(R.drawable.msg_settings_premium);
-        CombinedDrawable drawable = new CombinedDrawable(backgroundDrawable, starDrawable, 0, 0);
+        Drawable diamondDrawable = context.getResources().getDrawable(R.drawable.msg_settings_premium);
+        CombinedDrawable drawable = new CombinedDrawable(backgroundDrawable, diamondDrawable, 0, 0);
         if (small) {
             drawable.setIconSize(dp(18), dp(18));
         }

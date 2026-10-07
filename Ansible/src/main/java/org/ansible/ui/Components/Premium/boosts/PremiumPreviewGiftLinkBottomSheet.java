@@ -146,7 +146,7 @@ public class PremiumPreviewGiftLinkBottomSheet extends PremiumPreviewBottomSheet
                     AndroidUtilities.runOnUIThread(() -> {
                         PremiumPreviewBottomSheet previewBottomSheet = new PremiumPreviewBottomSheet(getBaseFragment(), UserConfig.selectedAccount, null, null, null, resourcesProvider)
                                 .setAnimateConfetti(true)
-                                .setAnimateConfettiWithStars(true)
+                                .setAnimateConfettiWithDiamonds(true)
                                 .setOutboundGift(true);
                         getBaseFragment().showDialog(previewBottomSheet);
                     }, 200);

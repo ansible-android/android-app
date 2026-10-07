@@ -37,14 +37,14 @@ public class PremiumGradient {
 
     private static PremiumGradient instance;
 
-    public Drawable premiumStarColoredDrawable;
-    public Drawable premiumStarDrawableMini;
-    public InternalDrawable premiumStarMenuDrawable;
-    public InternalDrawable premiumStarMenuDrawable2;
-    public InternalDrawable premiumStarMenuDrawableGray;
-    public InternalDrawable goldenStarMenuDrawable;
+    public Drawable premiumDiamondColoredDrawable;
+    public Drawable premiumDiamondDrawableMini;
+    public InternalDrawable premiumDiamondMenuDrawable;
+    public InternalDrawable premiumDiamondMenuDrawable2;
+    public InternalDrawable premiumDiamondMenuDrawableGray;
+    public InternalDrawable goldenDiamondMenuDrawable;
 
-    private int lastStarColor;
+    private int lastDiamondColor;
 
     public static PremiumGradient getInstance() {
         if (instance == null) {
@@ -54,12 +54,12 @@ public class PremiumGradient {
     }
 
     private PremiumGradient() {
-        premiumStarDrawableMini = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();
-        premiumStarMenuDrawable = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium));
-        goldenStarMenuDrawable = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium), goldGradient);
-        premiumStarMenuDrawable2 = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_normal));
+        premiumDiamondDrawableMini = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();
+        premiumDiamondMenuDrawable = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium));
+        goldenDiamondMenuDrawable = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium), goldGradient);
+        premiumDiamondMenuDrawable2 = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_normal));
 //        premiumStarMenuDrawableGray = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium), grayGradient);
-        premiumStarColoredDrawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();
+        premiumDiamondColoredDrawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();
         mainGradient.chekColors();
         checkIconColors();
     }
@@ -88,12 +88,12 @@ public class PremiumGradient {
     }
 
     public void checkIconColors() {
-        if (Theme.getColor(Theme.key_chats_verifiedBackground) != lastStarColor) {
-            lastStarColor = Theme.getColor(Theme.key_chats_verifiedBackground);
-            premiumStarDrawableMini.setColorFilter(new PorterDuffColorFilter(lastStarColor, PorterDuff.Mode.MULTIPLY));
+        if (Theme.getColor(Theme.key_chats_verifiedBackground) != lastDiamondColor) {
+            lastDiamondColor = Theme.getColor(Theme.key_chats_verifiedBackground);
+            premiumDiamondDrawableMini.setColorFilter(new PorterDuffColorFilter(lastDiamondColor, PorterDuff.Mode.MULTIPLY));
         }
-        premiumStarMenuDrawable = checkColors(premiumStarMenuDrawable);
-        premiumStarMenuDrawable2 = checkColors(premiumStarMenuDrawable2);
+        premiumDiamondMenuDrawable = checkColors(premiumDiamondMenuDrawable);
+        premiumDiamondMenuDrawable2 = checkColors(premiumDiamondMenuDrawable2);
     }
 
     private InternalDrawable checkColors(InternalDrawable internalDrawable) {

@@ -14,7 +14,7 @@ import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.ChannelMonetizationLayout;
 import org.ansible.ui.Charts.data.ChartData;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -154,7 +154,7 @@ public class ChartHorizontalLinesData {
             if (a == 1) {
                 return "≈" + BillingController.getInstance().formatCurrency(v, "USD");
             }
-            return StarsIntroActivity.replaceStarsWithPlain("XTR " + LocaleController.formatNumber(v, ' '), .65f);
+            return DiamondsIntroActivity.replaceDiamondsWithPlain("XTR " + LocaleController.formatNumber(v, ' '), .65f);
         }
         return AndroidUtilities.formatWholeNumber((int) v, 0);
     }

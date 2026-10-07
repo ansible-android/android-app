@@ -1,4 +1,4 @@
-package org.ansible.ui.Stars;
+package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.formatPluralString;
@@ -58,7 +58,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.Vector;
 import org.ansible.asnet.tl.TL_account;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
@@ -87,7 +87,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class StarsController {
+public class DiamondsController {
 
     public static final String currency = "XTR";
 
@@ -96,7 +96,7 @@ public class StarsController {
     public static final int PERIOD_MINUTE = 60;
     public static final int PERIOD_5MINUTES = 300;
 
-    private static volatile StarsController[][] Instance = new StarsController[2][UserConfig.MAX_ACCOUNT_COUNT];
+    private static volatile DiamondsController[][] Instance = new DiamondsController[2][UserConfig.MAX_ACCOUNT_COUNT];
     private static final Object[][] lockObjects = new Object[2][UserConfig.MAX_ACCOUNT_COUNT];
     static {
         for (int a = 0; a < 2; ++a) {
@@ -106,25 +106,25 @@ public class StarsController {
         }
     }
 
-    public static StarsController getTonInstance(int num) {
+    public static DiamondsController getTonInstance(int num) {
         return getInstance(num, true);
     }
 
-    public static StarsController getInstance(int num) {
+    public static DiamondsController getInstance(int num) {
         return getInstance(num, false);
     }
 
-    public static StarsController getInstance(int num, AmountUtils.Currency currency) {
+    public static DiamondsController getInstance(int num, AmountUtils.Currency currency) {
         return getInstance(num, currency == AmountUtils.Currency.TON);
     }
 
-    public static StarsController getInstance(int num, boolean ton) {
-        StarsController localInstance = Instance[ton ? 1 : 0][num];
+    public static DiamondsController getInstance(int num, boolean ton) {
+        DiamondsController localInstance = Instance[ton ? 1 : 0][num];
         if (localInstance == null) {
             synchronized (lockObjects[ton ? 1 : 0][num]) {
                 localInstance = Instance[ton ? 1 : 0][num];
                 if (localInstance == null) {
-                    Instance[ton ? 1 : 0][num] = localInstance = new StarsController(num, ton);
+                    Instance[ton ? 1 : 0][num] = localInstance = new DiamondsController(num, ton);
                 }
             }
         }
@@ -134,7 +134,7 @@ public class StarsController {
     public final int currentAccount;
     public final boolean ton;
 
-    private StarsController(int account, boolean ton) {
+    private DiamondsController(int account, boolean ton) {
         this.currentAccount = account;
         this.ton = ton;
     }
@@ -144,10 +144,10 @@ public class StarsController {
     private long lastBalanceLoaded;
     private boolean balanceLoading, balanceLoaded;
     @NonNull
-    public TL_stars.StarsAmount balance = TL_stars.StarsAmount.ofStars(0);
+    public TL_diamonds.StarsAmount balance = TL_diamonds.StarsAmount.ofDiamonds(0);
     public long minus;
 
-    public TL_stars.StarsAmount getBalance() {
+    public TL_diamonds.StarsAmount getBalance() {
         return getBalance(null);
     }
 
@@ -165,14 +165,14 @@ public class StarsController {
         return getBalance(withMinus, null, false).amount;
     }
 
-    public TL_stars.StarsAmount getBalance(Runnable loaded) {
+    public TL_diamonds.StarsAmount getBalance(Runnable loaded) {
         return getBalance(true, loaded, false);
     }
 
-    public TL_stars.StarsAmount getBalance(boolean withMinus, Runnable loaded, boolean force) {
+    public TL_diamonds.StarsAmount getBalance(boolean withMinus, Runnable loaded, boolean force) {
         if ((!balanceLoaded || System.currentTimeMillis() - lastBalanceLoaded > 1000 * 60) && !balanceLoading || force) {
             balanceLoading = true;
-            TL_stars.TL_payments_getStarsStatus req = new TL_stars.TL_payments_getStarsStatus();
+            TL_diamonds.TL_payments_getDiamondsStatus req = new TL_diamonds.TL_payments_getDiamondsStatus();
             req.ton = ton;
             req.peer = new TLRPC.TL_inputPeerSelf();
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
@@ -180,13 +180,13 @@ public class StarsController {
                 boolean updatedSubscriptions = false;
                 boolean updatedBalance = !balanceLoaded;
                 lastBalanceLoaded = System.currentTimeMillis();
-                if (res instanceof TL_stars.StarsStatus) {
-                    TL_stars.StarsStatus r = (TL_stars.StarsStatus) res;
+                if (res instanceof TL_diamonds.StarsStatus) {
+                    TL_diamonds.StarsStatus r = (TL_diamonds.StarsStatus) res;
                     MessagesController.getInstance(currentAccount).putUsers(r.users, false);
                     MessagesController.getInstance(currentAccount).putChats(r.chats, false);
 
                     if (transactions[ALL_TRANSACTIONS].isEmpty()) {
-                        for (TL_stars.StarsTransaction t : r.history) {
+                        for (TL_diamonds.StarsTransaction t : r.history) {
                             transactions[ALL_TRANSACTIONS].add(t);
                             transactions[t.amount.amount > 0 ? INCOMING_TRANSACTIONS : OUTGOING_TRANSACTIONS].add(t);
                         }
@@ -218,13 +218,13 @@ public class StarsController {
                 balanceLoading = false;
                 balanceLoaded = true;
                 if (updatedBalance) {
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
                 }
                 if (updatedTransactions) {
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starTransactionsLoaded);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondTransactionsLoaded);
                 }
                 if (updatedSubscriptions) {
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starSubscriptionsLoaded);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondSubscriptionsLoaded);
                 }
 
                 if (loaded != null) {
@@ -246,7 +246,7 @@ public class StarsController {
         if (TONIntroActivity.allowTopUp()) {
             return true;
         }
-        TL_stars.StarsAmount amount = getBalance();
+        TL_diamonds.StarsAmount amount = getBalance();
         return amount.nanos != 0 || amount.amount != 0;
     }
 
@@ -262,14 +262,14 @@ public class StarsController {
         balanceLoaded = true;
     }
 
-    public void updateBalance(TL_stars.StarsAmount balance) {
+    public void updateBalance(TL_diamonds.StarsAmount balance) {
         if (!this.balance.equals(balance)) {
             this.balance = balance;
             this.minus = 0;
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
         } else if (this.minus != 0) {
             this.minus = 0;
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
         }
     }
 
@@ -278,23 +278,23 @@ public class StarsController {
     }
 
     private boolean optionsLoading, optionsLoaded;
-    private ArrayList<TL_stars.TL_starsTopupOption> options;
-    public ArrayList<TL_stars.TL_starsTopupOption> getOptionsCached() {
+    private ArrayList<TL_diamonds.TL_starsTopupOption> options;
+    public ArrayList<TL_diamonds.TL_starsTopupOption> getOptionsCached() {
         return options;
     }
 
-    public ArrayList<TL_stars.TL_starsTopupOption> getOptions() {
+    public ArrayList<TL_diamonds.TL_starsTopupOption> getOptions() {
         if (optionsLoading || optionsLoaded) {
             return options;
         }
         optionsLoading = true;
-        ConnectionsManager.getInstance(currentAccount).sendRequest(new TL_stars.TL_payments_getStarsTopupOptions(), (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            ArrayList<TL_stars.TL_starsTopupOption> loadedOptions = new ArrayList<>();
-            ArrayList<TL_stars.TL_starsTopupOption> toLoadStorePrice = new ArrayList<>();
+        ConnectionsManager.getInstance(currentAccount).sendRequest(new TL_diamonds.TL_payments_getDiamondsTopupOptions(), (res, err) -> AndroidUtilities.runOnUIThread(() -> {
+            ArrayList<TL_diamonds.TL_starsTopupOption> loadedOptions = new ArrayList<>();
+            ArrayList<TL_diamonds.TL_starsTopupOption> toLoadStorePrice = new ArrayList<>();
             if (res instanceof Vector) {
                 for (Object object : ((Vector) res).objects) {
-                    if (object instanceof TL_stars.TL_starsTopupOption) {
-                        TL_stars.TL_starsTopupOption option = (TL_stars.TL_starsTopupOption) object;
+                    if (object instanceof TL_diamonds.TL_starsTopupOption) {
+                        TL_diamonds.TL_starsTopupOption option = (TL_diamonds.TL_starsTopupOption) object;
                         loadedOptions.add(option);
                         if (option.store_product != null && !BuildVars.useInvoiceBilling()) {
                             toLoadStorePrice.add(option);
@@ -306,7 +306,7 @@ public class StarsController {
             }
             options = loadedOptions;
             optionsLoading = false;
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondOptionsLoaded);
             if (!toLoadStorePrice.isEmpty()) {
                 Runnable fetchStorePrices = () -> {
                     ArrayList<QueryProductDetailsParams.Product> productQueries = new ArrayList<>();
@@ -326,7 +326,7 @@ public class StarsController {
                         if (list != null) {
                             for (int i = 0; i < list.size(); ++i) {
                                 ProductDetails productDetails = list.get(i);
-                                TL_stars.TL_starsTopupOption option = null;
+                                TL_diamonds.TL_starsTopupOption option = null;
                                 for (int j = 0; j < toLoadStorePrice.size(); ++j) {
                                     if (toLoadStorePrice.get(j).store_product.equals(productDetails.getProductId())) {
                                         option = toLoadStorePrice.get(j);
@@ -345,13 +345,13 @@ public class StarsController {
                         }
                         if (options != null) {
                             for (int i = 0; i < options.size(); ++i) {
-                                TL_stars.TL_starsTopupOption option = options.get(i);
+                                TL_diamonds.TL_starsTopupOption option = options.get(i);
                                 if (option != null && option.loadingStorePrice) {
                                     option.missingStorePrice = true;
                                 }
                             }
                         }
-                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starOptionsLoaded);
+                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondOptionsLoaded);
                     }));
                 };
                 if (!BillingController.getInstance().isReady()) {
@@ -365,23 +365,23 @@ public class StarsController {
     }
 
     private boolean giftOptionsLoading, giftOptionsLoaded;
-    private ArrayList<TL_stars.TL_starsGiftOption> giftOptions;
-    public ArrayList<TL_stars.TL_starsGiftOption> getGiftOptionsCached() {
+    private ArrayList<TL_diamonds.TL_starsGiftOption> giftOptions;
+    public ArrayList<TL_diamonds.TL_starsGiftOption> getGiftOptionsCached() {
         return giftOptions;
     }
-    public ArrayList<TL_stars.TL_starsGiftOption> getGiftOptions() {
+    public ArrayList<TL_diamonds.TL_starsGiftOption> getGiftOptions() {
         if (giftOptionsLoading || giftOptionsLoaded) {
             return giftOptions;
         }
         giftOptionsLoading = true;
-        TL_stars.TL_payments_getStarsGiftOptions req = new TL_stars.TL_payments_getStarsGiftOptions();
+        TL_diamonds.TL_payments_getDiamondsGiftOptions req = new TL_diamonds.TL_payments_getDiamondsGiftOptions();
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            ArrayList<TL_stars.TL_starsGiftOption> loadedOptions = new ArrayList<>();
-            ArrayList<TL_stars.TL_starsGiftOption> toLoadStorePrice = new ArrayList<>();
+            ArrayList<TL_diamonds.TL_starsGiftOption> loadedOptions = new ArrayList<>();
+            ArrayList<TL_diamonds.TL_starsGiftOption> toLoadStorePrice = new ArrayList<>();
             if (res instanceof Vector) {
                 for (Object object : ((Vector) res).objects) {
-                    if (object instanceof TL_stars.TL_starsGiftOption) {
-                        TL_stars.TL_starsGiftOption option = (TL_stars.TL_starsGiftOption) object;
+                    if (object instanceof TL_diamonds.TL_starsGiftOption) {
+                        TL_diamonds.TL_starsGiftOption option = (TL_diamonds.TL_starsGiftOption) object;
                         loadedOptions.add(option);
                         if (option.store_product != null && !BuildVars.useInvoiceBilling()) {
                             toLoadStorePrice.add(option);
@@ -393,7 +393,7 @@ public class StarsController {
             }
             giftOptions = loadedOptions;
             giftOptionsLoading = false;
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starGiftOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondGiftOptionsLoaded);
             if (!toLoadStorePrice.isEmpty()) {
                 Runnable fetchStorePrices = () -> {
                     ArrayList<QueryProductDetailsParams.Product> productQueries = new ArrayList<>();
@@ -413,7 +413,7 @@ public class StarsController {
                         if (list != null) {
                             for (int i = 0; i < list.size(); ++i) {
                                 ProductDetails productDetails = list.get(i);
-                                TL_stars.TL_starsGiftOption option = null;
+                                TL_diamonds.TL_starsGiftOption option = null;
                                 for (int j = 0; j < toLoadStorePrice.size(); ++j) {
                                     if (toLoadStorePrice.get(j).store_product.equals(productDetails.getProductId())) {
                                         option = toLoadStorePrice.get(j);
@@ -432,13 +432,13 @@ public class StarsController {
                         }
                         if (giftOptions != null) {
                             for (int i = 0; i < giftOptions.size(); ++i) {
-                                TL_stars.TL_starsGiftOption option = giftOptions.get(i);
+                                TL_diamonds.TL_starsGiftOption option = giftOptions.get(i);
                                 if (option != null && option.loadingStorePrice) {
                                     option.missingStorePrice = true;
                                 }
                             }
                         }
-                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starGiftOptionsLoaded);
+                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondGiftOptionsLoaded);
                     }));
                 };
                 if (!BillingController.getInstance().isReady()) {
@@ -452,23 +452,23 @@ public class StarsController {
     }
 
     private boolean giveawayOptionsLoading, giveawayOptionsLoaded;
-    private ArrayList<TL_stars.TL_starsGiveawayOption> giveawayOptions;
-    public ArrayList<TL_stars.TL_starsGiveawayOption> getGiveawayOptionsCached() {
+    private ArrayList<TL_diamonds.TL_starsGiveawayOption> giveawayOptions;
+    public ArrayList<TL_diamonds.TL_starsGiveawayOption> getGiveawayOptionsCached() {
         return giveawayOptions;
     }
-    public ArrayList<TL_stars.TL_starsGiveawayOption> getGiveawayOptions() {
+    public ArrayList<TL_diamonds.TL_starsGiveawayOption> getGiveawayOptions() {
         if (giveawayOptionsLoading || giveawayOptionsLoaded) {
             return giveawayOptions;
         }
         giveawayOptionsLoading = true;
-        TL_stars.TL_payments_getStarsGiveawayOptions req = new TL_stars.TL_payments_getStarsGiveawayOptions();
+        TL_diamonds.TL_payments_getDiamondsGiveawayOptions req = new TL_diamonds.TL_payments_getDiamondsGiveawayOptions();
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            ArrayList<TL_stars.TL_starsGiveawayOption> loadedOptions = new ArrayList<>();
-            ArrayList<TL_stars.TL_starsGiveawayOption> toLoadStorePrice = new ArrayList<>();
+            ArrayList<TL_diamonds.TL_starsGiveawayOption> loadedOptions = new ArrayList<>();
+            ArrayList<TL_diamonds.TL_starsGiveawayOption> toLoadStorePrice = new ArrayList<>();
             if (res instanceof Vector) {
                 for (Object object : ((Vector) res).objects) {
-                    if (object instanceof TL_stars.TL_starsGiveawayOption) {
-                        TL_stars.TL_starsGiveawayOption option = (TL_stars.TL_starsGiveawayOption) object;
+                    if (object instanceof TL_diamonds.TL_starsGiveawayOption) {
+                        TL_diamonds.TL_starsGiveawayOption option = (TL_diamonds.TL_starsGiveawayOption) object;
                         loadedOptions.add(option);
                         if (option.store_product != null && !BuildVars.useInvoiceBilling()) {
                             toLoadStorePrice.add(option);
@@ -480,7 +480,7 @@ public class StarsController {
             }
             giveawayOptions = loadedOptions;
             giveawayOptionsLoading = false;
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starGiveawayOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondGiveawayOptionsLoaded);
             if (!toLoadStorePrice.isEmpty()) {
                 Runnable fetchStorePrices = () -> {
                     ArrayList<QueryProductDetailsParams.Product> productQueries = new ArrayList<>();
@@ -500,7 +500,7 @@ public class StarsController {
                         if (list != null) {
                             for (int i = 0; i < list.size(); ++i) {
                                 ProductDetails productDetails = list.get(i);
-                                TL_stars.TL_starsGiveawayOption option = null;
+                                TL_diamonds.TL_starsGiveawayOption option = null;
                                 for (int j = 0; j < toLoadStorePrice.size(); ++j) {
                                     if (toLoadStorePrice.get(j).store_product.equals(productDetails.getProductId())) {
                                         option = toLoadStorePrice.get(j);
@@ -519,13 +519,13 @@ public class StarsController {
                         }
                         if (giveawayOptions != null) {
                             for (int i = 0; i < giveawayOptions.size(); ++i) {
-                                TL_stars.TL_starsGiveawayOption option = giveawayOptions.get(i);
+                                TL_diamonds.TL_starsGiveawayOption option = giveawayOptions.get(i);
                                 if (option != null && option.loadingStorePrice) {
                                     option.missingStorePrice = true;
                                 }
                             }
                         }
-                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starGiveawayOptionsLoaded);
+                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondGiveawayOptionsLoaded);
                     }));
                 };
                 if (!BillingController.getInstance().isReady()) {
@@ -555,7 +555,7 @@ public class StarsController {
     public static final int INCOMING_TRANSACTIONS = 1;
     public static final int OUTGOING_TRANSACTIONS = 2;
 
-    public final ArrayList<TL_stars.StarsTransaction>[] transactions = new ArrayList[] { new ArrayList<>(), new ArrayList<>(), new ArrayList<>() };
+    public final ArrayList<TL_diamonds.StarsTransaction>[] transactions = new ArrayList[] { new ArrayList<>(), new ArrayList<>(), new ArrayList<>() };
     public final boolean[] transactionsExist = new boolean[3];
     private final String[] offset = new String[3];
     private final boolean[] loading = new boolean[3];
@@ -586,7 +586,7 @@ public class StarsController {
 
         loading[type] = true;
 
-        TL_stars.TL_payments_getStarsTransactions req = new TL_stars.TL_payments_getStarsTransactions();
+        TL_diamonds.TL_payments_getDiamondsTransactions req = new TL_diamonds.TL_payments_getDiamondsTransactions();
         req.ton = ton;
         req.peer = new TLRPC.TL_inputPeerSelf();
         req.inbound = type == INCOMING_TRANSACTIONS;
@@ -597,8 +597,8 @@ public class StarsController {
         }
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
             loading[type] = false;
-            if (res instanceof TL_stars.StarsStatus) {
-                TL_stars.StarsStatus r = (TL_stars.StarsStatus) res;
+            if (res instanceof TL_diamonds.StarsStatus) {
+                TL_diamonds.StarsStatus r = (TL_diamonds.StarsStatus) res;
                 MessagesController.getInstance(currentAccount).putUsers(r.users, false);
                 MessagesController.getInstance(currentAccount).putChats(r.chats, false);
 
@@ -608,7 +608,7 @@ public class StarsController {
                 offset[type] = endReached[type] ? null : r.next_offset;
 
                 updateBalance(r.balance);
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starTransactionsLoaded);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondTransactionsLoaded);
             }
         }));
     }
@@ -629,7 +629,7 @@ public class StarsController {
 
     // ===== STAR SUBSCRIPTIONS =====
 
-    public final ArrayList<TL_stars.StarsSubscription> subscriptions = new ArrayList<>();
+    public final ArrayList<TL_diamonds.StarsSubscription> subscriptions = new ArrayList<>();
     public String subscriptionsOffset;
     public boolean subscriptionsLoading, subscriptionsEndReached;
 
@@ -649,7 +649,7 @@ public class StarsController {
     public void loadSubscriptions() {
         if (ton || subscriptionsLoading || subscriptionsEndReached) return;
         subscriptionsLoading = true;
-        final TL_stars.TL_getStarsSubscriptions req = new TL_stars.TL_getStarsSubscriptions();
+        final TL_diamonds.TL_getDiamondsSubscriptions req = new TL_diamonds.TL_getDiamondsSubscriptions();
         req.peer = new TLRPC.TL_inputPeerSelf();
         req.offset = subscriptionsOffset;
         if (req.offset == null) {
@@ -657,8 +657,8 @@ public class StarsController {
         }
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
             subscriptionsLoading = false;
-            if (res instanceof TL_stars.StarsStatus) {
-                TL_stars.StarsStatus r = (TL_stars.StarsStatus) res;
+            if (res instanceof TL_diamonds.StarsStatus) {
+                TL_diamonds.StarsStatus r = (TL_diamonds.StarsStatus) res;
                 MessagesController.getInstance(currentAccount).putUsers(r.users, false);
                 MessagesController.getInstance(currentAccount).putChats(r.chats, false);
 
@@ -667,7 +667,7 @@ public class StarsController {
                 subscriptionsOffset = r.subscriptions_next_offset;
 
                 updateBalance(r.balance);
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starSubscriptionsLoaded);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondSubscriptionsLoaded);
             }
         }));
     }
@@ -678,24 +678,24 @@ public class StarsController {
         return subscriptionsEndReached;
     }
 
-    public final ArrayList<TL_stars.StarsSubscription> insufficientSubscriptions = new ArrayList<>();
+    public final ArrayList<TL_diamonds.StarsSubscription> insufficientSubscriptions = new ArrayList<>();
     private boolean insufficientSubscriptionsLoading;
     public void loadInsufficientSubscriptions() {
         if (insufficientSubscriptionsLoading) return;
         insufficientSubscriptionsLoading = true;
-        TL_stars.TL_getStarsSubscriptions req = new TL_stars.TL_getStarsSubscriptions();
+        TL_diamonds.TL_getDiamondsSubscriptions req = new TL_diamonds.TL_getDiamondsSubscriptions();
         req.peer = new TLRPC.TL_inputPeerSelf();
         req.missing_balance = true;
         req.offset = "";
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
             insufficientSubscriptionsLoading = false;
-            if (res instanceof TL_stars.StarsStatus) {
-                TL_stars.StarsStatus r = (TL_stars.StarsStatus) res;
+            if (res instanceof TL_diamonds.StarsStatus) {
+                TL_diamonds.StarsStatus r = (TL_diamonds.StarsStatus) res;
                 MessagesController.getInstance(currentAccount).putUsers(r.users, false);
                 MessagesController.getInstance(currentAccount).putChats(r.chats, false);
                 insufficientSubscriptions.addAll(r.subscriptions);
                 updateBalance(r.balance);
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starSubscriptionsLoaded);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondSubscriptionsLoaded);
             }
         }));
     }
@@ -718,34 +718,34 @@ public class StarsController {
         return null;
     }
 
-    public void showStarsTopup(Activity activity, long amount, String purpose) {
+    public void showDiamondsTopup(Activity activity, long amount, String purpose) {
         if (!balanceAvailable()) {
             getBalance(() -> {
-                showStarsTopupInternal(activity, amount, purpose);
+                showDiamondsTopupInternal(activity, amount, purpose);
             });
             return;
         }
-        showStarsTopupInternal(activity, amount, purpose);
+        showDiamondsTopupInternal(activity, amount, purpose);
     }
 
-    private void showStarsTopupInternal(Activity activity, long amount, String purpose) {
+    private void showDiamondsTopupInternal(Activity activity, long amount, String purpose) {
         if (getBalance().amount >= amount || amount <= 0) {
             BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
             if (lastFragment == null) return;
             BulletinFactory.of(lastFragment).createSimpleBulletin(R.raw.stars_topup, getString(R.string.DiamondsTopupLinkEnough), getString(R.string.DiamondsTopupLinkTopupAnyway), () -> {
                 BaseFragment lastFragment2 = LaunchActivity.getSafeLastFragment();
                 if (lastFragment2 == null) return;
-                lastFragment2.presentFragment(new StarsIntroActivity());
+                lastFragment2.presentFragment(new DiamondsIntroActivity());
             }).setDuration(Bulletin.DURATION_PROLONG).show(true);
             return;
         }
-        new StarsIntroActivity.StarsNeededSheet(activity, null, amount, StarsIntroActivity.StarsNeededSheet.TYPE_LINK, purpose, () -> {
+        new DiamondsIntroActivity.DiamondsNeededSheet(activity, null, amount, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_LINK, purpose, () -> {
 
         }, 0).show();
     }
 
     private boolean isInvoiceBillingDisabled(TLRPC.InputPeer purposePeer) {
-        return AppGlobalConfig.getInstance(currentAccount).starsSpendTopUpInvoiceDisabled.get() && purposePeer != null;
+        return AppGlobalConfig.getInstance(currentAccount).diamondsSpendTopUpInvoiceDisabled.get() && purposePeer != null;
     }
 
     public boolean canBuy(TLRPC.InputPeer purposePeer) {
@@ -758,7 +758,7 @@ public class StarsController {
 
     public void buy(
         Activity activity,
-        TL_stars.TL_starsTopupOption option,
+        TL_diamonds.TL_starsTopupOption option,
         Utilities.Callback2<Boolean, String> whenDone,
         TLRPC.InputPeer purposePeer
     ) {
@@ -766,7 +766,7 @@ public class StarsController {
             return;
         }
 
-        if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+        if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
             BaseFragment lastFragment = LaunchActivity.getLastFragment();
             if (lastFragment != null && lastFragment.getContext() != null) {
                 showNoSupportDialog(lastFragment.getContext(), lastFragment.getResourceProvider());
@@ -778,13 +778,13 @@ public class StarsController {
 
         final boolean isInvoiceBillingDisabled = isInvoiceBillingDisabled(purposePeer);
         if ((BuildVars.useInvoiceBilling() || !BillingController.getInstance().isReady()) && !isInvoiceBillingDisabled) {
-            final TLRPC.TL_inputStorePaymentStarsTopup purpose = new TLRPC.TL_inputStorePaymentStarsTopup();
+            final TLRPC.TL_inputStorePaymentDiamondsTopup purpose = new TLRPC.TL_inputStorePaymentDiamondsTopup();
             purpose.stars = option.stars;
             purpose.amount = option.amount;
             purpose.currency = option.currency;
             purpose.spend_purpose_peer = purposePeer;
 
-            TLRPC.TL_inputInvoiceStars invoice = new TLRPC.TL_inputInvoiceStars();
+            TLRPC.TL_inputInvoiceDiamonds invoice = new TLRPC.TL_inputInvoiceDiamonds();
             invoice.purpose = purpose;
 
             TLRPC.TL_payments_getPaymentForm req = new TLRPC.TL_payments_getPaymentForm();
@@ -851,7 +851,7 @@ public class StarsController {
             return;
         }
 
-        final TLRPC.TL_inputStorePaymentStarsTopup payload = new TLRPC.TL_inputStorePaymentStarsTopup();
+        final TLRPC.TL_inputStorePaymentDiamondsTopup payload = new TLRPC.TL_inputStorePaymentDiamondsTopup();
         payload.stars = option.stars;
         payload.currency = option.currency;
         payload.amount = option.amount;
@@ -898,12 +898,12 @@ public class StarsController {
         }));
     }
 
-    public void buyGift(Activity activity, TL_stars.TL_starsGiftOption option, long user_id, Utilities.Callback2<Boolean, String> whenDone) {
+    public void buyGift(Activity activity, TL_diamonds.TL_starsGiftOption option, long user_id, Utilities.Callback2<Boolean, String> whenDone) {
         if (activity == null) {
             return;
         }
 
-        if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+        if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
             BaseFragment lastFragment = LaunchActivity.getLastFragment();
             if (lastFragment != null && lastFragment.getContext() != null) {
                 showNoSupportDialog(lastFragment.getContext(), lastFragment.getResourceProvider());
@@ -914,13 +914,13 @@ public class StarsController {
         }
 
         if (BuildVars.useInvoiceBilling() || !BillingController.getInstance().isReady()) {
-            TLRPC.TL_inputStorePaymentStarsGift purpose = new TLRPC.TL_inputStorePaymentStarsGift();
+            TLRPC.TL_inputStorePaymentDiamondsGift purpose = new TLRPC.TL_inputStorePaymentDiamondsGift();
             purpose.stars = option.stars;
             purpose.amount = option.amount;
             purpose.currency = option.currency;
             purpose.user_id = MessagesController.getInstance(currentAccount).getInputUser(user_id);
 
-            TLRPC.TL_inputInvoiceStars invoice = new TLRPC.TL_inputInvoiceStars();
+            TLRPC.TL_inputInvoiceDiamonds invoice = new TLRPC.TL_inputInvoiceDiamonds();
             invoice.purpose = purpose;
 
             TLRPC.TL_payments_getPaymentForm req = new TLRPC.TL_payments_getPaymentForm();
@@ -980,7 +980,7 @@ public class StarsController {
             return;
         }
 
-        TLRPC.TL_inputStorePaymentStarsGift payload = new TLRPC.TL_inputStorePaymentStarsGift();
+        TLRPC.TL_inputStorePaymentDiamondsGift payload = new TLRPC.TL_inputStorePaymentDiamondsGift();
         payload.stars = option.stars;
         payload.currency = option.currency;
         payload.amount = option.amount;
@@ -1040,7 +1040,7 @@ public class StarsController {
     public void buyGiveaway(
             Activity activity,
             TLRPC.Chat chat, List<TLObject> chats,
-            TL_stars.TL_starsGiveawayOption option, int users,
+            TL_diamonds.TL_starsGiveawayOption option, int users,
             List<TLObject> countries,
             int date,
             boolean winnersVisible,
@@ -1052,7 +1052,7 @@ public class StarsController {
             return;
         }
 
-        if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+        if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
             BaseFragment lastFragment = LaunchActivity.getLastFragment();
             if (lastFragment != null && lastFragment.getContext() != null) {
                 showNoSupportDialog(lastFragment.getContext(), lastFragment.getResourceProvider());
@@ -1062,7 +1062,7 @@ public class StarsController {
             return;
         }
 
-        TLRPC.TL_inputStorePaymentStarsGiveaway payload = new TLRPC.TL_inputStorePaymentStarsGiveaway();
+        TLRPC.TL_inputStorePaymentDiamondsGiveaway payload = new TLRPC.TL_inputStorePaymentDiamondsGiveaway();
         payload.only_new_subscribers = onlyNewSubscribers;
         payload.winners_are_visible = winnersVisible;
         payload.stars = option.stars;
@@ -1092,7 +1092,7 @@ public class StarsController {
 
         if (BuildVars.useInvoiceBilling() || !BillingController.getInstance().isReady() || option.store_product == null) {
 
-            TLRPC.TL_inputInvoiceStars invoice = new TLRPC.TL_inputInvoiceStars();
+            TLRPC.TL_inputInvoiceDiamonds invoice = new TLRPC.TL_inputInvoiceDiamonds();
             invoice.purpose = payload;
 
             TLRPC.TL_payments_getPaymentForm req = new TLRPC.TL_payments_getPaymentForm();
@@ -1232,8 +1232,8 @@ public class StarsController {
         req.invoice = inputInvoice;
 
         final int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            if (res instanceof TLRPC.TL_payments_paymentFormStars) {
-                openPaymentForm(messageObject, inputInvoice, (TLRPC.TL_payments_paymentFormStars) res, whenShown, null);
+            if (res instanceof TLRPC.TL_payments_paymentFormDiamonds) {
+                openPaymentForm(messageObject, inputInvoice, (TLRPC.TL_payments_paymentFormDiamonds) res, whenShown, null);
             } else {
                 bulletinError(err, "NO_PAYMENT_FORM");
             }
@@ -1247,7 +1247,7 @@ public class StarsController {
 
     private boolean paymentFormOpened;
 
-    public void openPaymentForm(MessageObject messageObject, TLRPC.InputInvoice inputInvoice, TLRPC.TL_payments_paymentFormStars form, Runnable whenShown, Utilities.Callback<String> whenAllDone) {
+    public void openPaymentForm(MessageObject messageObject, TLRPC.InputInvoice inputInvoice, TLRPC.TL_payments_paymentFormDiamonds form, Runnable whenShown, Utilities.Callback<String> whenAllDone) {
         if (form == null || form.invoice == null || paymentFormOpened) return;
         MessagesController.getInstance(currentAccount).putUsers(form.users, false);
 
@@ -1270,11 +1270,11 @@ public class StarsController {
             return;
         }
 
-        long _stars = 0;
+        long _diamonds = 0;
         for (TLRPC.TL_labeledPrice price : form.invoice.prices) {
-            _stars += price.amount;
+            _diamonds += price.amount;
         }
-        final long stars = _stars;
+        final long stars = _diamonds;
         final long dialogId = messageObject != null && messageObject.type == MessageObject.TYPE_PAID_MEDIA ? (
             (messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.from_id != null) ?
                 DialogObject.getPeerDialogId(messageObject.messageOwner.fwd_from.from_id) :
@@ -1301,9 +1301,9 @@ public class StarsController {
 
         final int subscription_period = form.invoice.subscription_period;
         final boolean[] allDone = new boolean[] { false };
-        StarsIntroActivity.openConfirmPurchaseSheet(context, resourcesProvider, currentAccount, messageObject, dialogId, product, stars, form.photo, subscription_period, whenDone -> {
+        DiamondsIntroActivity.openConfirmPurchaseSheet(context, resourcesProvider, currentAccount, messageObject, dialogId, product, stars, form.photo, subscription_period, whenDone -> {
             if (balance.amount < stars) {
-                if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+                if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
                     paymentFormOpened = false;
                     if (whenDone != null) {
                         whenDone.run(false);
@@ -1316,7 +1316,7 @@ public class StarsController {
                     return;
                 }
                 final boolean[] purchased = new boolean[] { false };
-                StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, isBiz ? StarsIntroActivity.StarsNeededSheet.TYPE_BIZ : StarsIntroActivity.StarsNeededSheet.TYPE_BOT, bot, () -> {
+                DiamondsIntroActivity.DiamondsNeededSheet sheet = new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, stars, isBiz ? DiamondsIntroActivity.DiamondsNeededSheet.TYPE_BIZ : DiamondsIntroActivity.DiamondsNeededSheet.TYPE_BOT, bot, () -> {
                     purchased[0] = true;
                     payAfterConfirmed(messageObject, inputInvoice, form, success -> {
                         allDone[0] = true;
@@ -1377,9 +1377,9 @@ public class StarsController {
         final int currentAccount = UserConfig.selectedAccount;
 
         final boolean[] allDone = new boolean[] { false };
-        StarsIntroActivity.openStarsChannelInviteSheet(context, resourcesProvider, currentAccount, chatInvite, whenDone -> {
+        DiamondsIntroActivity.openDiamondsChannelInviteSheet(context, resourcesProvider, currentAccount, chatInvite, whenDone -> {
             if (balance.amount < stars) {
-                if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+                if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
                     paymentFormOpened = false;
                     if (whenDone != null) {
                         whenDone.run(false);
@@ -1392,7 +1392,7 @@ public class StarsController {
                     return;
                 }
                 final boolean[] purchased = new boolean[] { false };
-                StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, StarsIntroActivity.StarsNeededSheet.TYPE_SUBSCRIPTION_BUY, chatInvite.title, () -> {
+                DiamondsIntroActivity.DiamondsNeededSheet sheet = new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, stars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_SUBSCRIPTION_BUY, chatInvite.title, () -> {
                     purchased[0] = true;
                     payAfterConfirmed(hash, chatInvite, (did, success) -> {
                         allDone[0] = true;
@@ -1443,7 +1443,7 @@ public class StarsController {
             .show();
     }
 
-    public void payAfterConfirmed(MessageObject messageObject, TLRPC.InputInvoice inputInvoice, TLRPC.TL_payments_paymentFormStars form, Utilities.Callback<Boolean> whenDone) {
+    public void payAfterConfirmed(MessageObject messageObject, TLRPC.InputInvoice inputInvoice, TLRPC.TL_payments_paymentFormDiamonds form, Utilities.Callback<Boolean> whenDone) {
         if (form == null) {
             return;
         }
@@ -1455,11 +1455,11 @@ public class StarsController {
             return;
         }
 
-        long _stars = 0;
+        long _diamonds = 0;
         for (TLRPC.TL_labeledPrice price : form.invoice.prices) {
-            _stars += price.amount;
+            _diamonds += price.amount;
         }
-        final long stars = _stars;
+        final long stars = _diamonds;
         final long dialogId;
         if (messageObject != null) {
             long did;
@@ -1488,7 +1488,7 @@ public class StarsController {
         final String product = form.title;
         final int subscription_period = form.invoice.subscription_period;
 
-        TL_stars.TL_payments_sendStarsForm req2 = new TL_stars.TL_payments_sendStarsForm();
+        TL_diamonds.TL_payments_sendDiamondsForm req2 = new TL_diamonds.TL_payments_sendDiamondsForm();
         req2.form_id = form.form_id;
         req2.invoice = inputInvoice;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (res2, err2) -> AndroidUtilities.runOnUIThread(() -> {
@@ -1507,8 +1507,8 @@ public class StarsController {
 
                 final boolean media = messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaPaidMedia;
                 if (media) {
-                    Drawable starDrawable = context.getResources().getDrawable(R.drawable.diamond).mutate();
-                    b.createSimpleBulletin(starDrawable, getString(R.string.DiamondsMediaPurchaseCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsMediaPurchaseCompletedInfo", (int) stars, bot))).show();
+                    Drawable diamondDrawable = context.getResources().getDrawable(R.drawable.diamond).mutate();
+                    b.createSimpleBulletin(diamondDrawable, getString(R.string.DiamondsMediaPurchaseCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsMediaPurchaseCompletedInfo", (int) stars, bot))).show();
                 } else if (subscription_period > 0) {
                     b.createSimpleBulletin(R.raw.stars_send, getString(R.string.DiamondsBotSubscriptionCompleted), AndroidUtilities.replaceTags(formatPluralString("DiamondsBotSubscriptionCompletedInfo", (int) stars, product, bot))).show();
                 } else {
@@ -1518,8 +1518,8 @@ public class StarsController {
                     LaunchActivity.instance.getFireworksOverlay().start(true);
                 }
 
-                final boolean isStarsGift = inputInvoice instanceof TLRPC.TL_inputInvoiceStars && ((TLRPC.TL_inputInvoiceStars) inputInvoice).purpose instanceof TLRPC.TL_inputStorePaymentStarsGift;
-                if (!isStarsGift) {
+                final boolean isDiamondsGift = inputInvoice instanceof TLRPC.TL_inputInvoiceDiamonds && ((TLRPC.TL_inputInvoiceDiamonds) inputInvoice).purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGift;
+                if (!isDiamondsGift) {
                     invalidateTransactions(true);
                 }
 
@@ -1530,7 +1530,7 @@ public class StarsController {
                     ConnectionsManager.getInstance(currentAccount).sendRequest(req, null);
                 }
             } else if (err2 != null && "BALANCE_TOO_LOW".equals(err2.text)) {
-                if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+                if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
                     if (whenDone != null) {
                         whenDone.run(false);
                     }
@@ -1538,7 +1538,7 @@ public class StarsController {
                     return;
                 }
                 final boolean[] purchased = new boolean[] { false };
-                StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, StarsIntroActivity.StarsNeededSheet.TYPE_BOT, bot, () -> {
+                DiamondsIntroActivity.DiamondsNeededSheet sheet = new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, stars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_BOT, bot, () -> {
                     purchased[0] = true;
                     payAfterConfirmed(messageObject, inputInvoice, form, success -> {
                         if (whenDone != null) {
@@ -1562,8 +1562,8 @@ public class StarsController {
                 }
                 req.invoice = inputInvoice;
                 ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res3, err3) -> AndroidUtilities.runOnUIThread(() -> {
-                    if (res3 instanceof TLRPC.TL_payments_paymentFormStars) {
-                        payAfterConfirmed(messageObject, inputInvoice, (TLRPC.TL_payments_paymentFormStars) res3, whenDone);
+                    if (res3 instanceof TLRPC.TL_payments_paymentFormDiamonds) {
+                        payAfterConfirmed(messageObject, inputInvoice, (TLRPC.TL_payments_paymentFormDiamonds) res3, whenDone);
                     } else {
                         if (whenDone != null) {
                             whenDone.run(false);
@@ -1605,7 +1605,7 @@ public class StarsController {
         TLRPC.TL_inputInvoiceChatInviteSubscription inputInvoice = new TLRPC.TL_inputInvoiceChatInviteSubscription();
         inputInvoice.hash = hash;
 
-        TL_stars.TL_payments_sendStarsForm req2 = new TL_stars.TL_payments_sendStarsForm();
+        TL_diamonds.TL_payments_sendDiamondsForm req2 = new TL_diamonds.TL_payments_sendDiamondsForm();
         req2.form_id = chatInvite.subscription_form_id;
         req2.invoice = inputInvoice;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (res2, err2) -> AndroidUtilities.runOnUIThread(() -> {
@@ -1646,7 +1646,7 @@ public class StarsController {
                 invalidateTransactions(true);
                 invalidateSubscriptions(true);
             } else if (err2 != null && "BALANCE_TOO_LOW".equals(err2.text)) {
-                if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+                if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
                     if (whenDone != null) {
                         whenDone.run(0L, false);
                     }
@@ -1654,7 +1654,7 @@ public class StarsController {
                     return;
                 }
                 final boolean[] purchased = new boolean[] { false };
-                StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, StarsIntroActivity.StarsNeededSheet.TYPE_SUBSCRIPTION_BUY, chatInvite.title, () -> {
+                DiamondsIntroActivity.DiamondsNeededSheet sheet = new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, stars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_SUBSCRIPTION_BUY, chatInvite.title, () -> {
                     purchased[0] = true;
                     payAfterConfirmed(hash, chatInvite, (did, success) -> {
                         if (whenDone != null) {
@@ -1859,8 +1859,8 @@ public class StarsController {
             return getPeerId() == UserObject.ANONYMOUS;
         }
 
-        public StarReactionsOverlay overlay;
-        public void setOverlay(StarReactionsOverlay overlay) {
+        public DiamondReactionsOverlay overlay;
+        public void setOverlay(DiamondReactionsOverlay overlay) {
             this.overlay = overlay;
         }
 
@@ -1937,7 +1937,7 @@ public class StarsController {
                 messageObject.addPaidReactions((int) +amount, true, getPeerId());
                 minus += amount;
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.didUpdateReactions, messageObject.getDialogId(), messageObject.getId(), messageObject.messageOwner.reactions);
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
             } else {
                 applied = false;
                 if (messageObject.ensurePaidReactionsExist(true)) {
@@ -1955,7 +1955,7 @@ public class StarsController {
                 applied = true;
                 messageObject.addPaidReactions((int) +not_added, true, getPeerId());
                 minus += not_added;
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
                 not_added = 0;
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.didUpdateReactions, messageObject.getDialogId(), messageObject.getId(), messageObject.messageOwner.reactions);
             }
@@ -1983,7 +1983,7 @@ public class StarsController {
                 cancelled = true;
                 messageObject.addPaidReactions((int) -amount, wasChosen, getPeerId());
                 minus -= amount;
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
             }
             bulletin.hide();
             if (overlay != null && overlay.isShowing(messageObject)) {
@@ -2007,7 +2007,7 @@ public class StarsController {
 
             messageObject.addPaidReactions((int) -amount, wasChosen, getPeerId());
             minus -= amount;
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
             NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.didUpdateReactions, messageObject.getDialogId(), messageObject.getId(), messageObject.messageOwner.reactions);
 
             if (currentPendingReactions == this) {
@@ -2020,17 +2020,17 @@ public class StarsController {
                 return;
             }
 
-            final StarsController starsController = StarsController.getInstance(currentAccount);
+            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
             final MessagesController messagesController = MessagesController.getInstance(currentAccount);
             final ConnectionsManager connectionsManager = ConnectionsManager.getInstance(currentAccount);
 
             final long totalStars = amount;
-            if (starsController.balanceAvailable() && starsController.getBalance(false) < totalStars) {
+            if (diamondsController.balanceAvailable() && diamondsController.getBalance(false) < totalStars) {
                 cancelled = true;
 
                 messageObject.addPaidReactions((int) -amount, wasChosen, getPeerId());
                 minus = 0;
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondBalanceUpdated);
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.didUpdateReactions, messageObject.getDialogId(), messageObject.getId(), messageObject.messageOwner.reactions);
 
                 String name;
@@ -2044,7 +2044,7 @@ public class StarsController {
                 Context context = chatActivity.getContext();
                 if (context == null) context = LaunchActivity.instance;
                 if (context == null) context = ApplicationLoader.applicationContext;
-                new StarsIntroActivity.StarsNeededSheet(context, chatActivity.getResourceProvider(), totalStars, StarsIntroActivity.StarsNeededSheet.TYPE_REACTIONS, name, () -> {
+                new DiamondsIntroActivity.DiamondsNeededSheet(context, chatActivity.getResourceProvider(), totalStars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_REACTIONS, name, () -> {
                     sendPaidReaction(messageObject, chatActivity, totalStars, true, true, peer);
                 }, 0).show();
 
@@ -2061,11 +2061,11 @@ public class StarsController {
             req.flags |= 1;
             final long privacyDialogId = getPeerId();
             if (privacyDialogId == 0 || privacyDialogId == UserConfig.getInstance(currentAccount).getClientUserId()) {
-                req.privacy = new TL_stars.paidReactionPrivacyDefault();
+                req.privacy = new TL_diamonds.paidReactionPrivacyDefault();
             } else if (privacyDialogId == UserObject.ANONYMOUS) {
-                req.privacy = new TL_stars.paidReactionPrivacyAnonymous();
+                req.privacy = new TL_diamonds.paidReactionPrivacyAnonymous();
             } else {
-                req.privacy = new TL_stars.paidReactionPrivacyPeer();
+                req.privacy = new TL_diamonds.paidReactionPrivacyPeer();
                 req.privacy.peer = messagesController.getInputPeer(privacyDialogId);
             }
 
@@ -2092,7 +2092,7 @@ public class StarsController {
                         Context context = chatActivity.getContext();
                         if (context == null) context = LaunchActivity.instance;
                         if (context == null) context = ApplicationLoader.applicationContext;
-                        new StarsIntroActivity.StarsNeededSheet(context, chatActivity.getResourceProvider(), totalStars, StarsIntroActivity.StarsNeededSheet.TYPE_REACTIONS, name, () -> {
+                        new DiamondsIntroActivity.DiamondsNeededSheet(context, chatActivity.getResourceProvider(), totalStars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_REACTIONS, name, () -> {
                             sendPaidReaction(messageObject, chatActivity, totalStars, true, true, peer);
                         }, 0).show();
                     }
@@ -2104,7 +2104,7 @@ public class StarsController {
         }
     }
 
-    public StarsController.PendingPaidReactions sendPaidReaction(MessageObject messageObject, ChatActivity chatActivity) {
+    public DiamondsController.PendingPaidReactions sendPaidReaction(MessageObject messageObject, ChatActivity chatActivity) {
         return sendPaidReaction(messageObject, chatActivity, +1, true, true, null);
     }
 
@@ -2118,7 +2118,7 @@ public class StarsController {
         return null;
     }
 
-    public StarsController.PendingPaidReactions sendPaidReaction(
+    public DiamondsController.PendingPaidReactions sendPaidReaction(
         MessageObject messageObject,
         ChatActivity chatActivity,
         long amount,
@@ -2127,7 +2127,7 @@ public class StarsController {
         Long peer
     ) {
         final MessageId key = MessageId.from(messageObject);
-        final StarsController s = StarsController.getInstance(currentAccount);
+        final DiamondsController s = DiamondsController.getInstance(currentAccount);
         final long totalStars = amount;
         final Context context = getContext(chatActivity);
         if (context == null) return null;
@@ -2142,7 +2142,7 @@ public class StarsController {
                 name = chat == null ? "" : chat.title;
             }
             if (context == null) return null;
-            new StarsIntroActivity.StarsNeededSheet(context, chatActivity.getResourceProvider(), totalStars, StarsIntroActivity.StarsNeededSheet.TYPE_REACTIONS, name, () -> {
+            new DiamondsIntroActivity.DiamondsNeededSheet(context, chatActivity.getResourceProvider(), totalStars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_REACTIONS, name, () -> {
                 sendPaidReaction(messageObject, chatActivity, totalStars, true, true, peer);
             }, 0).show();
             return null;
@@ -2154,7 +2154,7 @@ public class StarsController {
             currentPendingReactions = new PendingPaidReactions(key, messageObject, chatActivity, ConnectionsManager.getInstance(currentAccount).getCurrentTime(), affect);
             currentPendingReactions.peer = peer;
         }
-        if (currentPendingReactions.amount + amount > MessagesController.getInstance(currentAccount).starsPaidReactionAmountMax) {
+        if (currentPendingReactions.amount + amount > MessagesController.getInstance(currentAccount).diamondsPaidReactionAmountMax) {
             currentPendingReactions.close();
             currentPendingReactions = new PendingPaidReactions(key, messageObject, chatActivity, ConnectionsManager.getInstance(currentAccount).getCurrentTime(), affect);
         }
@@ -2170,7 +2170,7 @@ public class StarsController {
                 TLRPC.Chat chat = chatActivity.getMessagesController().getChat(-dialogId);
                 name = chat == null ? "" : chat.title;
             }
-            new StarsIntroActivity.StarsNeededSheet(context, chatActivity.getResourceProvider(), totalStars2, StarsIntroActivity.StarsNeededSheet.TYPE_REACTIONS, name, () -> {
+            new DiamondsIntroActivity.DiamondsNeededSheet(context, chatActivity.getResourceProvider(), totalStars2, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_REACTIONS, name, () -> {
                 sendPaidReaction(messageObject, chatActivity, totalStars2, true, true, peer);
             }, 0).show();
             return null;
@@ -2224,23 +2224,23 @@ public class StarsController {
     private boolean giftsCacheLoaded;
     public int giftsHash;
     public long giftsRemoteTime;
-    public final ArrayList<TL_stars.StarGift> gifts = new ArrayList<>();
-    public final ArrayList<TL_stars.StarGift> sortedGifts = new ArrayList<>();
-    public final ArrayList<TL_stars.StarGift> birthdaySortedGifts = new ArrayList<>();
+    public final ArrayList<TL_diamonds.StarGift> gifts = new ArrayList<>();
+    public final ArrayList<TL_diamonds.StarGift> sortedGifts = new ArrayList<>();
+    public final ArrayList<TL_diamonds.StarGift> birthdaySortedGifts = new ArrayList<>();
 
-    public void invalidateStarGifts() {
+    public void invalidateDiamondGifts() {
         giftsLoaded = false;
         giftsCacheLoaded = true;
         giftsRemoteTime = 0;
-        loadStarGifts();
+        loadDiamondGifts();
     }
 
-    public void loadStarGifts() {
+    public void loadDiamondGifts() {
         if (giftsLoading || giftsLoaded && (System.currentTimeMillis() - giftsRemoteTime) < 1000 * 60) return;
         giftsLoading = true;
 
         if (!giftsCacheLoaded) {
-            getStarGiftsCached((giftsCached, hash, time, users, chats) -> {
+            getDiamondGiftsCached((giftsCached, hash, time, users, chats) -> {
                 MessagesController.getInstance(currentAccount).putUsers(users, true);
                 MessagesController.getInstance(currentAccount).putChats(chats, true);
 
@@ -2249,23 +2249,23 @@ public class StarsController {
                 gifts.addAll(giftsCached);
                 birthdaySortedGifts.clear();
                 birthdaySortedGifts.addAll(gifts);
-                Collections.sort(birthdaySortedGifts, Comparator.comparingInt((TL_stars.StarGift a) -> (a.sold_out ? 1 : 0)).thenComparingInt((TL_stars.StarGift a) -> (a.birthday ? -1 : 0)));
+                Collections.sort(birthdaySortedGifts, Comparator.comparingInt((TL_diamonds.StarGift a) -> (a.sold_out ? 1 : 0)).thenComparingInt((TL_diamonds.StarGift a) -> (a.birthday ? -1 : 0)));
                 sortedGifts.clear();
                 sortedGifts.addAll(gifts);
-                Collections.sort(sortedGifts, Comparator.comparingInt((TL_stars.StarGift a) -> (a.sold_out ? 1 : 0)));
+                Collections.sort(sortedGifts, Comparator.comparingInt((TL_diamonds.StarGift a) -> (a.sold_out ? 1 : 0)));
                 giftsHash = hash;
                 giftsRemoteTime = time;
                 giftsLoading = false;
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starGiftsLoaded);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondGiftsLoaded);
 
-                loadStarGifts();
+                loadDiamondGifts();
             });
         } else {
-            getStarGiftsRemote(giftsHash, giftsRemote -> {
+            getDiamondGiftsRemote(giftsHash, giftsRemote -> {
                 giftsLoading = false;
                 giftsLoaded = true;
-                if (giftsRemote instanceof TL_stars.TL_starGifts) {
-                    final TL_stars.TL_starGifts res = (TL_stars.TL_starGifts) giftsRemote;
+                if (giftsRemote instanceof TL_diamonds.TL_starGifts) {
+                    final TL_diamonds.TL_starGifts res = (TL_diamonds.TL_starGifts) giftsRemote;
                     MessagesController.getInstance(currentAccount).putUsers(res.users, false);
                     MessagesController.getInstance(currentAccount).putChats(res.chats, false);
                     MessagesStorage.getInstance(currentAccount).putUsersAndChats(res.users, res.chats, true, true);
@@ -2273,33 +2273,33 @@ public class StarsController {
                     gifts.addAll(res.gifts);
                     birthdaySortedGifts.clear();
                     birthdaySortedGifts.addAll(gifts);
-                    Collections.sort(birthdaySortedGifts, Comparator.comparingInt((TL_stars.StarGift a) -> (a.sold_out ? 1 : 0)).thenComparingInt((TL_stars.StarGift a) -> (a.birthday ? -1 : 0)));
+                    Collections.sort(birthdaySortedGifts, Comparator.comparingInt((TL_diamonds.StarGift a) -> (a.sold_out ? 1 : 0)).thenComparingInt((TL_diamonds.StarGift a) -> (a.birthday ? -1 : 0)));
                     sortedGifts.clear();
                     sortedGifts.addAll(gifts);
-                    Collections.sort(sortedGifts, Comparator.comparingInt((TL_stars.StarGift a) -> (a.sold_out ? 1 : 0)));
+                    Collections.sort(sortedGifts, Comparator.comparingInt((TL_diamonds.StarGift a) -> (a.sold_out ? 1 : 0)));
                     giftsHash = res.hash;
                     giftsRemoteTime = System.currentTimeMillis();
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starGiftsLoaded);
-                    saveStarGiftsCached(res.gifts, giftsHash, giftsRemoteTime);
-                } else if (giftsRemote instanceof TL_stars.TL_starGiftsNotModified) {
-                    saveStarGiftsCached(gifts, giftsHash, giftsRemoteTime = System.currentTimeMillis());
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondGiftsLoaded);
+                    saveDiamondGiftsCached(res.gifts, giftsHash, giftsRemoteTime);
+                } else if (giftsRemote instanceof TL_diamonds.TL_starGiftsNotModified) {
+                    saveDiamondGiftsCached(gifts, giftsHash, giftsRemoteTime = System.currentTimeMillis());
                 }
             });
         }
     }
 
-    public void makeStarGiftSoldOut(TL_stars.StarGift starGift) {
+    public void makeDiamondGiftSoldOut(TL_diamonds.StarGift starGift) {
         if (starGift == null || !giftsLoaded) return;
         starGift.availability_remains = 0;
-        saveStarGiftsCached(gifts, giftsHash, giftsRemoteTime);
-        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starGiftSoldOut, starGift);
+        saveDiamondGiftsCached(gifts, giftsHash, giftsRemoteTime);
+        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondGiftSoldOut, starGift);
     }
 
-    private void getStarGiftsCached(Utilities.Callback5<ArrayList<TL_stars.StarGift>, Integer, Long, ArrayList<TLRPC.User>, ArrayList<TLRPC.Chat>> whenDone) {
+    private void getDiamondGiftsCached(Utilities.Callback5<ArrayList<TL_diamonds.StarGift>, Integer, Long, ArrayList<TLRPC.User>, ArrayList<TLRPC.Chat>> whenDone) {
         if (whenDone == null) return;
         final ArrayList<TLRPC.User> users = new ArrayList<>();
         final ArrayList<TLRPC.Chat> chats = new ArrayList<>();
-        final ArrayList<TL_stars.StarGift> result = new ArrayList<>();
+        final ArrayList<TL_diamonds.StarGift> result = new ArrayList<>();
         final MessagesStorage storage = MessagesStorage.getInstance(currentAccount);
         storage.getStorageQueue().postRunnable(() -> {
             final SQLiteDatabase db = storage.getDatabase();
@@ -2311,7 +2311,7 @@ public class StarsController {
                 while (cursor.next()) {
                     final NativeByteBuffer data = cursor.byteBufferValue(0);
                     if (data != null) {
-                        TL_stars.StarGift gift = TL_stars.StarGift.TLdeserialize(data, data.readInt32(false), false);
+                        TL_diamonds.StarGift gift = TL_diamonds.StarGift.TLdeserialize(data, data.readInt32(false), false);
                         if (gift != null) {
                             result.add(gift);
                         }
@@ -2324,7 +2324,7 @@ public class StarsController {
 
                 final ArrayList<Long> usersToLoad = new ArrayList<>();
                 final ArrayList<Long> chatsToLoad = new ArrayList<>();
-                for (TL_stars.StarGift starGift : result) {
+                for (TL_diamonds.StarGift starGift : result) {
                     if (starGift.released_by != null) {
                         final long dialogId = DialogObject.getPeerDialogId(starGift.released_by);
                         if (dialogId > 0) {
@@ -2355,7 +2355,7 @@ public class StarsController {
             });
         });
     }
-    private void saveStarGiftsCached(ArrayList<TL_stars.StarGift> gifts, int hash, long time) {
+    private void saveDiamondGiftsCached(ArrayList<TL_diamonds.StarGift> gifts, int hash, long time) {
         final MessagesStorage storage = MessagesStorage.getInstance(currentAccount);
         storage.getStorageQueue().postRunnable(() -> {
             final SQLiteDatabase db = storage.getDatabase();
@@ -2365,7 +2365,7 @@ public class StarsController {
                 if (gifts != null) {
                     state = db.executeFast("REPLACE INTO star_gifts2 VALUES(?, ?, ?, ?, ?)");
                     for (int i = 0; i < gifts.size(); ++i) {
-                        final TL_stars.StarGift gift = gifts.get(i);
+                        final TL_diamonds.StarGift gift = gifts.get(i);
                         state.requery();
                         state.bindLong(1, gift.id);
                         NativeByteBuffer data = new NativeByteBuffer(gift.getObjectSize());
@@ -2387,13 +2387,13 @@ public class StarsController {
             }
         });
     }
-    private void getStarGiftsRemote(int hash, Utilities.Callback<TL_stars.StarGifts> whenDone) {
+    private void getDiamondGiftsRemote(int hash, Utilities.Callback<TL_diamonds.StarGifts> whenDone) {
         if (whenDone == null) return;
-        TL_stars.getStarGifts req = new TL_stars.getStarGifts();
+        TL_diamonds.getStarGifts req = new TL_diamonds.getStarGifts();
         req.hash = hash;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-           if (res instanceof TL_stars.StarGifts) {
-               whenDone.run((TL_stars.StarGifts) res);
+           if (res instanceof TL_diamonds.StarGifts) {
+               whenDone.run((TL_diamonds.StarGifts) res);
            } else {
                whenDone.run(null);
            }
@@ -2401,17 +2401,17 @@ public class StarsController {
     }
 
     @Nullable
-    public TL_stars.StarGift getStarGift(long gift_id) {
-        loadStarGifts();
+    public TL_diamonds.StarGift getDiamondGift(long gift_id) {
+        loadDiamondGifts();
         for (int i = 0; i < gifts.size(); ++i) {
-            final TL_stars.StarGift gift = gifts.get(i);
+            final TL_diamonds.StarGift gift = gifts.get(i);
             if (gift.id == gift_id)
                 return gift;
         }
         return null;
     }
 
-    public Runnable getStarGift(long gift_id, Utilities.Callback<TL_stars.StarGift> whenDone) {
+    public Runnable getDiamondGift(long gift_id, Utilities.Callback<TL_diamonds.StarGift> whenDone) {
 //        final AlertDialog progressDialog = new AlertDialog(ApplicationLoader.applicationContext, AlertDialog.ALERT_TYPE_SPINNER);
 //        progressDialog.showDelayed(500);
 
@@ -2419,28 +2419,28 @@ public class StarsController {
         NotificationCenter.NotificationCenterDelegate[] observer = new NotificationCenter.NotificationCenterDelegate[1];
         observer[0] = (id, account, args) -> {
             if (done[0]) return;
-            if (id == NotificationCenter.starGiftsLoaded) {
-                TL_stars.StarGift gift = getStarGift(gift_id);
+            if (id == NotificationCenter.diamondGiftsLoaded) {
+                TL_diamonds.StarGift gift = getDiamondGift(gift_id);
                 if (gift != null) {
 //                    progressDialog.dismissUnless(500);
                     done[0] = true;
-                    NotificationCenter.getInstance(currentAccount).removeObserver(observer[0], NotificationCenter.starGiftsLoaded);
+                    NotificationCenter.getInstance(currentAccount).removeObserver(observer[0], NotificationCenter.diamondGiftsLoaded);
                     whenDone.run(gift);
                 }
             }
         };
-        NotificationCenter.getInstance(currentAccount).addObserver(observer[0], NotificationCenter.starGiftsLoaded);
-        TL_stars.StarGift gift = getStarGift(gift_id);
+        NotificationCenter.getInstance(currentAccount).addObserver(observer[0], NotificationCenter.diamondGiftsLoaded);
+        TL_diamonds.StarGift gift = getDiamondGift(gift_id);
         if (gift != null) {
             done[0] = true;
 //            progressDialog.dismissUnless(500);
-            NotificationCenter.getInstance(currentAccount).removeObserver(observer[0], NotificationCenter.starGiftsLoaded);
+            NotificationCenter.getInstance(currentAccount).removeObserver(observer[0], NotificationCenter.diamondGiftsLoaded);
             whenDone.run(gift);
         }
         return () -> {
             done[0] = true;
 //            progressDialog.dismissUnless(500);
-            NotificationCenter.getInstance(currentAccount).removeObserver(observer[0], NotificationCenter.starGiftsLoaded);
+            NotificationCenter.getInstance(currentAccount).removeObserver(observer[0], NotificationCenter.diamondGiftsLoaded);
         };
     }
 
@@ -2478,7 +2478,7 @@ public class StarsController {
 
         final String name = DialogObject.getName(currentAccount, dialogId);
 
-        final TLRPC.TL_inputInvoicePremiumGiftStars inputInvoice = new TLRPC.TL_inputInvoicePremiumGiftStars();
+        final TLRPC.TL_inputInvoicePremiumGiftDiamonds inputInvoice = new TLRPC.TL_inputInvoicePremiumGiftDiamonds();
         inputInvoice.user_id = MessagesController.getInstance(currentAccount).getInputUser(dialogId);
         inputInvoice.months = months;
         if (text != null && !TextUtils.isEmpty(text.text)) {
@@ -2496,28 +2496,28 @@ public class StarsController {
         req.invoice = inputInvoice;
 
         final int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            if (!(res instanceof TLRPC.TL_payments_paymentFormStars)) {
+            if (!(res instanceof TLRPC.TL_payments_paymentFormDiamonds)) {
                 bulletinError(err, "NO_PAYMENT_FORM");
                 whenDone.run(false, null);
                 return;
             }
 
-            final TLRPC.TL_payments_paymentFormStars form = (TLRPC.TL_payments_paymentFormStars) res;
-            TL_stars.TL_payments_sendStarsForm req2 = new TL_stars.TL_payments_sendStarsForm();
+            final TLRPC.TL_payments_paymentFormDiamonds form = (TLRPC.TL_payments_paymentFormDiamonds) res;
+            TL_diamonds.TL_payments_sendDiamondsForm req2 = new TL_diamonds.TL_payments_sendDiamondsForm();
             req2.form_id = form.form_id;
             req2.invoice = inputInvoice;
-            long _stars = 0;
+            long _diamonds = 0;
             for (TLRPC.TL_labeledPrice price : form.invoice.prices) {
-                _stars += price.amount;
+                _diamonds += price.amount;
             }
-            final long stars = _stars;
+            final long stars = _diamonds;
             ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (res2, err2) -> AndroidUtilities.runOnUIThread(() -> {
                 final BaseFragment fragment = LaunchActivity.getLastFragment();
                 BulletinFactory b = fragment != null && fragment.visibleDialog == null ? BulletinFactory.of(fragment) : BulletinFactory.global();
 
                 if (!(res2 instanceof TLRPC.TL_payments_paymentResult)) {
                     if (err2 != null && "BALANCE_TOO_LOW".equals(err2.text)) {
-                        if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+                        if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
                             if (whenDone != null) {
                                 whenDone.run(false, null);
                             }
@@ -2525,7 +2525,7 @@ public class StarsController {
                             return;
                         }
                         final boolean[] purchased = new boolean[] { false };
-                        StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, StarsIntroActivity.StarsNeededSheet.TYPE_STAR_GIFT_BUY, name, () -> {
+                        DiamondsIntroActivity.DiamondsNeededSheet sheet = new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, stars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY, name, () -> {
                             purchased[0] = true;
                             buyPremiumGift(dialogId, option, text, whenDone);
                         }, 0);
@@ -2616,7 +2616,7 @@ public class StarsController {
         }));
     }
 
-    public void buyStarGift(TL_stars.StarGift gift, boolean anonymous, boolean upgraded, long dialogId, TLRPC.TL_textWithEntities text, Utilities.Callback2<Boolean, String> whenDone) {
+    public void buyDiamondGift(TL_diamonds.StarGift gift, boolean anonymous, boolean upgraded, long dialogId, TLRPC.TL_textWithEntities text, Utilities.Callback2<Boolean, String> whenDone) {
         final Context context = LaunchActivity.instance != null ? LaunchActivity.instance : ApplicationLoader.applicationContext;
         final Theme.ResourcesProvider resourcesProvider = getResourceProvider();
 
@@ -2633,14 +2633,14 @@ public class StarsController {
                     }
                     return;
                 }
-                buyStarGift(gift, anonymous, upgraded, dialogId, text, whenDone);
+                buyDiamondGift(gift, anonymous, upgraded, dialogId, text, whenDone);
             });
             return;
         }
 
         final String name = DialogObject.getName(currentAccount, dialogId);
 
-        final TLRPC.TL_inputInvoiceStarGift inputInvoice = new TLRPC.TL_inputInvoiceStarGift();
+        final TLRPC.TL_inputInvoiceDiamondGift inputInvoice = new TLRPC.TL_inputInvoiceDiamondGift();
         inputInvoice.hide_name = anonymous;
         inputInvoice.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
         inputInvoice.gift_id = gift.id;
@@ -2660,28 +2660,28 @@ public class StarsController {
         req.invoice = inputInvoice;
 
         final int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            if (!(res instanceof TLRPC.TL_payments_paymentFormStarGift)) {
+            if (!(res instanceof TLRPC.TL_payments_paymentFormDiamondGift)) {
                 bulletinError(err, "NO_PAYMENT_FORM");
                 whenDone.run(false, null);
                 return;
             }
 
-            final TLRPC.TL_payments_paymentFormStarGift form = (TLRPC.TL_payments_paymentFormStarGift) res;
-            TL_stars.TL_payments_sendStarsForm req2 = new TL_stars.TL_payments_sendStarsForm();
+            final TLRPC.TL_payments_paymentFormDiamondGift form = (TLRPC.TL_payments_paymentFormDiamondGift) res;
+            TL_diamonds.TL_payments_sendDiamondsForm req2 = new TL_diamonds.TL_payments_sendDiamondsForm();
             req2.form_id = form.form_id;
             req2.invoice = inputInvoice;
-            long _stars = 0;
+            long _diamonds = 0;
             for (TLRPC.TL_labeledPrice price : form.invoice.prices) {
-                _stars += price.amount;
+                _diamonds += price.amount;
             }
-            final long stars = _stars;
+            final long stars = _diamonds;
             ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (res2, err2) -> AndroidUtilities.runOnUIThread(() -> {
                 final BaseFragment fragment = LaunchActivity.getLastFragment();
                 BulletinFactory b = fragment != null && fragment.visibleDialog == null ? BulletinFactory.of(fragment) : BulletinFactory.global();
 
                 if (!(res2 instanceof TLRPC.TL_payments_paymentResult)) {
                     if (err2 != null && "BALANCE_TOO_LOW".equals(err2.text)) {
-                        if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+                        if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
                             if (whenDone != null) {
                                 whenDone.run(false, null);
                             }
@@ -2689,9 +2689,9 @@ public class StarsController {
                             return;
                         }
                         final boolean[] purchased = new boolean[] { false };
-                        StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, StarsIntroActivity.StarsNeededSheet.TYPE_STAR_GIFT_BUY, name, () -> {
+                        DiamondsIntroActivity.DiamondsNeededSheet sheet = new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, stars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY, name, () -> {
                             purchased[0] = true;
-                            buyStarGift(gift, anonymous, upgraded, dialogId, text, whenDone);
+                            buyDiamondGift(gift, anonymous, upgraded, dialogId, text, whenDone);
                         }, 0);
                         sheet.setOnDismissListener(d -> {
                             if (whenDone != null && !purchased[0]) {
@@ -2721,7 +2721,7 @@ public class StarsController {
                     MessagesController.getInstance(currentAccount).processUpdates(result.updates, false);
                 });
 
-                invalidateStarGifts();
+                invalidateDiamondGifts();
                 invalidateProfileGifts(dialogId);
                 invalidateTransactions(true);
 
@@ -2796,11 +2796,11 @@ public class StarsController {
     }
 
     @Deprecated
-    public void getResellingGiftForm(TL_stars.StarGift gift, long dialogId, Utilities.Callback<TLRPC.TL_payments_paymentFormStarGift> whenDone) {
+    public void getResellingGiftForm(TL_diamonds.StarGift gift, long dialogId, Utilities.Callback<TLRPC.TL_payments_paymentFormDiamondGift> whenDone) {
         getResellingGiftForm(gift, dialogId, null, true, whenDone);
     }
 
-    public void getResellingGiftForm(TL_stars.StarGift gift, long dialogId, TLRPC.TL_textWithEntities message, boolean hideMyName, Utilities.Callback<TLRPC.TL_payments_paymentFormStarGift> whenDone) {
+    public void getResellingGiftForm(TL_diamonds.StarGift gift, long dialogId, TLRPC.TL_textWithEntities message, boolean hideMyName, Utilities.Callback<TLRPC.TL_payments_paymentFormDiamondGift> whenDone) {
         final Context context = LaunchActivity.instance != null ? LaunchActivity.instance : ApplicationLoader.applicationContext;
         final Theme.ResourcesProvider resourcesProvider = getResourceProvider();
 
@@ -2822,7 +2822,7 @@ public class StarsController {
             return;
         }
 
-        final TLRPC.TL_inputInvoiceStarGiftResale inputInvoice = new TLRPC.TL_inputInvoiceStarGiftResale();
+        final TLRPC.TL_inputInvoiceDiamondGiftResale inputInvoice = new TLRPC.TL_inputInvoiceDiamondGiftResale();
         inputInvoice.slug = gift.slug;
         inputInvoice.to_id = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
         inputInvoice.ton = ton;
@@ -2839,16 +2839,16 @@ public class StarsController {
         req.invoice = inputInvoice;
 
         final int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            if (!(res instanceof TLRPC.TL_payments_paymentFormStarGift)) {
+            if (!(res instanceof TLRPC.TL_payments_paymentFormDiamondGift)) {
                 bulletinError(err, "NO_PAYMENT_FORM");
                 whenDone.run(null);
             } else {
-                whenDone.run((TLRPC.TL_payments_paymentFormStarGift) res);
+                whenDone.run((TLRPC.TL_payments_paymentFormDiamondGift) res);
             }
         }));
     }
 
-    public static long getFormStarsPrice(TLRPC.PaymentForm form) {
+    public static long getFormDiamondsPrice(TLRPC.PaymentForm form) {
         long stars = 0;
         if (form != null) {
             for (TLRPC.TL_labeledPrice price : form.invoice.prices) {
@@ -2859,11 +2859,11 @@ public class StarsController {
     }
 
     @Deprecated
-    public void buyResellingGift(TLRPC.TL_payments_paymentFormStarGift form, TL_stars.StarGift gift, long dialogId, Utilities.Callback2<Boolean, String> whenDone) {
+    public void buyResellingGift(TLRPC.TL_payments_paymentFormDiamondGift form, TL_diamonds.StarGift gift, long dialogId, Utilities.Callback2<Boolean, String> whenDone) {
         buyResellingGift(form, gift, dialogId, null, true, whenDone);
     }
 
-    public void buyResellingGift(TLRPC.TL_payments_paymentFormStarGift form, TL_stars.StarGift gift, long dialogId, TLRPC.TL_textWithEntities message, boolean hideMyName, Utilities.Callback2<Boolean, String> whenDone) {
+    public void buyResellingGift(TLRPC.TL_payments_paymentFormDiamondGift form, TL_diamonds.StarGift gift, long dialogId, TLRPC.TL_textWithEntities message, boolean hideMyName, Utilities.Callback2<Boolean, String> whenDone) {
         final Context context = LaunchActivity.instance != null ? LaunchActivity.instance : ApplicationLoader.applicationContext;
         final Theme.ResourcesProvider resourcesProvider = getResourceProvider();
 
@@ -2887,7 +2887,7 @@ public class StarsController {
 
         final String name = DialogObject.getName(currentAccount, dialogId);
 
-        final TLRPC.TL_inputInvoiceStarGiftResale inputInvoice = new TLRPC.TL_inputInvoiceStarGiftResale();
+        final TLRPC.TL_inputInvoiceDiamondGiftResale inputInvoice = new TLRPC.TL_inputInvoiceDiamondGiftResale();
         inputInvoice.slug = gift.slug;
         inputInvoice.to_id = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
         inputInvoice.ton = ton;
@@ -2903,21 +2903,21 @@ public class StarsController {
         }
         req.invoice = inputInvoice;
 
-        TL_stars.TL_payments_sendStarsForm req2 = new TL_stars.TL_payments_sendStarsForm();
+        TL_diamonds.TL_payments_sendDiamondsForm req2 = new TL_diamonds.TL_payments_sendDiamondsForm();
         req2.form_id = form.form_id;
         req2.invoice = inputInvoice;
-        long _stars = 0;
+        long _diamonds = 0;
         for (TLRPC.TL_labeledPrice price : form.invoice.prices) {
-            _stars += price.amount;
+            _diamonds += price.amount;
         }
-        final long stars = _stars;
+        final long stars = _diamonds;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (res2, err2) -> AndroidUtilities.runOnUIThread(() -> {
             final BaseFragment fragment = LaunchActivity.getLastFragment();
             BulletinFactory b = fragment != null && fragment.visibleDialog == null ? BulletinFactory.of(fragment) : BulletinFactory.global();
 
             if (!(res2 instanceof TLRPC.TL_payments_paymentResult)) {
                 if (err2 != null && "BALANCE_TOO_LOW".equals(err2.text)) {
-                    if (!MessagesController.getInstance(currentAccount).starsPurchaseAvailable()) {
+                    if (!MessagesController.getInstance(currentAccount).diamondsPurchaseAvailable()) {
                         if (whenDone != null) {
                             whenDone.run(false, null);
                         }
@@ -2925,7 +2925,7 @@ public class StarsController {
                         return;
                     }
                     final boolean[] purchased = new boolean[] { false };
-                    StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, StarsIntroActivity.StarsNeededSheet.TYPE_STAR_GIFT_BUY, name, () -> {
+                    DiamondsIntroActivity.DiamondsNeededSheet sheet = new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, stars, DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY, name, () -> {
                         purchased[0] = true;
                         buyResellingGift(form, gift, dialogId, whenDone);
                     }, 0);
@@ -2953,7 +2953,7 @@ public class StarsController {
                 MessagesController.getInstance(currentAccount).processUpdates(result.updates, false);
             });
 
-            invalidateStarGifts();
+            invalidateDiamondGifts();
             invalidateProfileGifts(dialogId);
             invalidateTransactions(true);
 
@@ -3035,8 +3035,8 @@ public class StarsController {
 
         public boolean loading;
         public boolean loaded;
-        private ArrayList<TL_stars.TL_starGiftCollection> collections = new ArrayList<>();
-        private ArrayList<TL_stars.TL_starGiftCollection> filteredCollections = new ArrayList<>();
+        private ArrayList<TL_diamonds.TL_starGiftCollection> collections = new ArrayList<>();
+        private ArrayList<TL_diamonds.TL_starGiftCollection> filteredCollections = new ArrayList<>();
         public GiftsList all;
         public HashMap<Integer, GiftsList> gifts = new HashMap<>();
         public int currentRequestId = -1;
@@ -3047,21 +3047,21 @@ public class StarsController {
             return ChatObject.canUserDoAction(MessagesController.getInstance(currentAccount).getChat(-dialogId), ChatObject.ACTION_POST);
         }
 
-        public ArrayList<TL_stars.TL_starGiftCollection> getCollections() {
+        public ArrayList<TL_diamonds.TL_starGiftCollection> getCollections() {
             return isMine() ? collections : filteredCollections;
         }
 
         private void refilterCollections() {
             filteredCollections.clear();
             for (int i = 0; i < collections.size(); ++i) {
-                final TL_stars.TL_starGiftCollection collection = collections.get(i);
+                final TL_diamonds.TL_starGiftCollection collection = collections.get(i);
                 if (collection.gifts_count <= 0)
                     continue;
                 filteredCollections.add(collection);
             }
         }
 
-        public void updateGiftsCollections(TL_stars.SavedStarGift gift, int collection_id, boolean included) {
+        public void updateGiftsCollections(TL_diamonds.SavedStarGift gift, int collection_id, boolean included) {
             for (GiftsList list : gifts.values()) {
                 list.updateGiftsCollections(gift, collection_id, included);
             }
@@ -3070,7 +3070,7 @@ public class StarsController {
             }
         }
 
-        public void updateGiftsUnsaved(TL_stars.SavedStarGift gift, boolean unsaved) {
+        public void updateGiftsUnsaved(TL_diamonds.SavedStarGift gift, boolean unsaved) {
             for (GiftsList list : gifts.values()) {
                 list.updateGiftsUnsaved(gift, unsaved);
             }
@@ -3079,9 +3079,9 @@ public class StarsController {
             }
         }
 
-        private long getHash(ArrayList<TL_stars.TL_starGiftCollection> array) {
+        private long getHash(ArrayList<TL_diamonds.TL_starGiftCollection> array) {
             long hash = 0;
-            for (TL_stars.TL_starGiftCollection collection : array) {
+            for (TL_diamonds.TL_starGiftCollection collection : array) {
                 hash = calcHash(hash, collection.hash);
             }
             return hash;
@@ -3090,7 +3090,7 @@ public class StarsController {
         public GiftsList getListByIndex(int index) {
             if (index < 0 || index >= getCollections().size())
                 return null;
-            final TL_stars.TL_starGiftCollection collection = getCollections().get(index);
+            final TL_diamonds.TL_starGiftCollection collection = getCollections().get(index);
             return getListById(collection.collection_id);
         }
 
@@ -3103,18 +3103,18 @@ public class StarsController {
 
             loading = true;
 
-            final TL_stars.getStarGiftCollections req = new TL_stars.getStarGiftCollections();
+            final TL_diamonds.getStarGiftCollections req = new TL_diamonds.getStarGiftCollections();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.hash = getHash(collections);
             currentRequestId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                if (res instanceof TL_stars.TL_starGiftCollections) {
-                    final TL_stars.TL_starGiftCollections r = (TL_stars.TL_starGiftCollections) res;
+                if (res instanceof TL_diamonds.TL_starGiftCollections) {
+                    final TL_diamonds.TL_starGiftCollections r = (TL_diamonds.TL_starGiftCollections) res;
 
                     collections.clear();
                     collections.addAll(r.collections);
                     refilterCollections();
 
-                    for (TL_stars.TL_starGiftCollection collection : collections) {
+                    for (TL_diamonds.TL_starGiftCollection collection : collections) {
                         GiftsList list = getListById(collection.collection_id);
                         if (list != null) continue;
                         list = new GiftsList(currentAccount, dialogId, false);
@@ -3125,15 +3125,15 @@ public class StarsController {
                     loaded = true;
                     loading = false;
 
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
 
-                } else if (res instanceof TL_stars.TL_starGiftCollectionsNotModified) {
+                } else if (res instanceof TL_diamonds.TL_starGiftCollectionsNotModified) {
                     refilterCollections();
 
                     loaded = true;
                     loading = false;
 
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
                 }
             }));
         }
@@ -3151,12 +3151,12 @@ public class StarsController {
         }
 
         public boolean creating;
-        public void createCollection(String title, Utilities.Callback<TL_stars.TL_starGiftCollection> created) {
+        public void createCollection(String title, Utilities.Callback<TL_diamonds.TL_starGiftCollection> created) {
             if (creating) return;
 
             creating = true;
 
-            final TL_stars.TL_starGiftCollection tempCollection = new TL_stars.TL_starGiftCollection();
+            final TL_diamonds.TL_starGiftCollection tempCollection = new TL_diamonds.TL_starGiftCollection();
             tempCollection.collection_id = -1;
             tempCollection.title = title;
             collections.add(tempCollection);
@@ -3168,13 +3168,13 @@ public class StarsController {
             list.endReached = true;
             gifts.put(-1, list);
 
-            final TL_stars.createStarGiftCollection req = new TL_stars.createStarGiftCollection();
+            final TL_diamonds.createStarGiftCollection req = new TL_diamonds.createStarGiftCollection();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.title = title;
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                 creating = false;
-                if (res instanceof TL_stars.TL_starGiftCollection) {
-                    final TL_stars.TL_starGiftCollection loaded = (TL_stars.TL_starGiftCollection) res;
+                if (res instanceof TL_diamonds.TL_starGiftCollection) {
+                    final TL_diamonds.TL_starGiftCollection loaded = (TL_diamonds.TL_starGiftCollection) res;
                     collections.remove(tempCollection);
                     collections.add(loaded);
                     gifts.remove(-1);
@@ -3182,7 +3182,7 @@ public class StarsController {
                     gifts.put(loaded.collection_id, list);
                     refilterCollections();
 
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
 
                     if (created != null) {
                         created.run(loaded);
@@ -3198,14 +3198,14 @@ public class StarsController {
                     gifts.remove(-1);
                     refilterCollections();
 
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftCollectionsLoaded, dialogId, GiftsCollections.this);
                 }
             }));
         }
 
-        public TL_stars.TL_starGiftCollection findById(int id) {
+        public TL_diamonds.TL_starGiftCollection findById(int id) {
             for (int i = 0; i < collections.size(); ++i) {
-                TL_stars.TL_starGiftCollection collection = collections.get(i);
+                TL_diamonds.TL_starGiftCollection collection = collections.get(i);
                 if (id == collection.collection_id) {
                     return collection;
                 }
@@ -3215,7 +3215,7 @@ public class StarsController {
 
         public int indexOf(int id) {
             for (int i = 0; i < collections.size(); ++i) {
-                final TL_stars.TL_starGiftCollection collection = collections.get(i);
+                final TL_diamonds.TL_starGiftCollection collection = collections.get(i);
                 if (id == collection.collection_id) {
                     return i;
                 }
@@ -3227,10 +3227,10 @@ public class StarsController {
             final int index = indexOf(id);
             if (index == -1) return;
 
-            final TL_stars.TL_starGiftCollection collection = collections.remove(index);
+            final TL_diamonds.TL_starGiftCollection collection = collections.remove(index);
             gifts.remove(collection.collection_id);
 
-            final TL_stars.deleteStarGiftCollection req = new TL_stars.deleteStarGiftCollection();
+            final TL_diamonds.deleteStarGiftCollection req = new TL_diamonds.deleteStarGiftCollection();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.collection_id = collection.collection_id;
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, null);
@@ -3238,9 +3238,9 @@ public class StarsController {
 
         public void updateIcon(int id) {
             final GiftsList list = getListById(id);
-            final TL_stars.TL_starGiftCollection collection = findById(id);
+            final TL_diamonds.TL_starGiftCollection collection = findById(id);
             if (list == null || collection == null) return;
-            final TL_stars.SavedStarGift firstGift = list.gifts.isEmpty() ? null : list.gifts.get(0);
+            final TL_diamonds.SavedStarGift firstGift = list.gifts.isEmpty() ? null : list.gifts.get(0);
             if (firstGift == null) {
                 collection.flags &=~ 1;
                 collection.icon = null;
@@ -3248,11 +3248,11 @@ public class StarsController {
                 collection.flags |= 1;
                 collection.icon = firstGift.gift.getDocument();
             }
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftCollectionsLoaded, dialogId, this);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftCollectionsLoaded, dialogId, this);
         }
 
         public void rename(int id, String newName) {
-            final TL_stars.updateStarGiftCollection req = new TL_stars.updateStarGiftCollection();
+            final TL_diamonds.updateStarGiftCollection req = new TL_diamonds.updateStarGiftCollection();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.collection_id = id;
             req.flags |= 1;
@@ -3260,33 +3260,33 @@ public class StarsController {
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, null);
         }
 
-        public void addGift(int id, TL_stars.SavedStarGift gift, boolean insert) {
-            final ArrayList<TL_stars.SavedStarGift> gifts = new ArrayList<>();
+        public void addGift(int id, TL_diamonds.SavedStarGift gift, boolean insert) {
+            final ArrayList<TL_diamonds.SavedStarGift> gifts = new ArrayList<>();
             gifts.add(gift);
             addGifts(id, gifts, insert);
         }
 
-        public void addGifts(int id, ArrayList<TL_stars.SavedStarGift> gifts, boolean insert) {
+        public void addGifts(int id, ArrayList<TL_diamonds.SavedStarGift> gifts, boolean insert) {
             if (gifts.isEmpty()) return;
             final GiftsList list = getListById(id);
             if (list != null && insert) {
                 list.gifts.addAll(0, gifts);
                 list.totalCount += gifts.size();
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, list);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, list);
                 updateIcon(id);
             }
-            final TL_stars.updateStarGiftCollection req = new TL_stars.updateStarGiftCollection();
+            final TL_diamonds.updateStarGiftCollection req = new TL_diamonds.updateStarGiftCollection();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.collection_id = id;
             req.flags |= 4;
-            for (TL_stars.SavedStarGift gift : gifts) {
+            for (TL_diamonds.SavedStarGift gift : gifts) {
                 updateGiftsCollections(gift, id, true);
                 if (gift.msg_id > 0) {
-                    final TL_stars.TL_inputSavedStarGiftUser inputGift = new TL_stars.TL_inputSavedStarGiftUser();
+                    final TL_diamonds.TL_inputSavedDiamondGiftUser inputGift = new TL_diamonds.TL_inputSavedDiamondGiftUser();
                     inputGift.msg_id = gift.msg_id;
                     req.add_stargift.add(inputGift);
                 } else if (gift.saved_id != 0) {
-                    final TL_stars.TL_inputSavedStarGiftChat inputGift = new TL_stars.TL_inputSavedStarGiftChat();
+                    final TL_diamonds.TL_inputSavedDiamondGiftChat inputGift = new TL_diamonds.TL_inputSavedDiamondGiftChat();
                     inputGift.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
                     inputGift.saved_id = gift.saved_id;
                     req.add_stargift.add(inputGift);
@@ -3295,8 +3295,8 @@ public class StarsController {
                 }
             }
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                if (res instanceof TL_stars.TL_starGiftCollection) {
-                    final TL_stars.TL_starGiftCollection loaded = (TL_stars.TL_starGiftCollection) res;
+                if (res instanceof TL_diamonds.TL_starGiftCollection) {
+                    final TL_diamonds.TL_starGiftCollection loaded = (TL_diamonds.TL_starGiftCollection) res;
                     int index = indexOf(loaded.collection_id);
                     if (index >= 0) {
                         collections.set(index, loaded);
@@ -3305,18 +3305,18 @@ public class StarsController {
             }));
         }
 
-        public void removeGift(int id, final TL_stars.SavedStarGift gift) {
-            final ArrayList<TL_stars.SavedStarGift> gifts = new ArrayList<>();
+        public void removeGift(int id, final TL_diamonds.SavedStarGift gift) {
+            final ArrayList<TL_diamonds.SavedStarGift> gifts = new ArrayList<>();
             gifts.add(gift);
             removeGifts(id, gifts);
         }
 
-        public void removeGifts(int id, final ArrayList<TL_stars.SavedStarGift> gifts) {
+        public void removeGifts(int id, final ArrayList<TL_diamonds.SavedStarGift> gifts) {
             if (gifts.isEmpty()) return;
             final GiftsList list = getListById(id);
             if (list != null && !list.gifts.isEmpty()) {
                 for (int i = 0; i < list.gifts.size(); ++i) {
-                    final TL_stars.SavedStarGift g = list.gifts.get(i);
+                    final TL_diamonds.SavedStarGift g = list.gifts.get(i);
                     boolean remove = false;
                     for (int j = 0; j < gifts.size(); ++j) {
                         if (eq(g, gifts.get(j))) {
@@ -3332,18 +3332,18 @@ public class StarsController {
                 }
             }
             updateIcon(id);
-            final TL_stars.updateStarGiftCollection req = new TL_stars.updateStarGiftCollection();
+            final TL_diamonds.updateStarGiftCollection req = new TL_diamonds.updateStarGiftCollection();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.collection_id = id;
             req.flags |= 2;
-            for (TL_stars.SavedStarGift gift : gifts) {
+            for (TL_diamonds.SavedStarGift gift : gifts) {
                 updateGiftsCollections(gift, id, false);
                 if (gift.msg_id > 0) {
-                    final TL_stars.TL_inputSavedStarGiftUser inputGift = new TL_stars.TL_inputSavedStarGiftUser();
+                    final TL_diamonds.TL_inputSavedDiamondGiftUser inputGift = new TL_diamonds.TL_inputSavedDiamondGiftUser();
                     inputGift.msg_id = gift.msg_id;
                     req.delete_stargift.add(inputGift);
                 } else if (gift.saved_id != 0) {
-                    final TL_stars.TL_inputSavedStarGiftChat inputGift = new TL_stars.TL_inputSavedStarGiftChat();
+                    final TL_diamonds.TL_inputSavedDiamondGiftChat inputGift = new TL_diamonds.TL_inputSavedDiamondGiftChat();
                     inputGift.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
                     inputGift.saved_id = gift.saved_id;
                     req.delete_stargift.add(inputGift);
@@ -3353,25 +3353,25 @@ public class StarsController {
             }
             final int count = req.delete_stargift.size();
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                if (res instanceof TL_stars.TL_starGiftCollection) {
-                    final TL_stars.TL_starGiftCollection loaded = (TL_stars.TL_starGiftCollection) res;
+                if (res instanceof TL_diamonds.TL_starGiftCollection) {
+                    final TL_diamonds.TL_starGiftCollection loaded = (TL_diamonds.TL_starGiftCollection) res;
                     int index = indexOf(loaded.collection_id);
                     if (index >= 0) {
                         collections.set(index, loaded);
                     }
                 }
             }));
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, list);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, list);
         }
 
         public void reorder(ArrayList<Integer> collectionIds) {
-            final HashMap<Integer, TL_stars.TL_starGiftCollection> map = new HashMap<>();
-            for (final TL_stars.TL_starGiftCollection collection : collections) {
+            final HashMap<Integer, TL_diamonds.TL_starGiftCollection> map = new HashMap<>();
+            for (final TL_diamonds.TL_starGiftCollection collection : collections) {
                 map.put(collection.collection_id, collection);
             }
-            final ArrayList<TL_stars.TL_starGiftCollection> newCollections = new ArrayList<>();
+            final ArrayList<TL_diamonds.TL_starGiftCollection> newCollections = new ArrayList<>();
             for (final int id : collectionIds) {
-                final TL_stars.TL_starGiftCollection collection = map.get(id);
+                final TL_diamonds.TL_starGiftCollection collection = map.get(id);
                 if (collection != null) {
                     newCollections.add(collection);
                 }
@@ -3383,9 +3383,9 @@ public class StarsController {
         }
 
         public void sendOrder() {
-            final TL_stars.reorderStarGiftCollections req = new TL_stars.reorderStarGiftCollections();
+            final TL_diamonds.reorderStarGiftCollections req = new TL_diamonds.reorderStarGiftCollections();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
-            for (final TL_stars.TL_starGiftCollection collection : collections) {
+            for (final TL_diamonds.TL_starGiftCollection collection : collections) {
                 req.order.add(collection.collection_id);
             }
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, null);
@@ -3429,12 +3429,12 @@ public class StarsController {
 
         @Override
         public void notifyUpdate() {
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, GiftsList.this);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, GiftsList.this);
         }
 
-        public void updateGiftsCollections(TL_stars.SavedStarGift gift, int collection_id, boolean included) {
-            for (final TL_stars.SavedStarGift g : gifts) {
-                if (StarsController.eq(g, gift)) {
+        public void updateGiftsCollections(TL_diamonds.SavedStarGift gift, int collection_id, boolean included) {
+            for (final TL_diamonds.SavedStarGift g : gifts) {
+                if (DiamondsController.eq(g, gift)) {
                     if (included) {
                         if (!g.collection_id.contains(collection_id))
                             g.collection_id.add((Integer) collection_id);
@@ -3445,29 +3445,29 @@ public class StarsController {
             }
         }
 
-        public void updateGiftsUnsaved(TL_stars.SavedStarGift gift, boolean unsaved) {
+        public void updateGiftsUnsaved(TL_diamonds.SavedStarGift gift, boolean unsaved) {
             boolean changed = false;
-            for (final TL_stars.SavedStarGift g : gifts) {
-                if (StarsController.eq(g, gift) && g.unsaved != unsaved) {
+            for (final TL_diamonds.SavedStarGift g : gifts) {
+                if (DiamondsController.eq(g, gift) && g.unsaved != unsaved) {
                     g.unsaved = unsaved;
                     changed = true;
                 }
             }
             if (changed) {
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, GiftsList.this);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, GiftsList.this);
             }
         }
 
         public int findGiftToUpgrade(int fromIndex) {
-            if (!StarGiftSheet.isMineWithActions(currentAccount, dialogId)) return -1;
+            if (!DiamondGiftSheet.isMineWithActions(currentAccount, dialogId)) return -1;
             for (int index = fromIndex + 1; index < gifts.size(); ++index) {
-                final TL_stars.SavedStarGift gift = gifts.get(index);
+                final TL_diamonds.SavedStarGift gift = gifts.get(index);
                 if (gift.can_upgrade) {
                     return index;
                 }
             }
             for (int index = fromIndex - 1; index >= 0; --index) {
-                final TL_stars.SavedStarGift gift = gifts.get(index);
+                final TL_diamonds.SavedStarGift gift = gifts.get(index);
                 if (gift.can_upgrade) {
                     return index;
                 }
@@ -3476,9 +3476,9 @@ public class StarsController {
         }
 
         public void set(int index, Object obj) {
-            if (obj instanceof TL_stars.SavedStarGift) {
+            if (obj instanceof TL_diamonds.SavedStarGift) {
                 try {
-                    this.gifts.set(index, (TL_stars.SavedStarGift) obj);
+                    this.gifts.set(index, (TL_diamonds.SavedStarGift) obj);
                 } catch (Exception e) {
                     FileLog.e(e);
                 }
@@ -3585,7 +3585,7 @@ public class StarsController {
         public boolean loading;
         public boolean endReached;
         public String lastOffset;
-        public ArrayList<TL_stars.SavedStarGift> gifts = new ArrayList<>();
+        public ArrayList<TL_diamonds.SavedStarGift> gifts = new ArrayList<>();
         public int currentRequestId = -1;
         public int totalCount;
 
@@ -3633,13 +3633,13 @@ public class StarsController {
             loading = true;
             final TLObject request;
             if (craftingGiftId != 0) {
-                final TL_stars.getCraftStarGifts req = new TL_stars.getCraftStarGifts();
+                final TL_diamonds.getCraftStarGifts req = new TL_diamonds.getCraftStarGifts();
                 req.gift_id = craftingGiftId;
                 req.offset = first ? "" : lastOffset;
                 req.limit = first ? 15 : 30;
                 request = req;
             } else {
-                final TL_stars.getSavedStarGifts req = new TL_stars.getSavedStarGifts();
+                final TL_diamonds.getSavedStarGifts req = new TL_diamonds.getSavedStarGifts();
                 req.sort_by_value = !sort_by_date;
                 req.exclude_unupgradable = !isInclude_limited();
                 req.exclude_upgradable = !isInclude_upgradable();
@@ -3666,8 +3666,8 @@ public class StarsController {
                 if (reqId[0] != currentRequestId) return;
                 loading = false;
                 currentRequestId = -1;
-                if (res instanceof TL_stars.TL_payments_savedStarGifts) {
-                    final TL_stars.TL_payments_savedStarGifts rez = (TL_stars.TL_payments_savedStarGifts) res;
+                if (res instanceof TL_diamonds.TL_payments_savedDiamondGifts) {
+                    final TL_diamonds.TL_payments_savedDiamondGifts rez = (TL_diamonds.TL_payments_savedDiamondGifts) res;
                     MessagesController.getInstance(currentAccount).putUsers(rez.users, false);
                     MessagesController.getInstance(currentAccount).putChats(rez.chats, false);
 
@@ -3682,7 +3682,7 @@ public class StarsController {
                 } else {
                     endReached = true;
                 }
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, GiftsList.this);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, GiftsList.this);
             }));
         }
 
@@ -3694,12 +3694,12 @@ public class StarsController {
             loading = false;
         }
 
-        public void processCrafting(ArrayList<TL_stars.StarGift> giftsToRemove, TL_stars.StarGift giftToAdd) {
+        public void processCrafting(ArrayList<TL_diamonds.StarGift> giftsToRemove, TL_diamonds.StarGift giftToAdd) {
             if (giftsToRemove != null && !giftsToRemove.isEmpty()) {
                 boolean changed = false;
-                for (final TL_stars.StarGift gift : giftsToRemove) {
+                for (final TL_diamonds.StarGift gift : giftsToRemove) {
                     for (int i = 0; i < gifts.size(); ++i) {
-                        final TL_stars.SavedStarGift savedGift = gifts.get(i);
+                        final TL_diamonds.SavedStarGift savedGift = gifts.get(i);
                         if (savedGift.gift != null && savedGift.gift.id == gift.id) {
                             gifts.remove(i);
                             totalCount = Math.max(0, totalCount - 1);
@@ -3709,25 +3709,25 @@ public class StarsController {
                     }
                 }
                 if (changed) {
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, GiftsList.this);
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, GiftsList.this);
                 }
             }
             if (giftToAdd != null) {
-                final TL_stars.getSavedStarGift req = new TL_stars.getSavedStarGift();
-                final TL_stars.TL_inputSavedStarGiftSlug input = new TL_stars.TL_inputSavedStarGiftSlug();
+                final TL_diamonds.getSavedStarGift req = new TL_diamonds.getSavedStarGift();
+                final TL_diamonds.TL_inputSavedDiamondGiftSlug input = new TL_diamonds.TL_inputSavedDiamondGiftSlug();
                 input.slug = giftToAdd.slug;
                 req.stargift.add(input);
                 ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                    if (res instanceof TL_stars.TL_payments_savedStarGifts) {
-                        final TL_stars.TL_payments_savedStarGifts r = (TL_stars.TL_payments_savedStarGifts) res;
+                    if (res instanceof TL_diamonds.TL_payments_savedDiamondGifts) {
+                        final TL_diamonds.TL_payments_savedDiamondGifts r = (TL_diamonds.TL_payments_savedDiamondGifts) res;
                         MessagesController.getInstance(currentAccount).putUsers(r.users, false);
                         MessagesController.getInstance(currentAccount).putChats(r.chats, false);
                         if (r.gifts.size() > 0) {
-                            final TL_stars.SavedStarGift savedGift = r.gifts.get(0);
+                            final TL_diamonds.SavedStarGift savedGift = r.gifts.get(0);
                             int index = 0;
                             while (index < gifts.size() && gifts.get(index).pinned_to_top) index++;
                             gifts.add(index, savedGift);
-                            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, GiftsList.this);
+                            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, GiftsList.this);
                         }
                     }
                 }));
@@ -3738,10 +3738,10 @@ public class StarsController {
             return totalCount;
         }
 
-        public ArrayList<TL_stars.SavedStarGift> getPinned() {
-            final ArrayList<TL_stars.SavedStarGift> pinned = new ArrayList<>();
+        public ArrayList<TL_diamonds.SavedStarGift> getPinned() {
+            final ArrayList<TL_diamonds.SavedStarGift> pinned = new ArrayList<>();
             for (int i = 0; i < gifts.size(); ++i) {
-                final TL_stars.SavedStarGift gift = gifts.get(i);
+                final TL_diamonds.SavedStarGift gift = gifts.get(i);
                 if (gift.pinned_to_top && !gift.unsaved) {
                     pinned.add(gift);
                 }
@@ -3749,7 +3749,7 @@ public class StarsController {
             return pinned;
         }
 
-        public boolean eq(ArrayList<TL_stars.SavedStarGift> a, ArrayList<TL_stars.SavedStarGift> b) {
+        public boolean eq(ArrayList<TL_diamonds.SavedStarGift> a, ArrayList<TL_diamonds.SavedStarGift> b) {
             if (a == null && b == null) return true;
             if (a == null || b == null) return false;
             if (a.size() != b.size()) return false;
@@ -3759,36 +3759,36 @@ public class StarsController {
             return true;
         }
 
-        public TL_stars.InputSavedStarGift getInput(TL_stars.SavedStarGift gift) {
+        public TL_diamonds.InputSavedStarGift getInput(TL_diamonds.SavedStarGift gift) {
             if (gift == null) return null;
             if ((gift.flags & 8) != 0) {
-                TL_stars.TL_inputSavedStarGiftUser input = new TL_stars.TL_inputSavedStarGiftUser();
+                TL_diamonds.TL_inputSavedDiamondGiftUser input = new TL_diamonds.TL_inputSavedDiamondGiftUser();
                 input.msg_id = gift.msg_id;
                 return input;
             } else {
-                TL_stars.TL_inputSavedStarGiftChat input = new TL_stars.TL_inputSavedStarGiftChat();
+                TL_diamonds.TL_inputSavedDiamondGiftChat input = new TL_diamonds.TL_inputSavedDiamondGiftChat();
                 input.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
                 input.saved_id = gift.saved_id;
                 return input;
             }
         }
 
-        public void setPinned(ArrayList<TL_stars.SavedStarGift> newPinned) {
+        public void setPinned(ArrayList<TL_diamonds.SavedStarGift> newPinned) {
             gifts.removeAll(newPinned);
             if (sort_by_date && !isCollection) {
                 Collections.sort(gifts, (a, b) -> b.date - a.date);
             }
             gifts.addAll(0, newPinned);
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, GiftsList.this);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, GiftsList.this);
             sendPinnedOrder();
         }
 
-        public boolean togglePinned(TL_stars.SavedStarGift gift, boolean pin, boolean fixLimit) {
+        public boolean togglePinned(TL_diamonds.SavedStarGift gift, boolean pin, boolean fixLimit) {
             if (gift == null) {
                 return false;
             }
             boolean hitLimit = false;
-            final ArrayList<TL_stars.SavedStarGift> pinned = getPinned();
+            final ArrayList<TL_diamonds.SavedStarGift> pinned = getPinned();
             if (pinned.contains(gift)) {
                 if (pin) {
                     return false;
@@ -3802,7 +3802,7 @@ public class StarsController {
                     if (fixLimit) {
                         hitLimit = true;
                         while (pinned.size() > 0 && pinned.size() + 1 > MessagesController.getInstance(currentAccount).stargiftsPinnedToTopLimit) {
-                            TL_stars.SavedStarGift pinnedGift = pinned.remove(pinned.size() - 1);
+                            TL_diamonds.SavedStarGift pinnedGift = pinned.remove(pinned.size() - 1);
                             pinnedGift.pinned_to_top = false;
                         }
                     } else {
@@ -3817,12 +3817,12 @@ public class StarsController {
                 Collections.sort(gifts, (a, b) -> b.date - a.date);
             }
             gifts.addAll(0, pinned);
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starUserGiftsLoaded, dialogId, GiftsList.this);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.diamondUserGiftsLoaded, dialogId, GiftsList.this);
             sendPinnedOrder();
             return hitLimit;
         }
 
-        private ArrayList<TL_stars.SavedStarGift> savedPinnedState;
+        private ArrayList<TL_diamonds.SavedStarGift> savedPinnedState;
 
         public void reorderPinned(int fromPosition, int toPosition) {
             if (savedPinnedState == null) {
@@ -3835,7 +3835,7 @@ public class StarsController {
             fromPosition = Utilities.clamp(fromPosition, gifts.size() - 1, 0);
             if (fromPosition < 0 || fromPosition >= gifts.size()) return;
 
-            final TL_stars.SavedStarGift g = gifts.remove(fromPosition);
+            final TL_diamonds.SavedStarGift g = gifts.remove(fromPosition);
 
             toPosition = Utilities.clamp(toPosition, gifts.size() - 1, 0);
             if (toPosition < 0 || toPosition >= gifts.size()) return;
@@ -3854,18 +3854,18 @@ public class StarsController {
 
         public void sendPinnedOrder() {
             if (isCollection) {
-                final TL_stars.updateStarGiftCollection req = new TL_stars.updateStarGiftCollection();
+                final TL_diamonds.updateStarGiftCollection req = new TL_diamonds.updateStarGiftCollection();
                 req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
                 req.collection_id = collectionId;
                 req.flags |= 8;
-                for (TL_stars.SavedStarGift g : gifts) {
+                for (TL_diamonds.SavedStarGift g : gifts) {
                     req.order.add(getInput(g));
                 }
                 ConnectionsManager.getInstance(currentAccount).sendRequest(req, null, ConnectionsManager.RequestFlagInvokeAfter);
             } else {
-                final TL_stars.toggleStarGiftsPinnedToTop req = new TL_stars.toggleStarGiftsPinnedToTop();
+                final TL_diamonds.toggleStarGiftsPinnedToTop req = new TL_diamonds.toggleStarGiftsPinnedToTop();
                 req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
-                for (TL_stars.SavedStarGift pinnedGift : getPinned()) {
+                for (TL_diamonds.SavedStarGift pinnedGift : getPinned()) {
                     req.stargift.add(getInput(pinnedGift));
                 }
                 ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> {
@@ -3874,9 +3874,9 @@ public class StarsController {
             }
         }
 
-        public boolean contains(final TL_stars.SavedStarGift gift) {
-            for (final TL_stars.SavedStarGift g : gifts) {
-                if (StarsController.eq(g, gift)) {
+        public boolean contains(final TL_diamonds.SavedStarGift gift) {
+            for (final TL_diamonds.SavedStarGift g : gifts) {
+                if (DiamondsController.eq(g, gift)) {
                     return true;
                 }
             }
@@ -3884,18 +3884,18 @@ public class StarsController {
         }
     }
 
-    public static boolean eq(final TL_stars.SavedStarGift a, final TL_stars.SavedStarGift b) {
+    public static boolean eq(final TL_diamonds.SavedStarGift a, final TL_diamonds.SavedStarGift b) {
         return (
             (a.flags & 2048) != 0 && (b.flags & 2048) != 0 && a.saved_id == b.saved_id ||
             (a.flags & 8) != 0 && (b.flags & 8) != 0 && a.msg_id == b.msg_id
         );
     }
 
-    public TL_stars.SavedStarGift findUserStarGift(long collection_id) {
+    public TL_diamonds.SavedStarGift findUserDiamondGift(long collection_id) {
         for (int i = 0; i < giftLists.size(); ++i) {
             final GiftsList list = giftLists.valueAt(i);
             for (int j = 0; j < list.gifts.size(); ++j) {
-                final TL_stars.SavedStarGift gift = list.gifts.get(j);
+                final TL_diamonds.SavedStarGift gift = list.gifts.get(j);
                 if (gift != null && gift.gift != null && gift.gift.id == collection_id) {
                     return gift;
                 }
@@ -3904,11 +3904,11 @@ public class StarsController {
         return null;
     }
 
-    public static <T extends TL_stars.StarGiftAttribute> T findAttribute(ArrayList<TL_stars.StarGiftAttribute> attributes, Class<T> clazz) {
+    public static <T extends TL_diamonds.StarGiftAttribute> T findAttribute(ArrayList<TL_diamonds.StarGiftAttribute> attributes, Class<T> clazz) {
         if (attributes == null) {
             return null;
         }
-        for (TL_stars.StarGiftAttribute attribute : attributes) {
+        for (TL_diamonds.StarGiftAttribute attribute : attributes) {
             if (clazz.isInstance(attribute)) {
                 return clazz.cast(attribute);
             }
@@ -3916,9 +3916,9 @@ public class StarsController {
         return null;
     }
 
-    public static <T extends TL_stars.StarGiftAttribute> ArrayList<T> findAttributes(ArrayList<TL_stars.StarGiftAttribute> attributes, Class<T> clazz) {
+    public static <T extends TL_diamonds.StarGiftAttribute> ArrayList<T> findAttributes(ArrayList<TL_diamonds.StarGiftAttribute> attributes, Class<T> clazz) {
         final ArrayList<T> result = new ArrayList<>();
-        for (TL_stars.StarGiftAttribute attribute : attributes) {
+        for (TL_diamonds.StarGiftAttribute attribute : attributes) {
             if (clazz.isInstance(attribute)) {
                 result.add(clazz.cast(attribute));
             }
@@ -3926,46 +3926,46 @@ public class StarsController {
         return result;
     }
 
-    private ConcurrentHashMap<Long, TL_stars.starGiftUpgradePreview> giftPreviews = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Long, TL_diamonds.starGiftUpgradePreview> giftPreviews = new ConcurrentHashMap<>();
 
-    public void getStarGiftPreview(long gift_id, Utilities.Callback<TL_stars.starGiftUpgradePreview> got) {
+    public void getDiamondGiftPreview(long gift_id, Utilities.Callback<TL_diamonds.starGiftUpgradePreview> got) {
         if (got == null) return;
-        TL_stars.starGiftUpgradePreview cached = giftPreviews.get(gift_id);
+        TL_diamonds.starGiftUpgradePreview cached = giftPreviews.get(gift_id);
         if (cached != null) {
             got.run(cached);
             return;
         }
 
-        TL_stars.getStarGiftUpgradePreview req = new TL_stars.getStarGiftUpgradePreview();
+        TL_diamonds.getStarGiftUpgradePreview req = new TL_diamonds.getStarGiftUpgradePreview();
         req.gift_id = gift_id;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            if (res instanceof TL_stars.starGiftUpgradePreview) {
-                giftPreviews.put(gift_id, (TL_stars.starGiftUpgradePreview) res);
-                got.run((TL_stars.starGiftUpgradePreview) res);
+            if (res instanceof TL_diamonds.starGiftUpgradePreview) {
+                giftPreviews.put(gift_id, (TL_diamonds.starGiftUpgradePreview) res);
+                got.run((TL_diamonds.starGiftUpgradePreview) res);
             } else {
                 got.run(null);
             }
         }));
     }
 
-    public void getUserStarGift(TL_stars.InputSavedStarGift inputSavedStarGift, Utilities.Callback<TL_stars.SavedStarGift> got) {
+    public void getUserDiamondGift(TL_diamonds.InputSavedStarGift inputSavedDiamondGift, Utilities.Callback<TL_diamonds.SavedStarGift> got) {
         if (got == null) return;
         final AlertDialog progressDialog = new AlertDialog(ApplicationLoader.applicationContext, AlertDialog.ALERT_TYPE_SPINNER);
         progressDialog.showDelayed(200);
-        final TL_stars.getSavedStarGift req = new TL_stars.getSavedStarGift();
-        req.stargift.add(inputSavedStarGift);
+        final TL_diamonds.getSavedStarGift req = new TL_diamonds.getSavedStarGift();
+        req.stargift.add(inputSavedDiamondGift);
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
             progressDialog.dismiss();
-            TL_stars.SavedStarGift upgradedGift = null;
-            if (res instanceof TL_stars.TL_payments_savedStarGifts) {
-                TL_stars.TL_payments_savedStarGifts r = (TL_stars.TL_payments_savedStarGifts) res;
+            TL_diamonds.SavedStarGift upgradedGift = null;
+            if (res instanceof TL_diamonds.TL_payments_savedDiamondGifts) {
+                TL_diamonds.TL_payments_savedDiamondGifts r = (TL_diamonds.TL_payments_savedDiamondGifts) res;
                 MessagesController.getInstance(currentAccount).putUsers(r.users, false);
                 MessagesController.getInstance(currentAccount).putChats(r.chats, false);
                 for (int i = 0; i < r.gifts.size(); ++i) {
-                    TL_stars.SavedStarGift savedStarGift = r.gifts.get(i);
+                    TL_diamonds.SavedStarGift savedStarGift = r.gifts.get(i);
                     if (
-                        inputSavedStarGift instanceof TL_stars.TL_inputSavedStarGiftUser && ((TL_stars.TL_inputSavedStarGiftUser) inputSavedStarGift).msg_id == savedStarGift.msg_id ||
-                        inputSavedStarGift instanceof TL_stars.TL_inputSavedStarGiftChat && ((TL_stars.TL_inputSavedStarGiftChat) inputSavedStarGift).saved_id == savedStarGift.saved_id
+                        inputSavedDiamondGift instanceof TL_diamonds.TL_inputSavedDiamondGiftUser && ((TL_diamonds.TL_inputSavedDiamondGiftUser) inputSavedDiamondGift).msg_id == savedStarGift.msg_id ||
+                        inputSavedDiamondGift instanceof TL_diamonds.TL_inputSavedDiamondGiftChat && ((TL_diamonds.TL_inputSavedDiamondGiftChat) inputSavedDiamondGift).saved_id == savedStarGift.saved_id
                     ) {
                         upgradedGift = savedStarGift;
                         break;
@@ -4105,13 +4105,13 @@ public class StarsController {
             return !undone && !sent;
         }
 
-        public boolean push(MessageObject messageObject, long payStars, Utilities.Callback<HashSet<MessageObject>> undo, Runnable send, boolean needsUndo) {
+        public boolean push(MessageObject messageObject, long payDiamonds, Utilities.Callback<HashSet<MessageObject>> undo, Runnable send, boolean needsUndo) {
             if (undone || sent) return false;
 
             totalMessagesCount += 1;
             messages.add(messageObject);
 
-            totalStars += payStars;
+            totalStars += payDiamonds;
             undoListener = undo;
             if (send != null) totalSendListeners.add(send);
 
@@ -4209,7 +4209,7 @@ public class StarsController {
     public void showPaidMessageToast(
         long dialogId,
         MessageObject messageObject,
-        long payStars,
+        long payDiamonds,
         Utilities.Callback<HashSet<MessageObject>> undo,
         Runnable send,
         boolean needsUndo
@@ -4234,7 +4234,7 @@ public class StarsController {
         if (currentPaidMessagesToast == null) {
             currentPaidMessagesToast = new PaidMessagesToast(fragment, dialogId);
         }
-        if (!currentPaidMessagesToast.push(messageObject, payStars, undo, send, needsUndo)) {
+        if (!currentPaidMessagesToast.push(messageObject, payDiamonds, undo, send, needsUndo)) {
             if (send != null) {
                 send.run();
             }
@@ -4256,7 +4256,7 @@ public class StarsController {
     private final Set<Integer> sendingPaidMessagesIds = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final ConcurrentHashMap<Integer, Runnable> postponedPaidMessages = new ConcurrentHashMap<>();
 
-    private boolean needsUndoButton(MessageObject msg, long payStars) {
+    private boolean needsUndoButton(MessageObject msg, long payDiamonds) {
         if (currentPaidMessagesToast != null && currentPaidMessagesToast.isUndoRunning() && currentPaidMessagesToast.isVisible()) {
             // toast with undo already ticking
             return true;
@@ -4277,7 +4277,7 @@ public class StarsController {
             return true;
         }
 
-        if (payStars < 100) {
+        if (payDiamonds < 100) {
             return false;
         }
 
@@ -4326,7 +4326,7 @@ public class StarsController {
         if (msg.messageOwner == null) return true;
 
         final int id = msg.getId();
-        final long requestPrice = getAllowedPaidStars(req);
+        final long requestPrice = getAllowedPaidDiamonds(req);
 
         if (requestPrice <= 0) return true;
 
@@ -4341,7 +4341,7 @@ public class StarsController {
     public boolean beforeSendingFinalRequest(TLObject req, ArrayList<MessageObject> messages, Runnable send) {
         if (messages == null || messages.isEmpty()) return true;
 
-        final long requestPrice = getAllowedPaidStars(req);
+        final long requestPrice = getAllowedPaidDiamonds(req);
         if (requestPrice <= 0) return true;
 
         final HashSet<Integer> finalIds = new HashSet<>();
@@ -4364,7 +4364,7 @@ public class StarsController {
         return !postponing;
     }
 
-    public static long getAllowedPaidStars(TLObject req) {
+    public static long getAllowedPaidDiamonds(TLObject req) {
         if (req instanceof TLRPC.TL_messages_sendMessage) {
             return ((TLRPC.TL_messages_sendMessage) req).allow_paid_stars;
         } else if (req instanceof TLRPC.TL_messages_sendMultiMedia) {
@@ -4403,10 +4403,10 @@ public class StarsController {
         } else {
             MessagesController.getInstance(currentAccount).loadFullChat(-dialogId, 0, true);
         }
-        final CharSequence text = StarsIntroActivity.replaceStars(TextUtils.concat(
-            LocaleController.formatPluralString("PaidMessagesSendErrorToast1", (int) msg.messageOwner.errorAllowedPriceStars),
+        final CharSequence text = DiamondsIntroActivity.replaceDiamonds(TextUtils.concat(
+            LocaleController.formatPluralString("PaidMessagesSendErrorToast1", (int) msg.messageOwner.errorAllowedPriceDiamonds),
             " ",
-            LocaleController.formatPluralString("PaidMessagesSendErrorToast2", (int) msg.messageOwner.errorNewPriceStars)
+            LocaleController.formatPluralString("PaidMessagesSendErrorToast2", (int) msg.messageOwner.errorNewPriceDiamonds)
         ));
         BulletinFactory.of(LaunchActivity.getSafeLastFragment())
             .createSimpleBulletin(R.raw.error, text)

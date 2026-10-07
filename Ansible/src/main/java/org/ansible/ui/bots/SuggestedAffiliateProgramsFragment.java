@@ -20,7 +20,7 @@ import org.ansible.ui.Components.SizeNotifierFrameLayout;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
-import org.ansible.ui.Stars.BotStarsController;
+import org.ansible.ui.Diamonds.BotDiamondsController;
 
 import java.util.ArrayList;
 
@@ -77,7 +77,7 @@ public class SuggestedAffiliateProgramsFragment extends BaseFragment implements 
     }
 
     public void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-        BotStarsController.ChannelSuggestedBots suggestedBots = BotStarsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId);
+        BotDiamondsController.ChannelSuggestedBots suggestedBots = BotDiamondsController.getInstance(currentAccount).getChannelSuggestedBots(dialogId);
         for (int i = 0; i < suggestedBots.bots.size(); ++i) {
             items.add(ChannelAffiliateProgramsFragment.BotCell.Factory.as(suggestedBots.bots.get(i), false));
         }

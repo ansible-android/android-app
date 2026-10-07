@@ -280,8 +280,8 @@ public class BoostRepository {
             }
 
             finalPurpose = purpose;
-        } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidStarsGiveaway) {
-            TLRPC.TL_inputStorePaymentStarsGiveaway purpose = new TLRPC.TL_inputStorePaymentStarsGiveaway();
+        } else if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
+            TLRPC.TL_inputStorePaymentDiamondsGiveaway purpose = new TLRPC.TL_inputStorePaymentDiamondsGiveaway();
             purpose.only_new_subscribers = onlyNewSubscribers;
             purpose.winners_are_visible = winnersVisible;
             purpose.prize_description = prizeDesc;
@@ -296,7 +296,7 @@ public class BoostRepository {
             purpose.boost_peer = controller.getInputPeer(-chat.id);
             purpose.currency = "";
 
-            purpose.stars = ((TL_stories.TL_prepaidStarsGiveaway) prepaidGiveaway).stars;
+            purpose.stars = ((TL_stories.TL_prepaidDiamondsGiveaway) prepaidGiveaway).stars;
             purpose.users = prepaidGiveaway.quantity;
 
             for (TLObject object : selectedCountries) {

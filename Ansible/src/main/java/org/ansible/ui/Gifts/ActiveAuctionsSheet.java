@@ -33,7 +33,7 @@ import org.ansible.ui.Components.RLottieImageView;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -203,7 +203,7 @@ public class ActiveAuctionsSheet extends BottomSheetWithRecyclerListView impleme
             buttonView.setText(ssb, animated);
         }
 
-        private final ColoredImageSpan[] spanRefStars = new ColoredImageSpan[1];
+        private final ColoredImageSpan[] spanRefDiamonds = new ColoredImageSpan[1];
 
         public void updateStatus(boolean animated) {
             if (auction.auctionStateActive != null) {
@@ -215,13 +215,13 @@ public class ActiveAuctionsSheet extends BottomSheetWithRecyclerListView impleme
             final CharSequence bid = "⭐️" + formatNumber(auction.auctionUserState.bid_amount, ',');
             final GiftAuctionController.Auction.BidStatus bidStatus = auction.getBidStatus();
             if (bidStatus.isOutbid()) {
-                messageView.setText(StarsIntroActivity.replaceStarsWithPlain(AndroidUtilities.replaceTags(formatString(
-                    R.string.Gift2ActiveAuctionsActiveBidOutbid, bid)), .66f, spanRefStars), animated);
+                messageView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(AndroidUtilities.replaceTags(formatString(
+                    R.string.Gift2ActiveAuctionsActiveBidOutbid, bid)), .66f, spanRefDiamonds), animated);
                 messageView.setTextColor(Theme.getColor(Theme.key_text_RedBold));
             } else {
-                messageView.setText(StarsIntroActivity.replaceStarsWithPlain(AndroidUtilities.replaceTags(formatString(
+                messageView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(AndroidUtilities.replaceTags(formatString(
                     R.string.Gift2ActiveAuctionsActiveBidActive, bid, auction.getApproximatedMyPlace()
-                )), .66f, spanRefStars), animated);
+                )), .66f, spanRefDiamonds), animated);
                 messageView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             }
         }

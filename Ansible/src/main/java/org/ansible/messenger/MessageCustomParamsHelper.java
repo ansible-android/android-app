@@ -28,8 +28,8 @@ public class MessageCustomParamsHelper {
             message.translatedPoll == null &&
             message.translatedText == null &&
             message.translatedRichMessage == null &&
-            message.errorAllowedPriceStars == 0 &&
-            message.errorNewPriceStars == 0
+            message.errorAllowedPriceDiamonds == 0 &&
+            message.errorNewPriceDiamonds == 0
         );
     }
 
@@ -46,8 +46,8 @@ public class MessageCustomParamsHelper {
         toMessage.translatedPoll = fromMessage.translatedPoll;
         toMessage.translatedText = fromMessage.translatedText;
         toMessage.translatedRichMessage = fromMessage.translatedRichMessage;
-        toMessage.errorAllowedPriceStars = fromMessage.errorAllowedPriceStars;
-        toMessage.errorNewPriceStars = fromMessage.errorNewPriceStars;
+        toMessage.errorAllowedPriceDiamonds = fromMessage.errorAllowedPriceDiamonds;
+        toMessage.errorNewPriceDiamonds = fromMessage.errorNewPriceDiamonds;
         toMessage.translatedVoiceTranscription = fromMessage.translatedVoiceTranscription;
         toMessage.summarizedOpen = fromMessage.summarizedOpen;
         toMessage.summaryText = fromMessage.summaryText;
@@ -104,8 +104,8 @@ public class MessageCustomParamsHelper {
 
             flags |= message.translatedPoll != null ? 32 : 0;
 
-            flags |= message.errorAllowedPriceStars != 0 ? 64 : 0;
-            flags |= message.errorNewPriceStars != 0 ? 128 : 0;
+            flags |= message.errorAllowedPriceDiamonds != 0 ? 64 : 0;
+            flags |= message.errorNewPriceDiamonds != 0 ? 128 : 0;
 
             flags |= message.translatedVoiceTranscription != null ? 256 : 0;
 
@@ -146,10 +146,10 @@ public class MessageCustomParamsHelper {
             }
 
             if ((flags & 64) != 0) {
-                stream.writeInt64(message.errorAllowedPriceStars);
+                stream.writeInt64(message.errorAllowedPriceDiamonds);
             }
             if ((flags & 128) != 0) {
-                stream.writeInt64(message.errorNewPriceStars);
+                stream.writeInt64(message.errorNewPriceDiamonds);
             }
             if ((flags & 256) != 0) {
                 message.translatedVoiceTranscription.serializeToStream(stream);
@@ -196,10 +196,10 @@ public class MessageCustomParamsHelper {
                 message.translatedPoll = TranslateController.PollText.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if ((flags & 64) != 0) {
-                message.errorAllowedPriceStars = stream.readInt64(exception);
+                message.errorAllowedPriceDiamonds = stream.readInt64(exception);
             }
             if ((flags & 128) != 0) {
-                message.errorNewPriceStars = stream.readInt64(exception);
+                message.errorNewPriceDiamonds = stream.readInt64(exception);
             }
             if ((flags & 256) != 0) {
                 message.translatedVoiceTranscription = TLRPC.TL_textWithEntities.TLdeserialize(stream, stream.readInt32(exception), exception);

@@ -147,7 +147,7 @@ import org.ansible.ui.Components.HintEditText;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.TypefaceSpan;
 import org.ansible.ui.Components.URLSpanNoUnderline;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -2369,7 +2369,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
 
             if (currentStep == STEP_CHECKOUT) {
                 recurrentAccepted = !isCheckoutPreview;
-                if (invoiceInput instanceof TLRPC.TL_inputInvoiceStars) {
+                if (invoiceInput instanceof TLRPC.TL_inputInvoiceDiamonds) {
                     recurrentAccepted = true;
                 }
                 bottomLayout = new BottomFrameLayout(context, paymentForm);
@@ -4312,18 +4312,18 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
 
                         paymentStatusSent = true;
                         invoiceStatus = InvoiceStatus.PAID;
-                        final boolean isStars = invoiceInput instanceof TLRPC.TL_inputInvoiceStars;
-                        final boolean isStarsGift = isStars && ((TLRPC.TL_inputInvoiceStars) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentStarsGift;
-                        final boolean isStarsGiveaway = isStars && ((TLRPC.TL_inputInvoiceStars) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentStarsGiveaway;
-                        if (!isStars && paymentFormCallback != null) {
+                        final boolean isDiamonds = invoiceInput instanceof TLRPC.TL_inputInvoiceDiamonds;
+                        final boolean isDiamondsGift = isDiamonds && ((TLRPC.TL_inputInvoiceDiamonds) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGift;
+                        final boolean isDiamondsGiveaway = isDiamonds && ((TLRPC.TL_inputInvoiceDiamonds) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGiveaway;
+                        if (!isDiamonds && paymentFormCallback != null) {
                             paymentFormCallback.onInvoiceStatusChanged(invoiceStatus);
                         }
 
                         goToNextStep();
-                        if (isStars && paymentFormCallback != null) {
+                        if (isDiamonds && paymentFormCallback != null) {
                             paymentFormCallback.onInvoiceStatusChanged(invoiceStatus);
                         }
-                        final long giftUserId = getStarsGiftUserId();
+                        final long giftUserId = getDiamondsGiftUserId();
                         String giftUser = "";
                         if (giftUserId > 0) {
                             giftUser = UserObject.getForcedFirstName(getMessagesController().getUser(giftUserId));
@@ -4331,19 +4331,19 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                             TLRPC.Chat chat = getMessagesController().getChat(-giftUserId);
                             giftUser = chat != null ? chat.title : "";
                         }
-                        long stars = getStars();
-                        int icon = isStars ? (isStarsGift || isStarsGiveaway ? R.raw.stars_send : R.raw.stars_topup) : R.raw.payment_success;
-                        CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isStarsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
+                        long stars = getDiamonds();
+                        int icon = isDiamonds ? (isDiamondsGift || isDiamondsGiveaway ? R.raw.stars_send : R.raw.stars_topup) : R.raw.payment_success;
+                        CharSequence bulletinTitle = !isDiamonds ? null : (isDiamondsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isDiamondsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
                         CharSequence bulletinText = AndroidUtilities.replaceTags(
-                            isStars ?
-                                isStarsGiveaway ? LocaleController.formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "DiamondsGiftSentPopupInfo" : "DiamondsAcquiredInfo", (int) stars, giftUser) :
+                            isDiamonds ?
+                                isDiamondsGiveaway ? LocaleController.formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isDiamondsGift ? "DiamondsGiftSentPopupInfo" : "DiamondsAcquiredInfo", (int) stars, giftUser) :
                                 LocaleController.formatString(R.string.PaymentInfoHint, totalPrice[0], currentItemName)
                         );
                         BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                         if (lastFragment == null) return;
                         BulletinFactory factory = BulletinFactory.of(lastFragment);
                         Bulletin bulletin;
-                        if (giftUserId != 0 && bulletinTitle != null && !isStarsGiveaway) {
+                        if (giftUserId != 0 && bulletinTitle != null && !isDiamondsGiveaway) {
                             bulletin = factory.createSimpleBulletin(icon, bulletinTitle, bulletinText, getString(R.string.ViewInChat), () -> {
                                 BaseFragment lastFragment2 = LaunchActivity.getSafeLastFragment();
                                 if (lastFragment2 != null) {
@@ -4360,7 +4360,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         if (message[0] != null) {
                             bulletin.setOnClickListener(v -> {
                                 bulletin.hide();
-                                if (isStarsGift) {
+                                if (isDiamondsGift) {
                                     BaseFragment fragment = LaunchActivity.getSafeLastFragment();
                                     if (fragment != null) {
                                         fragment.presentFragment(ChatActivity.of(MessageObject.getDialogId(message[0]), message[0].id));
@@ -4370,8 +4370,8 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                     req2.msg_id = message[0].id;
                                     req2.peer = MessagesController.getInstance(currentAccount).getInputPeer(message[0].peer_id);
                                     ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
-                                        if (response2 instanceof TLRPC.TL_payments_paymentReceiptStars) {
-                                            StarsIntroActivity.showTransactionSheet(getContext(), false, currentAccount, (TLRPC.TL_payments_paymentReceiptStars) response2, getResourceProvider());
+                                        if (response2 instanceof TLRPC.TL_payments_paymentReceiptDiamonds) {
+                                            DiamondsIntroActivity.showTransactionSheet(getContext(), false, currentAccount, (TLRPC.TL_payments_paymentReceiptDiamonds) response2, getResourceProvider());
                                         } else if (response2 instanceof TLRPC.PaymentReceipt) {
                                             BaseFragment lastFragment3 = LaunchActivity.getLastFragment();
                                             if (lastFragment3 != null) {
@@ -4390,7 +4390,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                 }
                             });
                         }
-                        bulletin.show(isStarsGiveaway);
+                        bulletin.show(isDiamondsGiveaway);
                     });
                 } else if (response instanceof TLRPC.TL_payments_paymentVerificationNeeded) {
                     AndroidUtilities.runOnUIThread(() -> {
@@ -4420,18 +4420,18 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
 
                                     onCheckoutSuccess(parentLayout, parentActivity);
 
-                                    final boolean isStars = invoiceInput instanceof TLRPC.TL_inputInvoiceStars;
-                                    final boolean isStarsGift = isStars && ((TLRPC.TL_inputInvoiceStars) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentStarsGift;
-                                    final boolean isStarsGiveaway = isStars && ((TLRPC.TL_inputInvoiceStars) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentStarsGiveaway;
-                                    if (!isStars && paymentFormCallback != null) {
+                                    final boolean isDiamonds = invoiceInput instanceof TLRPC.TL_inputInvoiceDiamonds;
+                                    final boolean isDiamondsGift = isDiamonds && ((TLRPC.TL_inputInvoiceDiamonds) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGift;
+                                    final boolean isDiamondsGiveaway = isDiamonds && ((TLRPC.TL_inputInvoiceDiamonds) invoiceInput).purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGiveaway;
+                                    if (!isDiamonds && paymentFormCallback != null) {
                                         paymentFormCallback.onInvoiceStatusChanged(invoiceStatus);
                                     }
 
                                     goToNextStep();
-                                    if (isStars && paymentFormCallback != null) {
+                                    if (isDiamonds && paymentFormCallback != null) {
                                         paymentFormCallback.onInvoiceStatusChanged(invoiceStatus);
                                     }
-                                    final long giftUserId = getStarsGiftUserId();
+                                    final long giftUserId = getDiamondsGiftUserId();
                                     String giftUser = "";
                                     if (giftUserId > 0) {
                                         giftUser = UserObject.getForcedFirstName(getMessagesController().getUser(giftUserId));
@@ -4439,19 +4439,19 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                         TLRPC.Chat chat = getMessagesController().getChat(-giftUserId);
                                         giftUser = chat != null ? chat.title : "";
                                     }
-                                    long stars = getStars();
-                                    int icon = isStars ? (isStarsGift || isStarsGiveaway ? R.raw.stars_send : R.raw.stars_topup) : R.raw.payment_success;
-                                    CharSequence bulletinTitle = !isStars ? null : (isStarsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isStarsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
+                                    long stars = getDiamonds();
+                                    int icon = isDiamonds ? (isDiamondsGift || isDiamondsGiveaway ? R.raw.stars_send : R.raw.stars_topup) : R.raw.payment_success;
+                                    CharSequence bulletinTitle = !isDiamonds ? null : (isDiamondsGiveaway ? getString(R.string.DiamondsGiveawaySentPopup) : isDiamondsGift ? getString(R.string.DiamondsGiftSentPopup) : getString(R.string.DiamondsAcquired));
                                     CharSequence bulletinText = AndroidUtilities.replaceTags(
-                                        isStars ?
-                                            isStarsGiveaway ? LocaleController.formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isStarsGift ? "DiamondsGiftSentPopupInfo" : "DiamondsAcquiredInfo", (int) stars, giftUser) :
+                                        isDiamonds ?
+                                            isDiamondsGiveaway ? LocaleController.formatPluralStringComma("DiamondsGiveawaySentPopupInfo", (int) stars) : LocaleController.formatPluralStringComma(isDiamondsGift ? "DiamondsGiftSentPopupInfo" : "DiamondsAcquiredInfo", (int) stars, giftUser) :
                                             LocaleController.formatString(R.string.PaymentInfoHint, totalPrice[0], currentItemName)
                                     );
                                     BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                                     if (lastFragment == null) return;
                                     BulletinFactory factory = BulletinFactory.of(lastFragment);
                                     Bulletin bulletin;
-                                    if (giftUserId != 0 && bulletinTitle != null && !isStarsGiveaway) {
+                                    if (giftUserId != 0 && bulletinTitle != null && !isDiamondsGiveaway) {
                                         bulletin = factory.createSimpleBulletin(icon, bulletinTitle, bulletinText, getString(R.string.ViewInChat), () -> {
                                             BaseFragment lastFragment2 = LaunchActivity.getSafeLastFragment();
                                             if (lastFragment2 != null) {
@@ -4468,7 +4468,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                     if (message != null) {
                                         bulletin.setOnClickListener(v -> {
                                             bulletin.hide();
-                                            if (isStarsGift) {
+                                            if (isDiamondsGift) {
                                                 BaseFragment fragment = LaunchActivity.getSafeLastFragment();
                                                 if (fragment != null) {
                                                     fragment.presentFragment(ChatActivity.of(MessageObject.getDialogId(message), message.id));
@@ -4478,8 +4478,8 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                                 req2.msg_id = message.id;
                                                 req2.peer = MessagesController.getInstance(currentAccount).getInputPeer(message.peer_id);
                                                 ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
-                                                    if (response2 instanceof TLRPC.TL_payments_paymentReceiptStars) {
-                                                        StarsIntroActivity.showTransactionSheet(getContext(), false, currentAccount, (TLRPC.TL_payments_paymentReceiptStars) response2, getResourceProvider());
+                                                    if (response2 instanceof TLRPC.TL_payments_paymentReceiptDiamonds) {
+                                                        DiamondsIntroActivity.showTransactionSheet(getContext(), false, currentAccount, (TLRPC.TL_payments_paymentReceiptDiamonds) response2, getResourceProvider());
                                                     } else if (response2 instanceof TLRPC.PaymentReceipt) {
                                                         BaseFragment lastFragment3 = LaunchActivity.getLastFragment();
                                                         if (lastFragment3 != null) {
@@ -4498,7 +4498,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                             }
                                         });
                                     }
-                                    bulletin.show(isStarsGiveaway);
+                                    bulletin.show(isDiamondsGiveaway);
                                 });
                                 return true;
                             }
@@ -4536,30 +4536,30 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
         }, ConnectionsManager.RequestFlagFailOnServerErrors | (allowUnregistered ? ConnectionsManager.RequestFlagWithoutLogin : 0));
     }
 
-    private long getStars() {
-        if (invoiceInput instanceof TLRPC.TL_inputInvoiceStars) {
-            TLRPC.TL_inputInvoiceStars invoiceInputStars = (TLRPC.TL_inputInvoiceStars) invoiceInput;
-            final TLRPC.InputStorePaymentPurpose purpose = invoiceInputStars.purpose;
-            if (purpose instanceof TLRPC.TL_inputStorePaymentStarsGift) {
-                return ((TLRPC.TL_inputStorePaymentStarsGift) purpose).stars;
-            } else if (purpose instanceof TLRPC.TL_inputStorePaymentStarsTopup) {
-                return ((TLRPC.TL_inputStorePaymentStarsTopup) purpose).stars;
-            } else if (purpose instanceof TLRPC.TL_inputStorePaymentStarsGiveaway) {
-                return ((TLRPC.TL_inputStorePaymentStarsGiveaway) purpose).stars;
+    private long getDiamonds() {
+        if (invoiceInput instanceof TLRPC.TL_inputInvoiceDiamonds) {
+            TLRPC.TL_inputInvoiceDiamonds invoiceInputDiamonds = (TLRPC.TL_inputInvoiceDiamonds) invoiceInput;
+            final TLRPC.InputStorePaymentPurpose purpose = invoiceInputDiamonds.purpose;
+            if (purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGift) {
+                return ((TLRPC.TL_inputStorePaymentDiamondsGift) purpose).stars;
+            } else if (purpose instanceof TLRPC.TL_inputStorePaymentDiamondsTopup) {
+                return ((TLRPC.TL_inputStorePaymentDiamondsTopup) purpose).stars;
+            } else if (purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGiveaway) {
+                return ((TLRPC.TL_inputStorePaymentDiamondsGiveaway) purpose).stars;
             }
         }
         return 0;
     }
 
-    private long getStarsGiftUserId() {
-        if (invoiceInput instanceof TLRPC.TL_inputInvoiceStars) {
-            TLRPC.TL_inputInvoiceStars invoiceInputStars = (TLRPC.TL_inputInvoiceStars) invoiceInput;
-            final TLRPC.InputStorePaymentPurpose purpose = invoiceInputStars.purpose;
-            if (purpose instanceof TLRPC.TL_inputStorePaymentStarsGift) {
-                TLRPC.TL_inputStorePaymentStarsGift p = (TLRPC.TL_inputStorePaymentStarsGift) purpose;
+    private long getDiamondsGiftUserId() {
+        if (invoiceInput instanceof TLRPC.TL_inputInvoiceDiamonds) {
+            TLRPC.TL_inputInvoiceDiamonds invoiceInputDiamonds = (TLRPC.TL_inputInvoiceDiamonds) invoiceInput;
+            final TLRPC.InputStorePaymentPurpose purpose = invoiceInputDiamonds.purpose;
+            if (purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGift) {
+                TLRPC.TL_inputStorePaymentDiamondsGift p = (TLRPC.TL_inputStorePaymentDiamondsGift) purpose;
                 if (p.user_id != null) return p.user_id.user_id;
-            } else if (purpose instanceof TLRPC.TL_inputStorePaymentStarsGiveaway) {
-                TLRPC.TL_inputStorePaymentStarsGiveaway p = (TLRPC.TL_inputStorePaymentStarsGiveaway) purpose;
+            } else if (purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGiveaway) {
+                TLRPC.TL_inputStorePaymentDiamondsGiveaway p = (TLRPC.TL_inputStorePaymentDiamondsGiveaway) purpose;
                 if (p.boost_peer != null) return DialogObject.getPeerDialogId(p.boost_peer);
             }
         }

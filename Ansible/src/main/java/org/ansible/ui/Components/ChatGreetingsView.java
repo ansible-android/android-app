@@ -42,7 +42,7 @@ import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.Premium.PremiumButtonView;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PremiumPreviewFragment;
 import org.ansible.ui.Stories.recorder.HintView2;
@@ -164,30 +164,30 @@ public class ChatGreetingsView extends LinearLayout {
             premiumTextView.setLineSpacing(dp(2f), 1f);
             if (premiumButtonView == null) {
                 premiumButtonView = new TextView(getContext()) {
-                    StarParticlesView.Drawable starParticlesDrawable;
+                    DiamondParticlesView.Drawable diamondParticlesDrawable;
 
                     @Override
                     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
                         super.onLayout(changed, left, top, right, bottom);
-                        starParticlesDrawable = new StarParticlesView.Drawable(10);
-                        starParticlesDrawable.type = 100;
-                        starParticlesDrawable.isCircle = false;
-                        starParticlesDrawable.roundEffect = true;
-                        starParticlesDrawable.useRotate = false;
-                        starParticlesDrawable.useBlur = true;
-                        starParticlesDrawable.checkBounds = true;
-                        starParticlesDrawable.size1 = 1;
-                        starParticlesDrawable.k1 = starParticlesDrawable.k2 = starParticlesDrawable.k3 = 0.98f;
-                        starParticlesDrawable.paused = false;
-                        starParticlesDrawable.speedScale = 0f;
-                        starParticlesDrawable.minLifeTime = 750;
-                        starParticlesDrawable.randLifeTime = 750;
-                        starParticlesDrawable.init();
+                        diamondParticlesDrawable = new DiamondParticlesView.Drawable(10);
+                        diamondParticlesDrawable.type = 100;
+                        diamondParticlesDrawable.isCircle = false;
+                        diamondParticlesDrawable.roundEffect = true;
+                        diamondParticlesDrawable.useRotate = false;
+                        diamondParticlesDrawable.useBlur = true;
+                        diamondParticlesDrawable.checkBounds = true;
+                        diamondParticlesDrawable.size1 = 1;
+                        diamondParticlesDrawable.k1 = diamondParticlesDrawable.k2 = diamondParticlesDrawable.k3 = 0.98f;
+                        diamondParticlesDrawable.paused = false;
+                        diamondParticlesDrawable.speedScale = 0f;
+                        diamondParticlesDrawable.minLifeTime = 750;
+                        diamondParticlesDrawable.randLifeTime = 750;
+                        diamondParticlesDrawable.init();
 
                         AndroidUtilities.rectTmp.set(0, 0, getWidth(), getHeight());
-                        starParticlesDrawable.rect.set(AndroidUtilities.rectTmp);
-                        starParticlesDrawable.rect2.set(AndroidUtilities.rectTmp);
-                        starParticlesDrawable.resetPositions();
+                        diamondParticlesDrawable.rect.set(AndroidUtilities.rectTmp);
+                        diamondParticlesDrawable.rect2.set(AndroidUtilities.rectTmp);
+                        diamondParticlesDrawable.resetPositions();
 
                         clipPath.reset();
                         clipPath.addRoundRect(AndroidUtilities.rectTmp, getHeight() / 2f, getHeight() / 2f, Path.Direction.CW);
@@ -196,10 +196,10 @@ public class ChatGreetingsView extends LinearLayout {
                     private final Path clipPath = new Path();
                     @Override
                     protected void onDraw(Canvas canvas) {
-                        if (starParticlesDrawable != null) {
+                        if (diamondParticlesDrawable != null) {
                             canvas.save();
                             canvas.clipPath(clipPath);
-                            starParticlesDrawable.onDraw(canvas);
+                            diamondParticlesDrawable.onDraw(canvas);
                             canvas.restore();
                             invalidate();
                         }

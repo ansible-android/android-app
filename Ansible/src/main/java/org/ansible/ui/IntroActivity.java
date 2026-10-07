@@ -657,7 +657,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         private float maxRefreshRate;
         private long lastDrawFrame;
 
-        private final GenericProvider<Void, Bitmap> telegramMaskProvider = v -> {
+        private final GenericProvider<Void, Bitmap> ansibleMaskProvider = v -> {
             int size = dp(ICON_HEIGHT_DP);
             Bitmap bm = Bitmap.createBitmap(dp(ICON_WIDTH_DP), size, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(bm);
@@ -793,16 +793,16 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
             loadTexture(R.drawable.intro_plane, 21);
             loadTexture(v -> {
                 Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                paint.setColor(ThemeColors.TELEGRAM_COLOR); // It's logo color, it should not be colored by the theme
+                paint.setColor(ThemeColors.ANSIBLE_COLOR); // It's logo color, it should not be colored by the theme
                 int size = dp(ICON_HEIGHT_DP);
                 Bitmap bm = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
                 Canvas c = new Canvas(bm);
                 c.drawCircle(size / 2f, size / 2f, size / 2f, paint);
                 return bm;
             }, 22);
-            loadTexture(telegramMaskProvider, 23);
+            loadTexture(ansibleMaskProvider, 23);
 
-            updateTelegramTextures();
+            updateAnsibleTextures();
             updatePowerfulTextures();
             Intro.setPrivateTextures(textures[19], textures[20]);
             Intro.setFreeTextures(textures[14], textures[13]);
@@ -814,8 +814,8 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
             return true;
         }
 
-        public void updateTelegramTextures() {
-            Intro.setTelegramTextures(textures[22], textures[21], textures[23]);
+        public void updateAnsibleTextures() {
+            Intro.setAnsibleTextures(textures[22], textures[21], textures[23]);
         }
 
         public void updatePowerfulTextures() {
@@ -975,8 +975,8 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                     eglThread.loadTexture(R.drawable.intro_powerful_mask, 17, Theme.getColor(Theme.key_windowBackgroundWhite), true);
                     eglThread.updatePowerfulTextures();
 
-                    eglThread.loadTexture(eglThread.telegramMaskProvider, 23, true);
-                    eglThread.updateTelegramTextures();
+                    eglThread.loadTexture(eglThread.ansibleMaskProvider, 23, true);
+                    eglThread.updateAnsibleTextures();
 
                     Intro.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                 });

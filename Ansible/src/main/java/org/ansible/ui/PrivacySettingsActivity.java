@@ -1174,12 +1174,12 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                         } else {
                             value = formatRulesString(getAccountInstance(), ContactsController.PRIVACY_RULES_TYPE_VOICE_MESSAGES);
                         }
-                        textCell.setTextAndValue(addPremiumStar(getString(R.string.PrivacyVoiceMessages)), value, noncontactsRow != -1);
+                        textCell.setTextAndValue(addPremiumDiamond(getString(R.string.PrivacyVoiceMessages)), value, noncontactsRow != -1);
                         ImageView imageView = textCell.getValueImageView();
                         imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
                     } else if (position == noncontactsRow) {
                         value = getString(feeValue ? R.string.ContactsAndFee : noncontactsValue ? R.string.ContactsAndPremium : R.string.P2PEverybody);
-                        textCell.setTextAndValue(getMessagesController().newNoncontactPeersRequirePremiumWithoutOwnpremium && !getMessagesController().starsPaidMessagesAvailable ? getString(R.string.PrivacyMessages) : addPremiumStar(getString(R.string.PrivacyMessages)), value, musicRow != -1);
+                        textCell.setTextAndValue(getMessagesController().newNoncontactPeersRequirePremiumWithoutOwnpremium && !getMessagesController().diamondsPaidMessagesAvailable ? getString(R.string.PrivacyMessages) : addPremiumDiamond(getString(R.string.PrivacyMessages)), value, musicRow != -1);
                     } else if (position == passportRow) {
                         textCell.setText(getString("AnsiblePassport", R.string.AnsiblePassport), true);
                     } else if (position == deleteAccountRow) {
@@ -1408,18 +1408,18 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         }
     }
 
-    private SpannableString premiumStar;
-    private CharSequence addPremiumStar(String text) {
+    private SpannableString premiumDiamond;
+    private CharSequence addPremiumDiamond(String text) {
 //        if (getUserConfig().isPremium()) {
 //            return text;
 //        }
-        if (premiumStar == null) {
-            premiumStar = new SpannableString("★");
-            Drawable drawable = new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumStarMenuDrawable, dp(18), dp(18));
+        if (premiumDiamond == null) {
+            premiumDiamond = new SpannableString("★");
+            Drawable drawable = new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumDiamondMenuDrawable, dp(18), dp(18));
             drawable.setBounds(0, 0, dp(18), dp(18));
-            premiumStar.setSpan(new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_CENTER), 0, premiumStar.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            premiumDiamond.setSpan(new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_CENTER), 0, premiumDiamond.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
-        return new SpannableStringBuilder(text).append("  ").append(premiumStar);
+        return new SpannableStringBuilder(text).append("  ").append(premiumDiamond);
     }
 
     @Override

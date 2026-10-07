@@ -41,7 +41,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedTextView;
@@ -510,9 +510,9 @@ public class LimitPreviewView extends LinearLayout {
                     if (animatingRotate) {
                         animatingRotation = false;
                     }
-                    if (animateStarRatingRunnable != null) {
-                        AndroidUtilities.cancelRunOnUIThread(animateStarRatingRunnable);
-                        animateStarRatingRunnable.run();
+                    if (animateDiamondRatingRunnable != null) {
+                        AndroidUtilities.cancelRunOnUIThread(animateDiamondRatingRunnable);
+                        animateDiamondRatingRunnable.run();
                     }
                 }
             });
@@ -649,14 +649,14 @@ public class LimitPreviewView extends LinearLayout {
         isBoostsStyle = true;
     }
 
-    public void setStarsUpgradePrice(
-        TL_stars.StarGiftUpgradePrice from,
-        long current_stars,
-        TL_stars.StarGiftUpgradePrice to
+    public void setDiamondsUpgradePrice(
+        TL_diamonds.StarGiftUpgradePrice from,
+        long current_diamonds,
+        TL_diamonds.StarGiftUpgradePrice to
     ) {
         drawFromRight = true;
         ratingPaint.setColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
-        percent = AndroidUtilities.ilerp(current_stars, from.upgrade_stars, to.upgrade_stars);
+        percent = AndroidUtilities.ilerp(current_diamonds, from.upgrade_stars, to.upgrade_stars);
         defaultText.setText(LocaleController.formatPluralStringComma("Diamonds", (int) from.upgrade_stars));
         premiumCount.setText(LocaleController.formatPluralStringComma("Diamonds", (int) to.upgrade_stars));
         ((FrameLayout.LayoutParams) premiumCount.getLayoutParams()).gravity = Gravity.RIGHT;
@@ -667,13 +667,13 @@ public class LimitPreviewView extends LinearLayout {
         premiumCount.setTextColor(isRatingNegative ? Color.WHITE : Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         defaultText.setTextColor(Color.WHITE);
 
-        setIconValue((int) current_stars, false);
+        setIconValue((int) current_diamonds, false);
         isBoostsStyle = true;
         isSimpleStyle = true;
         isRatingStyle = true;
     }
 
-    public void setStarRating(TL_stars.Tl_starsRating rating) {
+    public void setDiamondRating(TL_diamonds.Tl_starsRating rating) {
         isRatingNegative = false;
         ratingPaint.setColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
         long k = rating.current_level_stars;
@@ -706,10 +706,10 @@ public class LimitPreviewView extends LinearLayout {
         isRatingStyle = true;
     }
 
-    private Runnable animateStarRatingRunnable;
-    public void animateStarRating(TL_stars.Tl_starsRating from, TL_stars.Tl_starsRating to) {
-        AndroidUtilities.cancelRunOnUIThread(animateStarRatingRunnable);
-        animateStarRatingRunnable = null;
+    private Runnable animateDiamondRatingRunnable;
+    public void animateDiamondRating(TL_diamonds.Tl_starsRating from, TL_diamonds.Tl_starsRating to) {
+        AndroidUtilities.cancelRunOnUIThread(animateDiamondRatingRunnable);
+        animateDiamondRatingRunnable = null;
         ratingPaint.setColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
         isRatingNegative = false;
         if (from.level == to.level) {
@@ -782,8 +782,8 @@ public class LimitPreviewView extends LinearLayout {
 
             setIconValue((int) from.stars, (int) from.next_level_stars, true, false);
 
-            AndroidUtilities.runOnUIThread(animateStarRatingRunnable = () -> {
-                animateStarRatingRunnable = null;
+            AndroidUtilities.runOnUIThread(animateDiamondRatingRunnable = () -> {
+                animateDiamondRatingRunnable = null;
                 if (!isAttachedToWindow()) return;
                 if (arrowAnimator != null) {
                     arrowAnimator.cancel();
@@ -877,8 +877,8 @@ public class LimitPreviewView extends LinearLayout {
 
             setIconValue((int) from.stars, (int) from.next_level_stars, true, false);
 
-            AndroidUtilities.runOnUIThread(animateStarRatingRunnable = () -> {
-                animateStarRatingRunnable = null;
+            AndroidUtilities.runOnUIThread(animateDiamondRatingRunnable = () -> {
+                animateDiamondRatingRunnable = null;
                 if (!isAttachedToWindow()) return;
                 if (arrowAnimator != null) {
                     arrowAnimator.cancel();

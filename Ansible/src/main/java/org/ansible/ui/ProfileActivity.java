@@ -17,8 +17,8 @@ import static org.ansible.messenger.LocaleController.formatPluralString;
 import static org.ansible.messenger.LocaleController.formatPluralStringComma;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarGiftSheet.replaceUnderstood;
-import static org.ansible.ui.Stars.StarsIntroActivity.formatStarsAmountShort;
+import static org.ansible.ui.Diamonds.DiamondGiftSheet.replaceUnderstood;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.formatDiamondsAmountShort;
 import static org.ansible.ui.bots.AffiliateProgramFragment.percents;
 
 import android.Manifest;
@@ -174,7 +174,7 @@ import org.ansible.asnet.tl.TL_account;
 import org.ansible.asnet.tl.TL_bots;
 import org.ansible.asnet.tl.TL_fragment;
 import org.ansible.asnet.tl.TL_iv;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenu;
@@ -273,7 +273,7 @@ import org.ansible.ui.Components.ScamDrawable;
 import org.ansible.ui.Components.ShareAlert;
 import org.ansible.ui.Components.SharedMediaLayout;
 import org.ansible.ui.Components.SizeNotifierFrameLayout;
-import org.ansible.ui.Components.StarRatingView;
+import org.ansible.ui.Components.DiamondRatingView;
 import org.ansible.ui.Components.StickerEmptyView;
 import org.ansible.ui.Components.TagEditCell;
 import org.ansible.ui.Components.TimerDrawable;
@@ -293,13 +293,13 @@ import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.Components.voip.VoIPHelper;
 import org.ansible.ui.Gifts.GiftSheet;
-import org.ansible.ui.Stars.BotStarsActivity;
-import org.ansible.ui.Stars.BotStarsController;
-import org.ansible.ui.Stars.ProfileGiftsView;
-import org.ansible.ui.Stars.StarGiftPatterns;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.BotDiamondsActivity;
+import org.ansible.ui.Diamonds.BotDiamondsController;
+import org.ansible.ui.Diamonds.ProfileGiftsView;
+import org.ansible.ui.Diamonds.DiamondGiftPatterns;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.ProfileStoriesView;
 import org.ansible.ui.Stories.StoriesController;
 import org.ansible.ui.Stories.StoriesListPlaceProvider;
@@ -361,7 +361,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private AnimatorSet writeButtonAnimation;
     private Drawable lockIconDrawable;
     private final Drawable[] verifiedDrawable = new Drawable[2];
-    private final Drawable[] premiumStarDrawable = new Drawable[2];
+    private final Drawable[] premiumDiamondDrawable = new Drawable[2];
     private Long emojiStatusGiftId;
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable[] emojiStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable[2];
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable[] botVerificationDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable[2];
@@ -376,7 +376,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private boolean sharedMediaLayoutAttached;
     private SharedMediaLayout.SharedMediaPreloader sharedMediaPreloader;
     private boolean preloadedChannelEmojiStatuses;
-    private StarRatingView ratingView;
+    private DiamondRatingView ratingView;
 
     private View blurredView;
 
@@ -398,7 +398,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private ImageView timeItem;
     private ImageView communityItem;
     private CommunityArrowDrawable communityArrowDrawable;
-    private ImageView starBgItem, starFgItem;
+    private ImageView diamondBgItem, diamondFgItem;
     private TimerDrawable timerDrawable;
     private ProfileGalleryBlurView avatarsBlurView;
     private ProfileGalleryView avatarsViewPager;
@@ -496,7 +496,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private boolean recreateMenuAfterAnimation;
     private int playProfileAnimation;
     private boolean needTimerImage;
-    private boolean needStarImage;
+    private boolean needDiamondImage;
     private boolean allowProfileAnimation = true;
     private boolean disableProfileAnimation = false;
     private boolean justFullyExpanded = false;
@@ -675,7 +675,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int addToGroupButtonRow;
     private int addToGroupInfoRow;
     private int premiumRow;
-    private int starsRow;
+    private int diamondsRow;
     private int tonRow;
     private int businessRow;
     private int premiumGiftingRow;
@@ -709,7 +709,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int subscribersRequestsRow;
     private int administratorsRow;
     private int settingsRow;
-    private int botStarsBalanceRow;
+    private int botDiamondsBalanceRow;
     private int botTonBalanceRow;
     private int channelBalanceRow;
     private int channelBalanceSectionRow;
@@ -1373,7 +1373,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         canvas.clipRect(0, 0, getMeasuredWidth(), y1);
                         float atop = actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0;
                         float maxExpand = getHeaderOnlyExtraHeight() + atop + (actionBar.getHeight() - atop) / 2f;
-                        StarGiftPatterns.drawProfileAnimatedPattern(canvas, emoji, getMeasuredWidth(), maxExpand, calculateHeaderExtraDiff(), avatarContainer, 1.0f);
+                        DiamondGiftPatterns.drawProfileAnimatedPattern(canvas, emoji, getMeasuredWidth(), maxExpand, calculateHeaderExtraDiff(), avatarContainer, 1.0f);
                         canvas.restore();
                     }
                 }
@@ -2235,12 +2235,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         getNotificationCenter().addObserver(this, NotificationCenter.storiesReadUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.userIsPremiumBlockedUpadted);
         getNotificationCenter().addObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
-        getNotificationCenter().addObserver(this, NotificationCenter.starBalanceUpdated);
-        getNotificationCenter().addObserver(this, NotificationCenter.botStarsUpdated);
-        getNotificationCenter().addObserver(this, NotificationCenter.botStarsTransactionsLoaded);
+        getNotificationCenter().addObserver(this, NotificationCenter.diamondBalanceUpdated);
+        getNotificationCenter().addObserver(this, NotificationCenter.botDiamondsUpdated);
+        getNotificationCenter().addObserver(this, NotificationCenter.botDiamondsTransactionsLoaded);
         getNotificationCenter().addObserver(this, NotificationCenter.dialogDeleted);
         getNotificationCenter().addObserver(this, NotificationCenter.channelRecommendationsLoaded);
-        getNotificationCenter().addObserver(this, NotificationCenter.starUserGiftsLoaded);
+        getNotificationCenter().addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
         getNotificationCenter().addObserver(this, NotificationCenter.profileMusicUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.updatedChatRanks);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
@@ -2376,12 +2376,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         getNotificationCenter().removeObserver(this, NotificationCenter.storiesReadUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.userIsPremiumBlockedUpadted);
         getNotificationCenter().removeObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
-        getNotificationCenter().removeObserver(this, NotificationCenter.starBalanceUpdated);
-        getNotificationCenter().removeObserver(this, NotificationCenter.botStarsUpdated);
-        getNotificationCenter().removeObserver(this, NotificationCenter.botStarsTransactionsLoaded);
+        getNotificationCenter().removeObserver(this, NotificationCenter.diamondBalanceUpdated);
+        getNotificationCenter().removeObserver(this, NotificationCenter.botDiamondsUpdated);
+        getNotificationCenter().removeObserver(this, NotificationCenter.botDiamondsTransactionsLoaded);
         getNotificationCenter().removeObserver(this, NotificationCenter.dialogDeleted);
         getNotificationCenter().removeObserver(this, NotificationCenter.channelRecommendationsLoaded);
-        getNotificationCenter().removeObserver(this, NotificationCenter.starUserGiftsLoaded);
+        getNotificationCenter().removeObserver(this, NotificationCenter.diamondUserGiftsLoaded);
         getNotificationCenter().removeObserver(this, NotificationCenter.profileMusicUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.updatedChatRanks);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
@@ -4330,7 +4330,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 TLRPC.User user = getMessagesController().getUser(userId);
                 if (userInfo != null && userInfo.starref_program != null) {
                     final long selfId = getUserConfig().getClientUserId();
-                    BotStarsController.getInstance(currentAccount).getConnectedBot(getContext(), selfId, userId, connectedBot -> {
+                    BotDiamondsController.getInstance(currentAccount).getConnectedBot(getContext(), selfId, userId, connectedBot -> {
                         if (connectedBot == null) {
                             ChannelAffiliateProgramsFragment.showConnectAffiliateAlert(context, currentAccount, userInfo.starref_program, getUserConfig().getClientUserId(), resourcesProvider, false);
                         } else {
@@ -4514,10 +4514,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 presentFragment(fragment);
             } else if (position == settingsRow) {
                 editItem.performClick();
-            } else if (position == botStarsBalanceRow) {
-                presentFragment(new BotStarsActivity(BotStarsActivity.TYPE_STARS, userId));
+            } else if (position == botDiamondsBalanceRow) {
+                presentFragment(new BotDiamondsActivity(BotDiamondsActivity.TYPE_STARS, userId));
             } else if (position == botTonBalanceRow) {
-                presentFragment(new BotStarsActivity(BotStarsActivity.TYPE_TON, userId));
+                presentFragment(new BotDiamondsActivity(BotDiamondsActivity.TYPE_TON, userId));
             } else if (position == channelBalanceRow) {
                 Bundle args = new Bundle();
                 args.putLong("chat_id", chatId);
@@ -4585,8 +4585,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 onWriteButtonClick();
             } else if (position == premiumRow) {
                 presentFragment(new PremiumPreviewFragment("settings"));
-            } else if (position == starsRow) {
-                presentFragment(new StarsIntroActivity());
+            } else if (position == diamondsRow) {
+                presentFragment(new DiamondsIntroActivity());
             } else if (position == tonRow) {
                 presentFragment(new TONIntroActivity());
             } else if (position == businessRow) {
@@ -5440,21 +5440,21 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         communityItem.setImageDrawable(communityArrowDrawable = new CommunityArrowDrawable().withCircle());
         frameLayout.addView(communityItem, LayoutHelper.createFrame(16, 16, Gravity.TOP | Gravity.LEFT));
 
-        starBgItem = new ImageView(context);
-        starBgItem.setImageResource(R.drawable.star_small_outline);
-        starBgItem.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefault), PorterDuff.Mode.SRC_IN));
-        starBgItem.setAlpha(0.0f);
-        starBgItem.setScaleY(0.0f);
-        starBgItem.setScaleX(0.0f);
-        frameLayout.addView(starBgItem, LayoutHelper.createFrame(20, 20, Gravity.TOP | Gravity.LEFT));
+        diamondBgItem = new ImageView(context);
+        diamondBgItem.setImageResource(R.drawable.star_small_outline);
+        diamondBgItem.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefault), PorterDuff.Mode.SRC_IN));
+        diamondBgItem.setAlpha(0.0f);
+        diamondBgItem.setScaleY(0.0f);
+        diamondBgItem.setScaleX(0.0f);
+        frameLayout.addView(diamondBgItem, LayoutHelper.createFrame(20, 20, Gravity.TOP | Gravity.LEFT));
 
-        starFgItem = new ImageView(context);
-        starFgItem.setImageResource(R.drawable.star_small_inner);
-        starFgItem.setAlpha(0.0f);
-        starFgItem.setScaleY(0.0f);
-        starFgItem.setScaleX(0.0f);
-        frameLayout.addView(starFgItem, LayoutHelper.createFrame(20, 20, Gravity.TOP | Gravity.LEFT));
-        updateStar();
+        diamondFgItem = new ImageView(context);
+        diamondFgItem.setImageResource(R.drawable.star_small_inner);
+        diamondFgItem.setAlpha(0.0f);
+        diamondFgItem.setScaleY(0.0f);
+        diamondFgItem.setScaleX(0.0f);
+        frameLayout.addView(diamondFgItem, LayoutHelper.createFrame(20, 20, Gravity.TOP | Gravity.LEFT));
+        updateDiamond();
 
         showAvatarProgress(false, false);
 
@@ -5637,15 +5637,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         checkPhotoDescriptionAlpha();
         avatarContainer2.addView(animatedStatusView);
 
-        ratingView = new StarRatingView(context);
+        ratingView = new DiamondRatingView(context);
         ratingView.setLayoutParams(LayoutHelper.createFrame(32, 32, Gravity.LEFT, 109 - 6, -2, 0, 0));
         ratingView.setResourcesProvider(resourcesProvider);
-        checkStarRatingVisible();
+        checkDiamondRatingVisible();
         ratingView.setDelegate(visibility -> {
             onlineTextView[1].setTranslationX(getOnlineTextViewTranslationXWithOffsets(lastOnlineTextViewX));
             onlineTextView[1].setTranslationY(getOnlineTextViewTranslationYWithOffsets(lastOnlineTextViewY));
         });
-        ratingView.setOnClickListener(this::showStarRatingBottomSheet);
+        ratingView.setOnClickListener(this::showDiamondRatingBottomSheet);
         if (userInfo != null) {
             ratingView.set(userInfo.stars_rating);
         }
@@ -6719,9 +6719,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         ecenter -= xoff;
         SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(this, getContext(), true, Math.max(0, ecenter), currentChat == null ? SelectAnimatedEmojiDialog.TYPE_EMOJI_STATUS : SelectAnimatedEmojiDialog.TYPE_EMOJI_STATUS_CHANNEL, true, resourcesProvider, topMarginDp) {
             @Override
-            protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+            protected boolean willApplyEmoji(View view, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                 if (gift != null) {
-                    final TL_stars.SavedStarGift savedStarGift = StarsController.getInstance(currentAccount).findUserStarGift(gift.id);
+                    final TL_diamonds.SavedStarGift savedStarGift = DiamondsController.getInstance(currentAccount).findUserDiamondGift(gift.id);
                     return savedStarGift == null || MessagesController.getGlobalMainSettings().getInt("statusgiftpage", 0) >= 2;
                 }
                 return true;
@@ -6733,13 +6733,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
 
             @Override
-            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                 final TLRPC.EmojiStatus emojiStatus;
                 if (gift != null) {
-                    final TL_stars.SavedStarGift savedStarGift = StarsController.getInstance(currentAccount).findUserStarGift(gift.id);
+                    final TL_diamonds.SavedStarGift savedStarGift = DiamondsController.getInstance(currentAccount).findUserDiamondGift(gift.id);
                     if (savedStarGift != null && MessagesController.getGlobalMainSettings().getInt("statusgiftpage", 0) < 2) {
                         MessagesController.getGlobalMainSettings().edit().putInt("statusgiftpage", MessagesController.getGlobalMainSettings().getInt("statusgiftpage", 0) + 1).apply();
-                        new StarGiftSheet(getContext(), currentAccount, UserConfig.getInstance(currentAccount).getClientUserId(), resourcesProvider)
+                        new DiamondGiftSheet(getContext(), currentAccount, UserConfig.getInstance(currentAccount).getClientUserId(), resourcesProvider)
                                 .set(savedStarGift, null)
                                 .setupWearPage()
                                 .show();
@@ -7775,15 +7775,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 verifiedCheckDrawable[1].setColorFilter(AndroidUtilities.getOffsetColor(color1, color2, value, 1.0f), PorterDuff.Mode.MULTIPLY);
             }
 
-            if (premiumStarDrawable[0] != null) {
+            if (premiumDiamondDrawable[0] != null) {
                 color1 = getThemedColor(Theme.key_profile_verifiedBackground);
                 color2 = getThemedColor(Theme.key_player_actionBarTitle);
-                premiumStarDrawable[0].setColorFilter(AndroidUtilities.getOffsetColor(color1, color2, value, 1.0f), PorterDuff.Mode.MULTIPLY);
+                premiumDiamondDrawable[0].setColorFilter(AndroidUtilities.getOffsetColor(color1, color2, value, 1.0f), PorterDuff.Mode.MULTIPLY);
             }
-            if (premiumStarDrawable[1] != null) {
+            if (premiumDiamondDrawable[1] != null) {
                 color1 = dontApplyPeerColor(getThemedColor(Theme.key_profile_verifiedBackground));
                 color2 = dontApplyPeerColor(getThemedColor(Theme.key_player_actionBarTitle));
-                premiumStarDrawable[1].setColorFilter(AndroidUtilities.getOffsetColor(color1, color2, value, 1.0f), PorterDuff.Mode.MULTIPLY);
+                premiumDiamondDrawable[1].setColorFilter(AndroidUtilities.getOffsetColor(color1, color2, value, 1.0f), PorterDuff.Mode.MULTIPLY);
             }
 
             updateEmojiStatusDrawableColor();
@@ -7880,7 +7880,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             animators.add(va);
         }
 
-        checkStarRatingVisible();
+        checkDiamondRatingVisible();
 
         headerAnimatorSet = new AnimatorSet();
         headerAnimatorSet.playTogether(animators);
@@ -8131,11 +8131,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
         }
     }
-    private boolean isStarRatingVisible1;
+    private boolean isDiamondRatingVisible1;
 
-    private void checkStarRatingVisible() {
+    private void checkDiamondRatingVisible() {
         if (ratingView != null) {
-            ratingView.setVisibility(!mediaHeaderVisible && isStarRatingVisible1);
+            ratingView.setVisibility(!mediaHeaderVisible && isDiamondRatingVisible1);
         }
     }
 
@@ -8241,10 +8241,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         timeItem.setTranslationY(avatarContainer.getY() + dp(-10) + extra);
         communityItem.setTranslationX(avatarContainer.getX() + dp(28f) + extra);
         communityItem.setTranslationY(avatarContainer.getY() + dp(26.5f) + extra);
-        starBgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
-        starBgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
-        starFgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
-        starFgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
+        diamondBgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
+        diamondBgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
+        diamondFgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
+        diamondFgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
 
         float nameScale = AndroidUtilities.lerp(1f, backwardInitialValues[7], backwardDiff);
 
@@ -8296,8 +8296,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         float diff = calculateHeaderExtraDiff();
         boolean writeButtonVisible = false;
 
-        isStarRatingVisible1 = diff > 0.2f && !searchMode && (imageUpdater == null || setAvatarRow == -1);
-        checkStarRatingVisible();
+        isDiamondRatingVisible1 = diff > 0.2f && !searchMode && (imageUpdater == null || setAvatarRow == -1);
+        checkDiamondRatingVisible();
         if (writeButtonVisible && chatId != 0) {
             writeButtonVisible = ChatObject.isChannel(currentChat) && !currentChat.megagroup && chatInfo != null && chatInfo.linked_chat_id != 0 && infoHeaderRow != -1;
         }
@@ -8653,10 +8653,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 timeItem.setTranslationY(avatarContainer.getY() + dp(-10) + extra);
                 communityItem.setTranslationX(avatarContainer.getX() + dp(28f) + extra);
                 communityItem.setTranslationY(avatarContainer.getY() + dp(26.5f) + extra);
-                starBgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
-                starBgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
-                starFgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
-                starFgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
+                diamondBgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
+                diamondBgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
+                diamondFgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
+                diamondFgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
                 avatarContainer.setScaleX(avatarScale);
                 avatarContainer.setScaleY(avatarScale);
 
@@ -8731,10 +8731,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     timeItem.setTranslationY(avatarContainer.getY() + dp(-10) + extra);
                     communityItem.setTranslationX(avatarContainer.getX() + dp(28f) + extra);
                     communityItem.setTranslationY(avatarContainer.getY() + dp(26.5f) + extra);
-                    starBgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
-                    starBgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
-                    starFgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
-                    starFgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
+                    diamondBgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
+                    diamondBgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
+                    diamondFgItem.setTranslationX(avatarContainer.getX() + dp(28) + extra);
+                    diamondFgItem.setTranslationY(avatarContainer.getY() + dp(24) + extra);
                 } else {
                     expandAnimator.removeListener(resetListener);
                     expandAnimator.addListener(resetListener);
@@ -9357,11 +9357,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             updateEditColorIcon();
         } else if (id == NotificationCenter.currentUserPremiumStatusChanged) {
             updateEditColorIcon();
-        } else if (id == NotificationCenter.starBalanceUpdated) {
+        } else if (id == NotificationCenter.diamondBalanceUpdated) {
             updateListAnimated(false);
-        } else if (id == NotificationCenter.botStarsUpdated) {
+        } else if (id == NotificationCenter.botDiamondsUpdated) {
             updateListAnimated(false);
-        } else if (id == NotificationCenter.botStarsTransactionsLoaded) {
+        } else if (id == NotificationCenter.botDiamondsTransactionsLoaded) {
             updateListAnimated(false);
         } else if (id == NotificationCenter.dialogDeleted) {
             final long dialogId = (long) args[0];
@@ -9381,7 +9381,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     listAdapter.notifyDataSetChanged();
                 }
             }
-        } else if (id == NotificationCenter.starUserGiftsLoaded) {
+        } else if (id == NotificationCenter.diamondUserGiftsLoaded) {
             final long dialogId = (long) args[0];
             if (dialogId == getDialogId() && !isSettings()) {
                 if (sharedMediaRow < 0) {
@@ -9511,18 +9511,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    private void updateStar() {
-        if (starBgItem == null || starFgItem == null) return;
-        if (needStarImage && currentChat != null && (currentChat.flags2 & 2048) != 0) {
-            starFgItem.setTag(1);
-            starFgItem.setVisibility(View.VISIBLE);
-            starBgItem.setTag(1);
-            starBgItem.setVisibility(View.VISIBLE);
+    private void updateDiamond() {
+        if (diamondBgItem == null || diamondFgItem == null) return;
+        if (needDiamondImage && currentChat != null && (currentChat.flags2 & 2048) != 0) {
+            diamondFgItem.setTag(1);
+            diamondFgItem.setVisibility(View.VISIBLE);
+            diamondBgItem.setTag(1);
+            diamondBgItem.setVisibility(View.VISIBLE);
         } else {
-            starFgItem.setTag(null);
-            starFgItem.setVisibility(View.GONE);
-            starBgItem.setTag(null);
-            starBgItem.setVisibility(View.GONE);
+            diamondFgItem.setTag(null);
+            diamondFgItem.setVisibility(View.GONE);
+            diamondBgItem.setTag(null);
+            diamondBgItem.setVisibility(View.GONE);
         }
     }
 
@@ -9680,8 +9680,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
         if (!AndroidUtilities.isTablet()) {
             needTimerImage = type != 0;
-            needStarImage = type != 0;
-            updateStar();
+            needDiamondImage = type != 0;
+            updateDiamond();
             if (preferences.getBoolean("view_animations", true)) {
                 playProfileAnimation = type;
             } else if (type == 2) {
@@ -9909,15 +9909,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (timeItem != null) {
             timeItem.setAlpha(1.0f);
         }
-        if (starFgItem != null) {
-            starFgItem.setAlpha(1.0f);
-            starFgItem.setScaleX(1.0f);
-            starFgItem.setScaleY(1.0f);
+        if (diamondFgItem != null) {
+            diamondFgItem.setAlpha(1.0f);
+            diamondFgItem.setScaleX(1.0f);
+            diamondFgItem.setScaleY(1.0f);
         }
-        if (starBgItem != null) {
-            starBgItem.setAlpha(1.0f);
-            starBgItem.setScaleX(1.0f);
-            starBgItem.setScaleY(1.0f);
+        if (diamondBgItem != null) {
+            diamondBgItem.setAlpha(1.0f);
+            diamondBgItem.setScaleX(1.0f);
+            diamondBgItem.setScaleY(1.0f);
         }
         previousTransitionMainFragment = null;
         if (parentLayout != null && parentLayout.getFragmentStack().size() >= 2) {
@@ -9946,7 +9946,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (previousTransitionFragment != null) {
             updateCommunityArrowItem();
             updateTimeItem();
-            updateStar();
+            updateDiamond();
         }
         final AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.setDuration(playProfileAnimation == 2 ? 250 : 180);
@@ -10037,15 +10037,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 animators.add(ObjectAnimator.ofFloat(communityItem, View.SCALE_X, 1f, 0.0f));
                 animators.add(ObjectAnimator.ofFloat(communityItem, View.SCALE_Y, 1f, 0.0f));
             }
-            if (starFgItem.getTag() != null) {
-                animators.add(ObjectAnimator.ofFloat(starFgItem, View.ALPHA, 1.0f, 0.0f));
-                animators.add(ObjectAnimator.ofFloat(starFgItem, View.SCALE_X, 1.0f, 0.0f));
-                animators.add(ObjectAnimator.ofFloat(starFgItem, View.SCALE_Y, 1.0f, 0.0f));
+            if (diamondFgItem.getTag() != null) {
+                animators.add(ObjectAnimator.ofFloat(diamondFgItem, View.ALPHA, 1.0f, 0.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondFgItem, View.SCALE_X, 1.0f, 0.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondFgItem, View.SCALE_Y, 1.0f, 0.0f));
             }
-            if (starBgItem.getTag() != null) {
-                animators.add(ObjectAnimator.ofFloat(starBgItem, View.ALPHA, 1.0f, 0.0f));
-                animators.add(ObjectAnimator.ofFloat(starBgItem, View.SCALE_X, 1.0f, 0.0f));
-                animators.add(ObjectAnimator.ofFloat(starBgItem, View.SCALE_Y, 1.0f, 0.0f));
+            if (diamondBgItem.getTag() != null) {
+                animators.add(ObjectAnimator.ofFloat(diamondBgItem, View.ALPHA, 1.0f, 0.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondBgItem, View.SCALE_X, 1.0f, 0.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondBgItem, View.SCALE_Y, 1.0f, 0.0f));
             }
             if (animatingItem != null) {
                 animatingItem.setAlpha(1.0f);
@@ -10132,17 +10132,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 animators.add(ObjectAnimator.ofFloat(communityItem, View.SCALE_X, 0.0f, 1f));
                 animators.add(ObjectAnimator.ofFloat(communityItem, View.SCALE_Y, 0.0f, 1f));
             }
-            if (starFgItem.getTag() != null) {
-                starFgItem.setAlpha(0f);
-                animators.add(ObjectAnimator.ofFloat(starFgItem, View.ALPHA, 0.0f, 1.0f));
-                animators.add(ObjectAnimator.ofFloat(starFgItem, View.SCALE_X, 0.0f, 1.0f));
-                animators.add(ObjectAnimator.ofFloat(starFgItem, View.SCALE_Y, 0.0f, 1.0f));
+            if (diamondFgItem.getTag() != null) {
+                diamondFgItem.setAlpha(0f);
+                animators.add(ObjectAnimator.ofFloat(diamondFgItem, View.ALPHA, 0.0f, 1.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondFgItem, View.SCALE_X, 0.0f, 1.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondFgItem, View.SCALE_Y, 0.0f, 1.0f));
             }
-            if (starBgItem.getTag() != null) {
-                starBgItem.setAlpha(0f);
-                animators.add(ObjectAnimator.ofFloat(starBgItem, View.ALPHA, 0.0f, 1.0f));
-                animators.add(ObjectAnimator.ofFloat(starBgItem, View.SCALE_X, 0.0f, 1.0f));
-                animators.add(ObjectAnimator.ofFloat(starBgItem, View.SCALE_Y, 0.0f, 1.0f));
+            if (diamondBgItem.getTag() != null) {
+                diamondBgItem.setAlpha(0f);
+                animators.add(ObjectAnimator.ofFloat(diamondBgItem, View.ALPHA, 0.0f, 1.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondBgItem, View.SCALE_X, 0.0f, 1.0f));
+                animators.add(ObjectAnimator.ofFloat(diamondBgItem, View.SCALE_Y, 0.0f, 1.0f));
             }
             if (animatingItem != null) {
                 animatingItem.setAlpha(0.0f);
@@ -10470,7 +10470,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         notificationRow = -1;
         languageRow = -1;
         premiumRow = -1;
-        starsRow = -1;
+        diamondsRow = -1;
         tonRow = -1;
         businessRow = -1;
         premiumGiftingRow = -1;
@@ -10551,7 +10551,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         sharedMediaRow = -1;
         notificationsSimpleRow = -1;
         settingsRow = -1;
-        botStarsBalanceRow = -1;
+        botDiamondsBalanceRow = -1;
         botTonBalanceRow = -1;
         channelBalanceRow = -1;
         balanceDividerRow = -1;
@@ -10653,8 +10653,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (!getMessagesController().premiumFeaturesBlocked()) {
                     premiumRow = rowCount++;
                 }
-                if (getMessagesController().starsPurchaseAvailable()) {
-                    starsRow = rowCount++;
+                if (getMessagesController().diamondsPurchaseAvailable()) {
+                    diamondsRow = rowCount++;
                 }
                 // Ansible: TON/«GRAM» вырезан из UI (как на iOS) — строка «Мои GRAM» (tonRow) не показывается.
                 if (!getMessagesController().premiumFeaturesBlocked()) {
@@ -10663,7 +10663,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (!getMessagesController().premiumPurchaseBlocked()) {
                     premiumGiftingRow = rowCount++;
                 }
-                if (premiumRow >= 0 || starsRow >= 0 || tonRow >= 0 || businessRow >= 0 || premiumGiftingRow >= 0) {
+                if (premiumRow >= 0 || diamondsRow >= 0 || tonRow >= 0 || businessRow >= 0 || premiumGiftingRow >= 0) {
                     premiumSectionsRow = rowCount++;
                 }
                 helpHeaderRow = rowCount++;
@@ -10783,18 +10783,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 boolean divider = false;
                 if (user != null && user.bot) {
-                    if (userInfo != null && userInfo.can_view_revenue && BotStarsController.getInstance(currentAccount).getTONBalance(userId) > 0) {
+                    if (userInfo != null && userInfo.can_view_revenue && BotDiamondsController.getInstance(currentAccount).getTONBalance(userId) > 0) {
                         botTonBalanceRow = rowCount++;
                     }
-                    if (BotStarsController.getInstance(currentAccount).getBotStarsBalance(userId).amount > 0 || BotStarsController.getInstance(currentAccount).hasTransactions(userId)) {
-                        botStarsBalanceRow = rowCount++;
+                    if (BotDiamondsController.getInstance(currentAccount).getBotDiamondsBalance(userId).amount > 0 || BotDiamondsController.getInstance(currentAccount).hasTransactions(userId)) {
+                        botDiamondsBalanceRow = rowCount++;
                     }
                 }
 
                 if (user != null && isBot && !user.bot_nochats) {
                     addToGroupButtonRow = rowCount++;
                     addToGroupInfoRow = rowCount++;
-                } else if (botStarsBalanceRow >= 0) {
+                } else if (botDiamondsBalanceRow >= 0) {
                     divider = true;
                 }
 
@@ -10906,12 +10906,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                     if (
                         chatInfo != null && chatInfo.can_view_stars_revenue && (
-                            BotStarsController.getInstance(currentAccount).getBotStarsBalance(-chatId).amount > 0 ||
-                            BotStarsController.getInstance(currentAccount).hasTransactions(-chatId)
+                            BotDiamondsController.getInstance(currentAccount).getBotDiamondsBalance(-chatId).amount > 0 ||
+                            BotDiamondsController.getInstance(currentAccount).hasTransactions(-chatId)
                         ) ||
                         chatInfo != null &&
                         chatInfo.can_view_revenue &&
-                        BotStarsController.getInstance(currentAccount).getTONBalance(-chatId) > 0
+                        BotDiamondsController.getInstance(currentAccount).getTONBalance(-chatId) > 0
                     ) {
                         channelBalanceRow = rowCount++;
                     }
@@ -10922,12 +10922,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (
                         chatInfo != null &&
                                 chatInfo.can_view_stars_revenue && (
-                                BotStarsController.getInstance(currentAccount).getBotStarsBalance(-chatId).amount > 0 ||
-                                        BotStarsController.getInstance(currentAccount).hasTransactions(-chatId)
+                                BotDiamondsController.getInstance(currentAccount).getBotDiamondsBalance(-chatId).amount > 0 ||
+                                        BotDiamondsController.getInstance(currentAccount).hasTransactions(-chatId)
                         ) ||
                                 chatInfo != null &&
                                         chatInfo.can_view_revenue &&
-                                        BotStarsController.getInstance(currentAccount).getTONBalance(-chatId) > 0
+                                        BotDiamondsController.getInstance(currentAccount).getTONBalance(-chatId) > 0
                 ) {
                     channelBalanceRow = rowCount++;
                     channelBalanceSectionRow = rowCount++;
@@ -11088,13 +11088,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private Drawable getPremiumCrossfadeDrawable(int a) {
         if (premiumCrossfadeDrawable[a] == null) {
-            premiumStarDrawable[a] = ContextCompat.getDrawable(getParentActivity(), R.drawable.msg_premium_liststar).mutate();
+            premiumDiamondDrawable[a] = ContextCompat.getDrawable(getParentActivity(), R.drawable.msg_premium_liststar).mutate();
             int color = getThemedColor(Theme.key_profile_verifiedBackground);
             if (a == 1) {
                 color = dontApplyPeerColor(color);
             }
-            premiumStarDrawable[a].setColorFilter(color, PorterDuff.Mode.MULTIPLY);
-            premiumCrossfadeDrawable[a] = new CrossfadeDrawable(premiumStarDrawable[a], ContextCompat.getDrawable(getParentActivity(), R.drawable.msg_premium_prolfilestar).mutate());
+            premiumDiamondDrawable[a].setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+            premiumCrossfadeDrawable[a] = new CrossfadeDrawable(premiumDiamondDrawable[a], ContextCompat.getDrawable(getParentActivity(), R.drawable.msg_premium_prolfilestar).mutate());
         }
         return premiumCrossfadeDrawable[a];
     }
@@ -12174,7 +12174,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (!UserObject.isDeleted(user) && !isBot && currentEncryptedChat == null && !userBlocked && userId != 333000 && userId != 777000 && userId != 42777) {
                     if (!BuildVars.IS_BILLING_UNAVAILABLE && !user.self && !user.bot && !MessagesController.isSupportUser(user) && !getMessagesController().premiumPurchaseBlocked()) {
-                        StarsController.getInstance(currentAccount).loadStarGifts();
+                        DiamondsController.getInstance(currentAccount).loadDiamondGifts();
                         otherItem.addSubItem(gift_premium, R.drawable.msg_gift_premium, LocaleController.getString(R.string.ProfileSendAGift));
                         giftAction = true;
                     }
@@ -12263,7 +12263,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         shareAction = !chat.creator;
                     }
                     if (!BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked()) {
-                        StarsController.getInstance(currentAccount).loadStarGifts();
+                        DiamondsController.getInstance(currentAccount).loadDiamondGifts();
                         otherItem.addSubItem(gift_premium, R.drawable.msg_gift_premium, LocaleController.getString(R.string.ProfileSendAGiftToChannel));
                         otherItem.setSubItemShown(gift_premium, chatInfo != null && chatInfo.stargifts_available);
                         giftAction = true;
@@ -13751,8 +13751,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == settingsRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.ChannelAdminSettings), R.drawable.msg_customize, position != membersSectionRow - 1);
                     } else if (position == channelBalanceRow) {
-                        final TL_stars.StarsAmount stars_balance = BotStarsController.getInstance(currentAccount).getBotStarsBalance(-chatId);
-                        final long ton_balance = BotStarsController.getInstance(currentAccount).getTONBalance(-chatId);
+                        final TL_diamonds.StarsAmount stars_balance = BotDiamondsController.getInstance(currentAccount).getBotDiamondsBalance(-chatId);
+                        final long ton_balance = BotDiamondsController.getInstance(currentAccount).getTONBalance(-chatId);
                         SpannableStringBuilder ssb = new SpannableStringBuilder();
                         if (ton_balance > 0) {
                             if (ton_balance / 1_000_000_000.0 > 1000.0) {
@@ -13769,18 +13769,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         if (stars_balance.amount > 0) {
                             if (ssb.length() > 0) ssb.append(" ");
-                            ssb.append("XTR ").append(formatStarsAmountShort(stars_balance));
+                            ssb.append("XTR ").append(formatDiamondsAmountShort(stars_balance));
                         }
-                        textCell.setTextAndValueAndIcon(getString(R.string.ChannelDiamonds), ChannelMonetizationLayout.replaceTON(StarsIntroActivity.replaceStarsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_feature_paid, true);
-                    } else if (position == botStarsBalanceRow) {
-                        final TL_stars.StarsAmount stars_balance = BotStarsController.getInstance(currentAccount).getBotStarsBalance(userId);
+                        textCell.setTextAndValueAndIcon(getString(R.string.ChannelDiamonds), ChannelMonetizationLayout.replaceTON(DiamondsIntroActivity.replaceDiamondsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_feature_paid, true);
+                    } else if (position == botDiamondsBalanceRow) {
+                        final TL_diamonds.StarsAmount stars_balance = BotDiamondsController.getInstance(currentAccount).getBotDiamondsBalance(userId);
                         SpannableStringBuilder ssb = new SpannableStringBuilder();
                         if (stars_balance.amount > 0) {
-                            ssb.append("XTR ").append(formatStarsAmountShort(stars_balance));
+                            ssb.append("XTR ").append(formatDiamondsAmountShort(stars_balance));
                         }
-                        textCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), ChannelMonetizationLayout.replaceTON(StarsIntroActivity.replaceStarsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_premium_main, true);
+                        textCell.setTextAndValueAndIcon(getString(R.string.BotBalanceDiamonds), ChannelMonetizationLayout.replaceTON(DiamondsIntroActivity.replaceDiamondsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.menu_premium_main, true);
                     } else if (position == botTonBalanceRow) {
-                        long ton_balance = BotStarsController.getInstance(currentAccount).getTONBalance(userId);
+                        long ton_balance = BotDiamondsController.getInstance(currentAccount).getTONBalance(userId);
                         SpannableStringBuilder ssb = new SpannableStringBuilder();
                         if (ton_balance > 0) {
                             if (ton_balance / 1_000_000_000.0 > 1000.0) {
@@ -13795,7 +13795,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 ssb.append("TON ").append(formatterTON.format(ton_balance / 1_000_000_000.0));
                             }
                         }
-                        textCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), ChannelMonetizationLayout.replaceTON(StarsIntroActivity.replaceStarsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.outline_gram_24, true);
+                        textCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), ChannelMonetizationLayout.replaceTON(DiamondsIntroActivity.replaceDiamondsWithPlain(ssb, .7f), textCell.getTextView().getPaint()), R.drawable.outline_gram_24, true);
                     } else if (position == blockedUsersRow) {
                         if (chatInfo != null) {
                             textCell.setTextAndValueAndIcon(LocaleController.getString(R.string.ChannelBlacklist), String.format("%d", Math.max(chatInfo.banned_count, chatInfo.kicked_count)), R.drawable.msg_user_remove, position != membersSectionRow - 1);
@@ -13871,17 +13871,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == addToGroupButtonRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.AddToGroupOrChannel), R.drawable.msg_groups_create, false);
                     } else if (position == premiumRow) {
-                        textCell.setTextAndIcon(LocaleController.getString(R.string.AnsiblePremium), new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumStarMenuDrawable, dp(24), dp(24)), true);
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.AnsiblePremium), new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumDiamondMenuDrawable, dp(24), dp(24)), true);
                         textCell.setImageLeft(23);
-                    } else if (position == starsRow) {
-                        StarsController c = StarsController.getInstance(currentAccount);
+                    } else if (position == diamondsRow) {
+                        DiamondsController c = DiamondsController.getInstance(currentAccount);
                         long balance = c.getBalance().amount;
-                        textCell.setTextAndValueAndIcon(LocaleController.getString(R.string.MenuAnsibleDiamonds), c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : "", new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().goldenStarMenuDrawable, dp(24), dp(24)), true);
+                        textCell.setTextAndValueAndIcon(LocaleController.getString(R.string.MenuAnsibleDiamonds), c.balanceAvailable() && balance > 0 ? DiamondsIntroActivity.formatDiamondsAmount(c.getBalance(), 0.85f, ' ') : "", new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().goldenDiamondMenuDrawable, dp(24), dp(24)), true);
                         textCell.setImageLeft(23);
                     } else if (position == tonRow) {
-                        StarsController c = StarsController.getTonInstance(currentAccount);
+                        DiamondsController c = DiamondsController.getTonInstance(currentAccount);
                         long balance = c.getBalance().amount;
-                        textCell.setTextAndValueAndIcon(getString(R.string.MyTON), c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : "", R.drawable.settings_gram_24, true);
+                        textCell.setTextAndValueAndIcon(getString(R.string.MyTON), c.balanceAvailable() && balance > 0 ? DiamondsIntroActivity.formatDiamondsAmount(c.getBalance(), 0.85f, ' ') : "", R.drawable.settings_gram_24, true);
                         textCell.setImageLeft(23);
                     } else if (position == businessRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.AnsibleBusiness), R.drawable.menu_shop, true);
@@ -14283,7 +14283,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         position == clearLogsRow || position == switchBackendRow || position == setAvatarRow ||
                         position == addToGroupButtonRow || position == premiumRow || position == premiumGiftingRow ||
                         position == businessRow || position == liteModeRow || position == birthdayRow || position == channelRow ||
-                        position == starsRow || position == tonRow || position == linkedCommunityRow;
+                        position == diamondsRow || position == tonRow || position == linkedCommunityRow;
             }
             if (holder.itemView instanceof UserCell) {
                 UserCell userCell = (UserCell) holder.itemView;
@@ -14328,7 +14328,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     position == faqRow || position == policyRow || position == sendLogsRow || position == sendLastLogsRow ||
                     position == clearLogsRow || position == switchBackendRow || position == setAvatarRow || position == addToGroupButtonRow ||
                     position == addToContactsRow || position == liteModeRow || position == premiumGiftingRow || position == businessRow ||
-                    position == botStarsBalanceRow || position == botTonBalanceRow || position == channelBalanceRow || position == botPermissionLocation ||
+                    position == botDiamondsBalanceRow || position == botTonBalanceRow || position == channelBalanceRow || position == botPermissionLocation ||
                     position == botPermissionBiometry || position == botPermissionEmojiStatus || position == tonRow
             ) {
                 return VIEW_TYPE_TEXT;
@@ -14364,7 +14364,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return VIEW_TYPE_ADDTOGROUP_INFO;
             } else if (position == premiumRow) {
                 return VIEW_TYPE_PREMIUM_TEXT_CELL;
-            } else if (position == starsRow) {
+            } else if (position == diamondsRow) {
                 return VIEW_TYPE_STARS_TEXT_CELL;
             } else if (position == bizLocationRow) {
                 return VIEW_TYPE_LOCATION;
@@ -15681,7 +15681,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             put(++pointer, notificationRow, sparseIntArray);
             put(++pointer, languageRow, sparseIntArray);
             put(++pointer, premiumRow, sparseIntArray);
-            put(++pointer, starsRow, sparseIntArray);
+            put(++pointer, diamondsRow, sparseIntArray);
             put(++pointer, businessRow, sparseIntArray);
             put(++pointer, premiumSectionsRow, sparseIntArray);
             put(++pointer, premiumGiftingRow, sparseIntArray);
@@ -15751,7 +15751,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             put(++pointer, bizLocationRow, sparseIntArray);
             put(++pointer, birthdayRow, sparseIntArray);
             put(++pointer, channelRow, sparseIntArray);
-            put(++pointer, botStarsBalanceRow, sparseIntArray);
+            put(++pointer, botDiamondsBalanceRow, sparseIntArray);
             put(++pointer, botTonBalanceRow, sparseIntArray);
             put(++pointer, channelBalanceRow, sparseIntArray);
             put(++pointer, balanceDividerRow, sparseIntArray);
@@ -16659,7 +16659,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    private void showStarRatingBottomSheet(View ignoreView) {
+    private void showDiamondRatingBottomSheet(View ignoreView) {
         final Context context = getContext();
         final TLRPC.UserFull userFull = getUserInfo();
         if (userFull == null || userFull.stars_rating == null) {
@@ -16678,7 +16678,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         {
             limitPreviewView = new LimitPreviewView(getContext(), R.drawable.filled_rating_crown, 0, 0, resourcesProvider);
             limitPreviewView.setHideNegativeValues(getDialogId() != UserConfig.getInstance(currentAccount).getClientUserId());
-            limitPreviewView.setStarRating(userFull.stars_rating);
+            limitPreviewView.setDiamondRating(userFull.stars_rating);
             limitPreviewView.setTranslationY(-dp(14));
             linearLayout.addView(limitPreviewView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 20, 0, 10));
         }
@@ -16748,11 +16748,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 ));
                 sb.append(" ");
                 sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.DiamondRatingFuturePendingPointsPreview), () -> {
-                    limitPreviewView.animateStarRating(userFull.stars_rating, userFull.stars_my_pending_rating);
+                    limitPreviewView.animateDiamondRating(userFull.stars_rating, userFull.stars_my_pending_rating);
                     update.run(true);
                 }), true));
                 textView[0].setOnClickListener(v -> {
-                    limitPreviewView.animateStarRating(userFull.stars_rating, userFull.stars_my_pending_rating);
+                    limitPreviewView.animateDiamondRating(userFull.stars_rating, userFull.stars_my_pending_rating);
                     update.run(true);
                 });
                 textView[0].setText(sb);
@@ -16765,11 +16765,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             ));
             sb.append(" ");
             sb.append(AndroidUtilities.replaceArrows(AndroidUtilities.premiumText(getString(R.string.DiamondRatingFuturePendingPointsPreviewBack), () -> {
-                limitPreviewView.animateStarRating(userFull.stars_my_pending_rating, userFull.stars_rating);
+                limitPreviewView.animateDiamondRating(userFull.stars_my_pending_rating, userFull.stars_rating);
                 update.run(false);
             }), true));
             textView[1].setOnClickListener(v -> {
-                limitPreviewView.animateStarRating(userFull.stars_my_pending_rating, userFull.stars_rating);
+                limitPreviewView.animateDiamondRating(userFull.stars_my_pending_rating, userFull.stars_rating);
                 update.run(false);
             });
             textView[1].setText(sb);

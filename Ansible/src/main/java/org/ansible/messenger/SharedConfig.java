@@ -1553,10 +1553,10 @@ public class SharedConfig {
     public static void checkSaveToGalleryFiles() {
         Utilities.globalQueue.postRunnable(() -> {
             try {
-                File telegramPath = new File(Environment.getExternalStorageDirectory(), "Ansible");
-                File imagePath = new File(telegramPath, "Ansible Images");
+                File ansiblePath = new File(Environment.getExternalStorageDirectory(), "Ansible");
+                File imagePath = new File(ansiblePath, "Ansible Images");
                 imagePath.mkdir();
-                File videoPath = new File(telegramPath, "Ansible Video");
+                File videoPath = new File(ansiblePath, "Ansible Video");
                 videoPath.mkdir();
 
                 if (!BuildVars.NO_SCOPED_STORAGE) {

@@ -1940,9 +1940,9 @@ public class NotificationsController extends BaseController implements Notificat
                             TLRPC.TL_messageActionGameScore.class,
                             TLRPC.TL_messageActionPaymentSent.class,
                             TLRPC.TL_messageActionPaymentSentMe.class,
-                            TLRPC.TL_messageActionStarGift.class,
+                            TLRPC.TL_messageActionDiamondGift.class,
                             TLRPC.TL_messageActionGiftPremium.class,
-                            TLRPC.TL_messageActionStarGiftUnique.class,
+                            TLRPC.TL_messageActionDiamondGiftUnique.class,
                             TLRPC.TL_messageActionPaidMessagesPrice.class,
                             TLRPC.TL_messageActionPaidMessagesRefunded.class,
                             TLRPC.TL_messageActionGiftTon.class
@@ -2327,8 +2327,8 @@ public class NotificationsController extends BaseController implements Notificat
                         return msg;
                     } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) {
                         return messageObject.messageText.toString();
-                    } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPrizeStars) {
-                        final TLRPC.TL_messageActionPrizeStars action = (TLRPC.TL_messageActionPrizeStars) messageObject.messageOwner.action;
+                    } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPrizeDiamonds) {
+                        final TLRPC.TL_messageActionPrizeDiamonds action = (TLRPC.TL_messageActionPrizeDiamonds) messageObject.messageOwner.action;
                         final long did = DialogObject.getPeerDialogId(action.boost_peer);
                         final String peername;
                         if (did >= 0) {
@@ -2607,9 +2607,9 @@ public class NotificationsController extends BaseController implements Notificat
                             msg = LocaleController.formatString(R.string.NotificationUnrecognizedDevice, getUserConfig().getCurrentUser().first_name, date, messageObject.messageOwner.action.title, messageObject.messageOwner.action.address);
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGameScore || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPaymentSent || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPaymentSentMe) {
                             msg = messageObject.messageText.toString();
-                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionStarGift || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftPremium || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftTon) {
+                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftPremium || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftTon) {
                             msg = messageObject.messageText.toString();
-                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
+                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
                             msg = messageObject.messageText.toString();
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSuggestBirthday) {
                             msg = messageObject.messageText.toString();
@@ -5134,7 +5134,7 @@ public class NotificationsController extends BaseController implements Notificat
 
             NotificationCompat.Action wearReplyAction = null;
 
-            if ((!isChannel || isSupergroup) && canReply && !SharedConfig.isWaitingForPasscodeEnter && selfUserId != dialogId && !UserObject.isReplyUser(dialogId) && MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(dialogId) <= 0) {
+            if ((!isChannel || isSupergroup) && canReply && !SharedConfig.isWaitingForPasscodeEnter && selfUserId != dialogId && !UserObject.isReplyUser(dialogId) && MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(dialogId) <= 0) {
                 Intent replyIntent = new Intent(ApplicationLoader.applicationContext, WearReplyReceiver.class);
                 replyIntent.putExtra("dialog_id", dialogId);
                 replyIntent.putExtra("max_id", maxId);

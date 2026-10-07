@@ -109,7 +109,7 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
     RoundedBitmapDrawable roundedBitmapDrawable;
     CellFlickerDrawable.DrawableInterface cellFlickerDrawable;
     private float roundRadius;
-    StarParticlesView.Drawable starDrawable;
+    DiamondParticlesView.Drawable diamondDrawable;
     SpeedLineParticles.Drawable speedLinesDrawable;
     HelloParticles.Drawable helloParticlesDrawable;
     private final static float[] speedScaleVideoTimestamps = new float[]{0.02f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 0.02f};
@@ -140,27 +140,27 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
                 type == PremiumPreviewFragment.PREMIUM_FEATURE_SAVED_TAGS ||
                 type == PremiumPreviewFragment.PREMIUM_FEATURE_RICH_EDITOR
         ) {
-            starDrawable = new StarParticlesView.Drawable(40);
-            starDrawable.speedScale = 3;
-            starDrawable.type = type;
+            diamondDrawable = new DiamondParticlesView.Drawable(40);
+            diamondDrawable.speedScale = 3;
+            diamondDrawable.type = type;
 
             if (type == PremiumPreviewFragment.PREMIUM_FEATURE_ADS || type == PremiumPreviewFragment.PREMIUM_FEATURE_SAVED_TAGS || type == PremiumPreviewFragment.PREMIUM_FEATURE_RICH_EDITOR) {
-                starDrawable.size1 = 14;
-                starDrawable.size2 = 18;
-                starDrawable.size3 = 18;
+                diamondDrawable.size1 = 14;
+                diamondDrawable.size2 = 18;
+                diamondDrawable.size3 = 18;
             } else {
-                starDrawable.size1 = 14;
-                starDrawable.size2 = 16;
-                starDrawable.size3 = 15;
+                diamondDrawable.size1 = 14;
+                diamondDrawable.size2 = 16;
+                diamondDrawable.size3 = 15;
             }
             if (type == PremiumPreviewFragment.PREMIUM_FEATURE_RICH_EDITOR) {
-                starDrawable.useRotate = true;
+                diamondDrawable.useRotate = true;
             }
-            starDrawable.k1 = starDrawable.k2 = starDrawable.k3 = 0.98f;
-            starDrawable.speedScale = 4;
-            starDrawable.resourcesProvider = resourcesProvider;
-            starDrawable.colorKey = Theme.key_premiumStartSmallStarsColor2;
-            starDrawable.init();
+            diamondDrawable.k1 = diamondDrawable.k2 = diamondDrawable.k3 = 0.98f;
+            diamondDrawable.speedScale = 4;
+            diamondDrawable.resourcesProvider = resourcesProvider;
+            diamondDrawable.colorKey = Theme.key_premiumStartSmallDiamondsColor2;
+            diamondDrawable.init();
         } else if (type == PremiumPreviewFragment.PREMIUM_FEATURE_DOWNLOAD_SPEED) {
             speedLinesDrawable = new SpeedLineParticles.Drawable(200);
             speedLinesDrawable.init();
@@ -174,20 +174,20 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
             } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_AVERAGE) {
                 particlesCount = 400;
             }
-            starDrawable = new StarParticlesView.Drawable(particlesCount);
-            starDrawable.resourcesProvider = resourcesProvider;
-            starDrawable.colorKey = Theme.key_premiumStartSmallStarsColor2;
-            starDrawable.size1 = 8;
-            starDrawable.size1 = 6;
-            starDrawable.size1 = 4;
-            starDrawable.k1 = starDrawable.k2 = starDrawable.k3 = 0.98f;
-            starDrawable.useRotate = true;
-            starDrawable.speedScale = 4;
-            starDrawable.checkBounds = true;
-            starDrawable.checkTime = true;
-            starDrawable.useBlur = true;
-            starDrawable.roundEffect = false;
-            starDrawable.init();
+            diamondDrawable = new DiamondParticlesView.Drawable(particlesCount);
+            diamondDrawable.resourcesProvider = resourcesProvider;
+            diamondDrawable.colorKey = Theme.key_premiumStartSmallDiamondsColor2;
+            diamondDrawable.size1 = 8;
+            diamondDrawable.size1 = 6;
+            diamondDrawable.size1 = 4;
+            diamondDrawable.k1 = diamondDrawable.k2 = diamondDrawable.k3 = 0.98f;
+            diamondDrawable.useRotate = true;
+            diamondDrawable.speedScale = 4;
+            diamondDrawable.checkBounds = true;
+            diamondDrawable.checkTime = true;
+            diamondDrawable.useBlur = true;
+            diamondDrawable.roundEffect = false;
+            diamondDrawable.init();
         }
 
         if (type == PremiumPreviewFragment.PREMIUM_FEATURE_UPLOAD_LIMIT || type == PremiumPreviewFragment.PREMIUM_FEATURE_ADS || type == PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_EMOJI) {
@@ -335,7 +335,7 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
                 matrixParticlesDrawable.excludeRect.set(AndroidUtilities.rectTmp);
                 matrixParticlesDrawable.excludeRect.inset(AndroidUtilities.dp(16), AndroidUtilities.dp(16));
             }
-            if (starDrawable != null) {
+            if (diamondDrawable != null) {
                 if (type == PremiumPreviewFragment.PREMIUM_FEATURE_PROFILE_BADGE ||
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_ADVANCED_CHAT_MANAGEMENT ||
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_ADS ||
@@ -344,20 +344,20 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_RICH_EDITOR ||
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_ANIMATED_EMOJI ||
                         type == PremiumPreviewFragment.PREMIUM_FEATURE_REACTIONS) {
-                    starDrawable.rect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-                    starDrawable.rect.inset(AndroidUtilities.dp(30), AndroidUtilities.dp(30));
+                    diamondDrawable.rect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+                    diamondDrawable.rect.inset(AndroidUtilities.dp(30), AndroidUtilities.dp(30));
                 } else {
                     int getParticlesWidth = (int) (AndroidUtilities.rectTmp.width() * 0.4f);
-                    starDrawable.rect.set(
+                    diamondDrawable.rect.set(
                             AndroidUtilities.rectTmp.centerX() - getParticlesWidth,
                             AndroidUtilities.rectTmp.centerY() - getParticlesWidth,
                             AndroidUtilities.rectTmp.centerX() + getParticlesWidth,
                             AndroidUtilities.rectTmp.centerY() + getParticlesWidth);
-                    starDrawable.rect2.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+                    diamondDrawable.rect2.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
                 }
-                starDrawable.resetPositions();
-                starDrawable.excludeRect.set(AndroidUtilities.rectTmp);
-                starDrawable.excludeRect.inset(AndroidUtilities.dp(10), AndroidUtilities.dp(10));
+                diamondDrawable.resetPositions();
+                diamondDrawable.excludeRect.set(AndroidUtilities.rectTmp);
+                diamondDrawable.excludeRect.inset(AndroidUtilities.dp(10), AndroidUtilities.dp(10));
             }
             if (speedLinesDrawable != null) {
                 speedLinesDrawable.rect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
@@ -378,14 +378,14 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        if ((starDrawable != null || speedLinesDrawable != null || helloParticlesDrawable != null || matrixParticlesDrawable != null) && progress < 0.5f) {
+        if ((diamondDrawable != null || speedLinesDrawable != null || helloParticlesDrawable != null || matrixParticlesDrawable != null) && progress < 0.5f) {
             float s = (float) Math.pow(1f - progress, 2f);
             canvas.save();
             canvas.scale(s, s, getMeasuredWidth() / 2f, getMeasuredHeight() / 2f);
             if (matrixParticlesDrawable != null) {
                 matrixParticlesDrawable.onDraw(canvas);
-            } else if (starDrawable != null) {
-                starDrawable.onDraw(canvas);
+            } else if (diamondDrawable != null) {
+                diamondDrawable.onDraw(canvas);
             } else if (speedLinesDrawable != null) {
                 float videoSpeedScale = 0.2f;
 

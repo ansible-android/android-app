@@ -516,7 +516,7 @@ public class DialogObject {
         return value instanceof TL_account.requirementToContactPremium;
     }
 
-    public static long getMessagesStarsPrice(TL_account.RequirementToContact value) {
+    public static long getMessagesDiamondsPrice(TL_account.RequirementToContact value) {
         if (value instanceof TL_account.requirementToContactPaidMessages) {
             return ((TL_account.requirementToContactPaidMessages) value).stars_amount;
         }

@@ -14,7 +14,7 @@ import org.ansible.asnet.Vector;
 
 import java.util.ArrayList;
 
-public class TL_stars {
+public class TL_diamonds {
 
     public static class StarGift extends TLObject {
 
@@ -87,7 +87,7 @@ public class TL_stars {
         }
 
         @Deprecated
-        public long getResellStars() {
+        public long getResellDiamonds() {
             AmountUtils.Amount amount = getResellAmount(AmountUtils.Currency.STARS);
             return amount != null ? amount.asDecimal() : 0;
         }
@@ -129,8 +129,8 @@ public class TL_stars {
             if (sticker != null) {
                 return sticker;
             }
-            for (TL_stars.StarGiftAttribute attr : attributes) {
-                if (attr instanceof TL_stars.starGiftAttributeModel) {
+            for (TL_diamonds.StarGiftAttribute attr : attributes) {
+                if (attr instanceof TL_diamonds.starGiftAttributeModel) {
                     return ((starGiftAttributeModel) attr).document;
                 }
             }
@@ -818,7 +818,7 @@ public class TL_stars {
             }
             if (hasFlag(flags, FLAG_4)) {
                 resell_amount = new ArrayList<>();
-                resell_amount.add(StarsAmount.ofStars(stream.readInt64(exception)));
+                resell_amount.add(StarsAmount.ofDiamonds(stream.readInt64(exception)));
             }
             if (hasFlag(flags, FLAG_5)) {
                 released_by = TLRPC.Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
@@ -850,7 +850,7 @@ public class TL_stars {
                 stream.writeString(gift_address);
             }
             if (hasFlag(flags, 16)) {
-                stream.writeInt64(getResellStars());
+                stream.writeInt64(getResellDiamonds());
             }
             if (hasFlag(flags, FLAG_5)) {
                 released_by.serializeToStream(stream);
@@ -884,7 +884,7 @@ public class TL_stars {
             }
             if (hasFlag(flags, 16)) {
                 resell_amount = new ArrayList<>();
-                resell_amount.add(StarsAmount.ofStars(stream.readInt64(exception)));
+                resell_amount.add(StarsAmount.ofDiamonds(stream.readInt64(exception)));
             }
         }
 
@@ -912,7 +912,7 @@ public class TL_stars {
                 stream.writeString(gift_address);
             }
             if (hasFlag(flags, 16)) {
-                stream.writeInt64(getResellStars());
+                stream.writeInt64(getResellDiamonds());
             }
         }
     }
@@ -1838,7 +1838,7 @@ public class TL_stars {
         }
     }
 
-    public static class getSavedStarGifts extends TLMethod<TL_payments_savedStarGifts> {
+    public static class getSavedStarGifts extends TLMethod<TL_payments_savedDiamondGifts> {
         public static final int constructor = 0xa319e569;
 
         public int flags;
@@ -1856,8 +1856,8 @@ public class TL_stars {
         public int limit;
 
         @Override
-        public TL_payments_savedStarGifts deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
-            return TL_payments_savedStarGifts.TLdeserialize(stream, constructor, exception);
+        public TL_payments_savedDiamondGifts deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return TL_payments_savedDiamondGifts.TLdeserialize(stream, constructor, exception);
         }
 
         @Override
@@ -1888,7 +1888,7 @@ public class TL_stars {
 
         @Override
         public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
-            return TL_payments_savedStarGifts.TLdeserialize(stream, constructor, exception);
+            return TL_payments_savedDiamondGifts.TLdeserialize(stream, constructor, exception);
         }
 
         @Override
@@ -2342,7 +2342,7 @@ public class TL_stars {
         public boolean stargift_auction_bid;
         public boolean offer;
         public String id;
-        public StarsAmount amount = StarsAmount.ofStars(0);
+        public StarsAmount amount = StarsAmount.ofDiamonds(0);
         public int date;
         public StarsTransactionPeer peer;
         public String title;
@@ -2397,7 +2397,7 @@ public class TL_stars {
             flags = stream.readInt32(exception);
             refund = hasFlag(flags, 8);
             id = stream.readString(exception);
-            amount = StarsAmount.ofStars(stream.readInt64(exception));
+            amount = StarsAmount.ofDiamonds(stream.readInt64(exception));
             date = stream.readInt32(exception);
             peer = StarsTransactionPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
             if (hasFlag(flags, 1)) {
@@ -2439,7 +2439,7 @@ public class TL_stars {
             pending = hasFlag(flags, 16);
             failed = hasFlag(flags, FLAG_6);
             id = stream.readString(exception);
-            amount = StarsAmount.ofStars(stream.readInt64(exception));
+            amount = StarsAmount.ofDiamonds(stream.readInt64(exception));
             date = stream.readInt32(exception);
             peer = StarsTransactionPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
             if (hasFlag(flags, 1)) {
@@ -2502,13 +2502,13 @@ public class TL_stars {
             return TLdeserialize(StarsAmount.class, result, stream, constructor, exception);
         }
 
-        public static StarsAmount ofStars(long stars) {
+        public static StarsAmount ofDiamonds(long stars) {
             TL_starsAmount starsAmount = new TL_starsAmount();
             starsAmount.amount = stars;
             return starsAmount;
         }
 
-        public boolean equals(TL_stars.StarsAmount amount) {
+        public boolean equals(TL_diamonds.StarsAmount amount) {
             if (amount == null) return false;
             return this.amount == amount.amount && this.nanos == amount.nanos;
         }
@@ -3119,7 +3119,7 @@ public class TL_stars {
             subscription = hasFlag(flags, FLAG_12);
             floodskip = hasFlag(flags, FLAG_15);
             id = stream.readString(exception);
-            amount = StarsAmount.ofStars(stream.readInt64(exception));
+            amount = StarsAmount.ofDiamonds(stream.readInt64(exception));
             date = stream.readInt32(exception);
             peer = StarsTransactionPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
             if (hasFlag(flags, 1)) {
@@ -3220,7 +3220,7 @@ public class TL_stars {
             reaction = hasFlag(flags, FLAG_11);
             subscription = hasFlag(flags, FLAG_12);
             id = stream.readString(exception);
-            amount = StarsAmount.ofStars(stream.readInt64(exception));
+            amount = StarsAmount.ofDiamonds(stream.readInt64(exception));
             date = stream.readInt32(exception);
             peer = StarsTransactionPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
             if (hasFlag(flags, 1)) {
@@ -3314,7 +3314,7 @@ public class TL_stars {
             reaction = hasFlag(flags, FLAG_11);
             subscription = hasFlag(flags, FLAG_12);
             id = stream.readString(exception);
-            amount = StarsAmount.ofStars(stream.readInt64(exception));
+            amount = StarsAmount.ofDiamonds(stream.readInt64(exception));
             date = stream.readInt32(exception);
             peer = StarsTransactionPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
             if (hasFlag(flags, 1)) {
@@ -3402,7 +3402,7 @@ public class TL_stars {
             reaction = hasFlag(flags, FLAG_11);
             subscription = hasFlag(flags, FLAG_12);
             id = stream.readString(exception);
-            amount = StarsAmount.ofStars(stream.readInt64(exception));
+            amount = StarsAmount.ofDiamonds(stream.readInt64(exception));
             date = stream.readInt32(exception);
             peer = StarsTransactionPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
             if (hasFlag(flags, 1)) {
@@ -3482,7 +3482,7 @@ public class TL_stars {
             failed = hasFlag(flags, FLAG_6);
             gift = hasFlag(flags, FLAG_10);
             id = stream.readString(exception);
-            amount = StarsAmount.ofStars(stream.readInt64(exception));
+            amount = StarsAmount.ofDiamonds(stream.readInt64(exception));
             date = stream.readInt32(exception);
             peer = StarsTransactionPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
             if (hasFlag(flags, 1)) {
@@ -3548,7 +3548,7 @@ public class TL_stars {
     public static class StarsStatus extends TLObject {
 
         public int flags;
-        public StarsAmount balance = StarsAmount.ofStars(0);
+        public StarsAmount balance = StarsAmount.ofDiamonds(0);
         public ArrayList<StarsSubscription> subscriptions = new ArrayList<>();
         public String subscriptions_next_offset;
         public long subscriptions_missing_balance;
@@ -3626,7 +3626,7 @@ public class TL_stars {
 
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
-            balance = StarsAmount.ofStars(stream.readInt64(exception));
+            balance = StarsAmount.ofDiamonds(stream.readInt64(exception));
             if (hasFlag(flags, 2)) {
                 subscriptions = Vector.deserialize(stream, StarsSubscription::TLdeserialize, exception);
             }
@@ -3670,7 +3670,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_payments_getStarsTopupOptions extends TLObject {
+    public static class TL_payments_getDiamondsTopupOptions extends TLObject {
         public static final int constructor = 0xc00ec7d3;
 
         public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
@@ -3682,7 +3682,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_payments_getStarsGiftOptions extends TLObject {
+    public static class TL_payments_getDiamondsGiftOptions extends TLObject {
         public static final int constructor = 0xd3c96bc8;
 
         public int flags;
@@ -3701,7 +3701,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_payments_getStarsGiveawayOptions extends TLObject {
+    public static class TL_payments_getDiamondsGiveawayOptions extends TLObject {
         public static final int constructor = 0xbd1efd3e;
 
         public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
@@ -3713,7 +3713,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_payments_getStarsStatus extends TLObject {
+    public static class TL_payments_getDiamondsStatus extends TLObject {
         public static final int constructor = 0x4ea9b3bf;
 
         public TLRPC.InputPeer peer;
@@ -3734,7 +3734,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_payments_getStarsTransactions extends TLObject {
+    public static class TL_payments_getDiamondsTransactions extends TLObject {
         public static final int constructor = 0x69da4557;
 
         public int flags;
@@ -3769,7 +3769,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_payments_sendStarsForm extends TLMethod<TLRPC.payments_PaymentResult> {
+    public static class TL_payments_sendDiamondsForm extends TLMethod<TLRPC.payments_PaymentResult> {
         public static final int constructor = 0x7998c914;
 
         public long form_id;
@@ -3961,7 +3961,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_getStarsSubscriptions extends TLObject {
+    public static class TL_getDiamondsSubscriptions extends TLObject {
         public static final int constructor = 0x32512c5;
 
         public int flags;
@@ -3982,7 +3982,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_changeStarsSubscription extends TLObject {
+    public static class TL_changeDiamondsSubscription extends TLObject {
         public static final int constructor = 0xc7770878;
 
         public int flags;
@@ -4006,7 +4006,7 @@ public class TL_stars {
         }
     }
 
-    public static class TL_fulfillStarsSubscription extends TLObject {
+    public static class TL_fulfillDiamondsSubscription extends TLObject {
         public static final int constructor = 0xcc5bebb3;
 
         public TLRPC.InputPeer peer;
@@ -4125,29 +4125,29 @@ public class TL_stars {
                 case starGiftAttributeModel.constructor:
                     result = new starGiftAttributeModel();
                     break;
-                case starGiftAttributeModel_layer221.constructor:
-                    result = new starGiftAttributeModel_layer221();
+                case diamondGiftAttributeModel_layer221.constructor:
+                    result = new diamondGiftAttributeModel_layer221();
                     break;
                 case starGiftAttributePattern.constructor:
                     result = new starGiftAttributePattern();
                     break;
-                case starGiftAttributePattern_layer221.constructor:
-                    result = new starGiftAttributePattern_layer221();
+                case diamondGiftAttributePattern_layer221.constructor:
+                    result = new diamondGiftAttributePattern_layer221();
                     break;
                 case starGiftAttributeBackdrop.constructor:
                     result = new starGiftAttributeBackdrop();
                     break;
-                case starGiftAttributeBackdrop_layer221.constructor:
-                    result = new starGiftAttributeBackdrop_layer221();
+                case diamondGiftAttributeBackdrop_layer221.constructor:
+                    result = new diamondGiftAttributeBackdrop_layer221();
                     break;
-                case starGiftAttributeBackdrop_layer202.constructor:
-                    result = new starGiftAttributeBackdrop_layer202();
+                case diamondGiftAttributeBackdrop_layer202.constructor:
+                    result = new diamondGiftAttributeBackdrop_layer202();
                     break;
                 case starGiftAttributeOriginalDetails.constructor:
                     result = new starGiftAttributeOriginalDetails();
                     break;
-                case starGiftAttributeOriginalDetails_layer197.constructor:
-                    result = new starGiftAttributeOriginalDetails_layer197();
+                case diamondGiftAttributeOriginalDetails_layer197.constructor:
+                    result = new diamondGiftAttributeOriginalDetails_layer197();
                     break;
             }
             return TLdeserialize(StarGiftAttribute.class, result, stream, constructor, exception);
@@ -4184,7 +4184,7 @@ public class TL_stars {
             rarity = StarGiftAttributeRarity.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
     }
-    public static class starGiftAttributeModel_layer221 extends starGiftAttributeModel {
+    public static class diamondGiftAttributeModel_layer221 extends starGiftAttributeModel {
         public static final int constructor = 0x39d99013;
 
         @Override
@@ -4227,7 +4227,7 @@ public class TL_stars {
             rarity = StarGiftAttributeRarity.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
     }
-    public static class starGiftAttributePattern_layer221 extends starGiftAttributePattern {
+    public static class diamondGiftAttributePattern_layer221 extends starGiftAttributePattern {
         public static final int constructor = 0x13acff19;
 
         @Override
@@ -4282,7 +4282,7 @@ public class TL_stars {
             rarity = StarGiftAttributeRarity.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
     }
-    public static class starGiftAttributeBackdrop_layer221 extends starGiftAttributeBackdrop {
+    public static class diamondGiftAttributeBackdrop_layer221 extends starGiftAttributeBackdrop {
         public static final int constructor = 0xd93d859c;
 
         @Override
@@ -4313,7 +4313,7 @@ public class TL_stars {
             ((TL_starGiftAttributeRarity) rarity).permille = stream.readInt32(exception);
         }
     }
-    public static class starGiftAttributeBackdrop_layer202 extends starGiftAttributeBackdrop {
+    public static class diamondGiftAttributeBackdrop_layer202 extends starGiftAttributeBackdrop {
         public static final int constructor = 0x94271762;
 
         @Override
@@ -4378,7 +4378,7 @@ public class TL_stars {
             }
         }
     }
-    public static class starGiftAttributeOriginalDetails_layer197 extends starGiftAttributeOriginalDetails {
+    public static class diamondGiftAttributeOriginalDetails_layer197 extends starGiftAttributeOriginalDetails {
         public static final int constructor = 0xc02c4f4b;
 
         @Override
@@ -4411,16 +4411,16 @@ public class TL_stars {
         }
     }
 
-    public static final class TL_payments_uniqueStarGift extends TLObject {
+    public static final class TL_payments_uniqueDiamondGift extends TLObject {
         public static final int constructor = 0x416c56e8;
 
         public StarGift gift;
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
-        public static TL_payments_uniqueStarGift TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
-            final TL_payments_uniqueStarGift result = TL_payments_uniqueStarGift.constructor != constructor ? null : new TL_payments_uniqueStarGift();
-            return TLdeserialize(TL_payments_uniqueStarGift.class, result, stream, constructor, exception);
+        public static TL_payments_uniqueDiamondGift TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            final TL_payments_uniqueDiamondGift result = TL_payments_uniqueDiamondGift.constructor != constructor ? null : new TL_payments_uniqueDiamondGift();
+            return TLdeserialize(TL_payments_uniqueDiamondGift.class, result, stream, constructor, exception);
         }
 
         @Override
@@ -4446,7 +4446,7 @@ public class TL_stars {
 
         @Override
         public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
-            return TL_payments_uniqueStarGift.TLdeserialize(stream, constructor, exception);
+            return TL_payments_uniqueDiamondGift.TLdeserialize(stream, constructor, exception);
         }
 
         @Override
@@ -4485,35 +4485,35 @@ public class TL_stars {
         public static SavedStarGift TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             SavedStarGift result = null;
             switch (constructor) {
-                case TL_savedStarGift.constructor:
-                    result = new TL_savedStarGift();
+                case TL_savedDiamondGift.constructor:
+                    result = new TL_savedDiamondGift();
                     break;
-                case TL_savedStarGift_layer221_2.constructor:
-                    result = new TL_savedStarGift_layer221_2();
+                case TL_savedDiamondGift_layer221_2.constructor:
+                    result = new TL_savedDiamondGift_layer221_2();
                     break;
-                case TL_savedStarGift_layer221.constructor:
-                    result = new TL_savedStarGift_layer221();
+                case TL_savedDiamondGift_layer221.constructor:
+                    result = new TL_savedDiamondGift_layer221();
                     break;
-                case TL_savedStarGift_layer219.constructor:
-                    result = new TL_savedStarGift_layer219();
+                case TL_savedDiamondGift_layer219.constructor:
+                    result = new TL_savedDiamondGift_layer219();
                     break;
-                case TL_savedStarGift_layer214.constructor:
-                    result = new TL_savedStarGift_layer214();
+                case TL_savedDiamondGift_layer214.constructor:
+                    result = new TL_savedDiamondGift_layer214();
                     break;
-                case TL_savedStarGift_layer211.constructor:
-                    result = new TL_savedStarGift_layer211();
+                case TL_savedDiamondGift_layer211.constructor:
+                    result = new TL_savedDiamondGift_layer211();
                     break;
-                case TL_savedStarGift_layer209.constructor:
-                    result = new TL_savedStarGift_layer209();
+                case TL_savedDiamondGift_layer209.constructor:
+                    result = new TL_savedDiamondGift_layer209();
                     break;
-                case TL_savedStarGift_layer202.constructor:
-                    result = new TL_savedStarGift_layer202();
+                case TL_savedDiamondGift_layer202.constructor:
+                    result = new TL_savedDiamondGift_layer202();
                     break;
             }
             return TLdeserialize(SavedStarGift.class, result, stream, constructor, exception);
         }
     }
-    public static class TL_savedStarGift extends SavedStarGift {
+    public static class TL_savedDiamondGift extends SavedStarGift {
         public static final int constructor = 0x41df43fc;
 
         @Override
@@ -4633,7 +4633,7 @@ public class TL_stars {
             }
         }
     }
-    public static class TL_savedStarGift_layer221_2 extends TL_savedStarGift {
+    public static class TL_savedDiamondGift_layer221_2 extends TL_savedDiamondGift {
         public static final int constructor = 0x389bb419;
 
         @Override
@@ -4755,7 +4755,7 @@ public class TL_stars {
             }
         }
     }
-    public static class TL_savedStarGift_layer221 extends TL_savedStarGift {
+    public static class TL_savedDiamondGift_layer221 extends TL_savedDiamondGift {
         public static final int constructor = 0xEAD6805E;
 
         @Override
@@ -4869,7 +4869,7 @@ public class TL_stars {
             }
         }
     }
-    public static class TL_savedStarGift_layer219 extends TL_savedStarGift {
+    public static class TL_savedDiamondGift_layer219 extends TL_savedDiamondGift {
         public static final int constructor = 0x8983a452;
 
         @Override
@@ -4977,7 +4977,7 @@ public class TL_stars {
             }
         }
     }
-    public static class TL_savedStarGift_layer214 extends TL_savedStarGift {
+    public static class TL_savedDiamondGift_layer214 extends TL_savedDiamondGift {
         public static final int constructor = 0x19a9b572;
 
         @Override
@@ -5079,7 +5079,7 @@ public class TL_stars {
             }
         }
     }
-    public static class TL_savedStarGift_layer211 extends TL_savedStarGift {
+    public static class TL_savedDiamondGift_layer211 extends TL_savedDiamondGift {
         public static final int constructor = 0x1ea646df;
 
         @Override
@@ -5173,7 +5173,7 @@ public class TL_stars {
             }
         }
     }
-    public static class TL_savedStarGift_layer209 extends TL_savedStarGift {
+    public static class TL_savedDiamondGift_layer209 extends TL_savedDiamondGift {
         public static final int constructor = 0xdfda0499;
 
         @Override
@@ -5261,7 +5261,7 @@ public class TL_stars {
             }
         }
     }
-    public static class TL_savedStarGift_layer202 extends TL_savedStarGift {
+    public static class TL_savedDiamondGift_layer202 extends TL_savedDiamondGift {
         public static final int constructor = 0x6056dba5;
 
         @Override
@@ -5338,7 +5338,7 @@ public class TL_stars {
         }
     }
 
-    public static final class TL_payments_savedStarGifts extends TLObject {
+    public static final class TL_payments_savedDiamondGifts extends TLObject {
         public static final int constructor = 0x95f389b1;
 
         public int flags;
@@ -5349,9 +5349,9 @@ public class TL_stars {
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
-        public static TL_payments_savedStarGifts TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
-            final TL_payments_savedStarGifts result = TL_payments_savedStarGifts.constructor != constructor ? null : new TL_payments_savedStarGifts();
-            return TLdeserialize(TL_payments_savedStarGifts.class, result, stream, constructor, exception);
+        public static TL_payments_savedDiamondGifts TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            final TL_payments_savedDiamondGifts result = TL_payments_savedDiamondGifts.constructor != constructor ? null : new TL_payments_savedDiamondGifts();
+            return TLdeserialize(TL_payments_savedDiamondGifts.class, result, stream, constructor, exception);
         }
 
         @Override
@@ -5390,20 +5390,20 @@ public class TL_stars {
         public static InputSavedStarGift TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             InputSavedStarGift result = null;
             switch (constructor) {
-                case TL_inputSavedStarGiftUser.constructor:
-                    result = new TL_inputSavedStarGiftUser();
+                case TL_inputSavedDiamondGiftUser.constructor:
+                    result = new TL_inputSavedDiamondGiftUser();
                     break;
-                case TL_inputSavedStarGiftChat.constructor:
-                    result = new TL_inputSavedStarGiftChat();
+                case TL_inputSavedDiamondGiftChat.constructor:
+                    result = new TL_inputSavedDiamondGiftChat();
                     break;
-                case TL_inputSavedStarGiftSlug.constructor:
-                    result = new TL_inputSavedStarGiftSlug();
+                case TL_inputSavedDiamondGiftSlug.constructor:
+                    result = new TL_inputSavedDiamondGiftSlug();
                     break;
             }
             return TLdeserialize(InputSavedStarGift.class, result, stream, constructor, exception);
         }
     }
-    public static final class TL_inputSavedStarGiftUser extends InputSavedStarGift {
+    public static final class TL_inputSavedDiamondGiftUser extends InputSavedStarGift {
         public static final int constructor = 0x69279795;
 
         public int msg_id;
@@ -5419,7 +5419,7 @@ public class TL_stars {
             msg_id = stream.readInt32(exception);
         }
     }
-    public static final class TL_inputSavedStarGiftSlug extends InputSavedStarGift {
+    public static final class TL_inputSavedDiamondGiftSlug extends InputSavedStarGift {
         public static final int constructor = 0x2085c238;
 
         public String slug;
@@ -5435,7 +5435,7 @@ public class TL_stars {
             slug = stream.readString(exception);
         }
     }
-    public static final class TL_inputSavedStarGiftChat extends InputSavedStarGift {
+    public static final class TL_inputSavedDiamondGiftChat extends InputSavedStarGift {
         public static final int constructor = 0xf101aa7f;
 
         public TLRPC.InputPeer peer;
@@ -5643,12 +5643,12 @@ public class TL_stars {
 
         public int flags;
         public int count;
-        public ArrayList<TL_stars.StarGift> gifts = new ArrayList<>();
+        public ArrayList<TL_diamonds.StarGift> gifts = new ArrayList<>();
         public String next_offset;
-        public ArrayList<TL_stars.StarGiftAttribute> attributes = new ArrayList<>();
+        public ArrayList<TL_diamonds.StarGiftAttribute> attributes = new ArrayList<>();
         public long attributes_hash;
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
-        public ArrayList<TL_stars.starGiftAttributeCounter> counters = new ArrayList<>();
+        public ArrayList<TL_diamonds.starGiftAttributeCounter> counters = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
         public static resaleStarGifts TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
@@ -5660,17 +5660,17 @@ public class TL_stars {
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
             count = stream.readInt32(exception);
-            gifts = Vector.deserialize(stream, TL_stars.StarGift::TLdeserialize, exception);
+            gifts = Vector.deserialize(stream, TL_diamonds.StarGift::TLdeserialize, exception);
             if (hasFlag(flags, 1)) {
                 next_offset = stream.readString(exception);
             }
             if (hasFlag(flags, 2)) {
-                attributes = Vector.deserialize(stream, TL_stars.StarGiftAttribute::TLdeserialize, exception);
+                attributes = Vector.deserialize(stream, TL_diamonds.StarGiftAttribute::TLdeserialize, exception);
                 attributes_hash = stream.readInt64(exception);
             }
             chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
             if (hasFlag(flags, 4)) {
-                counters = Vector.deserialize(stream, TL_stars.starGiftAttributeCounter::TLdeserialize, exception);
+                counters = Vector.deserialize(stream, TL_diamonds.starGiftAttributeCounter::TLdeserialize, exception);
             }
             users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
         }
@@ -5706,7 +5706,7 @@ public class TL_stars {
         public boolean stars_only;
         public long attributes_hash;
         public long gift_id;
-        public ArrayList<TL_stars.StarGiftAttributeId> attributes = new ArrayList<>();
+        public ArrayList<TL_diamonds.StarGiftAttributeId> attributes = new ArrayList<>();
         public String offset;
         public int limit;
 
@@ -6446,8 +6446,8 @@ public class TL_stars {
     public static abstract class InputStarGiftAuction extends TLObject {
         private static InputStarGiftAuction fromConstructor(int constructor) {
             switch (constructor) {
-                case TL_inputStarGiftAuction.constructor:       return new TL_inputStarGiftAuction();
-                case TL_inputStarGiftAuctionSlug.constructor:   return new TL_inputStarGiftAuctionSlug();
+                case TL_inputDiamondGiftAuction.constructor:       return new TL_inputDiamondGiftAuction();
+                case TL_inputDiamondGiftAuctionSlug.constructor:   return new TL_inputDiamondGiftAuctionSlug();
             }
             return null;
         }
@@ -6456,7 +6456,7 @@ public class TL_stars {
             return TLdeserialize(InputStarGiftAuction.class, fromConstructor(constructor), stream, constructor, exception);
         }
     }
-    public static class TL_inputStarGiftAuction extends InputStarGiftAuction {
+    public static class TL_inputDiamondGiftAuction extends InputStarGiftAuction {
         public static final int constructor = 0x02E16C98;
 
         public long gift_id;
@@ -6472,7 +6472,7 @@ public class TL_stars {
             gift_id = stream.readInt64(exception);
         }
     }
-    public static class TL_inputStarGiftAuctionSlug extends InputStarGiftAuction {
+    public static class TL_inputDiamondGiftAuctionSlug extends InputStarGiftAuction {
         public static final int constructor = 0x7AB58308;
 
         public String slug;
@@ -6585,7 +6585,7 @@ public class TL_stars {
         }
     }
 
-    public static class getCraftStarGifts extends TLMethod<TL_payments_savedStarGifts> {
+    public static class getCraftStarGifts extends TLMethod<TL_payments_savedDiamondGifts> {
         public static final int constructor = 0xfd05dd00;
 
         public long gift_id;
@@ -6601,8 +6601,8 @@ public class TL_stars {
         }
 
         @Override
-        public TL_payments_savedStarGifts deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
-            return TL_payments_savedStarGifts.TLdeserialize(stream, constructor, exception);
+        public TL_payments_savedDiamondGifts deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return TL_payments_savedDiamondGifts.TLdeserialize(stream, constructor, exception);
         }
     }
 

@@ -52,7 +52,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.Vector;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;
@@ -67,8 +67,8 @@ import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.LinkEditActivity;
 import org.ansible.ui.ManageLinksActivity;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
 
@@ -1194,14 +1194,14 @@ public class InviteLinkBottomSheet extends BottomSheet {
             addView(layout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT), 18, 0, 18, 0));
         }
 
-        public void setRevenue(TL_stars.TL_starsSubscriptionPricing pricing, int joined_date) {
+        public void setRevenue(TL_diamonds.TL_starsSubscriptionPricing pricing, int joined_date) {
             if (pricing == null) {
                 priceView.setText(null);
                 periodView.setText(null);
                 setRightPadding(0, true, true);
             } else {
-                final CharSequence amountText = StarsIntroActivity.replaceStarsWithPlain("⭐️" + pricing.amount, .7f);
-                final CharSequence periodText = pricing.period == StarsController.PERIOD_MONTHLY ? LocaleController.getString(R.string.DiamondsParticipantSubscriptionPerMonth) : (pricing.period == StarsController.PERIOD_5MINUTES ? "per 5 minutes" : "per each minute");
+                final CharSequence amountText = DiamondsIntroActivity.replaceDiamondsWithPlain("⭐️" + pricing.amount, .7f);
+                final CharSequence periodText = pricing.period == DiamondsController.PERIOD_MONTHLY ? LocaleController.getString(R.string.DiamondsParticipantSubscriptionPerMonth) : (pricing.period == DiamondsController.PERIOD_5MINUTES ? "per 5 minutes" : "per each minute");
                 priceView.setText(amountText);
                 periodView.setText(periodText);
                 setRightPadding(
@@ -1250,15 +1250,15 @@ public class InviteLinkBottomSheet extends BottomSheet {
             );
         }
 
-        public void set(TL_stars.TL_starsSubscriptionPricing pricing, int count) {
+        public void set(TL_diamonds.TL_starsSubscriptionPricing pricing, int count) {
             if (pricing == null) return;
-            if (pricing.period == StarsController.PERIOD_MONTHLY) {
-                titleView.setText(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatString(R.string.LinkRevenuePrice, pricing.amount) + (count > 0 ? " x " + count : ""), .8f));
-                subtitleView.setText(count == 0 ? getString(R.string.NoOneSubscribed) : LocaleController.formatString(R.string.LinkRevenuePriceInfo, BillingController.getInstance().formatCurrency((long) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000 * count), "USD")));
+            if (pricing.period == DiamondsController.PERIOD_MONTHLY) {
+                titleView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatString(R.string.LinkRevenuePrice, pricing.amount) + (count > 0 ? " x " + count : ""), .8f));
+                subtitleView.setText(count == 0 ? getString(R.string.NoOneSubscribed) : LocaleController.formatString(R.string.LinkRevenuePriceInfo, BillingController.getInstance().formatCurrency((long) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * count), "USD")));
             } else {
-                final String period = pricing.period == StarsController.PERIOD_5MINUTES ? "5min" : "min";
-                titleView.setText(StarsIntroActivity.replaceStarsWithPlain(String.format(Locale.US, "⭐%1$d/%2$s", pricing.amount, period) + (count > 0 ? " x " + count : ""), .8f));
-                subtitleView.setText(count == 0 ? getString(R.string.NoOneSubscribed) : String.format(Locale.US, "you get approximately %1$s %2$s", BillingController.getInstance().formatCurrency((long) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000 * count), "USD"), "for " + period));
+                final String period = pricing.period == DiamondsController.PERIOD_5MINUTES ? "5min" : "min";
+                titleView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(String.format(Locale.US, "⭐%1$d/%2$s", pricing.amount, period) + (count > 0 ? " x " + count : ""), .8f));
+                subtitleView.setText(count == 0 ? getString(R.string.NoOneSubscribed) : String.format(Locale.US, "you get approximately %1$s %2$s", BillingController.getInstance().formatCurrency((long) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * count), "USD"), "for " + period));
             }
         }
 
@@ -1268,7 +1268,7 @@ public class InviteLinkBottomSheet extends BottomSheet {
         Context context,
         int currentAccount,
         long dialogId,
-        TL_stars.TL_starsSubscriptionPricing pricing,
+        TL_diamonds.TL_starsSubscriptionPricing pricing,
         TLRPC.TL_chatInviteImporter importer,
         TLRPC.ChannelParticipant participant,
         Theme.ResourcesProvider resourcesProvider
@@ -1299,23 +1299,23 @@ public class InviteLinkBottomSheet extends BottomSheet {
         }
         topView.addView(imageView, LayoutHelper.createFrame(100, 100, Gravity.CENTER));
 
-        Drawable starBg = context.getResources().getDrawable(R.drawable.star_small_outline);
-        starBg.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
-        Drawable starFg = context.getResources().getDrawable(R.drawable.star_small_inner);
+        Drawable diamondBg = context.getResources().getDrawable(R.drawable.star_small_outline);
+        diamondBg.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+        Drawable diamondFg = context.getResources().getDrawable(R.drawable.star_small_inner);
 
-        ImageView starBgView = new ImageView(context);
-        starBgView.setImageDrawable(starBg);
-        topView.addView(starBgView, LayoutHelper.createFrame(28, 28, Gravity.CENTER));
-        starBgView.setTranslationX(dp(34));
-        starBgView.setTranslationY(dp(35));
-        starBgView.setScaleX(1.1f);
-        starBgView.setScaleY(1.1f);
+        ImageView diamondBgView = new ImageView(context);
+        diamondBgView.setImageDrawable(diamondBg);
+        topView.addView(diamondBgView, LayoutHelper.createFrame(28, 28, Gravity.CENTER));
+        diamondBgView.setTranslationX(dp(34));
+        diamondBgView.setTranslationY(dp(35));
+        diamondBgView.setScaleX(1.1f);
+        diamondBgView.setScaleY(1.1f);
 
-        ImageView starFgView = new ImageView(context);
-        starFgView.setImageDrawable(starFg);
-        topView.addView(starFgView, LayoutHelper.createFrame(28, 28, Gravity.CENTER));
-        starFgView.setTranslationX(dp(34));
-        starFgView.setTranslationY(dp(35));
+        ImageView diamondFgView = new ImageView(context);
+        diamondFgView.setImageDrawable(diamondFg);
+        topView.addView(diamondFgView, LayoutHelper.createFrame(28, 28, Gravity.CENTER));
+        diamondFgView.setTranslationX(dp(34));
+        diamondFgView.setTranslationY(dp(35));
 
         TextView textView = new TextView(context);
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
@@ -1329,11 +1329,11 @@ public class InviteLinkBottomSheet extends BottomSheet {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-        if (pricing.period == StarsController.PERIOD_MONTHLY) {
-            textView.setText(StarsIntroActivity.replaceStarsWithPlain(formatString(R.string.DiamondsSubscriptionPrice, pricing.amount), .8f));
+        if (pricing.period == DiamondsController.PERIOD_MONTHLY) {
+            textView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(formatString(R.string.DiamondsSubscriptionPrice, pricing.amount), .8f));
         } else {
-            final String period = pricing.period == StarsController.PERIOD_5MINUTES ? "5min" : "min";
-            textView.setText(StarsIntroActivity.replaceStarsWithPlain(String.format(Locale.US, "⭐%1$d/%2$s", pricing.amount, period), .8f));
+            final String period = pricing.period == DiamondsController.PERIOD_5MINUTES ? "5min" : "min";
+            textView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(String.format(Locale.US, "⭐%1$d/%2$s", pricing.amount, period), .8f));
         }
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 4));
 
@@ -1341,11 +1341,11 @@ public class InviteLinkBottomSheet extends BottomSheet {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-        if (pricing.period == StarsController.PERIOD_MONTHLY) {
-            textView.setText(formatString(R.string.DiamondsParticipantSubscriptionApproxMonth, BillingController.getInstance().formatCurrency((int) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000), "USD")));
+        if (pricing.period == DiamondsController.PERIOD_MONTHLY) {
+            textView.setText(formatString(R.string.DiamondsParticipantSubscriptionApproxMonth, BillingController.getInstance().formatCurrency((int) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000), "USD")));
         } else {
-            final String period = pricing.period == StarsController.PERIOD_5MINUTES ? "5min" : "min";
-            textView.setText(String.format(Locale.US, "appx. %1$s per %2$s", BillingController.getInstance().formatCurrency((int) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).starsUsdWithdrawRate1000), "USD"), period));
+            final String period = pricing.period == DiamondsController.PERIOD_5MINUTES ? "5min" : "min";
+            textView.setText(String.format(Locale.US, "appx. %1$s per %2$s", BillingController.getInstance().formatCurrency((int) (pricing.amount / 1000.0 * MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000), "USD"), period));
         }
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 4));
 

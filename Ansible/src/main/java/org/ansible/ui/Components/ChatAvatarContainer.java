@@ -88,7 +88,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     private AtomicReference<SimpleTextView> subtitleTextLargerCopyView = new AtomicReference<>();
     private ImageView timeItem;
     private ImageView communityItem;
-    private ImageView starBgItem, starFgItem;
+    private ImageView diamondBgItem, diamondFgItem;
     private TimerDrawable timerDrawable;
     private ChatActivity parentFragment;
     private StatusDrawable[] statusDrawables = new StatusDrawable[6];
@@ -338,22 +338,22 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 timeItem.setContentDescription(getString(R.string.AccAutoDeleteTimer));
             }
 
-            starBgItem = new ImageView(context);
-            starBgItem.setImageResource(R.drawable.star_small_outline);
-            starBgItem.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefault), PorterDuff.Mode.SRC_IN));
-            starBgItem.setAlpha(0.0f);
-            starBgItem.setVisibility(View.INVISIBLE);
-            starBgItem.setScaleY(0.0f);
-            starBgItem.setScaleX(0.0f);
-            addView(starBgItem);
+            diamondBgItem = new ImageView(context);
+            diamondBgItem.setImageResource(R.drawable.star_small_outline);
+            diamondBgItem.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefault), PorterDuff.Mode.SRC_IN));
+            diamondBgItem.setAlpha(0.0f);
+            diamondBgItem.setVisibility(View.INVISIBLE);
+            diamondBgItem.setScaleY(0.0f);
+            diamondBgItem.setScaleX(0.0f);
+            addView(diamondBgItem);
 
-            starFgItem = new ImageView(context);
-            starFgItem.setImageResource(R.drawable.star_small_inner);
-            starFgItem.setAlpha(0.0f);
-            starFgItem.setVisibility(View.INVISIBLE);
-            starFgItem.setScaleY(0.0f);
-            starFgItem.setScaleX(0.0f);
-            addView(starFgItem);
+            diamondFgItem = new ImageView(context);
+            diamondFgItem.setImageResource(R.drawable.star_small_inner);
+            diamondFgItem.setAlpha(0.0f);
+            diamondFgItem.setVisibility(View.INVISIBLE);
+            diamondFgItem.setScaleY(0.0f);
+            diamondFgItem.setScaleX(0.0f);
+            addView(diamondFgItem);
         }
 
         if (parentFragment != null && (parentFragment.getChatMode() == 0 || parentFragment.getChatMode() == ChatActivity.MODE_SUGGESTIONS || parentFragment.getChatMode() == ChatActivity.MODE_SAVED)) {
@@ -678,11 +678,11 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         if (timeItem != null) {
             timeItem.measure(MeasureSpec.makeMeasureSpec(dp(34), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(34), MeasureSpec.EXACTLY));
         }
-        if (starBgItem != null) {
-            starBgItem.measure(MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY));
+        if (diamondBgItem != null) {
+            diamondBgItem.measure(MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY));
         }
-        if (starFgItem != null) {
-            starFgItem.measure(MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY));
+        if (diamondFgItem != null) {
+            diamondFgItem.measure(MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY));
         }
         setMeasuredDimension(width, MeasureSpec.getSize(heightMeasureSpec));
         if (lastWidth != -1 && lastWidth != width && lastWidth > width) {
@@ -799,11 +799,11 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 viewTop - dp(8) + timeItem.getMeasuredHeight()
             );
         }
-        if (starBgItem != null) {
-            starBgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starBgItem.getMeasuredWidth(), viewTop + dp(24) + starBgItem.getMeasuredHeight());
+        if (diamondBgItem != null) {
+            diamondBgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + diamondBgItem.getMeasuredWidth(), viewTop + dp(24) + diamondBgItem.getMeasuredHeight());
         }
-        if (starFgItem != null) {
-            starFgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starFgItem.getMeasuredWidth(), viewTop + dp(24) + starFgItem.getMeasuredHeight());
+        if (diamondFgItem != null) {
+            diamondFgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + diamondFgItem.getMeasuredWidth(), viewTop + dp(24) + diamondFgItem.getMeasuredHeight());
         }
         if (subtitleTextView != null) {
             subtitleTextView.layout(l, subtitleTop, l + subtitleTextView.getMeasuredWidth(), subtitleTop + subtitleTextView.getTextHeight());
@@ -875,30 +875,30 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
     public boolean stars;
     public void setStars(boolean stars, boolean animated) {
-        if (starBgItem == null || starFgItem == null) return;
+        if (diamondBgItem == null || diamondFgItem == null) return;
         this.stars = stars;
         if (!animated) {
-            starBgItem.setVisibility(stars ? VISIBLE : INVISIBLE);
-            starBgItem.setAlpha(stars ? 1f : 0f);
-            starBgItem.setScaleX(stars ? 1.1f : 0f);
-            starBgItem.setScaleY(stars ? 1.1f : 0f);
-            starFgItem.setVisibility(stars ? VISIBLE : INVISIBLE);
-            starFgItem.setAlpha(stars ? 1f : 0f);
-            starFgItem.setScaleX(stars ? 1f : 0f);
-            starFgItem.setScaleY(stars ? 1f : 0f);
+            diamondBgItem.setVisibility(stars ? VISIBLE : INVISIBLE);
+            diamondBgItem.setAlpha(stars ? 1f : 0f);
+            diamondBgItem.setScaleX(stars ? 1.1f : 0f);
+            diamondBgItem.setScaleY(stars ? 1.1f : 0f);
+            diamondFgItem.setVisibility(stars ? VISIBLE : INVISIBLE);
+            diamondFgItem.setAlpha(stars ? 1f : 0f);
+            diamondFgItem.setScaleX(stars ? 1f : 0f);
+            diamondFgItem.setScaleY(stars ? 1f : 0f);
         } else {
             if (stars) {
-                starBgItem.setVisibility(VISIBLE);
-                starFgItem.setVisibility(VISIBLE);
+                diamondBgItem.setVisibility(VISIBLE);
+                diamondFgItem.setVisibility(VISIBLE);
             }
-            starBgItem.animate().alpha(stars ? 1f : 0f).scaleX(stars ? 1.1f : 0f).scaleY(stars ? 1.1f : 0f).withEndAction(() -> {
+            diamondBgItem.animate().alpha(stars ? 1f : 0f).scaleX(stars ? 1.1f : 0f).scaleY(stars ? 1.1f : 0f).withEndAction(() -> {
                 if (!stars) {
-                    starBgItem.setVisibility(INVISIBLE);
+                    diamondBgItem.setVisibility(INVISIBLE);
                 }
             }).start();
-            starFgItem.animate().alpha(stars ? 1f : 0f).scaleX(stars ? 1f : 0f).scaleY(stars ? 1f : 0f).withEndAction(() -> {
+            diamondFgItem.animate().alpha(stars ? 1f : 0f).scaleX(stars ? 1f : 0f).scaleY(stars ? 1f : 0f).withEndAction(() -> {
                 if (!stars) {
-                    starFgItem.setVisibility(INVISIBLE);
+                    diamondFgItem.setVisibility(INVISIBLE);
                 }
             }).start();
         }

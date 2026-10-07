@@ -1,6 +1,6 @@
 package org.ansible.messenger;
 
-import static org.ansible.ui.Stars.StarsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
 
 import android.text.TextUtils;
 import android.util.LongSparseArray;
@@ -12,10 +12,10 @@ import androidx.annotation.UiThread;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_payments;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.Gifts.AuctionBidSheet;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,8 +78,8 @@ public class GiftAuctionController extends BaseController {
             auction.resubscribe = null;
         }
 
-        final TL_payments.TL_getStarGiftAuctionState req = new TL_payments.TL_getStarGiftAuctionState();
-        final TL_stars.TL_inputStarGiftAuction inputStarGiftAuction = new TL_stars.TL_inputStarGiftAuction();
+        final TL_payments.TL_getDiamondGiftAuctionState req = new TL_payments.TL_getDiamondGiftAuctionState();
+        final TL_diamonds.TL_inputDiamondGiftAuction inputStarGiftAuction = new TL_diamonds.TL_inputDiamondGiftAuction();
         inputStarGiftAuction.gift_id = auction.giftId;
         req.auction = inputStarGiftAuction;
         req.version = auction.getVersion();
@@ -120,19 +120,19 @@ public class GiftAuctionController extends BaseController {
 
 
     public int requestGiftAuctionById(long giftId, Utilities.Callback2<TL_payments.TL_StarGiftAuctionState, TLRPC.TL_error> callback) {
-        TL_stars.TL_inputStarGiftAuction auction = new TL_stars.TL_inputStarGiftAuction();
+        TL_diamonds.TL_inputDiamondGiftAuction auction = new TL_diamonds.TL_inputDiamondGiftAuction();
         auction.gift_id = giftId;
         return requestGiftAuctionInternal(auction, callback);
     }
 
     public int requestGiftAuctionBySlug(String slug, Utilities.Callback2<TL_payments.TL_StarGiftAuctionState, TLRPC.TL_error> callback) {
-        TL_stars.TL_inputStarGiftAuctionSlug auction = new TL_stars.TL_inputStarGiftAuctionSlug();
+        TL_diamonds.TL_inputDiamondGiftAuctionSlug auction = new TL_diamonds.TL_inputDiamondGiftAuctionSlug();
         auction.slug = slug;
         return requestGiftAuctionInternal(auction, callback);
     }
 
-    private int requestGiftAuctionInternal(TL_stars.InputStarGiftAuction auction, Utilities.Callback2<TL_payments.TL_StarGiftAuctionState, TLRPC.TL_error> callback) {
-        final TL_payments.TL_getStarGiftAuctionState req = new TL_payments.TL_getStarGiftAuctionState();
+    private int requestGiftAuctionInternal(TL_diamonds.InputStarGiftAuction auction, Utilities.Callback2<TL_payments.TL_StarGiftAuctionState, TLRPC.TL_error> callback) {
+        final TL_payments.TL_getDiamondGiftAuctionState req = new TL_payments.TL_getDiamondGiftAuctionState();
         req.auction = auction;
         req.version = 0;
 
@@ -161,8 +161,8 @@ public class GiftAuctionController extends BaseController {
 
     private final LongSparseArray<Boolean> upgrades = new LongSparseArray<>();
 
-    public void requestAuctionUpgrades(long giftId, Utilities.Callback<ArrayList<TL_stars.StarGiftAttribute>> callback) {
-        final TL_stars.getStarGiftUpgradeAttributes req = new TL_stars.getStarGiftUpgradeAttributes();
+    public void requestAuctionUpgrades(long giftId, Utilities.Callback<ArrayList<TL_diamonds.StarGiftAttribute>> callback) {
+        final TL_diamonds.getStarGiftUpgradeAttributes req = new TL_diamonds.getStarGiftUpgradeAttributes();
         req.gift_id = giftId;
         getConnectionsManager().sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
             if (res != null) {
@@ -173,12 +173,12 @@ public class GiftAuctionController extends BaseController {
         });
     }
 
-    public static ArrayList<TL_stars.StarGiftAttribute> filterAttributes(ArrayList<TL_stars.StarGiftAttribute> attrs, boolean crafting) {
-        final ArrayList<TL_stars.StarGiftAttribute> result = new ArrayList<TL_stars.StarGiftAttribute>();
-        for (TL_stars.StarGiftAttribute attr : attrs) {
+    public static ArrayList<TL_diamonds.StarGiftAttribute> filterAttributes(ArrayList<TL_diamonds.StarGiftAttribute> attrs, boolean crafting) {
+        final ArrayList<TL_diamonds.StarGiftAttribute> result = new ArrayList<TL_diamonds.StarGiftAttribute>();
+        for (TL_diamonds.StarGiftAttribute attr : attrs) {
             final boolean remove;
-            if (attr.rarity instanceof TL_stars.TL_starGiftAttributeRarity) {
-                remove = crafting && attr instanceof TL_stars.starGiftAttributeModel;
+            if (attr.rarity instanceof TL_diamonds.TL_starGiftAttributeRarity) {
+                remove = crafting && attr instanceof TL_diamonds.starGiftAttributeModel;
             } else {
                 remove = !crafting;
             }
@@ -188,11 +188,11 @@ public class GiftAuctionController extends BaseController {
         return result;
     }
 
-    public static boolean hasAllAttributes(ArrayList<TL_stars.StarGiftAttribute> attrs) {
+    public static boolean hasAllAttributes(ArrayList<TL_diamonds.StarGiftAttribute> attrs) {
         return (
-            findAttribute(attrs, TL_stars.starGiftAttributeModel.class) != null &&
-            findAttribute(attrs, TL_stars.starGiftAttributePattern.class) != null &&
-            findAttribute(attrs, TL_stars.starGiftAttributeBackdrop.class) != null
+            findAttribute(attrs, TL_diamonds.starGiftAttributeModel.class) != null &&
+            findAttribute(attrs, TL_diamonds.starGiftAttributePattern.class) != null &&
+            findAttribute(attrs, TL_diamonds.starGiftAttributeBackdrop.class) != null
         );
     }
 
@@ -204,9 +204,9 @@ public class GiftAuctionController extends BaseController {
             return;
         }
 
-        if (!StarsController.getInstance(currentAccount).balanceAvailable()) {
-            StarsController.getInstance(currentAccount).getBalance(() -> {
-                if (!StarsController.getInstance(currentAccount).balanceAvailable()) {
+        if (!DiamondsController.getInstance(currentAccount).balanceAvailable()) {
+            DiamondsController.getInstance(currentAccount).getBalance(() -> {
+                if (!DiamondsController.getInstance(currentAccount).balanceAvailable()) {
                     if (whenDone != null) {
                         whenDone.run(false, "NO_BALANCE");
                     }
@@ -222,7 +222,7 @@ public class GiftAuctionController extends BaseController {
 
 
         final TLRPC.TL_payments_getPaymentForm req = new TLRPC.TL_payments_getPaymentForm();
-        final TLRPC.TL_inputInvoiceStarGiftAuctionBid invoice = new TLRPC.TL_inputInvoiceStarGiftAuctionBid();
+        final TLRPC.TL_inputInvoiceDiamondGiftAuctionBid invoice = new TLRPC.TL_inputInvoiceDiamondGiftAuctionBid();
         invoice.gift_id = giftId;
         invoice.bid_amount = amount;
         invoice.update_bid = hasBid;
@@ -248,14 +248,14 @@ public class GiftAuctionController extends BaseController {
                 whenDone.run(false, err.text);
                 auction.pendingBid = false;
                 return;
-            } else if (!(res instanceof TLRPC.TL_payments_paymentFormStarGift)) {
+            } else if (!(res instanceof TLRPC.TL_payments_paymentFormDiamondGift)) {
                 whenDone.run(false, "NO_PAYMENT_FORM");
                 auction.pendingBid = false;
                 return;
             }
 
-            final TLRPC.TL_payments_paymentFormStarGift form = (TLRPC.TL_payments_paymentFormStarGift) res;
-            TL_stars.TL_payments_sendStarsForm req2 = new TL_stars.TL_payments_sendStarsForm();
+            final TLRPC.TL_payments_paymentFormDiamondGift form = (TLRPC.TL_payments_paymentFormDiamondGift) res;
+            TL_diamonds.TL_payments_sendDiamondsForm req2 = new TL_diamonds.TL_payments_sendDiamondsForm();
             req2.form_id = form.form_id;
             req2.invoice = req.invoice;
             getConnectionsManager().sendRequestTyped(req2, AndroidUtilities::runOnUIThread, (res2, err2) -> {
@@ -307,7 +307,7 @@ public class GiftAuctionController extends BaseController {
     }
 
     public void requestUserAuctions() {
-        final TL_payments.TL_getStarGiftActiveAuctions req = new TL_payments.TL_getStarGiftActiveAuctions();
+        final TL_payments.TL_getDiamondGiftActiveAuctions req = new TL_payments.TL_getDiamondGiftActiveAuctions();
         req.hash = calculateUserAuctionsHash();
 
         getConnectionsManager().sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) ->{
@@ -320,7 +320,7 @@ public class GiftAuctionController extends BaseController {
                 getMessagesController().putUsers(activeAuctions.users, false);
                 getMessagesController().putChats(activeAuctions.chats, false);
 
-                for (TL_stars.TL_StarGiftActiveAuctionState state : activeAuctions.auctions) {
+                for (TL_diamonds.TL_StarGiftActiveAuctionState state : activeAuctions.auctions) {
                     applyGiftAuctionStateAndPerformUpdate(state.gift, state.state, state.user_state);
                 }
 
@@ -330,7 +330,7 @@ public class GiftAuctionController extends BaseController {
         });
     }
 
-    public void getOrRequestAcquiredGifts(long giftId, Utilities.Callback<List<TL_stars.TL_StarGiftAuctionAcquiredGift>> callback) {
+    public void getOrRequestAcquiredGifts(long giftId, Utilities.Callback<List<TL_diamonds.TL_StarGiftAuctionAcquiredGift>> callback) {
         final AuctionInternal auction = auctions.get(giftId);
         if (auction == null || auction.internalState == null) {
             callback.run(null);
@@ -338,7 +338,7 @@ public class GiftAuctionController extends BaseController {
         }
 
         if (auction.acquiredGifts == null || auction.internalState.auctionUserState.acquired_count != auction.acquiredGifts.size()) {
-            TL_payments.TL_getStarGiftAuctionAcquiredGifts req = new TL_payments.TL_getStarGiftAuctionAcquiredGifts();
+            TL_payments.TL_getDiamondGiftAuctionAcquiredGifts req = new TL_payments.TL_getDiamondGiftAuctionAcquiredGifts();
             req.gift_id = giftId;
 
             getConnectionsManager().sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
@@ -375,7 +375,7 @@ public class GiftAuctionController extends BaseController {
     /* * */
 
     @UiThread
-    public void processUpdate(TL_update.TL_updateStarGiftAuctionState update) {
+    public void processUpdate(TL_update.TL_updateDiamondGiftAuctionState update) {
         final AuctionInternal auction = auctions.get(update.gift_id);
         if (auction == null || auction.internalState == null) {
             return;
@@ -389,7 +389,7 @@ public class GiftAuctionController extends BaseController {
     }
 
     @UiThread
-    public void processUpdate(TL_update.TL_updateStarGiftAuctionUserState update) {
+    public void processUpdate(TL_update.TL_updateDiamondGiftAuctionUserState update) {
         final AuctionInternal auction = auctions.get(update.gift_id);
         if (auction == null || auction.internalState == null) {
             return;
@@ -402,9 +402,9 @@ public class GiftAuctionController extends BaseController {
         }
     }
 
-    private void applyGiftAuctionStateAndPerformUpdate(TL_stars.StarGift gift,
-                                                       TL_stars.StarGiftAuctionState state,
-                                                       TL_stars.TL_StarGiftAuctionUserState user_state) {
+    private void applyGiftAuctionStateAndPerformUpdate(TL_diamonds.StarGift gift,
+                                                       TL_diamonds.StarGiftAuctionState state,
+                                                       TL_diamonds.TL_StarGiftAuctionUserState user_state) {
         final AuctionInternal auction = getOrCreateAuction(gift.id);
 
         boolean changed = false;
@@ -495,13 +495,13 @@ public class GiftAuctionController extends BaseController {
         public final long giftId;
 
         private Auction internalState;
-        private @Nullable ArrayList<TL_stars.StarGiftAttribute> previewAttributes;
+        private @Nullable ArrayList<TL_diamonds.StarGiftAttribute> previewAttributes;
 
         private @Nullable Runnable resubscribe;
         private boolean subscription;
         private boolean pendingBid;
 
-        private @Nullable ArrayList<TL_stars.TL_StarGiftAuctionAcquiredGift> acquiredGifts;
+        private @Nullable ArrayList<TL_diamonds.TL_StarGiftAuctionAcquiredGift> acquiredGifts;
 
         private AuctionInternal(long giftId) {
             this.giftId = giftId;
@@ -555,19 +555,19 @@ public class GiftAuctionController extends BaseController {
         public final long giftDocumentId;
         public final String giftAuctionSlug;
 
-        public @NonNull TL_stars.StarGift gift;
-        public @NonNull TL_stars.StarGiftAuctionState auctionState;
-        public @NonNull TL_stars.TL_StarGiftAuctionUserState auctionUserState;
+        public @NonNull TL_diamonds.StarGift gift;
+        public @NonNull TL_diamonds.StarGiftAuctionState auctionState;
+        public @NonNull TL_diamonds.TL_StarGiftAuctionUserState auctionUserState;
 
-        public @Nullable TL_stars.TL_starGiftAuctionState auctionStateActive;
-        public @Nullable TL_stars.TL_starGiftAuctionStateFinished auctionStateFinished;
-        public @Nullable ArrayList<TL_stars.StarGiftAttribute> previewAttributes;
+        public @Nullable TL_diamonds.TL_starGiftAuctionState auctionStateActive;
+        public @Nullable TL_diamonds.TL_starGiftAuctionStateFinished auctionStateFinished;
+        public @Nullable ArrayList<TL_diamonds.StarGiftAttribute> previewAttributes;
 
         private Auction(
                 final int currentAccount,
-                @NonNull TL_stars.StarGift gift,
-                @NonNull TL_stars.StarGiftAuctionState auctionState,
-                @NonNull TL_stars.TL_StarGiftAuctionUserState auctionUserState) {
+                @NonNull TL_diamonds.StarGift gift,
+                @NonNull TL_diamonds.StarGiftAuctionState auctionState,
+                @NonNull TL_diamonds.TL_StarGiftAuctionUserState auctionUserState) {
 
             this.currentAccount = currentAccount;
             this.gift = gift;
@@ -651,7 +651,7 @@ public class GiftAuctionController extends BaseController {
                 return getMinimumBid();
             }
 
-            for (TL_stars.TL_AuctionBidLevel level : auctionStateActive.bid_levels) {
+            for (TL_diamonds.TL_AuctionBidLevel level : auctionStateActive.bid_levels) {
                 if (place <= level.pos) {
                     return level.amount;
                 }
@@ -659,17 +659,17 @@ public class GiftAuctionController extends BaseController {
             return getMinimumBid();
         }
 
-        public int approximatePlaceFromStars(long bidAmount) {
-            return approximatePlaceFromStars(bidAmount, ConnectionsManager.getInstance(currentAccount).getCurrentTime());
+        public int approximatePlaceFromDiamonds(long bidAmount) {
+            return approximatePlaceFromDiamonds(bidAmount, ConnectionsManager.getInstance(currentAccount).getCurrentTime());
         }
 
-        public int approximatePlaceFromStars(long bidAmount, int bidDate) {
+        public int approximatePlaceFromDiamonds(long bidAmount, int bidDate) {
             if (auctionStateActive == null || auctionStateActive.bid_levels == null) {
                 return -1;
             }
 
             int lastPos = 0;
-            for (TL_stars.TL_AuctionBidLevel level : auctionStateActive.bid_levels) {
+            for (TL_diamonds.TL_AuctionBidLevel level : auctionStateActive.bid_levels) {
                 if (bidAmount > level.amount || bidAmount == level.amount && bidDate <= level.date) {
                     return level.pos;
                 }
@@ -695,14 +695,14 @@ public class GiftAuctionController extends BaseController {
             return auctionStateActive != null ? auctionStateActive.version : 0;
         }
 
-        private boolean applyGift(@NonNull TL_stars.StarGift gift) {
+        private boolean applyGift(@NonNull TL_diamonds.StarGift gift) {
             this.gift = gift;
             return true;
         }
 
-        private boolean applyAuctionState(@NonNull TL_stars.StarGiftAuctionState state) {
-            if (state instanceof TL_stars.TL_starGiftAuctionState) {
-                final TL_stars.TL_starGiftAuctionState updatedState = (TL_stars.TL_starGiftAuctionState) state;
+        private boolean applyAuctionState(@NonNull TL_diamonds.StarGiftAuctionState state) {
+            if (state instanceof TL_diamonds.TL_starGiftAuctionState) {
+                final TL_diamonds.TL_starGiftAuctionState updatedState = (TL_diamonds.TL_starGiftAuctionState) state;
                 final int currentVersion = getVersion();
                 if (updatedState.version > currentVersion) {
                     auctionState = state;
@@ -710,17 +710,17 @@ public class GiftAuctionController extends BaseController {
                     onUpdateUserOrAuctionState();
                     return true;
                 }
-            } else if (state instanceof TL_stars.TL_starGiftAuctionStateFinished) {
+            } else if (state instanceof TL_diamonds.TL_starGiftAuctionStateFinished) {
                 if (!isFinished()) {
                     auctionState = state;
-                    auctionStateFinished = (TL_stars.TL_starGiftAuctionStateFinished) state;
+                    auctionStateFinished = (TL_diamonds.TL_starGiftAuctionStateFinished) state;
                     return true;
                 }
             }
             return false;
         }
 
-        private boolean applyUserState(@NonNull TL_stars.TL_StarGiftAuctionUserState state) {
+        private boolean applyUserState(@NonNull TL_diamonds.TL_StarGiftAuctionUserState state) {
             auctionUserState = state;
             onUpdateUserOrAuctionState();
             return true;
@@ -748,7 +748,7 @@ public class GiftAuctionController extends BaseController {
             }
 
             if (auctionUserState.bid_amount > 0 && !auctionUserState.returned) {
-                return approximatePlaceFromStars(auctionUserState.bid_amount, auctionUserState.bid_date);
+                return approximatePlaceFromDiamonds(auctionUserState.bid_amount, auctionUserState.bid_date);
             }
 
             return -1;

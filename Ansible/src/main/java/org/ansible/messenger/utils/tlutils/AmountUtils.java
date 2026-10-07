@@ -9,7 +9,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -139,7 +139,7 @@ public class AmountUtils {
             if (currency == AmountUtils.Currency.TON) {
                 return AmountUtils.Amount.fromDecimal(usd / MessagesController.getInstance(UserConfig.selectedAccount).config.tonUsdRate.get(), AmountUtils.Currency.TON).round(2);
             } else if (currency == AmountUtils.Currency.STARS) {
-                return AmountUtils.Amount.fromDecimal(usd * 100000 / MessagesController.getInstance(UserConfig.selectedAccount).starsUsdSellRate1000, AmountUtils.Currency.STARS).round(0);
+                return AmountUtils.Amount.fromDecimal(usd * 100000 / MessagesController.getInstance(UserConfig.selectedAccount).diamondsUsdSellRate1000, AmountUtils.Currency.STARS).round(0);
             }
 
             return AmountUtils.Amount.fromDecimal(0, currency);
@@ -147,7 +147,7 @@ public class AmountUtils {
 
         public double convertToUsd() {
             if (this.currency == Currency.STARS) {
-                return this.asDouble() / 1000 * MessagesController.getInstance(UserConfig.selectedAccount).starsUsdSellRate1000 / 100;
+                return this.asDouble() / 1000 * MessagesController.getInstance(UserConfig.selectedAccount).diamondsUsdSellRate1000 / 100;
             } else if (this.currency == Currency.TON) {
                 return this.asDouble() * MessagesController.getInstance(UserConfig.selectedAccount).config.tonUsdRate.get();
             }
@@ -162,9 +162,9 @@ public class AmountUtils {
             return fromUsd(convertToUsd(), currency);
         }
 
-        public TL_stars.StarsAmount toTl() {
+        public TL_diamonds.StarsAmount toTl() {
             if (currency == AmountUtils.Currency.STARS) {
-                final TL_stars.StarsAmount amount = new TL_stars.TL_starsAmount();
+                final TL_diamonds.StarsAmount amount = new TL_diamonds.TL_starsAmount();
                 final long decimals = getDecimals(currency);
                 amount.amount = nanos / decimals;
                 amount.nanos = (int) (nanos % decimals);
@@ -172,7 +172,7 @@ public class AmountUtils {
             }
 
             if (currency == AmountUtils.Currency.TON) {
-                final TL_stars.StarsAmount amount = new TL_stars.TL_starsTonAmount();
+                final TL_diamonds.StarsAmount amount = new TL_diamonds.TL_starsTonAmount();
                 amount.amount = nanos;
                 return amount;
             }
@@ -220,10 +220,10 @@ public class AmountUtils {
             }
         }
 
-        public static Amount of(TL_stars.StarsAmount amount) {
-            if (amount instanceof TL_stars.TL_starsAmount) {
+        public static Amount of(TL_diamonds.StarsAmount amount) {
+            if (amount instanceof TL_diamonds.TL_starsAmount) {
                 return fromNano(amount.amount * getDecimals(Currency.STARS) + amount.nanos, Currency.STARS);
-            } else if (amount instanceof TL_stars.TL_starsTonAmount) {
+            } else if (amount instanceof TL_diamonds.TL_starsTonAmount) {
                 return fromNano(amount.amount, Currency.TON);
             }
 
@@ -231,12 +231,12 @@ public class AmountUtils {
         }
 
         @NonNull
-        public static Amount ofSafe(TL_stars.StarsAmount amount) {
+        public static Amount ofSafe(TL_diamonds.StarsAmount amount) {
             Amount a = of(amount);
             return a != null ? a : Amount.fromNano(0, Currency.STARS);
         }
 
-        public static boolean equals(TL_stars.StarsAmount a, TL_stars.StarsAmount b) {
+        public static boolean equals(TL_diamonds.StarsAmount a, TL_diamonds.StarsAmount b) {
             return equals(Amount.of(a), Amount.of(b));
         }
 

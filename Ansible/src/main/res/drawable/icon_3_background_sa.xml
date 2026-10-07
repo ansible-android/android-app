@@ -1,4 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#323137" />
-</shape>
+<!-- Ansible launcher icon background: Premium — diamond blue -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#FF5FC3FF"
+                android:centerColor="#FF1E7FEA"
+                android:endColor="#FF0A4BAE" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <gradient
+                android:type="radial"
+                android:gradientRadius="62%p"
+                android:centerX="0.22"
+                android:centerY="0.16"
+                android:startColor="#73C7E9FF"
+                android:endColor="#00C7E9FF" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <gradient
+                android:type="radial"
+                android:gradientRadius="70%p"
+                android:centerX="0.92"
+                android:centerY="0.95"
+                android:startColor="#800046A0"
+                android:endColor="#000046A0" />
+        </shape>
+    </item>
+</layer-list>

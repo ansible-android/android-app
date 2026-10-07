@@ -71,7 +71,7 @@ public class BottomPagesView extends View {
         if (selectedColorKey >= 0) {
             paint.setColor(Theme.getColor(selectedColorKey));
         } else {
-            paint.setColor(ThemeColors.TELEGRAM_COLOR);
+            paint.setColor(ThemeColors.ANSIBLE_COLOR);
         }
         x = currentPage * AndroidUtilities.dp(11);
         if (progress != 0) {

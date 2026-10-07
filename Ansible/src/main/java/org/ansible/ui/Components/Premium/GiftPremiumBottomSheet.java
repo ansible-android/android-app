@@ -509,8 +509,8 @@ public class GiftPremiumBottomSheet extends BottomSheetWithRecyclerListView impl
 
         public final TLRPC.TL_premiumGiftOption giftOption;
         public final TLRPC.TL_premiumGiftCodeOption giftCodeOption;
-        public final TLRPC.TL_premiumGiftOption starsOption;
-        public final TLRPC.TL_premiumGiftCodeOption starsCodeOption;
+        public final TLRPC.TL_premiumGiftOption diamondsOption;
+        public final TLRPC.TL_premiumGiftCodeOption diamondsCodeOption;
         private int discount;
         private long pricePerMonth;
 
@@ -519,17 +519,17 @@ public class GiftPremiumBottomSheet extends BottomSheetWithRecyclerListView impl
 
         public int yOffset;
 
-        public GiftTier(TLRPC.TL_premiumGiftOption giftOption, Object starsOption) {
+        public GiftTier(TLRPC.TL_premiumGiftOption giftOption, Object diamondsOption) {
             this.giftOption = giftOption;
             this.giftCodeOption = null;
-            this.starsOption = starsOption instanceof TLRPC.TL_premiumGiftOption ? (TLRPC.TL_premiumGiftOption) starsOption : null;
-            this.starsCodeOption = starsOption instanceof TLRPC.TL_premiumGiftCodeOption ? (TLRPC.TL_premiumGiftCodeOption) starsOption : null;
+            this.diamondsOption = diamondsOption instanceof TLRPC.TL_premiumGiftOption ? (TLRPC.TL_premiumGiftOption) diamondsOption : null;
+            this.diamondsCodeOption = diamondsOption instanceof TLRPC.TL_premiumGiftCodeOption ? (TLRPC.TL_premiumGiftCodeOption) diamondsOption : null;
         }
-        public GiftTier(TLRPC.TL_premiumGiftCodeOption giftCodeOption, Object starsOption) {
+        public GiftTier(TLRPC.TL_premiumGiftCodeOption giftCodeOption, Object diamondsOption) {
             this.giftOption = null;
             this.giftCodeOption = giftCodeOption;
-            this.starsOption = starsOption instanceof TLRPC.TL_premiumGiftOption ? (TLRPC.TL_premiumGiftOption) starsOption : null;
-            this.starsCodeOption = starsOption instanceof TLRPC.TL_premiumGiftCodeOption ? (TLRPC.TL_premiumGiftCodeOption) starsOption : null;
+            this.diamondsOption = diamondsOption instanceof TLRPC.TL_premiumGiftOption ? (TLRPC.TL_premiumGiftOption) diamondsOption : null;
+            this.diamondsCodeOption = diamondsOption instanceof TLRPC.TL_premiumGiftCodeOption ? (TLRPC.TL_premiumGiftCodeOption) diamondsOption : null;
         }
 
         public ProductDetails getGooglePlayProductDetails() {
@@ -625,22 +625,22 @@ public class GiftPremiumBottomSheet extends BottomSheetWithRecyclerListView impl
             return googlePlayProductDetails == null ? "" : googlePlayProductDetails.getOneTimePurchaseOfferDetails().getPriceCurrencyCode();
         }
 
-        public Object getStarsOption() {
-            if (starsOption != null) return starsOption;
-            if (starsCodeOption != null) return starsCodeOption;
+        public Object getDiamondsOption() {
+            if (diamondsOption != null) return diamondsOption;
+            if (diamondsCodeOption != null) return diamondsCodeOption;
             return null;
         }
 
-        public boolean isStarsPaymentAvailable() {
-            return starsOption != null || starsCodeOption != null;
+        public boolean isDiamondsPaymentAvailable() {
+            return diamondsOption != null || diamondsCodeOption != null;
         }
 
-        public long getStarsPrice() {
-            if (starsOption != null) {
-                return starsOption.amount;
+        public long getDiamondsPrice() {
+            if (diamondsOption != null) {
+                return diamondsOption.amount;
             }
-            if (starsCodeOption != null) {
-                return starsCodeOption.amount;
+            if (diamondsCodeOption != null) {
+                return diamondsCodeOption.amount;
             }
             return 0;
         }

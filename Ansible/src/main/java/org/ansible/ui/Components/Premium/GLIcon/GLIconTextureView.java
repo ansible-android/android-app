@@ -19,7 +19,7 @@ import org.ansible.messenger.EmuDetector;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.Utilities;
 import org.ansible.ui.Components.CubicBezierInterpolator;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +69,7 @@ public class GLIconTextureView extends TextureView implements TextureView.Surfac
     int animationPointer;
     ArrayList<Integer> animationIndexes = new ArrayList<>();
     boolean attached;
-    StarParticlesView starParticlesView;
+    DiamondParticlesView diamondParticlesView;
     int type;
 
     public GLIconTextureView(Context context, int style) {
@@ -515,8 +515,8 @@ public class GLIconTextureView extends TextureView implements TextureView.Surfac
         backAnimation.setDuration(600);
         backAnimation.setInterpolator(new OvershootInterpolator());
         backAnimation.start();
-        if (starParticlesView != null) {
-            starParticlesView.flingParticles(Math.abs(sum));
+        if (diamondParticlesView != null) {
+            diamondParticlesView.flingParticles(Math.abs(sum));
         }
         scheduleIdleAnimation(idleDelay);
     }
@@ -763,8 +763,8 @@ public class GLIconTextureView extends TextureView implements TextureView.Surfac
         animatorSet.start();
     }
 
-    public void setStarParticlesView(StarParticlesView starParticlesView) {
-        this.starParticlesView = starParticlesView;
+    public void setDiamondParticlesView(DiamondParticlesView diamondParticlesView) {
+        this.diamondParticlesView = diamondParticlesView;
     }
 
     public void startEnterAnimation(int angle, long delay) {

@@ -164,9 +164,9 @@ import org.ansible.ui.PhotoPickerActivity;
 import org.ansible.ui.PhotoPickerSearchActivity;
 import org.ansible.ui.PhotoViewer;
 import org.ansible.ui.PremiumPreviewFragment;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
-import org.ansible.ui.Stars.MessageSuggestionOfferSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
+import org.ansible.ui.Diamonds.MessageSuggestionOfferSheet;
 import org.ansible.ui.Stories.recorder.HintView2;
 import org.ansible.ui.Stories.recorder.StoryEntry;
 import org.ansible.ui.WebAppDisclaimerAlert;
@@ -367,10 +367,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     public void onWebAppOpenInvoice(TLRPC.InputInvoice inputInvoice, String slug, TLObject response) {
                         BaseFragment parentFragment = baseFragment;
                         PaymentFormActivity paymentFormActivity = null;
-                        if (response instanceof TLRPC.TL_payments_paymentFormStars) {
+                        if (response instanceof TLRPC.TL_payments_paymentFormDiamonds) {
                             final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
                             progressDialog.showDelayed(150);
-                            StarsController.getInstance(currentAccount).openPaymentForm(null, inputInvoice, (TLRPC.TL_payments_paymentFormStars) response, () -> {
+                            DiamondsController.getInstance(currentAccount).openPaymentForm(null, inputInvoice, (TLRPC.TL_payments_paymentFormDiamonds) response, () -> {
                                 progressDialog.dismiss();
                             }, status -> {
                                 webViewLayout.getWebViewContainer().onInvoiceStatusUpdate(slug, status);
@@ -690,7 +690,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             return false;
         }
 
-        void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payStars);
+        void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payDiamonds);
 
         default void onCameraOpened() {
         }
@@ -719,7 +719,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
         }
 
-        default void sendAudio(ArrayList<MessageObject> audios, CharSequence caption, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payStars) {
+        default void sendAudio(ArrayList<MessageObject> audios, CharSequence caption, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payDiamonds) {
 
         }
     }
@@ -2437,12 +2437,12 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         return;
                     }
                     entry.editedInfo = videoEditedInfo;
-                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, getDialogId(), 1 + getAdditionalMessagesCount(), payStars -> {
+                    AlertsCreator.ensurePaidMessageConfirmation(currentAccount, getDialogId(), 1 + getAdditionalMessagesCount(), payDiamonds -> {
                         ChatAttachAlertPhotoLayout.selectedPhotosOrder.clear();
                         ChatAttachAlertPhotoLayout.selectedPhotos.clear();
                         ChatAttachAlertPhotoLayout.selectedPhotosOrder.add(0);
                         ChatAttachAlertPhotoLayout.selectedPhotos.put(0, entry);
-                        delegate.didPressedButton(7, true, notify, scheduleDate, 0, 0, isCaptionAbove(), forceDocument, payStars);
+                        delegate.didPressedButton(7, true, notify, scheduleDate, 0, 0, isCaptionAbove(), forceDocument, payDiamonds);
                     });
                 }
             }, baseFragment instanceof ChatActivity ? (ChatActivity) baseFragment : null);
@@ -2824,7 +2824,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                             if (locationActivityDelegate != null) {
                                 locationLayout.setDelegate(locationActivityDelegate);
                             } else {
-                                locationLayout.setDelegate((location, live, notify, scheduleDate, payStars) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, payStars));
+                                locationLayout.setDelegate((location, live, notify, scheduleDate, payDiamonds) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, payDiamonds));
                             }
                         }
                         showLayout(locationLayout);
@@ -2851,8 +2851,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     } else {
                         if (todoLayout == null) {
                             layouts[1] = todoLayout = new ChatAttachAlertPollLayout(this, getContext(), true, resourcesProvider, null);
-                            todoLayout.setDelegate((poll, caption, media, params, notify, scheduleDate, payStars) ->
-                                ((ChatActivity) baseFragment).sendTodo((TLRPC.TL_messageMediaToDo) poll, notify, scheduleDate, payStars)
+                            todoLayout.setDelegate((poll, caption, media, params, notify, scheduleDate, payDiamonds) ->
+                                ((ChatActivity) baseFragment).sendTodo((TLRPC.TL_messageMediaToDo) poll, notify, scheduleDate, payDiamonds)
                             );
                         }
                         showLayout(todoLayout);
@@ -3666,7 +3666,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             boolean hasMessageToEffect = false;
             MessageObject messageWithCaption = null;
 
-            boolean canHaveStars = false;
+            boolean canHaveDiamonds = false;
             ArrayList<MessageObject> messageObjects = new ArrayList<>();
             int id = 0;
             if (currentAttachLayout == photoLayout || currentAttachLayout == photoPreviewLayout) {
@@ -3804,7 +3804,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                             if (messageWithCaption == null && !TextUtils.isEmpty(msg.message)) {
                                 messageWithCaption = messageObject;
                             }
-                            canHaveStars = true;
+                            canHaveDiamonds = true;
                         }
                     }
                 }
@@ -4001,13 +4001,13 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     }
                 });
             }
-            if (editingMessageObject == null && canHaveStars && chatActivity != null && ChatObject.isChannelAndNotMegaGroup(chatActivity.getCurrentChat()) && chatActivity.getCurrentChatInfo() != null && chatActivity.getCurrentChatInfo().paid_media_allowed) {
+            if (editingMessageObject == null && canHaveDiamonds && chatActivity != null && ChatObject.isChannelAndNotMegaGroup(chatActivity.getCurrentChat()) && chatActivity.getCurrentChatInfo() != null && chatActivity.getCurrentChatInfo().paid_media_allowed) {
                 ActionBarMenuSubItem item = options.add(R.drawable.menu_feature_paid, getString(R.string.PaidMediaButton), null).getLast();
                 item.setOnClickListener(v -> {
                     if (photoLayout == null) return;
-                    StarsIntroActivity.showMediaPriceSheet(context, photoLayout.getStarsPrice(), true, (amount, done) -> {
+                    DiamondsIntroActivity.showMediaPriceSheet(context, photoLayout.getDiamondsPrice(), true, (amount, done) -> {
                         done.run();
-                        photoLayout.setStarsPrice(amount);
+                        photoLayout.setDiamondsPrice(amount);
                         if (amount != null && amount > 0) {
                             item.setText(getString(R.string.PaidMediaPriceButton));
                             item.setSubtext(formatPluralString("Diamonds", (int) (long) amount));
@@ -4019,7 +4019,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         }
                     }, resourcesProvider);
                 });
-                long amount = photoLayout.getStarsPrice();
+                long amount = photoLayout.getDiamondsPrice();
                 if (amount > 0) {
                     item.setText(getString(R.string.PaidMediaPriceButton));
                     item.setSubtext(formatPluralString("Diamonds", (int) amount));
@@ -4242,7 +4242,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         chatActivity.messageSuggestionParams :
                         MessageSuggestionParams.of(editingMessageObject.messageOwner.suggested_post);
 
-                if (!StarsController.isEnoughAmount(currentAccount, params.amount)) {
+                if (!DiamondsController.isEnoughAmount(currentAccount, params.amount)) {
                     chatActivity.showSuggestionOfferForEditMessage(params);
                     return;
                 }
@@ -4465,9 +4465,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             delegate.didPressedButton(7, true, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, false, 0);
             return true;
         } else {
-            return AlertsCreator.ensurePaidMessageConfirmation(currentAccount, getDialogId(), (currentAttachLayout == null ? 1 : currentAttachLayout.getSelectedItemsCount()) + getAdditionalMessagesCount(), payStars -> {
+            return AlertsCreator.ensurePaidMessageConfirmation(currentAccount, getDialogId(), (currentAttachLayout == null ? 1 : currentAttachLayout.getSelectedItemsCount()) + getAdditionalMessagesCount(), payDiamonds -> {
                 setButtonPressed(true);
-                delegate.didPressedButton(7, true, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, false, payStars);
+                delegate.didPressedButton(7, true, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, false, payDiamonds);
             });
         }
     }
@@ -4503,7 +4503,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 if (locationActivityDelegate != null) {
                     locationLayout.setDelegate(locationActivityDelegate);
                 } else if (baseFragment instanceof ChatActivity) {
-                    locationLayout.setDelegate((location, live, notify, scheduleDate, payStars) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, payStars));
+                    locationLayout.setDelegate((location, live, notify, scheduleDate, payDiamonds) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, payDiamonds));
                 }
             }
             showLayout(locationLayout);
@@ -4545,8 +4545,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     private void showPollLayout(boolean animated, Boolean quiz) {
         if (pollLayout == null) {
             layouts[1] = pollLayout = new ChatAttachAlertPollLayout(this, getContext(), false, resourcesProvider, quiz);
-            pollLayout.setDelegate((poll, caption, media, params, notify, scheduleDate, payStars) ->
-                ((ChatActivity) baseFragment).sendPoll((TLRPC.TL_messageMediaPoll) poll, caption, media, params, notify, scheduleDate, payStars)
+            pollLayout.setDelegate((poll, caption, media, params, notify, scheduleDate, payDiamonds) ->
+                ((ChatActivity) baseFragment).sendPoll((TLRPC.TL_messageMediaPoll) poll, caption, media, params, notify, scheduleDate, payDiamonds)
             );
         }
         showLayout(pollLayout, LAYOUT_TYPE_POLL, animated);
@@ -4888,12 +4888,12 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             contactsLayout.setupBlurredSearchField(iBlur3FactoryLiquidGlass);
             contactsLayout.setDelegate(new ChatAttachAlertContactsLayout.PhonebookShareAlertDelegate() {
                 @Override
-                public void didSelectContact(TLRPC.User user, boolean notify, int scheduleDate, long effectId, boolean invertMedia, long payStars) {
-                    ((ChatActivity) baseFragment).sendContact(user, notify, scheduleDate, effectId, invertMedia, payStars);
+                public void didSelectContact(TLRPC.User user, boolean notify, int scheduleDate, long effectId, boolean invertMedia, long payDiamonds) {
+                    ((ChatActivity) baseFragment).sendContact(user, notify, scheduleDate, effectId, invertMedia, payDiamonds);
                 }
 
                 @Override
-                public void didSelectContacts(ArrayList<TLRPC.User> users, String caption, boolean notify, int scheduleDate, long effectId, boolean invertMedia, long payStars) {
+                public void didSelectContacts(ArrayList<TLRPC.User> users, String caption, boolean notify, int scheduleDate, long effectId, boolean invertMedia, long payDiamonds) {
                     ((ChatActivity) baseFragment).sendContacts(users, caption, notify, scheduleDate, effectId, invertMedia, 0);
                 }
             });
@@ -4928,13 +4928,13 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         if (audioLayout == null) {
             layouts[3] = audioLayout = new ChatAttachAlertAudioLayout(this, getContext(), resourcesProvider);
             audioLayout.setupBlurredSearchField(iBlur3FactoryLiquidGlass);
-            audioLayout.setDelegate((audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payStars) -> {
+            audioLayout.setDelegate((audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payDiamonds) -> {
                 if (audioSelectDelegate != null) {
-                    audioSelectDelegate.didSelectAudio(audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payStars);
+                    audioSelectDelegate.didSelectAudio(audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payDiamonds);
                 } else if (baseFragment != null && baseFragment instanceof ChatActivity) {
-                    ((ChatActivity) baseFragment).sendAudio(audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payStars);
+                    ((ChatActivity) baseFragment).sendAudio(audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payDiamonds);
                 } else if (delegate != null) {
-                    delegate.sendAudio(audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payStars);
+                    delegate.sendAudio(audios, caption, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payDiamonds);
                 }
             });
             if (isPollAttach) {
@@ -4975,22 +4975,22 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             layouts[4] = documentLayout = new ChatAttachAlertDocumentLayout(this, getContext(), type, resourcesProvider);
             documentLayout.setDelegate(new ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate() {
                 @Override
-                public void didSelectFiles(ArrayList<String> files, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, ArrayList<MessageObject> fmessages, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payStars) {
+                public void didSelectFiles(ArrayList<String> files, String caption, ArrayList<TLRPC.MessageEntity> captionEntities, ArrayList<MessageObject> fmessages, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, long payDiamonds) {
                     if (documentsDelegate != null) {
-                        documentsDelegate.didSelectFiles(files, caption, captionEntities, fmessages, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payStars);
+                        documentsDelegate.didSelectFiles(files, caption, captionEntities, fmessages, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payDiamonds);
                     } else if (baseFragment instanceof ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate) {
-                        ((ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate) baseFragment).didSelectFiles(files, caption, captionEntities, fmessages, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payStars);
+                        ((ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate) baseFragment).didSelectFiles(files, caption, captionEntities, fmessages, notify, scheduleDate, scheduleRepeatPeriod, effectId, invertMedia, payDiamonds);
                     } else if (baseFragment instanceof PassportActivity) {
                         ((PassportActivity) baseFragment).didSelectFiles(files, caption, notify, scheduleDate, effectId, invertMedia);
                     }
                 }
 
                 @Override
-                public void didSelectPhotos(ArrayList<SendMessagesHelper.SendingMediaInfo> photos, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payStars) {
+                public void didSelectPhotos(ArrayList<SendMessagesHelper.SendingMediaInfo> photos, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long payDiamonds) {
                     if (documentsDelegate != null) {
-                        documentsDelegate.didSelectPhotos(photos, notify, scheduleDate, scheduleRepeatPeriod, payStars);
+                        documentsDelegate.didSelectPhotos(photos, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
                     } else if (baseFragment instanceof ChatActivity) {
-                        ((ChatActivity) baseFragment).didSelectPhotos(photos, notify, scheduleDate, scheduleRepeatPeriod, payStars);
+                        ((ChatActivity) baseFragment).didSelectPhotos(photos, notify, scheduleDate, scheduleRepeatPeriod, payDiamonds);
                     } else if (baseFragment instanceof PassportActivity) {
                         ((PassportActivity) baseFragment).didSelectPhotos(photos, notify, scheduleDate);
                     }
@@ -5222,9 +5222,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             }
         }
         writeButton.setCount(show ? Math.max(1, currentAttachLayout.getSelectedItemsCount()) : 0, animated);
-        final long starsPrice = editingMessageObject != null ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(getDialogId());
+        final long diamondsPrice = editingMessageObject != null ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(getDialogId());
         final int messagesCount = currentAttachLayout.getSelectedItemsCount() + getAdditionalMessagesCount();
-        writeButton.setStarsPrice(starsPrice, messagesCount);
+        writeButton.setDiamondsPrice(diamondsPrice, messagesCount);
         if (commentTextView != null) {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) commentTextView.getLayoutParams();
             final int newRightMargin = Math.max(dp(48), writeButton.width());
@@ -5957,9 +5957,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         }
         updateMotionItem(animated != 0);
 
-        final long starsPrice = editingMessageObject != null && !editingMessageObject.needResendWhenEdit() ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(getDialogId());
+        final long diamondsPrice = editingMessageObject != null && !editingMessageObject.needResendWhenEdit() ? 0 : MessagesController.getInstance(currentAccount).getSendPaidMessagesDiamonds(getDialogId());
         final int messagesCount = (currentAttachLayout == null ? 0 : currentAttachLayout.getSelectedItemsCount()) + getAdditionalMessagesCount();
-        writeButton.setStarsPrice(starsPrice, messagesCount);
+        writeButton.setDiamondsPrice(diamondsPrice, messagesCount);
         if (commentTextView != null) {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) commentTextView.getLayoutParams();
             final int newRightMargin = Math.max(dp(48), writeButton.width());
@@ -6084,7 +6084,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 if (locationActivityDelegate != null) {
                     locationLayout.setDelegate(locationActivityDelegate);
                 } else {
-                    locationLayout.setDelegate((location, live, notify, scheduleDate, payStars) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, 0));
+                    locationLayout.setDelegate((location, live, notify, scheduleDate, payDiamonds) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, 0));
                 }
             }
             selectedId = 5;
@@ -6715,7 +6715,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             } else {
                 TLRPC.User user = baseFragment instanceof ChatActivity ? ((ChatActivity) baseFragment).getCurrentUser() : null;
                 TLRPC.Chat chat = baseFragment instanceof ChatActivity ? ((ChatActivity) baseFragment).getCurrentChat() : null;
-                final boolean paidUser = user != null && ((ChatActivity) baseFragment).getMessagesController().getSendPaidMessagesStars(user.id) > 0;
+                final boolean paidUser = user != null && ((ChatActivity) baseFragment).getMessagesController().getSendPaidMessagesDiamonds(user.id) > 0;
                 galleryButton = buttonsCount++;
                 if ((photosEnabled || videosEnabled) && !paidUser && (chat == null || !ChatObject.isMonoForum(chat))) {
                     if (baseFragment instanceof ChatActivity && !((ChatActivity) baseFragment).isInScheduleMode() && !((ChatActivity) baseFragment).isSecretChat() && ((ChatActivity) baseFragment).getChatMode() != ChatActivity.MODE_QUICK_REPLIES) {

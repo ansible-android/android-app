@@ -54,7 +54,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_communities;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenu;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
@@ -247,8 +247,8 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
 
     private boolean initialEnablePrice;
     private boolean enablePrice;
-    private long initialStarsPrice = 10;
-    private long starsPrice = 10;
+    private long initialDiamondsPrice = 10;
+    private long diamondsPrice = 10;
 
     private boolean openTransitionStarted;
     private FlickerLoadingView flickerLoadingView;
@@ -1061,15 +1061,15 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     return;
                 } else if (position == antiSpamRow) {
                     final TextCell textCell = (TextCell) view;
-                    if (info != null && !info.antispam && getParticipantsCount() < getMessagesController().telegramAntispamGroupSizeMin) {
-                        BulletinFactory.of(this).createSimpleBulletin(R.raw.msg_antispam, AndroidUtilities.replaceTags(LocaleController.formatPluralString("ChannelAntiSpamForbidden", getMessagesController().telegramAntispamGroupSizeMin))).show();
+                    if (info != null && !info.antispam && getParticipantsCount() < getMessagesController().ansibleAntispamGroupSizeMin) {
+                        BulletinFactory.of(this).createSimpleBulletin(R.raw.msg_antispam, AndroidUtilities.replaceTags(LocaleController.formatPluralString("ChannelAntiSpamForbidden", getMessagesController().ansibleAntispamGroupSizeMin))).show();
                     } else if (info != null && ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES) && !antiSpamToggleLoading) {
                         antiSpamToggleLoading = true;
                         boolean wasAntispam = info.antispam;
                         TLRPC.TL_channels_toggleAntiSpam req = new TLRPC.TL_channels_toggleAntiSpam();
                         req.channel = getMessagesController().getInputChannel(chatId);
                         textCell.setChecked(req.enabled = (info.antispam = !info.antispam));
-                        textCell.getCheckBox().setIcon(ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES) && (info == null || info.antispam || getParticipantsCount() >= getMessagesController().telegramAntispamGroupSizeMin) ? 0 : R.drawable.permission_locked);
+                        textCell.getCheckBox().setIcon(ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES) && (info == null || info.antispam || getParticipantsCount() >= getMessagesController().ansibleAntispamGroupSizeMin) ? 0 : R.drawable.permission_locked);
                         getConnectionsManager().sendRequest(req, (res, err) -> {
                             if (res != null) {
                                 getMessagesController().processUpdates((TLRPC.Updates) res, false);
@@ -1081,7 +1081,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                                         return;
                                     }
                                     textCell.setChecked(info.antispam = wasAntispam);
-                                    textCell.getCheckBox().setIcon(ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES) && (info == null || !info.antispam || getParticipantsCount() >= getMessagesController().telegramAntispamGroupSizeMin) ? 0 : R.drawable.permission_locked);
+                                    textCell.getCheckBox().setIcon(ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES) && (info == null || !info.antispam || getParticipantsCount() >= getMessagesController().ansibleAntispamGroupSizeMin) ? 0 : R.drawable.permission_locked);
                                     BulletinFactory.of(ChatUsersActivity.this).createSimpleBulletin(R.raw.error, getString("UnknownError", R.string.UnknownError)).show();
                                 });
                             }
@@ -2064,7 +2064,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     final TLRPC.Chat chat = getMessagesController().getChat(chatId);
                     final long stars = chat == null ? 0 : chat.send_paid_messages_stars;
                     initialEnablePrice = enablePrice = stars > 0;
-                    initialStarsPrice = starsPrice = Utilities.clamp(stars > 0 ? stars : 10, getMessagesController().starsPaidMessageAmountMax, 1);
+                    initialDiamondsPrice = diamondsPrice = Utilities.clamp(stars > 0 ? stars : 10, getMessagesController().diamondsPaidMessageAmountMax, 1);
                 }
                 AndroidUtilities.runOnUIThread(() -> loadChatParticipants(0, 200));
             }
@@ -2302,10 +2302,10 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 getMessagesController().setChannelSlowMode(chatId, info.slowmode_seconds);
             }
 
-            if (enablePrice != initialEnablePrice || enablePrice && initialStarsPrice != starsPrice) {
-                final TL_stars.updatePaidMessagesPrice req = new TL_stars.updatePaidMessagesPrice();
+            if (enablePrice != initialEnablePrice || enablePrice && initialDiamondsPrice != diamondsPrice) {
+                final TL_diamonds.updatePaidMessagesPrice req = new TL_diamonds.updatePaidMessagesPrice();
                 req.channel = getMessagesController().getInputChannel(chatId);
-                req.send_paid_messages_stars = enablePrice ? starsPrice : 0;
+                req.send_paid_messages_stars = enablePrice ? diamondsPrice : 0;
                 getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
 
                 }));
@@ -2314,7 +2314,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 if (chat != null) {
                     if (enablePrice) {
                         chat.flags2 |= 16384;
-                        chat.send_paid_messages_stars = starsPrice;
+                        chat.send_paid_messages_stars = diamondsPrice;
                     } else {
                         chat.flags2 &=~ 16384;
                         chat.send_paid_messages_stars = 0;
@@ -2366,7 +2366,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
             final TLRPC.Chat chat = getMessagesController().getChat(chatId);
             final long stars = chat == null ? 0 : chat.send_paid_messages_stars;
             initialEnablePrice = enablePrice = stars > 0;
-            initialStarsPrice = starsPrice = Utilities.clamp(stars > 0 ? stars : 10, getMessagesController().starsPaidMessageAmountMax, 1);
+            initialDiamondsPrice = diamondsPrice = Utilities.clamp(stars > 0 ? stars : 10, getMessagesController().diamondsPaidMessageAmountMax, 1);
         }
     }
 
@@ -3573,9 +3573,9 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     } else if (position == payInfoRow) {
                         privacyCell.setText(getString(R.string.GroupMessagesChargePriceInfo));
                     } else if (position == priceInfoRow) {
-                        final float revenuePercent = getMessagesController().starsPaidMessageCommissionPermille / 1000.0f;
-                        final String income = String.valueOf((int) ((starsPrice * revenuePercent / 1000.0 * getMessagesController().starsUsdWithdrawRate1000)) / 100.0);
-                        privacyCell.setText(LocaleController.formatString(R.string.GroupMessagesPriceInfo, percents(getMessagesController().starsPaidMessageCommissionPermille), income));
+                        final float revenuePercent = getMessagesController().diamondsPaidMessageCommissionPermille / 1000.0f;
+                        final String income = String.valueOf((int) ((diamondsPrice * revenuePercent / 1000.0 * getMessagesController().diamondsUsdWithdrawRate1000)) / 100.0);
+                        privacyCell.setText(LocaleController.formatString(R.string.GroupMessagesPriceInfo, percents(getMessagesController().diamondsPaidMessageCommissionPermille), income));
                     } else if (position == hideMembersInfoRow) {
                         privacyCell.setText(getString(R.string.ChannelHideMembersInfo));
                     } else if (position == tagsInfoRow) {
@@ -3744,7 +3744,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 case 12:
                     TextCell textCell = (TextCell) holder.itemView;
                     if (position == antiSpamRow) {
-                        textCell.getCheckBox().setIcon(ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES) && (info == null || info.antispam || getParticipantsCount() >= getMessagesController().telegramAntispamGroupSizeMin) ? 0 : R.drawable.permission_locked);
+                        textCell.getCheckBox().setIcon(ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES) && (info == null || info.antispam || getParticipantsCount() >= getMessagesController().ansibleAntispamGroupSizeMin) ? 0 : R.drawable.permission_locked);
                         textCell.setTextAndCheckAndIcon(getString("ChannelAntiSpam", R.string.ChannelAntiSpam), info != null && info.antispam, R.drawable.msg_policy, false);
                     } else if (position == hideMembersRow) {
                         textCell.getCheckBox().setIcon(ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_BLOCK_USERS) && (info == null || info.participants_hidden || getParticipantsCount() >= getMessagesController().hiddenMembersGroupSizeMin) ? 0 : R.drawable.permission_locked);
@@ -3795,9 +3795,9 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 case VIEW_TYPE_SLIDER:
                     SlideIntChooseView cell = (SlideIntChooseView) holder.itemView;
                     if (position == priceRow) {
-                        final int[] steps = SlideIntChooseView.cut(new int[] { 1, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().starsPaidMessageAmountMax);
-                        cell.set((int) Utilities.clamp(starsPrice, getMessagesController().starsPaidMessageAmountMax, 1), SlideIntChooseView.Options.make(1, steps, 20, (type, val) -> type == 0 ? LocaleController.formatPluralStringComma("Diamonds", val) : "" + val), newValue -> {
-                            starsPrice = newValue;
+                        final int[] steps = SlideIntChooseView.cut(new int[] { 1, 10, 50, 100, 200, 250, 400, 500, 1000, 2500, 5000, 7500, 9000, 10_000 }, (int) getMessagesController().diamondsPaidMessageAmountMax);
+                        cell.set((int) Utilities.clamp(diamondsPrice, getMessagesController().diamondsPaidMessageAmountMax, 1), SlideIntChooseView.Options.make(1, steps, 20, (type, val) -> type == 0 ? LocaleController.formatPluralStringComma("Diamonds", val) : "" + val), newValue -> {
+                            diamondsPrice = newValue;
                             AndroidUtilities.updateVisibleRow(listView, priceInfoRow);
                         });
                     }

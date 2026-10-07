@@ -216,7 +216,7 @@ public class BillingController implements PurchasesUpdatedListener, BillingClien
             return;
         }
 
-        if ((paymentPurpose instanceof TLRPC.TL_inputStorePaymentGiftPremium || paymentPurpose instanceof TLRPC.TL_inputStorePaymentStarsTopup || paymentPurpose instanceof TLRPC.TL_inputStorePaymentStarsGift) && !checkedConsume) {
+        if ((paymentPurpose instanceof TLRPC.TL_inputStorePaymentGiftPremium || paymentPurpose instanceof TLRPC.TL_inputStorePaymentDiamondsTopup || paymentPurpose instanceof TLRPC.TL_inputStorePaymentDiamondsGift) && !checkedConsume) {
             FileLog.d("BillingController.launchBillingFlow, checking consumables");
             queryPurchases(BillingClient.ProductType.INAPP, (billingResult, list) -> {
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
@@ -450,10 +450,10 @@ public class BillingController implements PurchasesUpdatedListener, BillingClien
     public void consumeGiftPurchase(Purchase purchase, TLRPC.InputStorePaymentPurpose purpose, Runnable onDone) {
         if (purpose instanceof TLRPC.TL_inputStorePaymentGiftPremium ||
             purpose instanceof TLRPC.TL_inputStorePaymentPremiumGiftCode ||
-            purpose instanceof TLRPC.TL_inputStorePaymentStarsTopup ||
-            purpose instanceof TLRPC.TL_inputStorePaymentStarsGift ||
+            purpose instanceof TLRPC.TL_inputStorePaymentDiamondsTopup ||
+            purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGift ||
             purpose instanceof TLRPC.TL_inputStorePaymentPremiumGiveaway ||
-            purpose instanceof TLRPC.TL_inputStorePaymentStarsGiveaway ||
+            purpose instanceof TLRPC.TL_inputStorePaymentDiamondsGiveaway ||
             purpose instanceof TLRPC.TL_inputStorePaymentAuthCode
         ) {
             FileLog.d("BillingController consumeGiftPurchase " + purpose + " " + purchase.getOrderId() + " " + purchase.getPurchaseToken());

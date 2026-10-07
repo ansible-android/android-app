@@ -130,7 +130,7 @@ import org.ansible.ui.Components.spoilers.SpoilerEffect;
 import org.ansible.ui.DialogsActivity;
 import org.ansible.ui.FilterCreateActivity;
 import org.ansible.ui.RightSlidingDialogContainer;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.StoriesListPlaceProvider;
 import org.ansible.ui.Stories.StoriesUtilities;
 import org.ansible.ui.Stories.StoryViewer;
@@ -507,14 +507,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     private final AnimatedFloat premiumBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private boolean premiumBlocked;
-    private final AnimatedFloat starsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
-    private long starsPriceBlocked;
+    private final AnimatedFloat diamondsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private long diamondsPriceBlocked;
 
     public boolean isBlocked() {
         return premiumBlocked;
     }
-    public long getStarsPrice() {
-        return starsPriceBlocked;
+    public long getDiamondsPrice() {
+        return diamondsPriceBlocked;
     }
 
     protected CheckBox2 checkBox;
@@ -1512,7 +1512,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                 emojiStatus.setParticles(DialogObject.isEmojiStatusCollectible(user.emoji_status), false);
                             } else {
                                 nameLayoutEllipsizeByGradient = true;
-                                emojiStatus.set(PremiumGradient.getInstance().premiumStarDrawableMini, false);
+                                emojiStatus.set(PremiumGradient.getInstance().premiumDiamondDrawableMini, false);
                                 emojiStatus.setParticles(false, false);
                             }
                         }
@@ -1913,7 +1913,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                     } else {
                                         messageString = count > 1 ? LocaleController.formatPluralString("Photos", count) : getString(R.string.AttachPhoto);
                                     }
-                                    messageString = StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.AttachPaidMedia, messageString));
+                                    messageString = DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.AttachPaidMedia, messageString));
                                     currentMessagePaint = Theme.dialogs_messagePrintingPaint[paintIndex];
                                 } else if (thumbsCount > 1) {
                                     if (hasVideoThumb) {
@@ -2059,7 +2059,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
             }
 
-            if (!drawForwardIcon && !isFolderCell() && !isForumCell() && !isDialogFolder() && draftMessage == null && message != null && message.messageOwner != null && message.messageOwner.action instanceof TLRPC.TL_messageActionStarGift) {
+            if (!drawForwardIcon && !isFolderCell() && !isForumCell() && !isDialogFolder() && draftMessage == null && message != null && message.messageOwner != null && message.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift) {
                 drawGiftIcon = true;
                 SpannableStringBuilder builder = new SpannableStringBuilder(messageString);
                 builder.insert(0, "d ");
@@ -2069,7 +2069,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 coloredImageSpan.setAlpha(0.9f);
                 builder.setSpan(coloredImageSpan, 0, 1, 0);
                 messageString = builder;
-                final TLRPC.TL_messageActionStarGift action = (TLRPC.TL_messageActionStarGift) message.messageOwner.action;
+                final TLRPC.TL_messageActionDiamondGift action = (TLRPC.TL_messageActionDiamondGift) message.messageOwner.action;
                 if (action.message != null && !TextUtils.isEmpty(action.message.text)) {
                     currentMessagePaint = Theme.dialogs_messagePaint[paintIndex];
                 }
@@ -3334,7 +3334,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             emojiStatus.setParticles(DialogObject.isEmojiStatusCollectible(user.emoji_status), animated);
                         } else {
                             nameLayoutEllipsizeByGradient = true;
-                            emojiStatus.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
+                            emojiStatus.set(PremiumGradient.getInstance().premiumDiamondDrawableMini, animated);
                             emojiStatus.setParticles(false, animated);
                         }
                         dialogBotVerificationIcon = DialogObject.getBotVerificationIcon(user);
@@ -3348,7 +3348,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             emojiStatus.setParticles(DialogObject.isEmojiStatusCollectible(chat.emoji_status), animated);
                         } else {
                             nameLayoutEllipsizeByGradient = true;
-                            emojiStatus.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
+                            emojiStatus.set(PremiumGradient.getInstance().premiumDiamondDrawableMini, animated);
                             emojiStatus.setParticles(false, animated);
                         }
                         dialogBotVerificationIcon = DialogObject.getBotVerificationIcon(chat);
@@ -4490,7 +4490,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     }
                     emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
                 } else {
-                    Drawable premiumDrawable = PremiumGradient.getInstance().premiumStarDrawableMini;
+                    Drawable premiumDrawable = PremiumGradient.getInstance().premiumDiamondDrawableMini;
                     setDrawableBounds(premiumDrawable, nameMuteLeft - dp(1), dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f));
                     premiumDrawable.draw(canvas);
                 }
@@ -4946,8 +4946,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     private PremiumGradient.PremiumGradientTools premiumGradient;
     private Drawable lockDrawable;
 
-    private int starBgColor;
-    private Drawable starFg, starBg;
+    private int diamondBgColor;
+    private Drawable diamondFg, diamondBg;
 
     public boolean drawAvatarOverlays(Canvas canvas) {
         boolean needInvalidate = false, stars = false;
@@ -4957,27 +4957,27 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             float right = avatarImage.getImageX2();
             float checkProgress = checkBox != null && checkBox.isChecked() ? 1.0f - checkBox.getProgress() : 1.0f;
 
-            if (starBg == null) {
-                starBg = getContext().getResources().getDrawable(R.drawable.star_small_outline).mutate();
+            if (diamondBg == null) {
+                diamondBg = getContext().getResources().getDrawable(R.drawable.star_small_outline).mutate();
             }
             final int bg = Theme.getColor(Theme.key_windowBackgroundWhite);
-            if (starBgColor != bg) {
-                starBg.setColorFilter(new PorterDuffColorFilter(starBgColor = bg, PorterDuff.Mode.SRC_IN));
+            if (diamondBgColor != bg) {
+                diamondBg.setColorFilter(new PorterDuffColorFilter(diamondBgColor = bg, PorterDuff.Mode.SRC_IN));
             }
-            if (starFg == null) {
-                starFg = getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate();
+            if (diamondFg == null) {
+                diamondFg = getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate();
             }
 
             final int sz = dp(19.33f);
             AndroidUtilities.rectTmp2.set((int) right + dp(1.66f) - sz, (int) bottom - sz, (int) right + dp(1.66f), (int) bottom);
             AndroidUtilities.rectTmp2.inset(-dp(1), -dp(1));
-            starBg.setBounds(AndroidUtilities.rectTmp2);
-            starBg.setAlpha((int) (0xFF * checkProgress));
-            starBg.draw(canvas);
+            diamondBg.setBounds(AndroidUtilities.rectTmp2);
+            diamondBg.setAlpha((int) (0xFF * checkProgress));
+            diamondBg.draw(canvas);
             AndroidUtilities.rectTmp2.set((int) right + dp(1.66f) - sz, (int) bottom - sz, (int) right + dp(1.66f), (int) bottom);
-            starFg.setBounds(AndroidUtilities.rectTmp2);
-            starFg.setAlpha((int) (0xFF * checkProgress));
-            starFg.draw(canvas);
+            diamondFg.setBounds(AndroidUtilities.rectTmp2);
+            diamondFg.setAlpha((int) (0xFF * checkProgress));
+            diamondFg.draw(canvas);
         }
         float lockT = premiumBlockedT.set(premiumBlocked && !stars);
         if (lockT > 0) {
@@ -5993,7 +5993,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 } else {
                     innerMessage = count > 1 ? LocaleController.formatPluralString("Photos", count) : getString(R.string.AttachPhoto);
                 }
-                innerMessage = StarsIntroActivity.replaceStars(LocaleController.formatString(R.string.AttachPaidMedia, innerMessage));
+                innerMessage = DiamondsIntroActivity.replaceDiamonds(LocaleController.formatString(R.string.AttachPaidMedia, innerMessage));
                 colorKey = Theme.key_chats_actionMessage;
             } else if (thumbsCount > 1) {
                 if (hasVideoThumb) {
@@ -6485,12 +6485,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     private void updatePremiumBlocked(boolean animated) {
         final TL_account.RequirementToContact r = (unsubscribePremiumBlocked != null) && user != null ? MessagesController.getInstance(currentAccount).isUserContactBlocked(user.id) : null;
-        if (premiumBlocked != DialogObject.isPremiumBlocked(r) || starsPriceBlocked != DialogObject.getMessagesStarsPrice(r)) {
+        if (premiumBlocked != DialogObject.isPremiumBlocked(r) || diamondsPriceBlocked != DialogObject.getMessagesDiamondsPrice(r)) {
             premiumBlocked = DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+            diamondsPriceBlocked = DialogObject.getMessagesDiamondsPrice(r);
             if (!animated) {
                 premiumBlockedT.set(premiumBlocked, true);
-                starsBlockedT.set(starsPriceBlocked > 0, true);
+                diamondsBlockedT.set(diamondsPriceBlocked > 0, true);
             }
             invalidate();
         }

@@ -505,12 +505,12 @@ public class BoostDialogs {
         String fromTime = LocaleController.getInstance().getFormatterDay().format(new Date(giveawayInfo.start_date * 1000L));
         String fromDate = LocaleController.getInstance().getFormatterGiveawayMonthDayYear().format(new Date(giveawayInfo.start_date * 1000L));
         final boolean isSeveralChats = giveaway.channels.size() > 1;
-        final boolean isStars = (giveaway.flags & 32) != 0;
+        final boolean isDiamonds = (giveaway.flags & 32) != 0;
         AlertDialog.Builder builder = new AlertDialog.Builder(context, resourcesProvider);
         builder.setTitle(getString("BoostingGiveAwayAbout", R.string.BoostingGiveAwayAbout));
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 
-        if (isStars) {
+        if (isDiamonds) {
             stringBuilder.append(replaceTags(formatPluralStringComma(isChannel ? "BoostingDiamondsGiveawayHowItWorksText" : "BoostingDiamondsGiveawayHowItWorksTextGroup", (int) giveaway.stars, from)));
         } else {
             stringBuilder.append(replaceTags(formatPluralString(isChannel ? "BoostingGiveawayHowItWorksText" : "BoostingGiveawayHowItWorksTextGroup", quantity, from, quantity, months)));
@@ -581,12 +581,12 @@ public class BoostDialogs {
         String fromTime = LocaleController.getInstance().getFormatterDay().format(new Date(giveawayInfo.start_date * 1000L));
         String fromDate = LocaleController.getInstance().getFormatterGiveawayMonthDayYear().format(new Date(giveawayInfo.start_date * 1000L));
         boolean isSeveralChats = giveaway.channels.size() > 1;
-        final boolean isStars = (giveaway.flags & 32) != 0;
+        final boolean isDiamonds = (giveaway.flags & 32) != 0;
         AlertDialog.Builder builder = new AlertDialog.Builder(context, resourcesProvider);
         builder.setTitle(getString("BoostingGiveawayEnd", R.string.BoostingGiveawayEnd));
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 
-        if (isStars) {
+        if (isDiamonds) {
             stringBuilder.append(replaceTags(formatPluralStringComma(isChannel ? "BoostingDiamondsGiveawayHowItWorksTextEnd" : "BoostingDiamondsGiveawayHowItWorksTextEndGroup", (int) giveaway.stars, from)));
         } else {
             stringBuilder.append(replaceTags(formatPluralString(isChannel ? "BoostingGiveawayHowItWorksTextEnd" : "BoostingGiveawayHowItWorksTextEndGroup", quantity, from, quantity, months)));

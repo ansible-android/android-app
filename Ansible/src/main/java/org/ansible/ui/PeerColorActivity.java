@@ -6,7 +6,7 @@ import static org.ansible.messenger.AndroidUtilities.dpf2;
 import static org.ansible.messenger.AndroidUtilities.lerp;
 import static org.ansible.messenger.LocaleController.formatPluralStringComma;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -78,7 +78,7 @@ import org.ansible.messenger.utils.DrawableUtils;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
@@ -120,10 +120,10 @@ import org.ansible.ui.Components.UniversalRecyclerView;
 import org.ansible.ui.Components.ViewPagerFixed;
 import org.ansible.ui.Gifts.GiftSheet;
 import org.ansible.ui.Gifts.ResaleGiftsFragment;
-import org.ansible.ui.Stars.StarGiftPatterns;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondGiftPatterns;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.StoriesUtilities;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
@@ -137,8 +137,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
     private final boolean isChannel;
     private final long dialogId;
 
-    private final StarsController.GiftsList gifts;
-    private final StarsController.GiftsList giftsWithPeerColor;
+    private final DiamondsController.GiftsList gifts;
+    private final DiamondsController.GiftsList giftsWithPeerColor;
 
     private FrameLayout contentView;
     private ColoredActionBar colorBar;
@@ -173,12 +173,12 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         private TLRPC.TL_peerColorCollectible selectedPeerCollectible = null;
         private ThemePreviewMessagesCell messagesCellPreview;
         private SetReplyIconCell setReplyIconCell;
-        private TL_stars.TL_starGiftUnique selectedResaleGift;
+        private TL_diamonds.TL_starGiftUnique selectedResaleGift;
         private ResaleGiftsFragment.ResaleGiftsList resaleGifts;
-        private TL_stars.StarGift selectedTabGift = null;
+        private TL_diamonds.StarGift selectedTabGift = null;
 
         private final ArrayList<CharSequence> tabs = new ArrayList<>();
-        private final HashMap<Integer, TL_stars.StarGift> index2gift = new HashMap<>();
+        private final HashMap<Integer, TL_diamonds.StarGift> index2gift = new HashMap<>();
 
         private CharSequence buttonLocked, buttonUnlocked, buttonCollectible;
 
@@ -199,7 +199,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         int giftsTabsRow = -1;
         int giftsEmptyRow = -1;
         int rowCount;
-        final ArrayList<TL_stars.TL_starGiftUnique> uniqueGifts = new ArrayList<>();
+        final ArrayList<TL_diamonds.TL_starGiftUnique> uniqueGifts = new ArrayList<>();
 
         private static final int VIEW_TYPE_MESSAGE = 0;
         private static final int VIEW_TYPE_COLOR_PICKER = 1;
@@ -273,7 +273,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                             resaleGifts.load();
                         }
                     } else {
-                        final StarsController.GiftsList giftsList = type == PAGE_NAME ? giftsWithPeerColor : gifts;
+                        final DiamondsController.GiftsList giftsList = type == PAGE_NAME ? giftsWithPeerColor : gifts;
                         if (giftsList != null && seesLoading()) {
                             giftsList.load();
                         }
@@ -474,7 +474,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                             GiftCell giftCell = (GiftCell) holder.itemView;
                             final int index = position - giftsStartRow;
                             if (index < 0 || index >= uniqueGifts.size()) return;
-                            final TL_stars.TL_starGiftUnique gift = uniqueGifts.get(index);
+                            final TL_diamonds.TL_starGiftUnique gift = uniqueGifts.get(index);
                             giftCell.set(index, gift);
                             giftCell.setSelected(
                                 selectedEmojiCollectible != null && selectedEmojiCollectible.collectible_id == gift.id ||
@@ -488,8 +488,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                             final int index2 = position - giftsStartRow;
                             if (resaleGifts == null) return;
                             if (index2 < 0 || index2 >= uniqueGifts.size()) return;
-                            final TL_stars.TL_starGiftUnique gift2 = uniqueGifts.get(index2);
-                            giftCell2.setStarsGift(gift2, false, false, false, true, false);
+                            final TL_diamonds.TL_starGiftUnique gift2 = uniqueGifts.get(index2);
+                            giftCell2.setDiamondsGift(gift2, false, false, false, true, false);
                             giftCell2.setSelected(
                                 selectedEmojiCollectible != null && selectedEmojiCollectible.collectible_id == gift2.id ||
                                 selectedPeerCollectible != null && selectedPeerCollectible.collectible_id == gift2.id,
@@ -500,11 +500,11 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                             GiftSheet.Tabs tabsView = (GiftSheet.Tabs) holder.itemView;
                             tabs.clear();
                             index2gift.clear();
-                            final ArrayList<TL_stars.StarGift> gifts = StarsController.getInstance(currentAccount).sortedGifts;
+                            final ArrayList<TL_diamonds.StarGift> gifts = DiamondsController.getInstance(currentAccount).sortedGifts;
                             tabs.add(getString(R.string.Gift2TabMine));
                             int selectedTab = 0;
                             for (int i = 0; i < gifts.size(); ++i) {
-                                final TL_stars.StarGift starGift = gifts.get(i);
+                                final TL_diamonds.StarGift starGift = gifts.get(i);
                                 if ((type == PAGE_PROFILE || type == PAGE_NAME && starGift.peer_color_available) && starGift.availability_resale > 0) {
                                     if (selectedTabGift == starGift) {
                                         selectedTab = tabs.size();
@@ -558,7 +558,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                         GiftCell giftCell = (GiftCell) holder.itemView;
                         final int index = holder.getAdapterPosition() - giftsStartRow;
                         if (index < 0 || index >= uniqueGifts.size()) return;
-                        final TL_stars.TL_starGiftUnique gift = uniqueGifts.get(index);
+                        final TL_diamonds.TL_starGiftUnique gift = uniqueGifts.get(index);
                         giftCell.set(index, gift);
                         giftCell.setSelected(
                             selectedEmojiCollectible != null && selectedEmojiCollectible.collectible_id == gift.id ||
@@ -570,8 +570,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                         final int index2 = holder.getAdapterPosition() - giftsStartRow;
                         if (resaleGifts == null) return;
                         if (index2 < 0 || index2 >= uniqueGifts.size()) return;
-                        final TL_stars.TL_starGiftUnique gift2 = uniqueGifts.get(index2);
-                        giftCell2.setStarsGift(gift2, false, false, false, true, false);
+                        final TL_diamonds.TL_starGiftUnique gift2 = uniqueGifts.get(index2);
+                        giftCell2.setDiamondsGift(gift2, false, false, false, true, false);
                         giftCell2.setSelected(
                             selectedEmojiCollectible != null && selectedEmojiCollectible.collectible_id == gift2.id ||
                             selectedPeerCollectible != null && selectedPeerCollectible.collectible_id == gift2.id,
@@ -655,7 +655,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                     final int index = position - giftsStartRow;
                     if (selectedTabGift == null) {
                         if (index < 0 || index >= uniqueGifts.size()) return;
-                        final TL_stars.TL_starGiftUnique gift = uniqueGifts.get(index);
+                        final TL_diamonds.TL_starGiftUnique gift = uniqueGifts.get(index);
                         if (type == PAGE_NAME) {
                             if (!(gift.peer_color instanceof TLRPC.TL_peerColorCollectible)) return;
                             selectedEmoji = 0;
@@ -678,7 +678,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                         }
                     } else if (resaleGifts != null) {
                         if (index < 0 || index >= uniqueGifts.size()) return;
-                        final TL_stars.TL_starGiftUnique gift = uniqueGifts.get(index);
+                        final TL_diamonds.TL_starGiftUnique gift = uniqueGifts.get(index);
                         if (type == PAGE_NAME) {
                             if (!(gift.peer_color instanceof TLRPC.TL_peerColorCollectible)) return;
                             selectedEmoji = 0;
@@ -710,7 +710,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                             resaleGifts.load();
                         }
                     } else {
-                        final StarsController.GiftsList giftsList = type == PAGE_NAME ? giftsWithPeerColor : gifts;
+                        final DiamondsController.GiftsList giftsList = type == PAGE_NAME ? giftsWithPeerColor : gifts;
                         if (giftsList != null && seesLoading()) {
                             giftsList.load();
                         }
@@ -1042,7 +1042,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
             }
             SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(PeerColorActivity.this, getContext(), true, xoff, type == PAGE_NAME ? SelectAnimatedEmojiDialog.TYPE_SET_REPLY_ICON : SelectAnimatedEmojiDialog.TYPE_SET_REPLY_ICON_BOTTOM, true, getResourceProvider(), type == PAGE_NAME ? 24 : 16, cell.getColor()) {
                 @Override
-                protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_stars.TL_starGiftUnique gift, Integer until) {
+                protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, TL_diamonds.TL_starGiftUnique gift, Integer until) {
                     if (gift != null) {
                         if (type == PAGE_PROFILE) {
                             if (!(gift.peer_color instanceof TLRPC.TL_peerColorCollectible)) return;
@@ -1151,14 +1151,14 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                 clearRow = rowCount++;
                 shadowRow = rowCount++;
             }
-            final StarsController.GiftsList giftsList = type == PAGE_NAME ? giftsWithPeerColor : gifts;
+            final DiamondsController.GiftsList giftsList = type == PAGE_NAME ? giftsWithPeerColor : gifts;
             if ((type == PAGE_PROFILE || type == PAGE_NAME) && giftsList != null) {
                 giftsTabsRow = rowCount++;
                 if (selectedTabGift == null) {
                     for (int i = 0; i < giftsList.gifts.size(); ++i) {
-                        TL_stars.SavedStarGift savedGift = giftsList.gifts.get(i);
-                        if (savedGift.gift instanceof TL_stars.TL_starGiftUnique) {
-                            uniqueGifts.add((TL_stars.TL_starGiftUnique) savedGift.gift);
+                        TL_diamonds.SavedStarGift savedGift = giftsList.gifts.get(i);
+                        if (savedGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
+                            uniqueGifts.add((TL_diamonds.TL_starGiftUnique) savedGift.gift);
                         }
                     }
                     giftsStartRow = rowCount;
@@ -1181,7 +1181,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                 } else if (selectedTabGift != null && resaleGifts != null) {
                     final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
                     for (int i = 0; i < resaleGifts.gifts.size(); ++i) {
-                        TL_stars.TL_starGiftUnique g = resaleGifts.gifts.get(i);
+                        TL_diamonds.TL_starGiftUnique g = resaleGifts.gifts.get(i);
                         if (DialogObject.getPeerDialogId(g.owner_id) != selfId && DialogObject.getPeerDialogId(g.host_id) != selfId) {
                             uniqueGifts.add(g);
                         }
@@ -1221,14 +1221,14 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         public void updateButton(boolean animated) {
             if (button == null) return;
             if (selectedResaleGift != null) {
-                final TL_stars.TL_starGiftUnique gift = selectedResaleGift;
+                final TL_diamonds.TL_starGiftUnique gift = selectedResaleGift;
                 final AmountUtils.Amount stars = gift.getResellAmount(AmountUtils.Currency.STARS);
                 if (gift.resale_ton_only) {
                     final AmountUtils.Amount ton = gift.getResellAmount(AmountUtils.Currency.TON);
-                    button.setText(StarsIntroActivity.replaceStars(true, LocaleController.formatString(R.string.ResellGiftBuyTON, ton.asFormatString())), animated);
-                    button.setSubText(StarsIntroActivity.replaceStars(formatPluralStringComma("ResellGiftBuyEq", (int) stars.asDecimal())), animated);
+                    button.setText(DiamondsIntroActivity.replaceDiamonds(true, LocaleController.formatString(R.string.ResellGiftBuyTON, ton.asFormatString())), animated);
+                    button.setSubText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuyEq", (int) stars.asDecimal())), animated);
                 } else {
-                    button.setText(StarsIntroActivity.replaceStars(formatPluralStringComma("ResellGiftBuy", (int) stars.asDecimal())), animated);
+                    button.setText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuy", (int) stars.asDecimal())), animated);
                     button.setSubText(null, animated);
                 }
             } else {
@@ -1395,14 +1395,14 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         this.dialogId = dialogId;
         this.isChannel = dialogId != 0;
         if (dialogId >= 0) {
-            StarsController.getInstance(currentAccount).loadStarGifts();
+            DiamondsController.getInstance(currentAccount).loadDiamondGifts();
 
-            this.gifts = new StarsController.GiftsList(currentAccount, dialogId, false);
-            this.gifts.forceTypeIncludeFlag(StarsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG, false);
+            this.gifts = new DiamondsController.GiftsList(currentAccount, dialogId, false);
+            this.gifts.forceTypeIncludeFlag(DiamondsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG, false);
             this.gifts.load();
 
-            this.giftsWithPeerColor = new StarsController.GiftsList(currentAccount, dialogId, false);
-            this.giftsWithPeerColor.forceTypeIncludeFlag(StarsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG, false);
+            this.giftsWithPeerColor = new DiamondsController.GiftsList(currentAccount, dialogId, false);
+            this.giftsWithPeerColor.forceTypeIncludeFlag(DiamondsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG, false);
             this.giftsWithPeerColor.peer_color_available = true;
             this.giftsWithPeerColor.load();
         } else {
@@ -1471,8 +1471,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
     @Override
     public boolean onFragmentCreate() {
         getNotificationCenter().addObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
-        getNotificationCenter().addObserver(this, NotificationCenter.starUserGiftsLoaded);
-        getNotificationCenter().addObserver(this, NotificationCenter.starGiftsLoaded);
+        getNotificationCenter().addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
+        getNotificationCenter().addObserver(this, NotificationCenter.diamondGiftsLoaded);
         Bulletin.addDelegate(this, new Bulletin.Delegate() {
             @Override
             public int getBottomOffset(int tag) {
@@ -1757,19 +1757,19 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         showBulletin();
     }
 
-    public void buy(TL_stars.TL_starGiftUnique gift, Utilities.Callback<Boolean> bought) {
+    public void buy(TL_diamonds.TL_starGiftUnique gift, Utilities.Callback<Boolean> bought) {
         final long to = UserConfig.getInstance(currentAccount).getClientUserId();
         final AmountUtils.Currency currency = gift.resale_ton_only ?
                 AmountUtils.Currency.TON : AmountUtils.Currency.STARS;
-        StarsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, to, form -> {
+        DiamondsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, to, form -> {
             if (form == null) return;
-            final StarGiftSheet.PaymentFormState initial = new StarGiftSheet.PaymentFormState(currency, form);
+            final DiamondGiftSheet.PaymentFormState initial = new DiamondGiftSheet.PaymentFormState(currency, form);
             final String giftName = gift.title + " #" + LocaleController.formatNumber(gift.num, ',');
             final boolean[] buying = new boolean[1];
-            final StarGiftSheet.ResaleBuyTransferAlert sheet = new StarGiftSheet.ResaleBuyTransferAlert(getContext(), resourceProvider, gift, initial, currentAccount, to, giftName, false, (state, progress) -> {
+            final DiamondGiftSheet.ResaleBuyTransferAlert sheet = new DiamondGiftSheet.ResaleBuyTransferAlert(getContext(), resourceProvider, gift, initial, currentAccount, to, giftName, false, (state, progress) -> {
                 buying[0] = true;
                 progress.init();
-                StarsController.getInstance(currentAccount, state.currency).buyResellingGift(state.form, gift, to, (status, err) -> {
+                DiamondsController.getInstance(currentAccount, state.currency).buyResellingGift(state.form, gift, to, (status, err) -> {
                     progress.end();
                     if (bought != null) {
                         bought.run(status);
@@ -1876,11 +1876,11 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
             }
             if (!eq(me.emoji_status, profilePage.selectedEmojiCollectible) && (profilePage.selectedEmojiCollectible != null || DialogObject.isEmojiStatusCollectible(me.emoji_status))) {
                 TLRPC.EmojiStatus new_emoji_status = new TLRPC.TL_emojiStatusEmpty();
-                TL_stars.TL_starGiftUnique gift = null;
+                TL_diamonds.TL_starGiftUnique gift = null;
                 if (profilePage.selectedEmojiCollectible != null) {
                     final long id = profilePage.selectedEmojiCollectible.collectible_id;
                     for (int i = 0; i < profilePage.uniqueGifts.size(); ++i) {
-                        final TL_stars.TL_starGiftUnique g = profilePage.uniqueGifts.get(i);
+                        final TL_diamonds.TL_starGiftUnique g = profilePage.uniqueGifts.get(i);
                         if (g.id == id) {
                             gift = g;
                             break;
@@ -1952,8 +1952,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
         getNotificationCenter().removeObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
-        getNotificationCenter().removeObserver(this, NotificationCenter.starUserGiftsLoaded);
-        getNotificationCenter().removeObserver(this, NotificationCenter.starGiftsLoaded);
+        getNotificationCenter().removeObserver(this, NotificationCenter.diamondUserGiftsLoaded);
+        getNotificationCenter().removeObserver(this, NotificationCenter.diamondGiftsLoaded);
     }
 
     private List<TLRPC.TL_availableReaction> getAvailableReactions() {
@@ -2000,10 +2000,10 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         if (id == NotificationCenter.currentUserPremiumStatusChanged) {
             namePage.premiumChanged();
             profilePage.premiumChanged();
-        } else if (id == NotificationCenter.starUserGiftsLoaded) {
+        } else if (id == NotificationCenter.diamondUserGiftsLoaded) {
             namePage.update();
             profilePage.update();
-        } else if (id == NotificationCenter.starGiftsLoaded) {
+        } else if (id == NotificationCenter.diamondGiftsLoaded) {
             namePage.update();
             profilePage.update();
         }
@@ -3317,7 +3317,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                 getHeight() - dp(82)
             );
 
-            StarGiftPatterns.drawProfileAnimatedPattern(
+            DiamondGiftPatterns.drawProfileAnimatedPattern(
                 canvas,
                 emoji,
                 getWidth(),
@@ -3478,8 +3478,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
     public static class GiftCell extends FrameLayout {
 
         public long id;
-        public TL_stars.starGiftAttributeBackdrop backdrop;
-        public TL_stars.starGiftAttributePattern pattern;
+        public TL_diamonds.starGiftAttributeBackdrop backdrop;
+        public TL_diamonds.starGiftAttributePattern pattern;
 
         public final FrameLayout card;
         public final GiftSheet.CardBackground cardBackground;
@@ -3507,29 +3507,29 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
             }
         }
 
-        public void set(int index, TL_stars.TL_starGiftUnique gift) {
+        public void set(int index, TL_diamonds.TL_starGiftUnique gift) {
             id = gift.id;
             final boolean center = index % 3 == 1;
             setPadding(center ? dp(4) : 0, 0, center ? dp(4) : 0, 0);
 
             setSticker(gift.getDocument(), gift);
 
-            backdrop = findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
-            pattern = findAttribute(gift.attributes, TL_stars.starGiftAttributePattern.class);
+            backdrop = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
+            pattern = findAttribute(gift.attributes, TL_diamonds.starGiftAttributePattern.class);
 
             cardBackground.setBackdrop(backdrop);
             cardBackground.setPattern(pattern);
         }
 
-        public void set(int index, TL_stars.SavedStarGift g) {
+        public void set(int index, TL_diamonds.SavedStarGift g) {
             id = g.gift.id;
             final boolean center = index % 3 == 1;
             setPadding(center ? dp(4) : 0, 0, center ? dp(4) : 0, 0);
 
             setSticker(g.gift.getDocument(), g.gift);
 
-            backdrop = findAttribute(g.gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
-            pattern = findAttribute(g.gift.attributes, TL_stars.starGiftAttributePattern.class);
+            backdrop = findAttribute(g.gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
+            pattern = findAttribute(g.gift.attributes, TL_diamonds.starGiftAttributePattern.class);
 
             cardBackground.setBackdrop(backdrop);
             cardBackground.setPattern(pattern);
@@ -3591,11 +3591,11 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
 
             @Override
             public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
-                ((GiftCell) view).set(-1, (TL_stars.SavedStarGift) item.object);
+                ((GiftCell) view).set(-1, (TL_diamonds.SavedStarGift) item.object);
                 ((GiftCell) view).setSelected(item.checked, false);
             }
 
-            public static UItem asGiftCell(TL_stars.SavedStarGift gift) {
+            public static UItem asGiftCell(TL_diamonds.SavedStarGift gift) {
                 UItem item = UItem.ofFactory(Factory.class);
                 item.object = gift;
                 return item;

@@ -7,8 +7,8 @@ import static org.ansible.messenger.AndroidUtilities.lerp;
 import static org.ansible.messenger.LocaleController.formatPluralStringComma;
 import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.Stars.StarsController.findAttribute;
-import static org.ansible.ui.Stars.StarsIntroActivity.StarsTransactionView.getPlatformDrawable;
+import static org.ansible.ui.Diamonds.DiamondsController.findAttribute;
+import static org.ansible.ui.Diamonds.DiamondsIntroActivity.DiamondsTransactionView.getPlatformDrawable;
 import static org.ansible.ui.bots.AffiliateProgramFragment.percents;
 
 import android.content.Context;
@@ -86,7 +86,7 @@ import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.AccountFrozenAlert;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
@@ -114,7 +114,7 @@ import org.ansible.ui.Components.LinkSpanDrawable;
 import org.ansible.ui.Components.Premium.GiftPremiumBottomSheet;
 import org.ansible.ui.Components.Premium.PremiumLockIconView;
 import org.ansible.ui.Components.Premium.PremiumPreviewBottomSheet;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 import org.ansible.ui.Components.Premium.boosts.BoostRepository;
 import org.ansible.ui.Components.RLottieDrawable;
 import org.ansible.ui.Components.RecyclerListView;
@@ -129,12 +129,12 @@ import org.ansible.ui.Components.blur3.utils.NinePatchBuilder;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PremiumPreviewFragment;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.Stars.ExplainStarsSheet;
-import org.ansible.ui.Stars.StarGiftPatterns;
-import org.ansible.ui.Stars.StarGiftSheet;
-import org.ansible.ui.Stars.StarsController;
-import org.ansible.ui.Stars.StarsIntroActivity;
-import org.ansible.ui.Stars.StarsReactionsSheet;
+import org.ansible.ui.Diamonds.ExplainDiamondsSheet;
+import org.ansible.ui.Diamonds.DiamondGiftPatterns;
+import org.ansible.ui.Diamonds.DiamondGiftSheet;
+import org.ansible.ui.Diamonds.DiamondsController;
+import org.ansible.ui.Diamonds.DiamondsIntroActivity;
+import org.ansible.ui.Diamonds.DiamondsReactionsSheet;
 import org.ansible.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
@@ -157,19 +157,19 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
     private final boolean self;
     private final String name;
 
-    private final StarsIntroActivity.StarsBalanceView balanceView;
+    private final DiamondsIntroActivity.DiamondsBalanceView balanceView;
     private final FrameLayout topView;
     private final FrameLayout premiumHeaderView;
-    private final LinearLayout starsHeaderView;
+    private final LinearLayout diamondsHeaderView;
     private final ExtendedGridLayoutManager layoutManager;
     private final DefaultItemAnimator itemAnimator;
 
-    private final LinkSpanDrawable.LinksTextView subtitleStarsView;
-    private final LinkSpanDrawable.LinksTextView subtitleCollectiblesStarsView;
+    private final LinkSpanDrawable.LinksTextView subtitleDiamondsView;
+    private final LinkSpanDrawable.LinksTextView subtitleCollectiblesDiamondsView;
 
     private final ArrayList<GiftPremiumBottomSheet.GiftTier> premiumTiers = new ArrayList<>();
 
-    private final StarsController.GiftsList myGifts;
+    private final DiamondsController.GiftsList myGifts;
     private int TAB_ALL = -1;
     private int TAB_MY_GIFTS = -1;
     private int TAB_LIMITED = -1;
@@ -195,9 +195,9 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         this.closeParentSheet = closeParentSheet;
         setBackgroundColor(Theme.getColor(Theme.key_dialogGiftsBackground));
         fixNavigationBar(Theme.getColor(Theme.key_dialogGiftsBackground));
-        myGifts = StarsController.getInstance(currentAccount).getProfileGiftsList(UserConfig.getInstance(currentAccount).getClientUserId());
+        myGifts = DiamondsController.getInstance(currentAccount).getProfileGiftsList(UserConfig.getInstance(currentAccount).getClientUserId());
 
-        StarsController.getInstance(currentAccount).loadStarGifts();
+        DiamondsController.getInstance(currentAccount).loadDiamondGifts();
 
         final BackupImageView avatarImageView = new BackupImageView(context);
         avatarImageView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -222,7 +222,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
         topPadding = 0.10f;
 
-        balanceView = new StarsIntroActivity.StarsBalanceView(context, currentAccount, resourcesProvider);
+        balanceView = new DiamondsIntroActivity.DiamondsBalanceView(context, currentAccount, resourcesProvider);
         ScaleStateListAnimator.apply(balanceView);
         balanceView.setOnClickListener(v -> {
             if (balanceView.lastBalance <= 0) return;
@@ -231,7 +231,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 final BaseFragment.BottomSheetParams bottomSheetParams = new BaseFragment.BottomSheetParams();
                 bottomSheetParams.transitionFromLeft = true;
                 bottomSheetParams.allowNestedScroll = false;
-                lastFragment.showAsSheet(new StarsIntroActivity(), bottomSheetParams);
+                lastFragment.showAsSheet(new DiamondsIntroActivity(), bottomSheetParams);
             }
         });
 
@@ -250,7 +250,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         topView.setClipChildren(false);
         topView.setClipToPadding(false);
 
-        final StarParticlesView particlesView = StarsIntroActivity.makeParticlesView(context, 70, 0);
+        final DiamondParticlesView particlesView = DiamondsIntroActivity.makeParticlesView(context, 70, 0);
         topView.addView(particlesView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         avatarImageView.setRoundRadius(dp(42));
@@ -303,68 +303,68 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         subtitleView.setMaxWidth(HintView2.cutInFancyHalf(subtitleView.getText(), subtitleView.getPaint()));
 
         // Gift Stars header
-        starsHeaderView = new LinearLayout(context);
-        starsHeaderView.setOrientation(LinearLayout.VERTICAL);
+        diamondsHeaderView = new LinearLayout(context);
+        diamondsHeaderView.setOrientation(LinearLayout.VERTICAL);
 
-        final TextView titleStarsView = new TextView(context);
-        titleStarsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        titleStarsView.setTypeface(AndroidUtilities.bold());
-        titleStarsView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-        titleStarsView.setGravity(Gravity.CENTER);
-        starsHeaderView.addView(titleStarsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 4, 0, 4, 0));
+        final TextView titleDiamondsView = new TextView(context);
+        titleDiamondsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        titleDiamondsView.setTypeface(AndroidUtilities.bold());
+        titleDiamondsView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        titleDiamondsView.setGravity(Gravity.CENTER);
+        diamondsHeaderView.addView(titleDiamondsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 4, 0, 4, 0));
 
-        subtitleStarsView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider) {
+        subtitleDiamondsView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider) {
             @Override
             public boolean dispatchTouchEvent(MotionEvent event) {
                 if (getAlpha() < 0.95f) return false;
                 return super.dispatchTouchEvent(event);
             }
         };
-        subtitleStarsView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-        subtitleStarsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        subtitleStarsView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-        subtitleStarsView.setGravity(Gravity.CENTER);
+        subtitleDiamondsView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        subtitleDiamondsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        subtitleDiamondsView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        subtitleDiamondsView.setGravity(Gravity.CENTER);
 
-        subtitleCollectiblesStarsView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider) {
+        subtitleCollectiblesDiamondsView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider) {
             @Override
             public boolean dispatchTouchEvent(MotionEvent event) {
                 if (getAlpha() < 0.95f) return false;
                 return super.dispatchTouchEvent(event);
             }
         };
-        subtitleCollectiblesStarsView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-        subtitleCollectiblesStarsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        subtitleCollectiblesStarsView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-        subtitleCollectiblesStarsView.setGravity(Gravity.CENTER);
-        subtitleCollectiblesStarsView.setAlpha(0.0f);
-        subtitleCollectiblesStarsView.setScaleX(0.85f);
-        subtitleCollectiblesStarsView.setScaleY(0.85f);
+        subtitleCollectiblesDiamondsView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        subtitleCollectiblesDiamondsView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        subtitleCollectiblesDiamondsView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        subtitleCollectiblesDiamondsView.setGravity(Gravity.CENTER);
+        subtitleCollectiblesDiamondsView.setAlpha(0.0f);
+        subtitleCollectiblesDiamondsView.setScaleX(0.85f);
+        subtitleCollectiblesDiamondsView.setScaleY(0.85f);
 
         FrameLayout subtitleLayout = new FrameLayout(context);
-        subtitleLayout.addView(subtitleStarsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 26, 0, 26, 0));
-        subtitleLayout.addView(subtitleCollectiblesStarsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 26, 0, 26, 0));
+        subtitleLayout.addView(subtitleDiamondsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 26, 0, 26, 0));
+        subtitleLayout.addView(subtitleCollectiblesDiamondsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 26, 0, 26, 0));
 
-        titleStarsView.setText(getString(dialogId < 0 ? R.string.Gift2DiamondsChannel : self ? R.string.Gift2DiamondsSelf : R.string.Gift2Diamonds));
+        titleDiamondsView.setText(getString(dialogId < 0 ? R.string.Gift2DiamondsChannel : self ? R.string.Gift2DiamondsSelf : R.string.Gift2Diamonds));
         if (self) {
-            starsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 4));
+            diamondsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 4));
 
-            final LinkSpanDrawable.LinksTextView subtitleStarsView2 = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-            subtitleStarsView2.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-            subtitleStarsView2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            subtitleStarsView2.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-            subtitleStarsView2.setGravity(Gravity.CENTER);
-            starsHeaderView.addView(subtitleStarsView2, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 26, 4, 26, 6));
+            final LinkSpanDrawable.LinksTextView subtitleDiamondsView2 = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
+            subtitleDiamondsView2.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            subtitleDiamondsView2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            subtitleDiamondsView2.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            subtitleDiamondsView2.setGravity(Gravity.CENTER);
+            diamondsHeaderView.addView(subtitleDiamondsView2, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 26, 4, 26, 6));
 
-            subtitleStarsView.setText(getString(R.string.Gift2DiamondsSelfInfo1));
-            subtitleStarsView2.setText(getString(R.string.Gift2DiamondsSelfInfo2));
+            subtitleDiamondsView.setText(getString(R.string.Gift2DiamondsSelfInfo1));
+            subtitleDiamondsView2.setText(getString(R.string.Gift2DiamondsSelfInfo2));
         } else if (dialogId < 0) {
-            starsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 4));
-            NotificationCenter.listenEmojiLoading(subtitleStarsView);
-            subtitleStarsView.setText(Emoji.replaceEmoji(AndroidUtilities.replaceTags(formatString(R.string.Gift2DiamondsChannelInfo, name)), subtitleStarsView.getPaint().getFontMetricsInt(), false));
+            diamondsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 4));
+            NotificationCenter.listenEmojiLoading(subtitleDiamondsView);
+            subtitleDiamondsView.setText(Emoji.replaceEmoji(AndroidUtilities.replaceTags(formatString(R.string.Gift2DiamondsChannelInfo, name)), subtitleDiamondsView.getPaint().getFontMetricsInt(), false));
         } else {
-            starsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 6));
+            diamondsHeaderView.addView(subtitleLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 6));
 
-            final StarsController.GiftsList list = StarsController.getInstance(currentAccount).getProfileGiftsList(dialogId);
+            final DiamondsController.GiftsList list = DiamondsController.getInstance(currentAccount).getProfileGiftsList(dialogId);
             final Runnable setSubtitle = () -> {
                 for (int a = 0; a < 2; ++a) {
                     final SpannableStringBuilder subtitle = new SpannableStringBuilder();
@@ -373,7 +373,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                     final HashSet<Long> emojiDocumentIds = new HashSet<>();
                     final HashSet<TLRPC.Document> emojiDocuments = new HashSet<>();
                     for (int i = 0; i < list.gifts.size() && emojiDocumentIds.size() < 3; ++i) {
-                        final TL_stars.SavedStarGift savedStarGift = list.gifts.get(i);
+                        final TL_diamonds.SavedStarGift savedStarGift = list.gifts.get(i);
                         if (savedStarGift != null && savedStarGift.gift != null) {
                             final TLRPC.Document document = savedStarGift.gift.getDocument();
                             if (document != null && !emojiDocumentIds.contains(document.id)) {
@@ -388,7 +388,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                         link.append(" ");
                         for (final TLRPC.Document document : emojiDocuments) {
                             link.append("\u2060e");
-                            link.setSpan(new AnimatedEmojiSpan(document, subtitleStarsView.getPaint().getFontMetricsInt()), link.length() - 1, link.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            link.setSpan(new AnimatedEmojiSpan(document, subtitleDiamondsView.getPaint().getFontMetricsInt()), link.length() - 1, link.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         }
                         link.append(" >");
                         subtitle.append(AndroidUtilities.replaceArrows(AndroidUtilities.makeClickable(link, () -> {
@@ -405,17 +405,17 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                         }), true));
                     } else {
                         subtitle.append(AndroidUtilities.replaceArrows(AndroidUtilities.makeClickable(getString(R.string.Gift2DiamondsInfoLink), () -> {
-                            new ExplainStarsSheet(context).show();
+                            new ExplainDiamondsSheet(context).show();
                         }), true));
                     }
 
-                    final LinkSpanDrawable.LinksTextView textView = a == 0 ? subtitleStarsView : subtitleCollectiblesStarsView;
+                    final LinkSpanDrawable.LinksTextView textView = a == 0 ? subtitleDiamondsView : subtitleCollectiblesDiamondsView;
                     textView.setText(subtitle);
                     textView.setMaxWidth(HintView2.cutInFancyHalf(textView.getText(), textView.getPaint()));
                 }
             };
             setSubtitle.run();
-            subtitleStarsView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            subtitleDiamondsView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
                 public void onViewAttachedToWindow(@NonNull View v) {
                     setSubtitle.run();
@@ -427,7 +427,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             if (list.gifts.size() < 3) {
                 list.load();
             }
-            NotificationCenter.getInstance(currentAccount).listen(subtitleStarsView, NotificationCenter.starUserGiftsLoaded, args -> {
+            NotificationCenter.getInstance(currentAccount).listen(subtitleDiamondsView, NotificationCenter.diamondUserGiftsLoaded, args -> {
                 if (args[1] == list) {
                     setSubtitle.run();
                 }
@@ -483,11 +483,11 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                         }
                     }.show();
                     return;
-                } else if (item.object instanceof TL_stars.StarGift) {
-                    final TL_stars.StarGift gift = (TL_stars.StarGift) item.object;
+                } else if (item.object instanceof TL_diamonds.StarGift) {
+                    final TL_diamonds.StarGift gift = (TL_diamonds.StarGift) item.object;
                     if (myGifts != null && selectedTab == TAB_MY_GIFTS) {
-                        TL_stars.SavedStarGift savedStarGift = null;
-                        for (TL_stars.SavedStarGift g : myGifts.gifts) {
+                        TL_diamonds.SavedStarGift savedStarGift = null;
+                        for (TL_diamonds.SavedStarGift g : myGifts.gifts) {
                             if (g.gift.id == gift.id) {
                                 savedStarGift = g;
                                 break;
@@ -496,7 +496,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                         if (savedStarGift == null) {
                             return;
                         }
-                        StarGiftSheet sheet = new StarGiftSheet(getContext(), currentAccount, UserConfig.getInstance(currentAccount).getClientUserId(), resourcesProvider) {
+                        DiamondGiftSheet sheet = new DiamondGiftSheet(getContext(), currentAccount, UserConfig.getInstance(currentAccount).getClientUserId(), resourcesProvider) {
                             @Override
                             public BulletinFactory getBulletinFactory() {
                                 return BulletinFactory.of(GiftSheet.this.container, GiftSheet.this.resourcesProvider);
@@ -566,7 +566,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                     }
 
                     if (gift.sold_out) {
-                        StarsIntroActivity.showSoldOutGiftSheet(context, currentAccount, gift, resourcesProvider);
+                        DiamondsIntroActivity.showSoldOutGiftSheet(context, currentAccount, gift, resourcesProvider);
                         return;
                     }
                     if (gift.limited_per_user && gift.per_user_remains <= 0) {
@@ -593,15 +593,15 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                         final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
                         progressDialog.showDelayed(500);
 
-                        final TL_stars.checkCanSendGift req = new TL_stars.checkCanSendGift();
+                        final TL_diamonds.checkCanSendGift req = new TL_diamonds.checkCanSendGift();
                         req.gift_id = gift.id;
                         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                             progressDialog.dismiss();
 
-                            if (res instanceof TL_stars.checkCanSendGiftResultOk) {
+                            if (res instanceof TL_diamonds.checkCanSendGiftResultOk) {
                                 openSendSheet.run();
-                            } else if (res instanceof TL_stars.checkCanSendGiftResultFail) {
-                                final TL_stars.checkCanSendGiftResultFail fail = (TL_stars.checkCanSendGiftResultFail) res;
+                            } else if (res instanceof TL_diamonds.checkCanSendGiftResultFail) {
+                                final TL_diamonds.checkCanSendGiftResultFail fail = (TL_diamonds.checkCanSendGiftResultFail) res;
                                 final AlertDialog dialog = new AlertDialog.Builder(getContext(), resourcesProvider)
                                     .setTitle(getString(R.string.GiftLocked))
                                     .setMessage(MessageObject.formatTextWithEntities(fail.reason, false))
@@ -663,10 +663,10 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
 
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.billingProductDetailsUpdated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondGiftsLoaded);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.userInfoDidLoad);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starGiftSoldOut);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondGiftSoldOut);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
 
         actionBar.setTitle(getTitle());
         NotificationCenter.listenEmojiLoading(actionBar.getTitleTextView());
@@ -677,14 +677,14 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         if (show == shownCollectiblesInfo) return;
 
         shownCollectiblesInfo = show;
-        subtitleStarsView.animate()
+        subtitleDiamondsView.animate()
             .alpha(!show ? 1.0f : 0.0f)
             .scaleX(!show ? 1.0f : 0.85f)
             .scaleY(!show ? 1.0f : 0.85f)
             .setDuration(380)
             .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
             .start();
-        subtitleCollectiblesStarsView.animate()
+        subtitleCollectiblesDiamondsView.animate()
             .alpha(show ? 1.0f : 0.0f)
             .scaleX(show ? 1.0f : 0.85f)
             .scaleY(show ? 1.0f : 0.85f)
@@ -769,17 +769,17 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
     public void dismiss() {
         super.dismiss();
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.billingProductDetailsUpdated);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondGiftsLoaded);
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.userInfoDidLoad);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starGiftSoldOut);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondGiftSoldOut);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondUserGiftsLoaded);
     }
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.billingProductDetailsUpdated) {
             updatePremiumTiers();
-        } else if (id == NotificationCenter.starGiftsLoaded) {
+        } else if (id == NotificationCenter.diamondGiftsLoaded) {
             if (adapter != null) {
                 adapter.update(true);
             }
@@ -808,16 +808,16 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                     adapter.update(true);
                 }
             }
-        } else if (id == NotificationCenter.starGiftSoldOut) {
+        } else if (id == NotificationCenter.diamondGiftSoldOut) {
             if (!isShown()) return;
-            final TL_stars.StarGift gift = (TL_stars.StarGift) args[0];
+            final TL_diamonds.StarGift gift = (TL_diamonds.StarGift) args[0];
             BulletinFactory.of(container, resourcesProvider)
                 .createEmojiBulletin(gift.sticker, getString(R.string.Gift2SoldOutTitle), AndroidUtilities.replaceTags(formatPluralStringComma("Gift2SoldOutCount", gift.availability_total)))
                 .show();
             if (adapter != null) {
                 adapter.update(true);
             }
-        } else if (id == NotificationCenter.starUserGiftsLoaded) {
+        } else if (id == NotificationCenter.diamondUserGiftsLoaded) {
             if (args[1] == myGifts) {
                 if (adapter != null) {
                     adapter.update(true);
@@ -834,14 +834,14 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             for (int i = options.size() - 1; i >= 0; i--) {
                 final TLRPC.TL_premiumGiftCodeOption option = options.get(i);
                 if ("XTR".equalsIgnoreCase(option.currency)) continue;
-                Object starsOption = null;
+                Object diamondsOption = null;
                 for (TLRPC.TL_premiumGiftCodeOption o : options) {
                     if (o != option && "XTR".equalsIgnoreCase(o.currency) && o.months == option.months) {
-                        starsOption = o;
+                        diamondsOption = o;
                         break;
                     }
                 }
-                final GiftPremiumBottomSheet.GiftTier giftTier = new GiftPremiumBottomSheet.GiftTier(option, starsOption);
+                final GiftPremiumBottomSheet.GiftTier giftTier = new GiftPremiumBottomSheet.GiftTier(option, diamondsOption);
                 premiumTiers.add(giftTier);
                 if (BuildVars.useInvoiceBilling()) {
                     if (giftTier.getPricePerMonth() > pricePerMonthMax) {
@@ -934,8 +934,8 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             }
         }
 
-        final StarsController s = StarsController.getInstance(currentAccount);
-        ArrayList<TL_stars.StarGift> gifts;
+        final DiamondsController s = DiamondsController.getInstance(currentAccount);
+        ArrayList<TL_diamonds.StarGift> gifts;
         if (birthday) {
             gifts = s.birthdaySortedGifts;
         } else {
@@ -943,7 +943,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
         if (userSettings != null) {
             gifts = gifts.stream().filter(gift -> {
-                if (gift instanceof TL_stars.TL_starGiftUnique) {
+                if (gift instanceof TL_diamonds.TL_starGiftUnique) {
                     return !userSettings.disallow_unique_stargifts;
                 } else if (gift.limited) {
                     return !userSettings.disallow_limited_stargifts || gift.can_upgrade && !userSettings.disallow_unique_stargifts;
@@ -960,8 +960,8 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         boolean myGiftsHaveUnique = false;
         if (dialogId != UserConfig.getInstance(currentAccount).getClientUserId()) {
             if (myGifts != null) {
-                for (TL_stars.SavedStarGift savedStarGift : myGifts.gifts) {
-                    if (savedStarGift.gift instanceof TL_stars.TL_starGiftUnique) {
+                for (TL_diamonds.SavedStarGift savedStarGift : myGifts.gifts) {
+                    if (savedStarGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
                         myGiftsHaveUnique = true;
                         break;
                     }
@@ -974,12 +974,12 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             } else {
                 items.add(UItem.asSpace(dp(16)));
             }
-            items.add(UItem.asCustom(starsHeaderView));
+            items.add(UItem.asCustom(diamondsHeaderView));
             boolean hasResale = false;
             final TreeSet<Long> prices = new TreeSet<>();
             if (userSettings == null || !userSettings.disallow_unique_stargifts) {
                 for (int i = 0; i < gifts.size(); ++i) {
-                    final TL_stars.StarGift gift = gifts.get(i);
+                    final TL_diamonds.StarGift gift = gifts.get(i);
                     prices.add(gift.stars);
                     if (gift.availability_resale > 0) {
                         hasResale = true;
@@ -1003,11 +1003,11 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             items.add(Tabs.Factory.asTabs(1, tabs, selectedTab, this::selectTab));
             setShowCollectiblesInfo(selectedTab == TAB_COLLECTIBLES && !self && dialogId >= 0);
 
-            final ArrayList<TL_stars.StarGift> finalGifts;
+            final ArrayList<TL_diamonds.StarGift> finalGifts;
             if (myGifts != null && selectedTab == TAB_MY_GIFTS) {
                 finalGifts = new ArrayList<>();
-                for (TL_stars.SavedStarGift savedStarGift : myGifts.gifts) {
-                    if (savedStarGift.gift instanceof TL_stars.TL_starGiftUnique) {
+                for (TL_diamonds.SavedStarGift savedStarGift : myGifts.gifts) {
+                    if (savedStarGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
                         finalGifts.add(savedStarGift.gift);
                     }
                 }
@@ -1016,17 +1016,17 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             }
             int giftsCount = 0;
             for (int i = 0; i < finalGifts.size(); ++i) {
-                final TL_stars.StarGift gift = finalGifts.get(i);
+                final TL_diamonds.StarGift gift = finalGifts.get(i);
                 if (
                     selectedTab == TAB_ALL ||
                     selectedTab == TAB_MY_GIFTS ||
                     selectedTab == TAB_COLLECTIBLES && (gift.availability_resale > 0 || gift.require_premium || gift.locked_until_date != 0)
                 ) {
                     if (!gift.sold_out && gift.availability_resale > 0 && selectedTab != TAB_COLLECTIBLES) {
-                        items.add(GiftCell.Factory.asStarGift(selectedTab, gift, selectedTab == TAB_MY_GIFTS, gift.limited && userSettings != null && userSettings.disallow_limited_stargifts, false, false, false));
+                        items.add(GiftCell.Factory.asDiamondGift(selectedTab, gift, selectedTab == TAB_MY_GIFTS, gift.limited && userSettings != null && userSettings.disallow_limited_stargifts, false, false, false));
                         giftsCount++;
                     }
-                    items.add(GiftCell.Factory.asStarGift(selectedTab, gift, selectedTab == TAB_MY_GIFTS, gift.limited && userSettings != null && userSettings.disallow_limited_stargifts, true, false, false));
+                    items.add(GiftCell.Factory.asDiamondGift(selectedTab, gift, selectedTab == TAB_MY_GIFTS, gift.limited && userSettings != null && userSettings.disallow_limited_stargifts, true, false, false));
                     giftsCount++;
                 }
             }
@@ -1079,9 +1079,9 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         private final TextView titleView;
         private final TextView subtitleView;
         private final FrameLayout priceLayout;
-        private final StarsBackgroundView priceBackground;
+        private final DiamondsBackgroundView priceBackground;
         private final TextView priceView;
-        private final TextView starsPriceView;
+        private final TextView diamondsPriceView;
 
         private Runnable cancel;
 
@@ -1149,19 +1149,19 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             priceView.setTextColor(0xFF3391D4);
             card.addView(priceLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0, 0, 11));
 
-            priceBackground = new StarsBackgroundView(context);
+            priceBackground = new DiamondsBackgroundView(context);
             priceBackground.setBackgroundColor(0xFF0000FF);
             priceLayout.addView(priceBackground, LayoutHelper.createFrame(0, 0));
             priceLayout.addView(priceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 26, Gravity.CENTER));
 
-            priceBackground.setBackground(new StarsBackground(Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6));
+            priceBackground.setBackground(new DiamondsBackground(Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6));
 
-            starsPriceView = new TextView(context);
-            starsPriceView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10.66f);
-            starsPriceView.setGravity(Gravity.CENTER);
-            starsPriceView.setTextColor(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
-            starsPriceView.setVisibility(View.GONE);
-            card.addView(starsPriceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 161, 0, 8));
+            diamondsPriceView = new TextView(context);
+            diamondsPriceView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10.66f);
+            diamondsPriceView.setGravity(Gravity.CENTER);
+            diamondsPriceView.setTextColor(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
+            diamondsPriceView.setVisibility(View.GONE);
+            card.addView(diamondsPriceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 161, 0, 8));
 
             avatarDrawable = new AvatarDrawable();
             avatarView = new BackupImageView(context);
@@ -1221,11 +1221,11 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                         name = titleView.getText();
                     }
                 } else if (userGift != null && userGift.gift != null) {
-                    if (userGift.gift instanceof TL_stars.TL_starGiftUnique && !TextUtils.isEmpty(userGift.gift.title)) {
+                    if (userGift.gift instanceof TL_diamonds.TL_starGiftUnique && !TextUtils.isEmpty(userGift.gift.title)) {
                         name = userGift.gift.title;
                     }
                 } else if (gift != null) {
-                    if (gift instanceof TL_stars.TL_starGiftUnique && !TextUtils.isEmpty(gift.title)) {
+                    if (gift instanceof TL_diamonds.TL_starGiftUnique && !TextUtils.isEmpty(gift.title)) {
                         name = gift.title;
                     }
                 }
@@ -1250,7 +1250,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 if (userGift != null && userGift.unsaved) {
                     sb.append(", ").append(getString(R.string.Gift2FilterHidden));
                 }
-                if (userGift != null && !(userGift.gift instanceof TL_stars.TL_starGiftUnique) && !userGift.name_hidden && avatarView != null && avatarView.getVisibility() == View.VISIBLE) {
+                if (userGift != null && !(userGift.gift instanceof TL_diamonds.TL_starGiftUnique) && !userGift.name_hidden && avatarView != null && avatarView.getVisibility() == View.VISIBLE) {
                     final long fromDialogId = DialogObject.getPeerDialogId(userGift.from_id);
                     if (fromDialogId != 0) {
                         CharSequence fromName = null;
@@ -1322,7 +1322,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             canvas.save();
             canvas.scale(getScaleX(), getScaleY(), width / 2.0f, height / 2.0f);
 
-            final TL_stars.TL_starGiftUnique gift = getUniqueStarGift();
+            final TL_diamonds.TL_starGiftUnique gift = getUniqueStarGift();
             final float topPadding = gift != null ? dp(63) * progress : 0;
 
             cardBackground.setBounds(0, 0, (int) width, (int) height);
@@ -1430,13 +1430,13 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 pinnedView.setScaleY(pin ? 1.0f : 0.3f);
             }
 
-            setShowPinIcon(!pinned && reordering && !inCollection && (userGift != null && userGift.gift instanceof TL_stars.TL_starGiftUnique), animated);
+            setShowPinIcon(!pinned && reordering && !inCollection && (userGift != null && userGift.gift instanceof TL_diamonds.TL_starGiftUnique), animated);
             updateRibbonText();
         }
 
-        private TL_stars.TL_starGiftUnique getUniqueStarGift() {
-            if (userGift != null && userGift.gift instanceof TL_stars.TL_starGiftUnique) {
-                return ((TL_stars.TL_starGiftUnique) userGift.gift);
+        private TL_diamonds.TL_starGiftUnique getUniqueStarGift() {
+            if (userGift != null && userGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
+                return ((TL_diamonds.TL_starGiftUnique) userGift.gift);
             }
             return null;
         }
@@ -1472,7 +1472,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 animatedReordering.force(reordering);
             }
             invalidate();
-            setShowPinIcon(!pinned && reordering && !inCollection && (userGift != null && userGift.gift instanceof TL_stars.TL_starGiftUnique), animated);
+            setShowPinIcon(!pinned && reordering && !inCollection && (userGift != null && userGift.gift instanceof TL_diamonds.TL_starGiftUnique), animated);
         }
 
         @Override
@@ -1489,10 +1489,10 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
 
         private GiftPremiumBottomSheet.GiftTier premiumTier;
-        private TL_stars.StarGift gift;
+        private TL_diamonds.StarGift gift;
         private boolean priotityAuction;
         private boolean giftMine;
-        private TL_stars.SavedStarGift userGift;
+        private TL_diamonds.SavedStarGift userGift;
         public boolean allowResaleInGifts, inResalePage;
         public boolean inCollection;
         public boolean inCrafting;
@@ -1500,10 +1500,10 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         public GiftPremiumBottomSheet.GiftTier getPremiumTier() {
             return premiumTier;
         }
-        public TL_stars.StarGift getGift() {
+        public TL_diamonds.StarGift getGift() {
             return gift;
         }
-        public TL_stars.SavedStarGift getSavedGift() {
+        public TL_diamonds.SavedStarGift getSavedGift() {
             return userGift;
         }
 
@@ -1516,7 +1516,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         public boolean setPremiumGift(GiftPremiumBottomSheet.GiftTier tier) {
             final int months = tier.getMonths();
             if (lastTier != tier) {
-                cancel = StarsIntroActivity.setPremiumGiftImage(imageView, imageView.getImageReceiver(), months);
+                cancel = DiamondsIntroActivity.setPremiumGiftImage(imageView, imageView.getImageReceiver(), months);
                 if (cancel != null) {
                     cancel.run();
                     cancel = null;
@@ -1533,16 +1533,16 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             imageView.setTranslationY(-dp(8));
             avatarView.setVisibility(View.GONE);
             lockView.setVisibility(View.GONE);
-            if (tier.isStarsPaymentAvailable()) {
-                starsPriceView.setTextColor(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
-                starsPriceView.setVisibility(View.VISIBLE);
-                final SpannableStringBuilder starsPrice = new SpannableStringBuilder("" + LocaleController.formatNumber(tier.getStarsPrice(), ','));
-                starsPrice.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, starsPrice.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (tier.isDiamondsPaymentAvailable()) {
+                diamondsPriceView.setTextColor(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
+                diamondsPriceView.setVisibility(View.VISIBLE);
+                final SpannableStringBuilder diamondsPrice = new SpannableStringBuilder("" + LocaleController.formatNumber(tier.getDiamondsPrice(), ','));
+                diamondsPrice.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, diamondsPrice.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 final ColoredImageSpan[] span = new ColoredImageSpan[1];
-                starsPriceView.setText(StarsIntroActivity.replaceStarsWithPlain(LocaleController.formatSpannable(R.string.PremiumOrDiamondsPrice, starsPrice), .48f, span));
+                diamondsPriceView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatSpannable(R.string.PremiumOrDiamondsPrice, diamondsPrice), .48f, span));
                 span[0].spaceScaleX = .8f;
             } else {
-                starsPriceView.setVisibility(View.GONE);
+                diamondsPriceView.setVisibility(View.GONE);
             }
 
             imageViewLayoutParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
@@ -1601,8 +1601,8 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
 
         public static final int[] PREMIUM_STROKE = new int[] { 0xFFD58F25, 0xFFC8851D };
-        public boolean setStarsGift(
-            TL_stars.StarGift gift,
+        public boolean setDiamondsGift(
+            TL_diamonds.StarGift gift,
             boolean mine,
             boolean includeUpgradeInPrice,
             boolean allowResaleInGifts,
@@ -1615,9 +1615,9 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             }
 
             setSticker(gift.getDocument(), gift);
-            final TL_stars.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
+            final TL_diamonds.starGiftAttributeBackdrop backdrop = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
             cardBackground.setBackdrop(backdrop);
-            cardBackground.setPattern(findAttribute(gift.attributes, TL_stars.starGiftAttributePattern.class));
+            cardBackground.setPattern(findAttribute(gift.attributes, TL_diamonds.starGiftAttributePattern.class));
             if (gift.auction && (!gift.sold_out || priotityAuction) && !(allowResaleInGifts && gift.availability_resale > 0)) {
                 if (gift.sold_out) {
                     cardBackground.setStrokeColors(new int[] {
@@ -1673,10 +1673,10 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 tonOnlySaleView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(10), backgroundColor, Theme.blendOver(backgroundColor, 0x30FFFFFF)));
             } else if (inResalePage) {
                 priceView.setPadding(dp(8), 0, dp(10), 0);
-                final long stars = gift.getResellStars();
+                final long stars = gift.getResellDiamonds();
                 final int backgroundColor = Theme.blendOver(backdrop.center_color | 0xFF000000, Theme.multAlpha(backdrop.pattern_color | 0xFF000000, .55f));
-                priceView.setText(StarsIntroActivity.replaceStars("XTR " + LocaleController.formatNumber(stars, ',')));
-                priceBackground.setBackground(new StarsBackground(0x70FFFFFF, backgroundColor));
+                priceView.setText(DiamondsIntroActivity.replaceDiamonds("XTR " + LocaleController.formatNumber(stars, ',')));
+                priceBackground.setBackground(new DiamondsBackground(0x70FFFFFF, backgroundColor));
                 priceView.setTextColor(0xFFFFFFFF);
 
                 tonOnlySaleView.setColorFilter(0xFFFFFFFF);
@@ -1689,7 +1689,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 final long stars;
                 if (allowResaleInGifts && gift.availability_resale > 0) {
                     stars = gift.resell_min_stars;
-                    if (gift.availability_resale > 1 && stars < MessagesController.getInstance(currentAccount).config.starsStarGiftResaleAmountMax.get()) {
+                    if (gift.availability_resale > 1 && stars < MessagesController.getInstance(currentAccount).config.diamondsDiamondGiftResaleAmountMax.get()) {
                         plus = true;
                     }
                 } else {
@@ -1699,21 +1699,21 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 if (gift.auction && gift.availability_resale == 0) {
                     priceView.setText(getString(gift.sold_out ? R.string.Gift2AuctionPriceView : R.string.Gift2AuctionPriceJoin));
                 } else {
-                    priceView.setText(StarsIntroActivity.replaceStarsWithPlain("XTR " + LocaleController.formatNumber(stars, ',') + (plus ? "+" : ""), .71f));
+                    priceView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain("XTR " + LocaleController.formatNumber(stars, ',') + (plus ? "+" : ""), .71f));
                 }
 
-                priceBackground.setBackground(new StarsBackground(gift instanceof TL_stars.TL_starGiftUnique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
+                priceBackground.setBackground(new DiamondsBackground(gift instanceof TL_diamonds.TL_starGiftUnique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
                 priceView.setTextColor(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
 
                 tonOnlySaleView.setColorFilter(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
-                tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), gift instanceof TL_stars.TL_starGiftUnique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
+                tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), gift instanceof TL_diamonds.TL_starGiftUnique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
 
                 final int backgroundColor = backdrop != null ? Theme.blendOver(backdrop.center_color | 0xFF000000, Theme.multAlpha(backdrop.pattern_color | 0xFF000000, .55f)) : 0;
                 chanceTextView.setBackground(Theme.createRoundRectDrawable(dp(9), backgroundColor));
             }
             ((MarginLayoutParams) priceLayout.getLayoutParams()).topMargin = dp(103);
             ((FrameLayout.LayoutParams) priceLayout.getLayoutParams()).gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-            starsPriceView.setVisibility(View.GONE);
+            diamondsPriceView.setVisibility(View.GONE);
 
             lastTier = null;
 
@@ -1741,18 +1741,18 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             return 0;
         }
 
-        private TL_stars.SavedStarGift lastUserGift;
+        private TL_diamonds.SavedStarGift lastUserGift;
 
-        public boolean setStarsGift(TL_stars.SavedStarGift userGift, boolean noprice, boolean inCollection) {
+        public boolean setDiamondsGift(TL_diamonds.SavedStarGift userGift, boolean noprice, boolean inCollection) {
             if (cancel != null) {
                 cancel.run();
                 cancel = null;
             }
 
             setSticker(userGift.gift.getDocument(), userGift);
-            final TL_stars.starGiftAttributeBackdrop backdrop = findAttribute(userGift.gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
+            final TL_diamonds.starGiftAttributeBackdrop backdrop = findAttribute(userGift.gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class);
             cardBackground.setBackdrop(backdrop);
-            cardBackground.setPattern(findAttribute(userGift.gift.attributes, TL_stars.starGiftAttributePattern.class));
+            cardBackground.setPattern(findAttribute(userGift.gift.attributes, TL_diamonds.starGiftAttributePattern.class));
             cardBackground.setStrokeColors(null);
             titleView.setVisibility(View.GONE);
             subtitleView.setVisibility(View.GONE);
@@ -1792,7 +1792,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 lockView.setVisibility(userGift.unsaved ? View.VISIBLE : View.GONE);
             }
 
-            final boolean unique = userGift.gift instanceof TL_stars.TL_starGiftUnique;
+            final boolean unique = userGift.gift instanceof TL_diamonds.TL_starGiftUnique;
             avatarView.setColorFilter(null);
             avatarView.setLayoutParams(avatarViewLayout1);
             if (unique && userGift.name_hidden) {
@@ -1833,15 +1833,15 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 priceView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
                 ColoredImageSpan[] spans = new ColoredImageSpan[1];
                 if (userGift.gift.resale_ton_only && DialogObject.getPeerDialogId(userGift.gift.owner_id) == UserConfig.getInstance(currentAccount).getClientUserId()) {
-                    priceView.setText(StarsIntroActivity.replaceStars(true, "XTR " + StarsIntroActivity.formatStarsAmount(userGift.gift.getResellAmount(AmountUtils.Currency.TON).toTl(), 1, ','), .95f, spans));
+                    priceView.setText(DiamondsIntroActivity.replaceDiamonds(true, "XTR " + DiamondsIntroActivity.formatDiamondsAmount(userGift.gift.getResellAmount(AmountUtils.Currency.TON).toTl(), 1, ','), .95f, spans));
                 } else {
-                    priceView.setText(StarsIntroActivity.replaceStars("XTR " + LocaleController.formatNumber(userGift.gift.getResellStars(), ','), .95f, spans));
+                    priceView.setText(DiamondsIntroActivity.replaceDiamonds("XTR " + LocaleController.formatNumber(userGift.gift.getResellDiamonds(), ','), .95f, spans));
                 }
                 if (spans[0] != null) {
                     spans[0].translate(0, dp(0.5f));
                 }
                 final int backgroundColor = Theme.blendOver(backdrop.center_color | 0xFF000000, Theme.multAlpha(backdrop.pattern_color | 0xFF000000, .55f));
-                priceBackground.setBackground(new StarsBackground(0x70FFFFFF, backgroundColor));
+                priceBackground.setBackground(new DiamondsBackground(0x70FFFFFF, backgroundColor));
                 priceView.setTextColor(0xFFFFFFFF);
                 tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), backgroundColor));
                 tonOnlySaleView.setColorFilter(0xFFFFFFFF);
@@ -1864,21 +1864,21 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 } else {
                     priceView.setPadding(dp(8), 0, dp(10), 0);
                     priceView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-                    priceView.setText(StarsIntroActivity.replaceStarsWithPlain("XTR " + LocaleController.formatNumber(Math.max(userGift.gift.stars, userGift.convert_stars > 0 ? userGift.convert_stars : userGift.gift.convert_stars), ','), .66f));
+                    priceView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain("XTR " + LocaleController.formatNumber(Math.max(userGift.gift.stars, userGift.convert_stars > 0 ? userGift.convert_stars : userGift.gift.convert_stars), ','), .66f));
                 }
                 priceView.setTextColor(unique ? 0xFFFFFFFF : (Theme.isCurrentThemeDark() ? 0xFFEBA52D : 0xFFBF7600));
-                priceBackground.setBackground(new StarsBackground(unique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
+                priceBackground.setBackground(new DiamondsBackground(unique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
                 tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), (unique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6))));
                 tonOnlySaleView.setColorFilter(unique ? 0xFFFFFFFF : (Theme.isCurrentThemeDark() ? 0xFFEBA52D : 0xFFBF7600));
                 ((FrameLayout.LayoutParams) priceLayout.getLayoutParams()).gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
                 ((MarginLayoutParams) priceLayout.getLayoutParams()).topMargin = dp(103);
             }
-            starsPriceView.setVisibility(View.GONE);
+            diamondsPriceView.setVisibility(View.GONE);
 
             lastUserGift = userGift;
             lastTier = null;
 
-            final TL_stars.SavedStarGift oldUserGift = this.userGift;
+            final TL_diamonds.SavedStarGift oldUserGift = this.userGift;
             this.premiumTier = null;
             this.gift = null;
             this.giftMine = false;
@@ -1908,7 +1908,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
 
         private void updateRibbonText() {
             if (userGift != null) {
-                if (userGift.gift instanceof TL_stars.TL_starGiftUnique) {
+                if (userGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
                     ribbon.setVisibility(View.VISIBLE);
                     if (userGift.gift.resell_amount != null) {
                         final int backgroundColor = Theme.blendOver(
@@ -1922,7 +1922,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                     } else {
                         ribbon.setColor(Theme.getColor(Theme.key_gift_ribbon, resourcesProvider));
                         ribbon.setStrokeColor(0);
-                        ribbon.setBackdrop(findAttribute(userGift.gift.attributes, TL_stars.starGiftAttributeBackdrop.class));
+                        ribbon.setBackdrop(findAttribute(userGift.gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class));
 //                        if (pinned) {
                             ribbon.setText("#" + LocaleController.formatNumber(userGift.gift.num, ','), true);
 //                        } else {
@@ -1943,7 +1943,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 if (inResalePage || inCrafting) {
                     ribbon.setVisibility(View.VISIBLE);
                     ribbon.setColor(Theme.getColor(Theme.key_gift_ribbon, resourcesProvider));
-                    ribbon.setBackdrop(findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class));
+                    ribbon.setBackdrop(findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class));
                     ribbon.setStrokeColor(0);
                     ribbon.setText("#" + LocaleController.formatNumber(gift.num, ','), true);
                 } else if (allowResaleInGifts && gift.availability_resale > 0) {
@@ -1956,7 +1956,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                     ribbon.setVisibility(View.VISIBLE);
                     ribbon.setColor(Theme.getColor(Theme.key_gift_ribbon, resourcesProvider));
                     ribbon.setStrokeColor(0);
-                    ribbon.setBackdrop(findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class));
+                    ribbon.setBackdrop(findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class));
                     ribbon.setText(formatString(R.string.Gift2Limited1OfRibbon, AndroidUtilities.formatWholeNumber(gift.availability_issued, 0)), true);
                 } else if (gift.limited && gift.availability_remains <= 0) {
                     ribbon.setVisibility(View.VISIBLE);
@@ -2019,7 +2019,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             ribbon.setVisibility(View.VISIBLE);
             ribbon.setColor(Theme.getColor(Theme.key_gift_ribbon, resourcesProvider));
             ribbon.setStrokeColor(0);
-            ribbon.setBackdrop(findAttribute(gift.attributes, TL_stars.starGiftAttributeBackdrop.class));
+            ribbon.setBackdrop(findAttribute(gift.attributes, TL_diamonds.starGiftAttributeBackdrop.class));
             ribbon.setText(formatString(R.string.Gift2Limited1OfRibbon, AndroidUtilities.formatWholeNumber(total, 0)), true);
         }
 
@@ -2037,12 +2037,12 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 boolean animated = false;
                 if (item.object instanceof GiftPremiumBottomSheet.GiftTier) {
                     animated = cell.setPremiumGift((GiftPremiumBottomSheet.GiftTier) item.object);
-                } else if (item.object instanceof TL_stars.StarGift) {
-                    TL_stars.StarGift gift = (TL_stars.StarGift) item.object;
-                    animated = cell.setStarsGift(gift, item.checked, item.object2 instanceof Boolean ? (Boolean) item.object2 : false, item.accent, item.red, item.locked);
-                } else if (item.object instanceof TL_stars.SavedStarGift) {
-                    TL_stars.SavedStarGift gift = (TL_stars.SavedStarGift) item.object;
-                    animated = cell.setStarsGift(gift, item.accent, item.red);
+                } else if (item.object instanceof TL_diamonds.StarGift) {
+                    TL_diamonds.StarGift gift = (TL_diamonds.StarGift) item.object;
+                    animated = cell.setDiamondsGift(gift, item.checked, item.object2 instanceof Boolean ? (Boolean) item.object2 : false, item.accent, item.red, item.locked);
+                } else if (item.object instanceof TL_diamonds.SavedStarGift) {
+                    TL_diamonds.SavedStarGift gift = (TL_diamonds.SavedStarGift) item.object;
+                    animated = cell.setDiamondsGift(gift, item.accent, item.red);
                 }
                 if (item.collapsed) { // checkable
                     cell.setChecked(item.checked, animated);
@@ -2063,7 +2063,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 return item;
             }
 
-            public static UItem asStarGift(int tab, TL_stars.StarGift gift, boolean mine, boolean includeUpgradeInPrice, boolean allowResaleInGifts, boolean inResalePage, boolean inCrafting) {
+            public static UItem asDiamondGift(int tab, TL_diamonds.StarGift gift, boolean mine, boolean includeUpgradeInPrice, boolean allowResaleInGifts, boolean inResalePage, boolean inCrafting) {
                 final UItem item = UItem.ofFactory(Factory.class).setSpanCount(1);
                 item.intValue = tab;
                 item.object = gift;
@@ -2075,13 +2075,13 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 return item;
             }
 
-            public static UItem asStarGift(int tab, TL_stars.SavedStarGift gift) {
-                return asStarGift(tab, gift, false);
+            public static UItem asDiamondGift(int tab, TL_diamonds.SavedStarGift gift) {
+                return asDiamondGift(tab, gift, false);
             }
-            public static UItem asStarGift(int tab, TL_stars.SavedStarGift gift, boolean noprice) {
-                return asStarGift(tab, gift, noprice, false, false);
+            public static UItem asDiamondGift(int tab, TL_diamonds.SavedStarGift gift, boolean noprice) {
+                return asDiamondGift(tab, gift, noprice, false, false);
             }
-            public static UItem asStarGift(int tab, TL_stars.SavedStarGift gift, boolean noprice, boolean checkable, boolean inCollection) {
+            public static UItem asDiamondGift(int tab, TL_diamonds.SavedStarGift gift, boolean noprice, boolean checkable, boolean inCollection) {
                 final UItem item = UItem.ofFactory(Factory.class).setSpanCount(1);
                 item.intValue = tab;
                 item.object = gift;
@@ -2097,13 +2097,13 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 if (a.object != null || b.object != null) {
                     if (a.object instanceof GiftPremiumBottomSheet.GiftTier) {
                         return a.object == b.object;
-                    } else if (a.object instanceof TL_stars.StarGift && b.object instanceof TL_stars.StarGift) {
-                        final TL_stars.StarGift ag = (TL_stars.StarGift) a.object;
-                        final TL_stars.StarGift bg = (TL_stars.StarGift) b.object;
+                    } else if (a.object instanceof TL_diamonds.StarGift && b.object instanceof TL_diamonds.StarGift) {
+                        final TL_diamonds.StarGift ag = (TL_diamonds.StarGift) a.object;
+                        final TL_diamonds.StarGift bg = (TL_diamonds.StarGift) b.object;
                         return ag.id == bg.id;
-                    } else if (a.object instanceof TL_stars.SavedStarGift && b.object instanceof TL_stars.SavedStarGift) {
-                        final TL_stars.SavedStarGift ag = (TL_stars.SavedStarGift) a.object;
-                        final TL_stars.SavedStarGift bg = (TL_stars.SavedStarGift) b.object;
+                    } else if (a.object instanceof TL_diamonds.SavedStarGift && b.object instanceof TL_diamonds.SavedStarGift) {
+                        final TL_diamonds.SavedStarGift ag = (TL_diamonds.SavedStarGift) a.object;
+                        final TL_diamonds.SavedStarGift bg = (TL_diamonds.SavedStarGift) b.object;
                         return ag.gift.id == bg.gift.id && ag.date == bg.date && ag.saved_id == bg.saved_id;
                     }
                 }
@@ -2123,7 +2123,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         private Path path = new Path();
         private Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private float scale;
-        private StarsReactionsSheet.Particles particles;
+        private DiamondsReactionsSheet.Particles particles;
 
         public static void fillRibbonPath(Path path, float s, boolean left) {
             final Utilities.CallbackReturn<Float, Float> x = v -> left ? 48.0f - v : v;
@@ -2155,7 +2155,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         public void setParticles(boolean p) {
             if (p == (particles != null)) return;
             if (p) {
-                particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL_INSIDE, 12);
+                particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL_INSIDE, 12);
                 particles.setSpeed(5.0f);
             } else {
                 particles = null;
@@ -2175,7 +2175,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             paint.setShader(new LinearGradient(0, 0, dp(48), dp(48), new int[]{ color1, color2 }, new float[] { 0, 1 }, Shader.TileMode.CLAMP));
         }
 
-        public void setBackdrop(TL_stars.starGiftAttributeBackdrop backdrop, boolean swap, boolean darken) {
+        public void setBackdrop(TL_diamonds.starGiftAttributeBackdrop backdrop, boolean swap, boolean darken) {
             if (backdrop == null) {
                 paint.setShader(null);
             } else {
@@ -2265,7 +2265,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             drawable.setColors(color1, color2);
         }
 
-        public void setBackdrop(TL_stars.starGiftAttributeBackdrop backdrop) {
+        public void setBackdrop(TL_diamonds.starGiftAttributeBackdrop backdrop) {
             drawable.setBackdrop(backdrop, false, false);
             invalidate();
         }
@@ -2287,10 +2287,10 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
     }
 
-    private static class StarsBackgroundView extends View {
-        private StarsBackground currentBackground;
+    private static class DiamondsBackgroundView extends View {
+        private DiamondsBackground currentBackground;
 
-        public StarsBackgroundView(Context context) {
+        public DiamondsBackgroundView(Context context) {
             super(context);
         }
 
@@ -2304,8 +2304,8 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             }
 
             super.setBackground(background);
-            if (background instanceof StarsBackground) {
-                currentBackground = (StarsBackground) background;
+            if (background instanceof DiamondsBackground) {
+                currentBackground = (DiamondsBackground) background;
                 if (isAttachedToWindow()) {
                     currentBackground.attach();
                 }
@@ -2329,23 +2329,23 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
     }
 
-    private static class StarsBackground extends Drawable {
+    private static class DiamondsBackground extends Drawable {
         private static int tickIndex;
 
         private final int particlesColor;
         private final int color;
 
-        public StarsBackground(int color) {
+        public DiamondsBackground(int color) {
             this(ColorUtils.setAlphaComponent(color, 0x80), color);
         }
 
-        public StarsBackground(int particlesColor, int color) {
+        public DiamondsBackground(int particlesColor, int color) {
             this.particlesColor = particlesColor;
             this.color = color;
             backgroundPaint.setColor(color);
 
             if (BatchParticlesDrawHelper.isAvailable()) {
-                particles = new StarsReactionsSheet.Particles(StarsReactionsSheet.Particles.TYPE_RADIAL, 25);
+                particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, 25);
             } else {
                 particles = null;
             }
@@ -2354,7 +2354,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         public final RectF rectF = new RectF();
         public final Path path = new Path();
         public final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        public final @Nullable StarsReactionsSheet.Particles particles;
+        public final @Nullable DiamondsReactionsSheet.Particles particles;
 
         @Override
         public void draw(@NonNull Canvas canvas) {
@@ -2449,7 +2449,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
     }
 
-    public TLRPC.Document getStarGiftDocument(String emoji) {
+    public TLRPC.Document getDiamondGiftDocument(String emoji) {
         TLRPC.TL_messages_stickerSet set;
         TLRPC.Document document = null;
 
@@ -2480,7 +2480,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         return document;
     }
 
-    public static Runnable setStarGiftImage(View view, ImageReceiver imageReceiver, String emoji) {
+    public static Runnable setDiamondGiftImage(View view, ImageReceiver imageReceiver, String emoji) {
         final boolean[] played = new boolean[1];
         final int currentAccount = imageReceiver.getCurrentAccount();
         Runnable setImage = () -> {
@@ -2605,7 +2605,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         private final Path clipPath = new Path();
         private final boolean withShadow;
 
-        private TL_stars.starGiftAttributeBackdrop backdrop;
+        private TL_diamonds.starGiftAttributeBackdrop backdrop;
 
         private int gradientRadius;
         private RadialGradient gradient;
@@ -2788,10 +2788,10 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                         }
 
                         if (largerParticlesAlpha < 1)
-                            StarGiftPatterns.drawPatternBatch(canvas, StarGiftPatterns.TYPE_GIFT, lastDrawnBitmapPaint, pBitmap, bounds.width(), bounds.height(), 1.0f - largerParticlesAlpha, 1.0f);
+                            DiamondGiftPatterns.drawPatternBatch(canvas, DiamondGiftPatterns.TYPE_GIFT, lastDrawnBitmapPaint, pBitmap, bounds.width(), bounds.height(), 1.0f - largerParticlesAlpha, 1.0f);
                         if (largerParticlesAlpha > 0) {
                             canvas.translate(0, dp(-31));
-                            StarGiftPatterns.drawPatternBatch(canvas, StarGiftPatterns.TYPE_DEFAULT, lastDrawnBitmapPaint, pBitmap, bounds.width(), bounds.height(), largerParticlesAlpha, 1.0f);
+                            DiamondGiftPatterns.drawPatternBatch(canvas, DiamondGiftPatterns.TYPE_DEFAULT, lastDrawnBitmapPaint, pBitmap, bounds.width(), bounds.height(), largerParticlesAlpha, 1.0f);
                         }
                         drawLegacy = false;
                     }
@@ -2800,10 +2800,10 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 if (drawLegacy) {
                     pattern.setColor(color);
                     if (largerParticlesAlpha < 1)
-                        StarGiftPatterns.drawPattern(canvas, StarGiftPatterns.TYPE_GIFT, pattern, bounds.width(), bounds.height(), 1.0f - largerParticlesAlpha, 1.0f);
+                        DiamondGiftPatterns.drawPattern(canvas, DiamondGiftPatterns.TYPE_GIFT, pattern, bounds.width(), bounds.height(), 1.0f - largerParticlesAlpha, 1.0f);
                     if (largerParticlesAlpha > 0) {
                         canvas.translate(0, dp(-31));
-                        StarGiftPatterns.drawPattern(canvas, StarGiftPatterns.TYPE_DEFAULT, pattern, bounds.width(), bounds.height(), largerParticlesAlpha, 1.0f);
+                        DiamondGiftPatterns.drawPattern(canvas, DiamondGiftPatterns.TYPE_DEFAULT, pattern, bounds.width(), bounds.height(), largerParticlesAlpha, 1.0f);
                     }
                 }
                 canvas.restore();
@@ -2863,7 +2863,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             }
         }
 
-        public void setBackdrop(TL_stars.starGiftAttributeBackdrop backdrop) {
+        public void setBackdrop(TL_diamonds.starGiftAttributeBackdrop backdrop) {
             if (this.backdrop != backdrop) {
                 gradient = null;
             }
@@ -2872,7 +2872,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
 
         public long patternDocumentId;
-        public void setPattern(TL_stars.starGiftAttributePattern pattern) {
+        public void setPattern(TL_diamonds.starGiftAttributePattern pattern) {
             patternDocumentId = 0;
             if (pattern == null) {
                 this.pattern.set((Drawable) null, false);
