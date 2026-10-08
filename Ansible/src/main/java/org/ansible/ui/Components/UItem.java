@@ -11,7 +11,6 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stats;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Business.BusinessLinksActivity;
@@ -440,12 +439,6 @@ public class UItem extends AdapterWithDiffUtils.Item {
         UItem item = new UItem(UniversalAdapter.VIEW_TYPE_CHART_LINEAR + type, false);
         item.intValue = stats_dc;
         item.object = data;
-        return item;
-    }
-
-    public static UItem asTransaction(TL_stats.BroadcastRevenueTransaction transaction) {
-        UItem item = new UItem(UniversalAdapter.VIEW_TYPE_TRANSACTION, false);
-        item.object = transaction;
         return item;
     }
 

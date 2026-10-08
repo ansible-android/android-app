@@ -53,7 +53,6 @@ public class FileLog {
 
     private File currentFile = null;
     private File networkFile = null;
-    private File tonlibFile = null;
     private boolean initied;
     private boolean initiing;
     public static boolean databaseIsMalformed = false;
@@ -361,23 +360,6 @@ public class FileLog {
         return "";
     }
 
-    public static String getTonlibLogPath() {
-        if (!BuildVars.LOGS_ENABLED) {
-            return "";
-        }
-        try {
-            File dir = AndroidUtilities.getLogsDir();
-            if (dir == null) {
-                return "";
-            }
-            getInstance().tonlibFile = new File(dir, getInstance().dateFormat.format(System.currentTimeMillis()) + "_tonlib.txt");
-            return getInstance().tonlibFile.getAbsolutePath();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
     public static void e(final String message, final Throwable exception) {
         if (!BuildVars.LOGS_ENABLED) {
             return;
@@ -612,9 +594,6 @@ public class FileLog {
                     continue;
                 }
                 if (getInstance().networkFile != null && file.getAbsolutePath().equals(getInstance().networkFile.getAbsolutePath())) {
-                    continue;
-                }
-                if (getInstance().tonlibFile != null && file.getAbsolutePath().equals(getInstance().tonlibFile.getAbsolutePath())) {
                     continue;
                 }
                 file.delete();

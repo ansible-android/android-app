@@ -57,7 +57,6 @@ import java.net.IDN;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Browser {
 
@@ -376,7 +375,7 @@ public class Browser {
                     .appendQueryParameter("autologin_token", autologin_token)
                     .build();
             }
-            if (allowCustom && !(uri != null && MessagesController.getInstance(currentAccount).isWebBrowserOpenInApp(uri.toString()) || isInstantViewOpen()) && MessagesController.getInstance(currentAccount).isWebBrowserUseCustomTabs() && !internalUri && !scheme.equals("tel") && !isTonsite(uri.toString())) {
+            if (allowCustom && !(uri != null && MessagesController.getInstance(currentAccount).isWebBrowserOpenInApp(uri.toString()) || isInstantViewOpen()) && MessagesController.getInstance(currentAccount).isWebBrowserUseCustomTabs() && !internalUri && !scheme.equals("tel")) {
                 if (forceBrowser[0] || !openInExternalApp(context, uri.toString(), false) || !hasAppToOpen(context, uri.toString())) {
                     if (MessagesController.getInstance(currentAccount).authDomains.contains(host)) {
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -414,9 +413,7 @@ public class Browser {
                 allowInAppBrowser && BubbleActivity.instance == null &&
                 (uri != null && MessagesController.getInstance(currentAccount).isWebBrowserOpenInApp(uri.toString()) || isInstantViewOpen()) &&
                 TextUtils.isEmpty(browserPackage) &&
-                (uri.getScheme() == null || "https".equals(uri.getScheme()) || "http".equals(uri.getScheme()) || "tonsite".equals(uri.getScheme()))
-                ||
-                isTonsite(uri.toString())
+                (uri.getScheme() == null || "https".equals(uri.getScheme()) || "http".equals(uri.getScheme()))
             );
             final boolean isIntentScheme = uri.getScheme() != null && uri.getScheme().equalsIgnoreCase("intent");
             if (internalUri && LaunchActivity.instance != null) {
@@ -528,36 +525,10 @@ public class Browser {
         return false;
     }
 
-    public static boolean isTonsite(String url) {
-        String domain = AndroidUtilities.getHostAuthority(url, true);
-        if (domain != null && (domain.endsWith(".ton") || domain.endsWith(".adnl"))) {
-            return true;
-        }
-        Uri uri = Uri.parse(url);
-        if (uri.getScheme() != null && uri.getScheme().equalsIgnoreCase("tonsite")) {
-            return true;
-        }
-        return false;
-    }
-
-    private static Pattern domainPattern;
-    public static boolean isTonsitePunycode(String url) {
-        if (domainPattern == null) domainPattern = Pattern.compile("^[a-zA-Z0-9\\-\\_\\.]+\\.[a-zA-Z0-9\\-\\_]+$");
-        String domain = AndroidUtilities.getHostAuthority(url, true);
-        if (domain != null && (domain.endsWith(".ton") || domain.endsWith(".adnl"))) {
-            return !domainPattern.matcher(domain).matches();
-        }
-        Uri uri = Uri.parse(url);
-        if (uri.getScheme() != null && uri.getScheme().equalsIgnoreCase("tonsite")) {
-            return !domainPattern.matcher(uri.getScheme()).matches();
-        }
-        return false;
-    }
-
     public static boolean openInExternalApp(Context context, String url, boolean allowIntent) {
         if (url == null) return false;
         try {
-            if (isTonsite(url) || isInternalUrl(url, null)) return false;
+            if (isInternalUrl(url, null)) return false;
             Uri uri = Uri.parse(url);
             url = Browser.replace(
                 uri,
@@ -696,18 +667,7 @@ public class Browser {
             host = host != null ? host.toLowerCase() : "";
         }
 
-        if ("ton".equals(uri.getScheme())) {
-            try {
-                Intent viewIntent = new Intent(Intent.ACTION_VIEW, uri);
-                List<ResolveInfo> allActivities = ApplicationLoader.applicationContext.getPackageManager().queryIntentActivities(viewIntent, 0);
-                if (allActivities != null && allActivities.size() >= 1) {
-                    return false;
-                }
-            } catch (Exception ignore) {
-
-            }
-            return true;
-        } else if ("as".equals(uri.getScheme())) {
+        if ("as".equals(uri.getScheme())) {
             return true;
         } else if ("asme.su".equals(host)) {
             String path = uri.getPath();

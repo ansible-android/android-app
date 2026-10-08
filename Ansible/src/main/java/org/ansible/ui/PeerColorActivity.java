@@ -1223,14 +1223,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
             if (selectedResaleGift != null) {
                 final TL_diamonds.TL_starGiftUnique gift = selectedResaleGift;
                 final AmountUtils.Amount stars = gift.getResellAmount(AmountUtils.Currency.STARS);
-                if (gift.resale_ton_only) {
-                    final AmountUtils.Amount ton = gift.getResellAmount(AmountUtils.Currency.TON);
-                    button.setText(DiamondsIntroActivity.replaceDiamonds(true, LocaleController.formatString(R.string.ResellGiftBuyTON, ton.asFormatString())), animated);
-                    button.setSubText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuyEq", (int) stars.asDecimal())), animated);
-                } else {
-                    button.setText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuy", (int) stars.asDecimal())), animated);
-                    button.setSubText(null, animated);
-                }
+                button.setText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuy", (int) stars.asDecimal())), animated);
+                button.setSubText(null, animated);
             } else {
                 button.setText(!getUserConfig().isPremium() && !isChannel ? buttonLocked : (selectedEmojiCollectible != null ? buttonCollectible : buttonUnlocked), animated);
                 button.setSubText(null, animated);
@@ -1759,9 +1753,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
 
     public void buy(TL_diamonds.TL_starGiftUnique gift, Utilities.Callback<Boolean> bought) {
         final long to = UserConfig.getInstance(currentAccount).getClientUserId();
-        final AmountUtils.Currency currency = gift.resale_ton_only ?
-                AmountUtils.Currency.TON : AmountUtils.Currency.STARS;
-        DiamondsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, to, form -> {
+        final AmountUtils.Currency currency = AmountUtils.Currency.STARS;
+        DiamondsController.getInstance(currentAccount).getResellingGiftForm(gift, to, form -> {
             if (form == null) return;
             final DiamondGiftSheet.PaymentFormState initial = new DiamondGiftSheet.PaymentFormState(currency, form);
             final String giftName = gift.title + " #" + LocaleController.formatNumber(gift.num, ',');
@@ -1769,7 +1762,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
             final DiamondGiftSheet.ResaleBuyTransferAlert sheet = new DiamondGiftSheet.ResaleBuyTransferAlert(getContext(), resourceProvider, gift, initial, currentAccount, to, giftName, false, (state, progress) -> {
                 buying[0] = true;
                 progress.init();
-                DiamondsController.getInstance(currentAccount, state.currency).buyResellingGift(state.form, gift, to, (status, err) -> {
+                DiamondsController.getInstance(currentAccount).buyResellingGift(state.form, gift, to, (status, err) -> {
                     progress.end();
                     if (bought != null) {
                         bought.run(status);

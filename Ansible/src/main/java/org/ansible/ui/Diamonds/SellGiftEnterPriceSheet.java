@@ -28,7 +28,6 @@ import org.ansible.messenger.Utilities;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.Cells.TextCheckbox2Cell;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.EditTextBoldCursor;
 import org.ansible.ui.Components.LayoutHelper;
@@ -43,14 +42,10 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
     private final AnimatedTextView titleView;
     private final ButtonWithCounterView buttonView;
     private final AnimatedTextView dollarsEqView;
-    private final TextCheckbox2Cell radioButtonCell;
     private final ImageView iconDiamonds;
-    private final ImageView iconTon;
 
     private final AmountUtils.Amount inputAmountMinDiamonds;
     private final AmountUtils.Amount inputAmountMaxDiamonds;
-    private final AmountUtils.Amount inputAmountMinTON;
-    private final AmountUtils.Amount inputAmountMaxTON;
     private AmountUtils.Amount inputAmount;
 
     private static final int ERROR_FLAG_INCORRECT_INPUT = 1;
@@ -73,8 +68,6 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         waitingKeyboard = true;
 
         final AppGlobalConfig config = MessagesController.getInstance(currentAccount).config;
-        inputAmountMinTON = AmountUtils.Amount.fromNano(Math.max(config.tonDiamondGiftResaleAmountMin.get(), 10_000_000L), AmountUtils.Currency.TON);
-        inputAmountMaxTON = AmountUtils.Amount.fromNano(config.tonDiamondGiftResaleAmountMax.get(), AmountUtils.Currency.TON);
         inputAmountMinDiamonds = AmountUtils.Amount.fromDecimal(config.diamondsDiamondGiftResaleAmountMin.get(), AmountUtils.Currency.STARS);
         inputAmountMaxDiamonds = AmountUtils.Amount.fromDecimal(config.diamondsDiamondGiftResaleAmountMax.get(), AmountUtils.Currency.STARS);
 
@@ -133,11 +126,6 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
             iconDiamonds.setImageResource(R.drawable.diamond);
             diamondsCountEditOutline.addView(iconDiamonds, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
-            iconTon = new ImageView(context);
-            iconTon.setImageResource(R.drawable.mini_gram_72);
-            iconTon.setColorFilter(0xFF3391d4);
-            diamondsCountEditOutline.addView(iconTon, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
-
             dollarsEqView = new AnimatedTextView(context);
             dollarsEqView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
             dollarsEqView.setTextSize(dp(13));
@@ -148,22 +136,6 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
             diamondsCountEditHint.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
             diamondsCountEditHint.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             bodyLayout.addView(diamondsCountEditHint, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 33, 4, 33, 0));
-        }
-        {
-            radioButtonCell = new TextCheckbox2Cell(context);
-            radioButtonCell.setCheckboxGravityTop();
-            radioButtonCell.setTextAndValue(getString(R.string.ResellGiftPriceOnlyTON), getString(R.string.ResellGiftPriceHintOnlyTON), true, false);
-            radioButtonCell.setOnClickListener(v -> {
-                final AmountUtils.Currency newCurrency = inputAmount.currency == AmountUtils.Currency.TON ?
-                        AmountUtils.Currency.STARS :
-                        AmountUtils.Currency.TON;
-
-                setAmount(AmountUtils.Amount.fromNano(0, newCurrency), true, false, true);
-                diamondsCountEditField.setText("");
-            });
-
-            bodyLayout.addView(radioButtonCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 16, 0, 16));
-            radioButtonCell.setVisibility(android.view.View.GONE); // Ansible: TON/«GRAM» убран из UI (тумблер «Принимать только GRAM»)
         }
 
         /* Footer */
@@ -279,22 +251,12 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
     }
 
     private void onCurrencyChanged(boolean animated) {
-        if (inputAmount.currency == AmountUtils.Currency.STARS) {
-            titleView.setText(getString(R.string.ResellGiftTitle), animated);
+        titleView.setText(getString(R.string.ResellGiftTitle), animated);
 
-            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
-            diamondsCountEditField.setFilters(new InputFilter[]{
-                    new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length())
-            });
-        } else if (inputAmount.currency == AmountUtils.Currency.TON) {
-            titleView.setText(getString(R.string.ResellGiftTitleTON), animated);
-
-            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            diamondsCountEditField.setFilters(new InputFilter[]{
-                    new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length() + 3)
-            });
-        }
-        radioButtonCell.checkbox.setChecked(inputAmount.currency == AmountUtils.Currency.TON, animated);
+        diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
+        diamondsCountEditField.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length())
+        });
 
         if (animated) {
             iconDiamonds.animate()
@@ -303,15 +265,8 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
                     .scaleY(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f)
                     .setDuration(180L)
                     .start();
-            iconTon.animate()
-                    .alpha(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .scaleX(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .scaleY(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .setDuration(180L)
-                    .start();
         } else {
             iconDiamonds.setAlpha(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f);
-            iconTon.setAlpha(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f);
         }
     }
 
@@ -334,33 +289,21 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         } else if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_SMALL) != 0) {
             diamondsCountEditOutline.setText(LocaleController.formatString(R.string.ResellGiftPriceTooSmall, getInputAmountMin().formatAsDecimalSpaced()));
         } else {
-            final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
-                    R.string.ResellGiftPriceTitle:
-                    R.string.ResellGiftPriceTitleTON;
-
-            diamondsCountEditOutline.setText(getString(key));
+            diamondsCountEditOutline.setText(getString(R.string.ResellGiftPriceTitle));
         }
     }
 
     private void checkRateText(boolean animated) {
         final AppGlobalConfig config = MessagesController.getInstance(currentAccount).config;
 
-        if (inputAmount.currency == AmountUtils.Currency.STARS) {
-            final AmountUtils.Amount amount = inputAmount.applyPerMille(config.diamondsDiamondGiftResaleCommissionPermille.get());
-            final CharSequence s = AndroidUtilities.replaceTags(LocaleController.formatPluralString("ResellGiftInfo", (int) amount.asDecimal()));
-            diamondsCountEditHint.setText(s);
-        } else if (inputAmount.currency == AmountUtils.Currency.TON) {
-            final AmountUtils.Amount amount = inputAmount.applyPerMille(config.tonDiamondGiftResaleCommissionPermille.get());
-            final CharSequence s = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.ResellGiftInfoTON, amount.asDecimalString()));
-            diamondsCountEditHint.setText(s);
-        }
+        final AmountUtils.Amount amount = inputAmount.applyPerMille(config.diamondsDiamondGiftResaleCommissionPermille.get());
+        final CharSequence s = AndroidUtilities.replaceTags(LocaleController.formatPluralString("ResellGiftInfo", (int) amount.asDecimal()));
+        diamondsCountEditHint.setText(s);
 
 
         final StringBuilder sb = new StringBuilder(10).append('~');
 
-        final double rate = inputAmount.currency == AmountUtils.Currency.TON ?
-                (MessagesController.getInstance(currentAccount).config.tonUsdRate.get()):
-                (MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * 0.00001);
+        final double rate = MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * 0.00001;
 
         sb.append(BillingController.getInstance().formatCurrency((long) (inputAmount.asDouble() * rate * 100), "USD", 2));
 
@@ -368,11 +311,11 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
     }
 
     private AmountUtils.Amount getInputAmountMin() {
-        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMinTON : inputAmountMinDiamonds;
+        return inputAmountMinDiamonds;
     }
 
     private AmountUtils.Amount getInputAmountMax() {
-        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMaxTON : inputAmountMaxDiamonds;
+        return inputAmountMaxDiamonds;
     }
 
     @Override

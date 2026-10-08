@@ -88,10 +88,6 @@
 
     <queries>
         <package android:name="com.google.android.apps.maps"/>
-        <intent>
-            <action android:name="android.intent.action.VIEW"/>
-            <data android:scheme="ton"/>
-        </intent>
     </queries>
 
     <application
@@ -267,12 +263,6 @@
                 <data android:host="asme.su" android:scheme="https" />
                 <data android:host="*.asme.su" android:scheme="http" />
                 <data android:host="*.asme.su" android:scheme="https" />
-            </intent-filter>
-            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="tonsite" />
             </intent-filter>
             <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:priority="1">
                 <action android:name="android.intent.action.VIEW" />

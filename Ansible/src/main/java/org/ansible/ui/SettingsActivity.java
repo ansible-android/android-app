@@ -133,7 +133,6 @@ import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.DualCameraView;
-import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.BotBiometry;
 import org.ansible.ui.bots.BotDownloads;
 import org.ansible.ui.bots.BotLocation;
@@ -708,7 +707,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             long balance = c.getBalance().amount;
             items.add(SettingCell.Factory.of(12, 0xFF51C4FE, 0xFF1BA4ED, R.drawable.settings_diamond, getString(R.string.AnsibleDiamonds), null, c.balanceAvailable() && balance > 0 ? DiamondsIntroActivity.formatDiamondsAmount(c.getBalance(), 0.85f, ' ') : ""));
         }
-        // Ansible: TON/«GRAM» вырезан из UI (как на iOS) — строка «Мои GRAM» (id 13) не добавляется.
 
         TLRPC.TL_attachMenuBots menuBots = MediaDataController.getInstance(UserConfig.selectedAccount).getAttachMenuBots();
         if (menuBots != null && menuBots.bots != null && !menuBots.bots.isEmpty()) {
@@ -837,9 +835,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 break;
             case 12:
                 presentSettingFragment(new DiamondsIntroActivity());
-                break;
-            case 13:
-                presentSettingFragment(new TONIntroActivity());
                 break;
             case 15:
                 presentSettingFragment(new PremiumPreviewFragment(PremiumPreviewFragment.FEATURES_BUSINESS, "settings"));

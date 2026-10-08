@@ -111,8 +111,6 @@ import org.ansible.ui.community.CommunityEditActivity;
 import org.ansible.ui.community.CommunitySheet;
 import org.ansible.ui.community.cells.CommunityLinkView2;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -189,7 +187,6 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
     private TextInfoPrivacyCell communityGapView;
 
     private TextCell publicLinkCell;
-    private TextCell tonBalanceCell;
     private TextCell diamondsBalanceCell;
     private TextCell botAffiliateProgramCell;
     private TextCell editIntroCell;
@@ -1444,39 +1441,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 headerCell.setText(getString(R.string.BotBalance));
                 balanceContainer.addView(headerCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-                tonBalanceCell = new TextCell(context);
-                tonBalanceCell.setBackground(Theme.getSelectorDrawable(false));
-                tonBalanceCell.setPrioritizeTitleOverValue(true);
-                balanceContainer.addView(tonBalanceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
                 BotDiamondsController c = BotDiamondsController.getInstance(currentAccount);
-                tonBalanceCell.setOnClickListener(v -> {
-                    if (!c.isDiamondsBalanceAvailable(userId))
-                        return;
-                    presentFragment(new BotDiamondsActivity(BotDiamondsActivity.TYPE_TON, userId));
-                });
-                if (!c.isTONBalanceAvailable(userId)) {
-                    SpannableStringBuilder loadingStr = new SpannableStringBuilder("x");
-                    loadingStr.setSpan(new LoadingSpan(tonBalanceCell.valueTextView, dp(30)), 0, loadingStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    tonBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), loadingStr, R.drawable.outline_gram_24, false);
-                } else {
-                    long ton_balance = c.getTONBalance(userId);
-                    SpannableStringBuilder ssb = new SpannableStringBuilder();
-                    if (ton_balance > 0) {
-                        if (ton_balance / 1_000_000_000.0 > 1000.0) {
-                            ssb.append("TON ").append(AndroidUtilities.formatWholeNumber((int) (ton_balance / 1_000_000_000.0), 0));
-                        } else {
-                            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-                            symbols.setDecimalSeparator('.');
-                            DecimalFormat formatterTON = new DecimalFormat("#.##", symbols);
-                            formatterTON.setMinimumFractionDigits(2);
-                            formatterTON.setMaximumFractionDigits(3);
-                            formatterTON.setGroupingUsed(false);
-                            ssb.append("TON ").append(formatterTON.format(ton_balance / 1_000_000_000.0));
-                        }
-                    }
-                    tonBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), ssb, R.drawable.outline_gram_24, true);
-                }
-                tonBalanceCell.setVisibility(c.botHasTON(userId) ? View.VISIBLE : View.GONE);
 
                 diamondsBalanceCell = new TextCell(context);
                 diamondsBalanceCell.setBackground(Theme.getSelectorDrawable(false));
@@ -1502,7 +1467,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 gap.setTag(R.id.fit_width_tag, 1);
                 linearLayout1.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 12));
 
-                balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
+                balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
             }
         }
 
@@ -1870,33 +1835,9 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                     diamondsBalanceCell.setVisibility(c.botHasDiamonds(userId) ? View.VISIBLE : View.GONE);
                     diamondsBalanceCell.setValue(DiamondsIntroActivity.replaceDiamondsWithPlain(TextUtils.concat("XTR", formatDiamondsAmount(c.getBotDiamondsBalance(userId), .8f, ' ')), .85f), true);
                     if (publicLinkCell != null) {
-                        publicLinkCell.setNeedDivider(c.botHasDiamonds(userId) || c.botHasTON(userId));
+                        publicLinkCell.setNeedDivider(c.botHasDiamonds(userId));
                     }
-                    balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
-                }
-                if (tonBalanceCell != null) {
-                    BotDiamondsController c = BotDiamondsController.getInstance(currentAccount);
-                    tonBalanceCell.setVisibility(c.botHasTON(userId) ? View.VISIBLE : View.GONE);
-                    long ton_balance = c.getTONBalance(userId);
-                    SpannableStringBuilder ssb = new SpannableStringBuilder();
-                    if (ton_balance > 0) {
-                        if (ton_balance / 1_000_000_000.0 > 1000.0) {
-                            ssb.append("TON ").append(AndroidUtilities.formatWholeNumber((int) (ton_balance / 1_000_000_000.0), 0));
-                        } else {
-                            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-                            symbols.setDecimalSeparator('.');
-                            DecimalFormat formatterTON = new DecimalFormat("#.##", symbols);
-                            formatterTON.setMinimumFractionDigits(2);
-                            formatterTON.setMaximumFractionDigits(3);
-                            formatterTON.setGroupingUsed(false);
-                            ssb.append("TON ").append(formatterTON.format(ton_balance / 1_000_000_000.0));
-                        }
-                    }
-                    tonBalanceCell.setValue(ssb, true);
-                    if (publicLinkCell != null) {
-                        publicLinkCell.setNeedDivider(c.botHasDiamonds(userId) || c.botHasTON(userId));
-                    }
-                    balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE || tonBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
+                    balanceContainer.setVisibility(diamondsBalanceCell.getVisibility() == View.VISIBLE ? View.VISIBLE : View.GONE);
                 }
             }
         } else if (id == NotificationCenter.userInfoDidLoad) {

@@ -260,7 +260,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     public View createView(Context context) {
         useFillLastLayoutManager = false;
         particlesViewHeight = dp(32 + 190 + 16);
-        transactionsLayout = new DiamondsTransactionsLayout(context, currentAccount, false, 0, getClassGuid(), getResourceProvider());
+        transactionsLayout = new DiamondsTransactionsLayout(context, currentAccount, 0, getClassGuid(), getResourceProvider());
         emptyLayout = new View(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -781,7 +781,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         private final int currentAccount;
         private final TextView headerTextView;
         private final AnimatedTextView amountTextView;
-        private boolean withTon;
 
         public DiamondsBalanceView(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
             super(context);
@@ -805,11 +804,9 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             amountTextView = new AnimatedTextView(context) {
                 @Override
                 protected void dispatchDraw(Canvas canvas) {
-                    if (!withTon) {
-                        int x = (int) (getMeasuredWidth() - getDrawable().getCurrentWidth() - dp(20));
-                        diamondDrawable.setBounds(x, (getMeasuredHeight() - dp(17)) / 2, x + dp(17), (getMeasuredHeight() + dp(17)) / 2);
-                        diamondDrawable.draw(canvas);
-                    }
+                    int x = (int) (getMeasuredWidth() - getDrawable().getCurrentWidth() - dp(20));
+                    diamondDrawable.setBounds(x, (getMeasuredHeight() - dp(17)) / 2, x + dp(17), (getMeasuredHeight() + dp(17)) / 2);
+                    diamondDrawable.draw(canvas);
                     super.dispatchDraw(canvas);
                 }
             };
@@ -825,10 +822,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             updateBalance(false);
 
             setPadding(dp(15), dp(4), dp(15), dp(4));
-        }
-
-        public void withTon() {
-            this.withTon = true;
         }
 
         public void setDialogId(long dialogId) {
@@ -867,25 +860,15 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         private SpannableString loadingString;
         public long lastBalance = -1;
 
-        private final ColoredImageSpan[] ref = new ColoredImageSpan[1];
-        private final ColoredImageSpan[] refTon = new ColoredImageSpan[1];
-
         public void updateBalance(boolean animated) {
             DiamondsController c = DiamondsController.getInstance(currentAccount);
-            DiamondsController tc = withTon ? DiamondsController.getTonInstance(currentAccount) : null;
 
-            AmountUtils.Amount tonAmount = AmountUtils.Amount.fromNano(0, AmountUtils.Currency.TON);
             amountTextView.cancelAnimation();
             boolean loading;
             long balance;
             if (dialogId == UserConfig.getInstance(currentAccount).getClientUserId()) {
                 loading = !c.balanceAvailable();
                 balance = c.getBalance().amount;
-
-                if (tc != null) {
-                    loading |= !tc.balanceAvailable();
-                    tonAmount = tc.getBalanceAmount();
-                }
             } else {
                 TLRPC.TL_payments_starsRevenueStats stats = BotDiamondsController.getInstance(currentAccount).getStarsRevenueStats(dialogId);
                 loading = stats == null || stats.status == null;
@@ -902,20 +885,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 amountTextView.setText(loadingString, animated);
                 lastBalance = -1;
             } else {
-                if (withTon) {
-                    SpannableStringBuilder ssb = new SpannableStringBuilder();
-                    if (!tonAmount.isZero()) {
-                        ssb.append(replaceDiamondsWithPlain(true, "⭐️" + tonAmount.asFormatString(), 0.62f, refTon));
-                        if (refTon[0] != null) {
-                            refTon[0].setColorKey(Theme.key_telegram_color_text);
-                        }
-                        ssb.append("  ");
-                    }
-                    ssb.append(replaceDiamondsWithPlain("⭐️" + LocaleController.formatNumber(balance, ' '), 0.62f, ref));
-                    amountTextView.setText(ssb);
-                } else {
-                    amountTextView.setText(LocaleController.formatNumber(balance, ' '));
-                }
+                amountTextView.setText(LocaleController.formatNumber(balance, ' '));
 
                 lastBalance = balance;
             }
@@ -1195,7 +1165,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     public static class DiamondsTransactionsLayout extends LinearLayout implements NotificationCenter.NotificationCenterDelegate {
 
         private final int currentAccount;
-        private final boolean ton;
         private final ViewPagerFixed viewPager;
         private final PageAdapter adapter;
         private final ViewPagerFixed.TabsView tabsView;
@@ -1205,15 +1174,13 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
             private final Context context;
             private final int currentAccount;
-            private final boolean ton;
             private final int classGuid;
             private final Theme.ResourcesProvider resourcesProvider;
             private final long bot_id;
 
-            public PageAdapter(Context context, int currentAccount, boolean ton, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+            public PageAdapter(Context context, int currentAccount, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 this.context = context;
                 this.currentAccount = currentAccount;
-                this.ton = ton;
                 this.classGuid = classGuid;
                 this.resourcesProvider = resourcesProvider;
                 this.bot_id = bot_id;
@@ -1225,7 +1192,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             public void fill() {
                 items.clear();
                 if (bot_id == 0) {
-                    DiamondsController s = DiamondsController.getInstance(currentAccount, ton);
+                    DiamondsController s = DiamondsController.getInstance(currentAccount);
                     items.add(UItem.asSpace(DiamondsController.ALL_TRANSACTIONS));
                     if (s.hasTransactions(DiamondsController.INCOMING_TRANSACTIONS)) {
                         items.add(UItem.asSpace(DiamondsController.INCOMING_TRANSACTIONS));
@@ -1252,7 +1219,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
             @Override
             public View createView(int viewType) {
-                return new Page(context, ton, bot_id, viewType, currentAccount, classGuid, resourcesProvider);
+                return new Page(context, bot_id, viewType, currentAccount, classGuid, resourcesProvider);
             }
 
             @Override
@@ -1285,16 +1252,15 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             }
         }
 
-        public DiamondsTransactionsLayout(Context context, int currentAccount, boolean ton, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+        public DiamondsTransactionsLayout(Context context, int currentAccount, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
             super(context);
             this.currentAccount = currentAccount;
-            this.ton = ton;
             this.bot_id = bot_id;
 
             setOrientation(VERTICAL);
 
             viewPager = new ViewPagerFixed(context);
-            viewPager.setAdapter(adapter = new PageAdapter(context, currentAccount, ton, bot_id, classGuid, resourcesProvider));
+            viewPager.setAdapter(adapter = new PageAdapter(context, currentAccount, bot_id, classGuid, resourcesProvider));
             tabsView = viewPager.createTabsView(true, 3);
 
             View separatorView = new View(context);
@@ -1333,14 +1299,12 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             private final Theme.ResourcesProvider resourcesProvider;
             private final int currentAccount;
             private final int type;
-            private final boolean ton;
             private final long bot_id;
 
-            public Page(Context context, boolean ton, long bot_id, int type, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+            public Page(Context context, long bot_id, int type, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 super(context);
 
                 this.type = type;
-                this.ton = ton;
                 this.currentAccount = currentAccount;
                 this.bot_id = bot_id;
                 this.resourcesProvider = resourcesProvider;
@@ -1349,7 +1313,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                     if (bot_id != 0) {
                         BotDiamondsController.getInstance(currentAccount).loadTransactions(bot_id, type);
                     } else {
-                        DiamondsController.getInstance(currentAccount, ton).loadTransactions(type);
+                        DiamondsController.getInstance(currentAccount).loadTransactions(type);
                     }
                 };
 
@@ -1422,7 +1386,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                         items.add(UItem.asFlicker(items.size(), FlickerLoadingView.DIALOG_CELL_TYPE));
                     }
                 } else {
-                    final DiamondsController c = DiamondsController.getInstance(currentAccount, ton);
+                    final DiamondsController c = DiamondsController.getInstance(currentAccount);
                     for (TL_diamonds.StarsTransaction t : c.transactions[type]) {
                         items.add(DiamondsTransactionView.Factory.asTransaction(t, false));
                     }
@@ -1484,7 +1448,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         private final TextView amountTextView;
 
         private final SpannableString star;
-        private final SpannableString ton;
 
         private boolean threeLines;
 
@@ -1555,13 +1518,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             Drawable drawable = context.getResources().getDrawable(R.drawable.diamond).mutate(); // Ansible: алмаз (транзакции)
             drawable.setBounds(0, 0, dp(21), dp(21));
             star.setSpan(new ImageSpan(drawable), 0, star.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            ton = new SpannableString("TON");
-            drawable = context.getResources().getDrawable(R.drawable.mini_gram_72).mutate();
-            ColoredImageSpan span = new ColoredImageSpan(drawable);
-            span.setSize(dp(18));
-            span.setTranslateY(dp(.5f));
-            ton.setSpan(span, 0, ton.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         public static HashMap<String, CombinedDrawable> cachedPlatformDrawables;
@@ -1585,7 +1541,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         public void set(TL_diamonds.StarsTransaction transaction, boolean bot, boolean divider) {
             long did = DialogObject.getPeerDialogId(transaction.peer.peer);
 
-            final boolean isTon = transaction.amount instanceof TL_diamonds.TL_starsTonAmount;
             final boolean affiliate_to_bot = (transaction.flags & 131072) != 0;
             final boolean affiliate_to_channel = !affiliate_to_bot && (transaction.flags & 65536) != 0;
             threeLines = did != 0 && !transaction.stargift_upgrade && !transaction.stargift_drop_original_details && !transaction.posts_search || transaction.subscription || transaction.floodskip || transaction.stargift != null && !transaction.stargift_upgrade && !transaction.stargift_drop_original_details || transaction.gift && transaction.peer instanceof TL_diamonds.TL_starsTransactionPeerFragment;
@@ -1774,7 +1729,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             } else if (transaction.peer instanceof TL_diamonds.TL_starsTransactionPeerFragment) {
                 if (transaction.gift) {
                     titleTextView.setText(LocaleController.getString(R.string.DiamondsGiftReceived));
-                    subtitleTextView.setText(getString(isTon ? R.string.DiamondsTransactionTONFromFragment : R.string.DiamondsTransactionUnknown));
+                    subtitleTextView.setText(getString(R.string.DiamondsTransactionUnknown));
                     subtitleTextView.setVisibility(VISIBLE);
                 } else {
                     titleTextView.setText(getString(bot || (transaction.refund ? transaction.amount.positive() : transaction.amount.negative()) ? R.string.DiamondsTransactionWithdrawFragment : R.string.DiamondsTransactionFragment));
@@ -1797,11 +1752,11 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             if (transaction.amount.amount > 0 || transaction.amount.amount == 0 && transaction.amount.nanos > 0) {
                 amountTextView.setVisibility(View.VISIBLE);
                 amountTextView.setTextColor(Theme.getColor(Theme.key_color_green));
-                amountTextView.setText(TextUtils.concat("+", formatDiamondsAmount(transaction.amount), " ", isTon ? ton : star));
+                amountTextView.setText(TextUtils.concat("+", formatDiamondsAmount(transaction.amount), " ", star));
             } else if (transaction.amount.amount < 0 || transaction.amount.amount == 0 && transaction.amount.nanos < 0) {
                 amountTextView.setVisibility(View.VISIBLE);
                 amountTextView.setTextColor(Theme.getColor(Theme.key_color_red));
-                amountTextView.setText(TextUtils.concat(formatDiamondsAmount(transaction.amount), " ", isTon ? ton : star));
+                amountTextView.setText(TextUtils.concat(formatDiamondsAmount(transaction.amount), " ", star));
             } else {
                 amountTextView.setVisibility(View.GONE);
             }
@@ -3266,36 +3221,12 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         }
     }
 
-    public static SpannableStringBuilder replaceDiamonds(TL_diamonds.StarsAmount amount, CharSequence cs) {
-        return replaceDiamonds(amount instanceof TL_diamonds.TL_starsTonAmount, cs, 1.13f);
-    }
-
-    public static SpannableStringBuilder replaceDiamonds(boolean ton, CharSequence cs) {
-        return replaceDiamonds(ton, cs, 1.13f);
-    }
-
     public static SpannableStringBuilder replaceDiamonds(CharSequence cs) {
         return replaceDiamonds(cs, 1.13f);
     }
 
-    public static SpannableStringBuilder replaceDiamonds(boolean ton, CharSequence cs, final float scale) {
-        return replaceDiamonds(ton, cs, scale, null);
-    }
-
-    public static SpannableStringBuilder replaceDiamonds(TL_diamonds.StarsAmount amount, CharSequence cs, final float scale) {
-        return replaceDiamonds(amount instanceof TL_diamonds.TL_starsTonAmount, cs, scale, null);
-    }
-
     public static SpannableStringBuilder replaceDiamonds(CharSequence cs, final float scale) {
         return replaceDiamonds(cs, scale, null);
-    }
-
-    public static SpannableStringBuilder replaceDiamonds(boolean ton, CharSequence cs, final float scale, ColoredImageSpan[] cache) {
-        return replaceDiamonds(ton, cs, scale, cache, 0, 0, 1.0f);
-    }
-
-    public static SpannableStringBuilder replaceDiamonds(TL_diamonds.StarsAmount amount, CharSequence cs, final float scale, ColoredImageSpan[] cache) {
-        return replaceDiamonds(amount instanceof TL_diamonds.TL_starsTonAmount, cs, scale, cache, 0, 0, 1.0f);
     }
 
     public static SpannableStringBuilder replaceDiamonds(CharSequence cs, final float scale, ColoredImageSpan[] cache) {
@@ -3303,14 +3234,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     }
 
     public static SpannableStringBuilder replaceDiamonds(CharSequence cs, final float scale, ColoredImageSpan[] cache, final float tx, final float ty, final float sx) {
-        return replaceDiamonds(false, cs, scale, cache, tx, ty, sx);
-    }
-
-    public static SpannableStringBuilder replaceDiamonds(TL_diamonds.StarsAmount amount, CharSequence cs, final float scale, ColoredImageSpan[] cache, final float tx, final float ty, final float sx) {
-        return replaceDiamonds(amount instanceof TL_diamonds.TL_starsTonAmount, cs, scale, cache, tx, ty, sx);
-    }
-
-    public static SpannableStringBuilder replaceDiamonds(boolean ton, CharSequence cs, final float scale, ColoredImageSpan[] cache, final float tx, final float ty, final float sx) {
         if (cs == null) return null;
         SpannableStringBuilder ssb;
         if (!(cs instanceof SpannableStringBuilder)) {
@@ -3318,26 +3241,22 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         } else {
             ssb = (SpannableStringBuilder) cs;
         }
-        final String symbol = ton ? "TON" : "⭐";
+        final String symbol = "⭐";
         SpannableString spacedDiamond = new SpannableString(symbol + " ");
         ColoredImageSpan span;
         if (cache != null && cache[0] != null) {
             span = cache[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.diamond);
+            span = new ColoredImageSpan(R.drawable.diamond);
             if (cache != null) {
                 cache[0] = span;
             }
         }
         span.translate(tx, ty);
         span.spaceScaleX = sx;
-        if (ton) {
-            span.setScale(scale * 0.2f, scale * 0.2f);
-        } else {
-            // Ansible: валюта Stars рисуется полноцветным алмазом (а не перекрашенной звездой).
-            span.recolorDrawable = false;
-            span.setScale(scale * 0.8f, scale * 0.8f);
-        }
+        // Ansible: валюта Stars рисуется полноцветным алмазом (а не перекрашенной звездой).
+        span.recolorDrawable = false;
+        span.setScale(scale * 0.8f, scale * 0.8f);
         spacedDiamond.setSpan(span, 0, spacedDiamond.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         AndroidUtilities.replaceMultipleCharSequence("⭐️", ssb, "⭐");
         AndroidUtilities.replaceMultipleCharSequence("⭐ ", ssb, "⭐");
@@ -3387,10 +3306,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     }
 
     public static SpannableStringBuilder replaceDiamonds(CharSequence cs, ColoredImageSpan[] spanRef) {
-        return replaceDiamonds(false, cs, spanRef);
-    }
-
-    public static SpannableStringBuilder replaceDiamonds(boolean ton, CharSequence cs, ColoredImageSpan[] spanRef) {
         if (cs == null) return null;
         SpannableStringBuilder ssb;
         if (!(cs instanceof SpannableStringBuilder)) {
@@ -3402,9 +3317,9 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (spanRef != null && spanRef[0] != null) {
             span = spanRef[0];
         } else {
-            span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.diamond);
-            span.setScale(ton ? 0.222f : 0.9f, ton ? 0.222f : 0.9f);
-            if (!ton) span.recolorDrawable = false; // Ansible: полноцветный алмаз вместо звезды
+            span = new ColoredImageSpan(R.drawable.diamond);
+            span.setScale(0.9f, 0.9f);
+            span.recolorDrawable = false; // Ansible: полноцветный алмаз вместо звезды
         }
         if (spanRef != null) {
             spanRef[0] = span;
@@ -3421,19 +3336,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     public static SpannableStringBuilder replaceDiamondsWithPlain(CharSequence cs, float scale) {
         return replaceDiamondsWithPlain(cs, scale, null);
     }
-    public static SpannableStringBuilder replaceDiamondsWithPlain(boolean ton, CharSequence cs, float scale) {
-        return replaceDiamondsWithPlain(ton, cs, scale, null);
-    }
-    public static SpannableStringBuilder replaceDiamondsWithPlain(TL_diamonds.StarsAmount amount, CharSequence cs, float scale) {
-        return replaceDiamondsWithPlain(amount instanceof TL_diamonds.TL_starsTonAmount, cs, scale, null);
-    }
     public static SpannableStringBuilder replaceDiamondsWithPlain(CharSequence cs, float scale, ColoredImageSpan[] spanArr) {
-        return replaceDiamondsWithPlain(false, cs, scale, spanArr);
-    }
-    public static SpannableStringBuilder replaceDiamondsWithPlain(TL_diamonds.StarsAmount amount, CharSequence cs, float scale, ColoredImageSpan[] spanArr) {
-        return replaceDiamondsWithPlain(amount instanceof TL_diamonds.TL_starsTonAmount, cs, scale, spanArr);
-    }
-    public static SpannableStringBuilder replaceDiamondsWithPlain(boolean ton, CharSequence cs, float scale, ColoredImageSpan[] spanArr) {
         if (cs == null) return null;
         SpannableStringBuilder ssb;
         if (!(cs instanceof SpannableStringBuilder)) {
@@ -3441,8 +3344,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         } else {
             ssb = (SpannableStringBuilder) cs;
         }
-        final String symbol = ton ? "TON" : "⭐";
-        final int resId = ton ? R.drawable.mini_gram_72 : R.drawable.diamond; // Ansible: алмаз вместо звезды
+        final String symbol = "⭐";
+        final int resId = R.drawable.diamond; // Ansible: алмаз вместо звезды
         SpannableString spacedDiamond = new SpannableString(symbol + " ");
         ColoredImageSpan span;
         if (spanArr != null && spanArr[0] != null) {
@@ -3452,11 +3355,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         } else {
             span = new ColoredImageSpan(resId);
         }
-        if (ton) {
-            scale *= .33f;
-        } else {
-            span.recolorDrawable = false;
-        }
+        span.recolorDrawable = false;
         span.setScale(scale, scale);
         spacedDiamond.setSpan(span, 0, spacedDiamond.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         AndroidUtilities.replaceMultipleCharSequence("⭐️", ssb, "⭐");
@@ -3489,7 +3388,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (!t.extended_media.isEmpty()) {
             return getString(R.string.DiamondMediaPurchase);
         }
-        final boolean ton = t.amount instanceof TL_diamonds.TL_starsTonAmount;
         final boolean affiliate_to_bot = (t.flags & 131072) != 0;
         final boolean affiliate_to_channel = !affiliate_to_bot && (t.flags & 65536) != 0;
         if (affiliate_to_channel) {
@@ -3581,23 +3479,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         return showTransactionSheet(context, false, 0, currentAccount, t, resourcesProvider);
     }
 
-    public static BottomSheet showTransactionSheet(Context context, int currentAccount, int date, TLRPC.Peer sent_by, TLRPC.Peer received_by, TLRPC.TL_messageActionGiftTon action, Theme.ResourcesProvider resourcesProvider) {
-        TL_diamonds.StarsTransaction t = new TL_diamonds.StarsTransaction();
-        t.title = null;
-        t.description = null;
-        t.photo = null;
-        t.peer = new TL_diamonds.TL_starsTransactionPeer();
-        t.peer.peer = sent_by;
-        t.date = date;
-        t.amount = new TL_diamonds.TL_starsTonAmount();
-        t.amount.amount = action.cryptoAmount;
-        t.id = action.transaction_id;
-        t.gift = true;
-        t.sent_by = sent_by;
-        t.received_by = received_by;
-        return showTransactionSheet(context, false, 0, currentAccount, t, resourcesProvider);
-    }
-
     public static BottomSheet showTransactionSheet(Context context, int currentAccount, int date, TLRPC.TL_messageActionPaymentRefunded action, Theme.ResourcesProvider resourcesProvider) {
         TL_diamonds.StarsTransaction t = new TL_diamonds.StarsTransaction();
         t.title = null;
@@ -3639,10 +3520,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         return setGiftImage(view, imageReceiver, getGiftDiamondsEmoji(stars));
     }
 
-    public static Runnable setTonGiftImage(View view, ImageReceiver imageReceiver, long nanotons) {
-        return setGiftImage(view, imageReceiver, getTonGiftEmoji(nanotons), true);
-    }
-
     public static String getPremiumGiftMonthsEmoji(int months) {
         switch (months) {
             case 1: return 1 + "\u20E3";
@@ -3654,43 +3531,21 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         }
     }
 
-    public static String getTonGiftEmoji(long nanotons) {
-        if (nanotons <= 10_000_000_000L) {
-            return "2⃣";
-        } else if (nanotons <= 50_000_000_000L) {
-            return "1⃣";
-        } else {
-            return "3⃣";
-        }
-    }
-
     public static Runnable setPremiumGiftImage(View view, ImageReceiver imageReceiver, int months) {
         return setGiftImage(view, imageReceiver, getPremiumGiftMonthsEmoji(months));
     }
 
     public static Runnable setGiftImage(View view, ImageReceiver imageReceiver, String emoji) {
-        return setGiftImage(view, imageReceiver, emoji, false);
-    }
-
-    public static Runnable setGiftImage(View view, ImageReceiver imageReceiver, String emoji, boolean isTon) {
         final boolean[] played = new boolean[1];
         final int currentAccount = imageReceiver.getCurrentAccount();
         Runnable setImage = () -> {
             TLRPC.TL_messages_stickerSet set;
             TLRPC.Document document = null;
             String packName;
-            if (isTon) {
-                packName = UserConfig.getInstance(currentAccount).premiumTonStickerPack;
-                if (packName == null) {
-                    MediaDataController.getInstance(currentAccount).checkTonGiftStickers();
-                    return;
-                }
-            } else {
-                packName = UserConfig.getInstance(currentAccount).premiumGiftsStickerPack;
-                if (packName == null) {
-                    MediaDataController.getInstance(currentAccount).checkPremiumGiftStickers();
-                    return;
-                }
+            packName = UserConfig.getInstance(currentAccount).premiumGiftsStickerPack;
+            if (packName == null) {
+                MediaDataController.getInstance(currentAccount).checkPremiumGiftStickers();
+                return;
             }
 
             set = MediaDataController.getInstance(currentAccount).getStickerSetByName(packName);
@@ -3748,7 +3603,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             }
         };
         setImage.run();
-        final Runnable cancel1 = NotificationCenter.getInstance(currentAccount).listen(view, isTon ? NotificationCenter.didUpdateTonGiftStickers : NotificationCenter.didUpdatePremiumGiftStickers, args -> setImage.run());
+        final Runnable cancel1 = NotificationCenter.getInstance(currentAccount).listen(view, NotificationCenter.didUpdatePremiumGiftStickers, args -> setImage.run());
         final Runnable cancel2 = NotificationCenter.getInstance(currentAccount).listen(view, NotificationCenter.diceStickersDidLoad, args -> setImage.run());
         return () -> {
             cancel1.run();
@@ -3760,7 +3615,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (transaction == null || context == null)
             return null;
 
-        final boolean ton = transaction.amount instanceof TL_diamonds.TL_starsTonAmount;
         final boolean giveaway = (transaction.flags & 8192) != 0;
         final boolean affiliate_to_bot = (transaction.flags & 131072) != 0 && !transaction.paid_message;
         final boolean affiliate_to_channel = !affiliate_to_bot && (transaction.flags & 65536) != 0 && !transaction.paid_message;
@@ -3848,7 +3702,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
             textView = TextHelper.makeTextView(context, 18, 0, true);
             textView.setTextColor(0xFFFFFFFF);
-            textView.setText(replaceDiamonds(transaction.amount, TextUtils.concat((positive ? "+" : ""), formatDiamondsAmount(transaction.amount), " ⭐️"), 1.25f));
+            textView.setText(replaceDiamonds(TextUtils.concat((positive ? "+" : ""), formatDiamondsAmount(transaction.amount), " ⭐️"), 1.25f));
             SpannableStringBuilder s = new SpannableStringBuilder(textView.getText());
             if (transaction.refund) {
                 appendStatus(s, textView, getString(R.string.DiamondsRefunded));
@@ -3882,11 +3736,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                     linearLayout.addView(imageView, LayoutHelper.createLinear(160, 160, Gravity.CENTER, 0, -8, 0, 10));
                 }
             } else if (giveaway || transaction.gift) {
-                if (transaction.amount instanceof TL_diamonds.TL_starsTonAmount) {
-                    setTonGiftImage(imageView, imageView.getImageReceiver(), transaction.amount.amount);
-                } else {
-                    setGiftImage(imageView, imageView.getImageReceiver(), transaction.amount.amount);
-                }
+                setGiftImage(imageView, imageView.getImageReceiver(), transaction.amount.amount);
 
                 linearLayout.addView(imageView, LayoutHelper.createLinear(160, 160, Gravity.CENTER, 0, -8, 0, 10));
             } else if (!transaction.extended_media.isEmpty()) {
@@ -4010,7 +3860,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             textView.setTypeface(AndroidUtilities.bold());
             textView.setGravity(Gravity.CENTER);
             textView.setTextColor(Theme.getColor(positive ? Theme.key_color_green : Theme.key_color_red, resourcesProvider));
-            textView.setText(replaceDiamondsWithPlain(transaction.amount, TextUtils.concat((positive ? "+" : ""), formatDiamondsAmount(transaction.amount), " ⭐️"), .8f));
+            textView.setText(replaceDiamondsWithPlain(TextUtils.concat((positive ? "+" : ""), formatDiamondsAmount(transaction.amount), " ⭐️"), .8f));
             SpannableStringBuilder s = new SpannableStringBuilder(textView.getText());
             if (transaction.refund) {
                 appendStatus(s, textView, getString(R.string.DiamondsRefunded));
@@ -4059,14 +3909,14 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 }
                 textView.setText(text);
                 linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 36, 0, 36, 4));
-            } else if (!(transaction.amount instanceof TL_diamonds.TL_starsTonAmount) && (giveaway || transaction.gift)) {
+            } else if (giveaway || transaction.gift) {
                 final TLRPC.User user =   transaction.sent_by == null ? null : MessagesController.getInstance(currentAccount).getUser(DialogObject.getPeerDialogId(transaction.sent_by));
                 final TLRPC.User received = transaction.sent_by == null ? null : MessagesController.getInstance(currentAccount).getUser(DialogObject.getPeerDialogId(transaction.received_by));
                 final boolean self = UserObject.isUserSelf(user);
 
                 if (self) {
                     textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
-                    textView.setText(replaceDiamondsWithPlain(transaction.amount, TextUtils.concat(formatDiamondsAmount(transaction.amount), " ⭐️"), .8f));
+                    textView.setText(replaceDiamondsWithPlain(TextUtils.concat(formatDiamondsAmount(transaction.amount), " ⭐️"), .8f));
                 }
 
                 textView = new LinkSpanDrawable.LinksTextView(context);
@@ -4200,18 +4050,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                     });
                 }
                 if ((from_id == selfId || transaction.stargift_resale) && transaction.starref_amount != null && transaction.starref_commission_permille > 0) {
-                    if (transaction.amount instanceof TL_diamonds.TL_starsTonAmount && transaction.starref_amount instanceof TL_diamonds.TL_starsTonAmount) {
-                        final TL_diamonds.TL_starsTonAmount fullPriceAmount = new TL_diamonds.TL_starsTonAmount();
-                        fullPriceAmount.amount = transaction.amount.amount + transaction.starref_amount.amount;
-                        final ColoredImageSpan[] span = new ColoredImageSpan[1];
-                        tableView.addRow(getString(R.string.DiamondsTransactionFullPrice), replaceDiamondsWithPlain(transaction.amount, "⭐️ " + formatDiamondsAmount(fullPriceAmount), .8f, span));
-                        if (span[0] != null) {
-                            span[0].setOverrideColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
-                        }
-                    } else {
-                        final long fullPrice = Math.abs(Math.round(transaction.amount.toDouble() + transaction.starref_amount.toDouble()));
-                        tableView.addRow(getString(R.string.DiamondsTransactionFullPrice), replaceDiamondsWithPlain(transaction.amount, "⭐️ " + LocaleController.formatNumber(fullPrice, ','), .8f));
-                    }
+                    final long fullPrice = Math.abs(Math.round(transaction.amount.toDouble() + transaction.starref_amount.toDouble()));
+                    tableView.addRow(getString(R.string.DiamondsTransactionFullPrice), replaceDiamondsWithPlain("⭐️ " + LocaleController.formatNumber(fullPrice, ','), .8f));
                 }
             } else if (!transaction.refund) {
                 final long selfId = dialogId == 0 ? UserConfig.getInstance(currentAccount).getClientUserId() : dialogId;
@@ -4285,7 +4125,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 });
                 if (transaction.starref_amount != null && transaction.starref_commission_permille > 0) {
                     final long fullPrice = Math.abs(Math.round(transaction.amount.toDouble() + transaction.starref_amount.toDouble()));
-                    tableView.addRow(getString(R.string.DiamondsTransactionFullPrice), replaceDiamondsWithPlain(transaction.amount, "⭐️ " + LocaleController.formatNumber(fullPrice, ','), .8f));
+                    tableView.addRow(getString(R.string.DiamondsTransactionFullPrice), replaceDiamondsWithPlain("⭐️ " + LocaleController.formatNumber(fullPrice, ','), .8f));
                 }
             } else if (affiliate_to_bot) {
                 final long botId = dialogId;
@@ -4412,7 +4252,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 textView.setSingleLine(true);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
                 AvatarSpan avatarSpan = new AvatarSpan(textView, currentAccount, 24);
-                CharSequence username = getString(ton ? R.string.DiamondsTransactionTONFromFragment : R.string.DiamondsTransactionUnknown);
+                CharSequence username = getString(R.string.DiamondsTransactionUnknown);
                 CombinedDrawable iconDrawable = getPlatformDrawable("fragment", 24);
                 iconDrawable.setIconSize(dp(16), dp(16));
                 avatarSpan.setImageDrawable(iconDrawable);
@@ -4422,7 +4262,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                     @Override
                     public void onClick(@NonNull View widget) {
                         sheet[0].dismiss();
-                        Browser.openUrl(context, getString(ton ? R.string.DiamondsTransactionTONFromFragmentLink : R.string.DiamondsTransactionUnknownLink));
+                        Browser.openUrl(context, getString(R.string.DiamondsTransactionUnknownLink));
                     }
 
                     @Override
@@ -4540,42 +4380,26 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         }
         linearLayout.addView(tableView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 16, 17, 16, 0));
 
-        if ((transaction.flags & 32) != 0) {
-            tableView.addRow(getString(R.string.DiamondsTransactionTONDate), LocaleController.formatString(R.string.formatDateAtTime, LocaleController.getInstance().getFormatterGiveawayCard().format(new Date(transaction.transaction_date * 1000L)), LocaleController.getInstance().getFormatterDay().format(new Date(transaction.transaction_date * 1000L))));
-        }
-
-        if (!ton) {
-            LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-            textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTransactionTOS), () -> {
-                Browser.openUrl(context, getString(R.string.DiamondsTOSLink));
-            }));
-            textView.setGravity(Gravity.CENTER);
-            linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 16, 15, 16, 0));
-        }
+        LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
+        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTransactionTOS), () -> {
+            Browser.openUrl(context, getString(R.string.DiamondsTOSLink));
+        }));
+        textView.setGravity(Gravity.CENTER);
+        linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 16, 15, 16, 0));
 
         ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider).setRound();
-        if ((transaction.flags & 32) != 0) {
-            button.setText(getString(R.string.DiamondsTransactionViewInBlockchainExplorer), false);
-        } else {
-            button.setText(getString(R.string.OK), false);
-        }
+        button.setText(getString(R.string.OK), false);
         linearLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 16, 15, 16, 0));
 
         b.setCustomView(linearLayout);
         sheet[0] = b.create();
         sheet[0].useBackgroundTopPadding = false;
-        if ((transaction.flags & 32) != 0) {
-            button.setOnClickListener(v -> {
-                Browser.openUrl(context, transaction.transaction_url);
-            });
-        } else {
-            button.setOnClickListener(v -> {
-                sheet[0].dismiss();
-            });
-        }
+        button.setOnClickListener(v -> {
+            sheet[0].dismiss();
+        });
 
         sheet[0].fixNavigationBar();
         BaseFragment fragment = LaunchActivity.getSafeLastFragment();
@@ -5313,8 +5137,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                     MessagesController.getInstance(currentAccount).config.diamondsDiamondGiftResaleAmountMin.get(),
                     AmountUtils.Currency.STARS
                 );
-            } else if (gift.resale_ton_only) {
-                price = gift.getResellAmount(AmountUtils.Currency.TON);
             } else {
                 price = gift.getResellAmount(AmountUtils.Currency.STARS);
             }
@@ -5692,17 +5514,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         });
     }
 
-    private static DecimalFormat floatFormat2;
-    public static String formatTON(long ton) {
-        if (floatFormat2 == null)
-            floatFormat2 = new DecimalFormat("0.####", new DecimalFormatSymbols(Locale.US));
-        if (ton % 1_000_000_000 != 0) {
-            return floatFormat2.format(ton / 1_000_000_000.0);
-        } else {
-            return (ton < 0 ? "-" : "") + LocaleController.formatNumber(Math.abs(ton / 1_000_000_000L), ',');
-        }
-    }
-
     public static CharSequence formatDiamondsAmount(TL_diamonds.StarsAmount starsAmount) {
         return formatDiamondsAmount(starsAmount, 0.777f, ',');
     }
@@ -5711,32 +5522,19 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (floatFormat == null)
             floatFormat = new DecimalFormat("0.################", new DecimalFormatSymbols(Locale.US));
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-        if (starsAmount instanceof TL_diamonds.TL_starsTonAmount) {
-            if (starsAmount.amount % 1_000_000_000 != 0) {
-                String str = floatFormat.format(starsAmount.amount / 1_000_000_000.0);
-                ssb.append(str);
-                int index;
-                if ((index = str.indexOf(".")) >= 0) {
-                    ssb.setSpan(new RelativeSizeSpan(relativeSize), index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-            } else {
-                ssb.append((starsAmount.negative() ? "-" : "") + LocaleController.formatNumber(Math.abs(starsAmount.amount / 1_000_000_000L), symbol));
+        final long amount = starsAmount.amount + (starsAmount.nanos < 0 && starsAmount.amount > 0 ? -1 : (starsAmount.nanos > 0 && starsAmount.amount < 0 ? +1 : 0));
+        final boolean negative = starsAmount.amount == 0 ? starsAmount.nanos < 0 : starsAmount.amount < 0;
+        if (starsAmount.nanos != 0) {
+            ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
+            String str = floatFormat.format((starsAmount.nanos < 0 ? 1e9 + starsAmount.nanos : starsAmount.nanos) / 1e9d);
+            int index;
+            if ((index = str.indexOf(".")) >= 0) {
+                int fromIndex = ssb.length();
+                ssb.append(str.substring(index));
+                ssb.setSpan(new RelativeSizeSpan(relativeSize), fromIndex + 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         } else {
-            final long amount = starsAmount.amount + (starsAmount.nanos < 0 && starsAmount.amount > 0 ? -1 : (starsAmount.nanos > 0 && starsAmount.amount < 0 ? +1 : 0));
-            final boolean negative = starsAmount.amount == 0 ? starsAmount.nanos < 0 : starsAmount.amount < 0;
-            if (starsAmount.nanos != 0) {
-                ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
-                String str = floatFormat.format((starsAmount.nanos < 0 ? 1e9 + starsAmount.nanos : starsAmount.nanos) / 1e9d);
-                int index;
-                if ((index = str.indexOf(".")) >= 0) {
-                    int fromIndex = ssb.length();
-                    ssb.append(str.substring(index));
-                    ssb.setSpan(new RelativeSizeSpan(relativeSize), fromIndex + 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-            } else {
-                ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
-            }
+            ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
         }
         return ssb;
     }
@@ -5749,33 +5547,24 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (floatFormat == null)
             floatFormat = new DecimalFormat("0.################", new DecimalFormatSymbols(Locale.US));
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-        if (starsAmount instanceof TL_diamonds.TL_starsTonAmount) {
-            String str = floatFormat.format(starsAmount.amount / 1_000_000_000.0);
-            ssb.append(str);
+        final long amount = starsAmount.amount + (starsAmount.nanos < 0 && starsAmount.amount > 0 ? -1 : (starsAmount.nanos > 0 && starsAmount.amount < 0 ? +1 : 0));
+        final boolean negative = starsAmount.amount == 0 ? starsAmount.nanos < 0 : starsAmount.amount < 0;
+        if (Math.abs(amount) <= 1000 && starsAmount.nanos != 0) {
+            ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
+            String str = floatFormat.format((starsAmount.nanos < 0 ? 1e9 + starsAmount.nanos : starsAmount.nanos) / 1e9d);
             int index;
             if ((index = str.indexOf(".")) >= 0) {
-                ssb.setSpan(new RelativeSizeSpan(relativeSize), index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-        } else {
-            final long amount = starsAmount.amount + (starsAmount.nanos < 0 && starsAmount.amount > 0 ? -1 : (starsAmount.nanos > 0 && starsAmount.amount < 0 ? +1 : 0));
-            final boolean negative = starsAmount.amount == 0 ? starsAmount.nanos < 0 : starsAmount.amount < 0;
-            if (Math.abs(amount) <= 1000 && starsAmount.nanos != 0) {
-                ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
-                String str = floatFormat.format((starsAmount.nanos < 0 ? 1e9 + starsAmount.nanos : starsAmount.nanos) / 1e9d);
-                int index;
-                if ((index = str.indexOf(".")) >= 0) {
-                    int fromIndex = ssb.length();
-                    String part = str.substring(index);
-                    if (part.length() > 1) {
-                        ssb.append(part.substring(0, Math.min(part.length(), 3)));
-                        ssb.setSpan(new RelativeSizeSpan(relativeSize), fromIndex + 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    }
+                int fromIndex = ssb.length();
+                String part = str.substring(index);
+                if (part.length() > 1) {
+                    ssb.append(part.substring(0, Math.min(part.length(), 3)));
+                    ssb.setSpan(new RelativeSizeSpan(relativeSize), fromIndex + 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-            } else if (starsAmount.amount <= 1000) {
-                ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
-            } else {
-                ssb.append((negative ? "-" : "") + AndroidUtilities.formatWholeNumber((int) Math.abs(amount), 0));
             }
+        } else if (starsAmount.amount <= 1000) {
+            ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
+        } else {
+            ssb.append((negative ? "-" : "") + AndroidUtilities.formatWholeNumber((int) Math.abs(amount), 0));
         }
         return ssb;
     }
@@ -5786,33 +5575,22 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
     public static CharSequence formatDiamondsAmountString(TL_diamonds.StarsAmount starsAmount, float relativeSize, char symbol) {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-        if (starsAmount instanceof TL_diamonds.TL_starsTonAmount) {
+        final long amount = starsAmount.amount + (starsAmount.nanos < 0 && starsAmount.amount > 0 ? -1 : (starsAmount.nanos > 0 && starsAmount.amount < 0 ? +1 : 0));
+        final boolean negative = starsAmount.amount == 0 ? starsAmount.nanos < 0 : starsAmount.amount < 0;
+        if (starsAmount.nanos != 0) {
+            ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
             if (floatFormat == null)
                 floatFormat = new DecimalFormat("0.################", new DecimalFormatSymbols(Locale.US));
-            String str = floatFormat.format(starsAmount.amount / 1_000_000_000.0);
-            ssb.append(str);
+            String str = floatFormat.format((starsAmount.nanos < 0 ? 1e9 + starsAmount.nanos : starsAmount.nanos) / 1e9d);
             int index;
             if ((index = str.indexOf(".")) >= 0) {
-                ssb.setSpan(new RelativeSizeSpan(relativeSize), index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                int fromIndex = ssb.length();
+                ssb.append(str.substring(index));
+                ssb.setSpan(new RelativeSizeSpan(relativeSize), fromIndex + 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
+            ssb.append(" ").append(getString(R.string.DiamondsNano));
         } else {
-            final long amount = starsAmount.amount + (starsAmount.nanos < 0 && starsAmount.amount > 0 ? -1 : (starsAmount.nanos > 0 && starsAmount.amount < 0 ? +1 : 0));
-            final boolean negative = starsAmount.amount == 0 ? starsAmount.nanos < 0 : starsAmount.amount < 0;
-            if (starsAmount.nanos != 0) {
-                ssb.append((negative ? "-" : "") + LocaleController.formatNumber(Math.abs(amount), symbol));
-                if (floatFormat == null)
-                    floatFormat = new DecimalFormat("0.################", new DecimalFormatSymbols(Locale.US));
-                String str = floatFormat.format((starsAmount.nanos < 0 ? 1e9 + starsAmount.nanos : starsAmount.nanos) / 1e9d);
-                int index;
-                if ((index = str.indexOf(".")) >= 0) {
-                    int fromIndex = ssb.length();
-                    ssb.append(str.substring(index));
-                    ssb.setSpan(new RelativeSizeSpan(relativeSize), fromIndex + 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                ssb.append(" ").append(getString(R.string.DiamondsNano));
-            } else {
-                ssb.append(formatPluralStringComma("Diamonds", (int) starsAmount.amount));
-            }
+            ssb.append(formatPluralStringComma("Diamonds", (int) starsAmount.amount));
         }
         return ssb;
     }

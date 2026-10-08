@@ -41,14 +41,11 @@ import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.EditTextBoldCursor;
 import org.ansible.ui.Components.Forum.ForumUtilities;
-import org.ansible.ui.Components.HorizontalRoundTabsLayout;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.OutlineTextContainerView;
 import org.ansible.ui.Components.ScaleStateListAnimator;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
-import org.ansible.ui.TON.TONIntroActivity;
 
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MessageSuggestionOfferSheet extends BottomSheet {
@@ -56,7 +53,6 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
     private final boolean isMonoForumAdmin;
     private final int mode;
 
-    private final @Nullable HorizontalRoundTabsLayout currencyTabsView;
     private final OutlineTextContainerView diamondsCountEditOutline;
     private final EditTextBoldCursor diamondsCountEditField;
     private final TextView diamondsCountEditHint;
@@ -65,13 +61,10 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
     private final ButtonWithCounterView buttonView;
     private final AnimatedTextView dollarsEqView;
     private final ImageView iconDiamonds;
-    private final ImageView iconTon;
 
     private final AmountUtils.Amount inputAmountMinDiamonds;
     private final AmountUtils.Amount inputAmountMaxDiamonds;
 
-    private final AmountUtils.Amount inputAmountMinTON;
-    private final AmountUtils.Amount inputAmountMaxTON;
     private AmountUtils.Amount inputAmount;
 
     private long selectedTime = -1;
@@ -110,16 +103,8 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
         waitingKeyboard = true;
         smoothKeyboardAnimationEnabled = true;
         isMonoForumAdmin = ChatObject.canManageMonoForum(currentAccount, dialogId);
-        boolean allowTON = isMonoForumAdmin || DiamondsController.getTonInstance(currentAccount).canUseTon();
 
        final AppGlobalConfig config = MessagesController.getInstance(currentAccount).config;
-        inputAmountMinTON = AmountUtils.Amount.fromNano(
-            config.tonSuggestedPostAmountMin.get(),
-            AmountUtils.Currency.TON);
-        inputAmountMaxTON = AmountUtils.Amount.fromNano(
-            config.tonSuggestedPostAmountMax.get(),
-            AmountUtils.Currency.TON);
-
         inputAmountMinDiamonds = AmountUtils.Amount.fromDecimal(
             config.diamondsSuggestedPostAmountMin.get(),
             AmountUtils.Currency.STARS);
@@ -137,9 +122,7 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
             container.addView(balanceCloud, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 48, 0, 0));
             ScaleStateListAnimator.apply(balanceCloud);
             balanceCloud.setOnClickListener(v -> {
-                if (inputAmount.currency == AmountUtils.Currency.STARS) {
-                    new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
-                }
+                new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
             });
         } else {
             balanceCloud = null;
@@ -179,26 +162,6 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
 
         diamondsCountEditField = new EditTextBoldCursor(context);
 
-        /* Tabs */
-
-        if (allowTON) {
-            currencyTabsView = new HorizontalRoundTabsLayout(context, resourcesProvider);
-            ArrayList<CharSequence> tabs = new ArrayList<>();
-            tabs.add(getString(R.string.SuggestedOfferDiamonds));
-            tabs.add(getString(R.string.SuggestedOfferTON));
-            currencyTabsView.setTabs(tabs, x -> {
-                final AmountUtils.Currency currency = x == 0 ?
-                        AmountUtils.Currency.STARS :
-                        AmountUtils.Currency.TON;
-
-                setAmount(AmountUtils.Amount.fromNano(0, currency), true, false, true);
-                diamondsCountEditField.setText("");
-            });
-            layout.addView(currencyTabsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 18, 0, 18, 12));
-        } else {
-            currencyTabsView = null;
-        }
-
         /* Body */
 
         LinearLayout bodyLayout = new LinearLayout(context);
@@ -233,11 +196,6 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
             iconDiamonds = new ImageView(context);
             iconDiamonds.setImageResource(R.drawable.diamond);
             diamondsCountEditOutline.addView(iconDiamonds, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
-
-            iconTon = new ImageView(context);
-            iconTon.setImageResource(R.drawable.mini_gram_72);
-            iconTon.setColorFilter(0xFF3391d4);
-            diamondsCountEditOutline.addView(iconTon, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
             dollarsEqView = new AnimatedTextView(context);
             dollarsEqView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
@@ -316,16 +274,12 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
                 return;
             }
 
-            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount, inputAmount.currency);
+            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
             final AmountUtils.Amount balance = diamondsController.balanceAvailable() ?
                 AmountUtils.Amount.of(diamondsController.getBalance()) : null;
 
             if (!isMonoForumAdmin && (balance == null || balance.asNano() < inputAmount.asNano())) {
-                if (inputAmount.currency == AmountUtils.Currency.STARS) {
-                    new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, inputAmount.asDecimal(), DiamondsIntroActivity.DiamondsNeededSheet.TYPE_PRIVATE_MESSAGE, ForumUtilities.getMonoForumTitle(currentAccount, dialogId, true), null, dialogId).show();
-                } else if (inputAmount.currency == AmountUtils.Currency.TON){
-                    new TONIntroActivity.DiamondsNeededSheet(context, resourcesProvider, inputAmount, true, null).show();
-                }
+                new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, inputAmount.asDecimal(), DiamondsIntroActivity.DiamondsNeededSheet.TYPE_PRIVATE_MESSAGE, ForumUtilities.getMonoForumTitle(currentAccount, dialogId, true), null, dialogId).show();
             } else {
                 callback.run(MessageSuggestionParams.of(inputAmount, selectedTime));
                 dismiss();
@@ -390,7 +344,6 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
     }
 
     private final ColoredImageSpan[] spanRefDiamonds = new ColoredImageSpan[1];
-    private final ColoredImageSpan[] spanRefTon = new ColoredImageSpan[1];
 
     private void setAmount(@Nullable AmountUtils.Amount amount, boolean updateEditField, boolean force, boolean animated) {
         AmountUtils.Amount oldAmount = inputAmount;
@@ -410,17 +363,6 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
         if (!inputAmount.isZero() && getInputAmountMin().asNano() > inputAmount.asNano()) {
             inputAmountError |= ERROR_FLAG_AMOUNT_TOO_SMALL;
         }
-
-        /*if (!isMonoForumAdmin && !TONIntroActivity.allowTopUp() && inputAmount.currency == AmountUtils.Currency.TON) {
-            if (StarsController.getTonInstance(currentAccount).balanceAvailable()) {
-                if (inputAmount.asNano() > StarsController.getTonInstance(currentAccount).getBalanceAmount().asNano()) {
-                    inputAmountError |= ERROR_FLAG_AMOUNT_NOT_ENOUGH;
-                }
-            }
-        }*/
-
-
-
 
         final boolean currencyChanged = force || oldAmount.currency != inputAmount.currency;
         final boolean amountChanged = force || oldAmount.asNano() != inputAmount.asNano();
@@ -451,22 +393,11 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
     }
 
     private void onCurrencyChanged(boolean animated) {
-        if (currencyTabsView != null) {
-            currencyTabsView.setSelectedIndex(inputAmount.currency == AmountUtils.Currency.STARS ? 0 : 1, animated);
-        }
-        if (inputAmount.currency == AmountUtils.Currency.STARS) {
-            diamondsCountEditHint.setText(getString(R.string.PostSuggestionsOfferSubtitleDiamonds));
-            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
-            diamondsCountEditField.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length())
-            });
-        } else if (inputAmount.currency == AmountUtils.Currency.TON) {
-            diamondsCountEditHint.setText(getString(R.string.PostSuggestionsOfferSubtitleTON));
-            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            diamondsCountEditField.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length() + 3)
-            });
-        }
+        diamondsCountEditHint.setText(getString(R.string.PostSuggestionsOfferSubtitleDiamonds));
+        diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
+        diamondsCountEditField.setFilters(new InputFilter[]{
+            new InputFilter.LengthFilter(Long.toString(getInputAmountMax().asDecimal()).length())
+        });
 
         if (animated) {
             iconDiamonds.animate()
@@ -475,28 +406,14 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
                     .scaleY(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f)
                     .setDuration(180L)
                     .start();
-            iconTon.animate()
-                    .alpha(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .scaleX(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .scaleY(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .setDuration(180L)
-                    .start();
         } else {
             iconDiamonds.setAlpha(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f);
-            iconTon.setAlpha(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f);
-        }
-
-        if (balanceCloud != null) {
-            balanceCloud.setCurrency(inputAmount.currency, animated);
         }
     }
-
-    private boolean isFullyVisible;
 
     @Override
     public void onOpenAnimationEnd() {
         super.onOpenAnimationEnd();
-        isFullyVisible = true;
         checkBalanceCloudVisibility();
     }
 
@@ -507,16 +424,15 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
     }
 
     private void checkBalanceCloudVisibility() {
-        final boolean balanceCloudVisible = isFullyVisible && !isDismissed() && balanceCloud != null && containerView.getY() > dp(32) || currencyTabsView == null;
-        if (this.balanceCloudVisible != balanceCloudVisible)  {
-            this.balanceCloudVisible = balanceCloudVisible;
+        if (!balanceCloudVisible) {
+            balanceCloudVisible = true;
             if (balanceCloud != null) {
-                balanceCloud.setEnabled(balanceCloudVisible);
-                balanceCloud.setClickable(balanceCloudVisible);
+                balanceCloud.setEnabled(true);
+                balanceCloud.setClickable(true);
                 balanceCloud.animate()
-                    .scaleX(balanceCloudVisible ? 1f : 0.6f)
-                    .scaleY(balanceCloudVisible ? 1f : 0.6f)
-                    .alpha(balanceCloudVisible ? 1f : 0f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .alpha(1f)
                     .setDuration(180L)
                     .start();
             }
@@ -526,11 +442,10 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
     private void checkButtonOfferText(boolean animated) {
         if (mode == MODE_INPUT) {
             if (!inputAmount.isZero()) {
-                final boolean isTon = inputAmount.currency == AmountUtils.Currency.TON;
-                buttonView.setText(DiamondsIntroActivity.replaceDiamonds(isTon,
-                    LocaleController.formatString(R.string.PostSuggestionsOfferDiamonds, isTon ? inputAmount.asDecimalString() :
+                buttonView.setText(DiamondsIntroActivity.replaceDiamonds(
+                    LocaleController.formatString(R.string.PostSuggestionsOfferDiamonds,
                         LocaleController.formatNumber(inputAmount.asDecimal(), ',')),
-                    isTon ? spanRefTon: spanRefDiamonds
+                    spanRefDiamonds
                 ), animated);
             } else {
                 buttonView.setText(LocaleController.getString(R.string.PostSuggestionsOfferForFree), animated);
@@ -559,20 +474,14 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
         } else if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_SMALL) != 0) {
             diamondsCountEditOutline.setText(LocaleController.formatString(R.string.SuggestAPostTooSmall, getInputAmountMin().formatAsDecimalSpaced()));
         } else {
-            final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
-                R.string.PostSuggestionsOfferTitlePriceDiamonds:
-                R.string.PostSuggestionsOfferTitlePriceTON;
-
-            diamondsCountEditOutline.setText(getString(key));
+            diamondsCountEditOutline.setText(getString(R.string.PostSuggestionsOfferTitlePriceDiamonds));
         }
     }
 
     private void checkRateText(boolean animated) {
         final StringBuilder sb = new StringBuilder(10).append('~');
 
-        final double rate = inputAmount.currency == AmountUtils.Currency.TON ?
-                (MessagesController.getInstance(currentAccount).config.tonUsdRate.get()):
-                (MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * 0.00001);
+        final double rate = MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * 0.00001;
 
         sb.append(BillingController.getInstance().formatCurrency((long) (inputAmount.asDouble() * rate * 100), "USD", 2));
 
@@ -580,11 +489,11 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
     }
 
     private AmountUtils.Amount getInputAmountMin() {
-        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMinTON : inputAmountMinDiamonds;
+        return inputAmountMinDiamonds;
     }
 
     private AmountUtils.Amount getInputAmountMax() {
-        return inputAmount.currency == AmountUtils.Currency.TON ? inputAmountMaxTON : inputAmountMaxDiamonds;
+        return inputAmountMaxDiamonds;
     }
 
     @Override

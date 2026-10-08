@@ -109,7 +109,6 @@ import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_account;
 import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_update;
 import org.ansible.ui.AccountFrozenAlert;
@@ -140,7 +139,6 @@ import org.ansible.ui.Components.CompatDrawable;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.EllipsizeSpanAnimator;
 import org.ansible.ui.Components.FireworksOverlay;
-import org.ansible.ui.Components.HorizontalRoundTabsLayout;
 import org.ansible.ui.Components.ItemOptions;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkPath;
@@ -176,9 +174,6 @@ import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
 import org.ansible.ui.Stories.recorder.StoryEntry;
 import org.ansible.ui.Stories.recorder.StoryRecorder;
-import org.ansible.ui.TON.TONIntroActivity;
-import org.ansible.ui.TwoStepVerificationActivity;
-import org.ansible.ui.TwoStepVerificationSetupActivity;
 import org.ansible.ui.bots.AffiliateProgramFragment;
 import org.ansible.ui.bots.BotWebViewSheet;
 
@@ -1375,10 +1370,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                     MessagesController.getInstance(currentAccount).processUpdates((TLRPC.Updates) res, false);
                     AndroidUtilities.runOnUIThread(() -> {
                         gift.flags |= 16;
-                        gift.resale_ton_only = price.currency == AmountUtils.Currency.TON;
                         gift.resell_amount = new ArrayList<>();
                         gift.resell_amount.add(price.convertTo(AmountUtils.Currency.STARS).toTl());
-                        gift.resell_amount.add(price.convertTo(AmountUtils.Currency.TON).toTl());
                         topView.setResellPrice(price);
                         if (onGiftUpdatedListener != null) {
                             onGiftUpdatedListener.run();
@@ -1400,10 +1393,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
     }
 
     public void onResellPressed(View btn) {
-        if (btn.getAlpha() < 0.99f) {
-            cantWithBlockchainGiftAlert(1);
-            return;
-        }
+        if (btn.getAlpha() < 0.99f) return;
         final TL_diamonds.TL_starGiftUnique gift = getUniqueGift();
         if (gift == null) return;
         if (gift.resell_amount != null) {
@@ -1422,7 +1412,6 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                             AndroidUtilities.runOnUIThread(() -> {
                                 progress.end();
                                 gift.flags &=~ 16;
-                                gift.resale_ton_only = false;
                                 gift.resell_amount = null;
                                 topView.setResellPrice(AmountUtils.Amount.fromNano(0, AmountUtils.Currency.STARS));
                                 if (onGiftUpdatedListener != null) {
@@ -1465,10 +1454,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                         MessagesController.getInstance(currentAccount).processUpdates((TLRPC.Updates) res, false);
                         AndroidUtilities.runOnUIThread(() -> {
                             gift.flags |= 16;
-                            gift.resale_ton_only = price.currency == AmountUtils.Currency.TON;
                             gift.resell_amount = new ArrayList<>();
                             gift.resell_amount.add(price.convertTo(AmountUtils.Currency.STARS).toTl());
-                            gift.resell_amount.add(price.convertTo(AmountUtils.Currency.TON).toTl());
                             topView.setResellPrice(price);
                             if (onGiftUpdatedListener != null) {
                                 onGiftUpdatedListener.run();
@@ -2415,9 +2402,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 if (gift.resell_amount != null) {
                     hasResellPrice = true;
 
-                    final AmountUtils.Amount price = gift.getResellAmount(gift.resale_ton_only ? AmountUtils.Currency.TON : AmountUtils.Currency.STARS);
+                    final AmountUtils.Amount price = gift.getResellAmount(AmountUtils.Currency.STARS);
                     resellPriceView.setText(LocaleController.formatSpannable(R.string.GiftOnSale, DiamondsIntroActivity.replaceDiamonds(
-                        price.currency == AmountUtils.Currency.TON,
                         "⭐️ " + DiamondsIntroActivity.formatDiamondsAmount(price.toTl(), 1, ',')),
                         0.9f
                     ));
@@ -2506,7 +2492,6 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             hasResellPrice = !price.isZero();
             if (hasResellPrice) {
                 resellPriceView.setText(LocaleController.formatSpannable(R.string.GiftOnSale, DiamondsIntroActivity.replaceDiamonds(
-                    price.currency == AmountUtils.Currency.TON,
                     "⭐️ " + DiamondsIntroActivity.formatDiamondsAmount(price.toTl(), 1, ','),
                     0.9f
                 )));
@@ -4034,27 +4019,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
         set(gift, false);
 
-        final String owner_address = gift == null ? null : gift.owner_address;
-        final String gift_address = gift == null ? null : gift.gift_address;
-        final boolean hosting = gift != null && gift.host_id != null;
-        if (hosting && !TextUtils.isEmpty(owner_address) && !TextUtils.isEmpty(gift_address)) {
-            beforeTableTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2InBlockchain), () -> {
-                Browser.openUrlInSystemBrowser(getContext(), MessagesController.getInstance(currentAccount).tonBlockchainExplorerUrl + gift_address);
-            }), true, dp(8f / 3f), dp(.66f)));
-            beforeTableTextView.setVisibility(View.VISIBLE);
-            beforeTableTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2, resourcesProvider));
-        } else {
-            beforeTableTextView.setVisibility(View.GONE);
-        }
-
-        if (!hosting && !TextUtils.isEmpty(owner_address) && !TextUtils.isEmpty(gift_address)) {
-            afterTableTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2InBlockchain), () -> {
-                Browser.openUrlInSystemBrowser(getContext(), MessagesController.getInstance(currentAccount).tonBlockchainExplorerUrl + gift_address);
-            }), true, dp(8f / 3f), dp(.66f)));
-            afterTableTextView.setVisibility(View.VISIBLE);
-        } else {
-            afterTableTextView.setVisibility(View.GONE);
-        }
+        beforeTableTextView.setVisibility(View.GONE);
+        afterTableTextView.setVisibility(View.GONE);
 
         if (resale) {
             setButtonTextResale(gift);
@@ -4190,21 +4156,12 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         tableView.clear();
         if (!refunded) {
             if (gift.host_id != null) {
-                if (!TextUtils.isEmpty(gift.owner_address)) {
-                    tableView.addWalletAddressRow(getString(R.string.Gift2HostAddress), gift.owner_address, () -> {
-                        getBulletinFactory().createSimpleBulletin(R.raw.copy, getString(R.string.WalletAddressCopied)).show(false);
-                    });
-                }
                 if (host_id != 0) {
                     TableRow row = tableView.addRowUserWithEmojiStatus(getString(R.string.Gift2Host), currentAccount, host_id, () -> openProfile(host_id));
                     ownerTextView = ((TableView.TableRowContent) row.getChildAt(1)).getChildAt(0);
                 }
             } else {
-                if (!TextUtils.isEmpty(gift.owner_address)) {
-                    tableView.addWalletAddressRow(getString(R.string.Gift2Owner), gift.owner_address, () -> {
-                        getBulletinFactory().createSimpleBulletin(R.raw.copy, getString(R.string.WalletAddressCopied)).show(false);
-                    });
-                } else if (owner_id == 0 && gift.owner_name != null) {
+                if (owner_id == 0 && gift.owner_name != null) {
                     tableView.addRow(getString(R.string.Gift2Owner), gift.owner_name);
                 } else if (owner_id != 0) {
                     TableRow row = tableView.addRowUserWithEmojiStatus(getString(R.string.Gift2Owner), currentAccount, owner_id, () -> openProfile(owner_id));
@@ -4556,14 +4513,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
     private void setButtonTextResale(TL_diamonds.StarGift gift) {
         final AmountUtils.Amount stars = gift.getResellAmount(AmountUtils.Currency.STARS);
-        if (gift.resale_ton_only) {
-            final AmountUtils.Amount ton = gift.getResellAmount(AmountUtils.Currency.TON);
-            button.setText(DiamondsIntroActivity.replaceDiamonds(true, LocaleController.formatString(R.string.ResellGiftBuyTON, ton.asFormatString())), !firstSet);
-            button.setSubText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuyEq", (int) stars.asDecimal())), !firstSet);
-        } else {
-            button.setText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuy", (int) stars.asDecimal())), !firstSet);
-            button.setSubText(null, !firstSet);
-        }
+        button.setText(DiamondsIntroActivity.replaceDiamonds(formatPluralStringComma("ResellGiftBuy", (int) stars.asDecimal())), !firstSet);
+        button.setSubText(null, !firstSet);
     }
 
     public boolean isSaved() {
@@ -4613,25 +4564,17 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
         final long fromId = (savedStarGift.flags & 2) != 0 ? from_id : UserObject.ANONYMOUS;
         final boolean isForChannel = dialogId < 0;
-        final String owner_address, gift_address;
         final TLRPC.TL_textWithEntities message = savedStarGift.message;
-        final boolean hosted;
 
         boolean refunded = savedStarGift.refunded, self = false;
 
         if (savedStarGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
-            owner_address = savedStarGift.gift.owner_address;
-            gift_address = savedStarGift.gift.gift_address;
-            hosted = savedStarGift.gift.host_id != null;
             TL_diamonds.TL_starGiftUnique starGiftUnique = (TL_diamonds.TL_starGiftUnique) savedStarGift.gift;
             set(starGiftUnique, refunded, !savedStarGift.name_hidden ?
                 MessagesController.getInstance(currentAccount).getUserOrChat(DialogObject.getPeerDialogId(savedStarGift.from_id)) : null,
                 savedStarGift.message);
         } else {
             self = myProfile && selfId == fromId && dialogId >= 0;
-            owner_address = null;
-            gift_address = null;
-            hosted = false;
 
                     topView.setGift(savedStarGift.gift, false, false, isWorn(currentAccount, getUniqueGift()), getLink() != null, false);
             tableView.clear();
@@ -4758,13 +4701,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(getString(R.string.Gift2Refunded));
             beforeTableTextView.setTextColor(Theme.getColor(Theme.key_text_RedBold, resourcesProvider));
-        } else if (hosted && !TextUtils.isEmpty(owner_address) && !TextUtils.isEmpty(gift_address)) {
-            beforeTableTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2InBlockchain), () -> {
-                Browser.openUrlInSystemBrowser(getContext(), MessagesController.getInstance(currentAccount).tonBlockchainExplorerUrl + gift_address);
-            }), true, dp(8f / 3f), dp(.66f)));
-            beforeTableTextView.setVisibility(View.VISIBLE);
-            beforeTableTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2, resourcesProvider));
-        } else if (TextUtils.isEmpty(owner_address) && TextUtils.isEmpty(gift_address) && myProfile && savedStarGift.gift instanceof TL_diamonds.TL_starGift && savedStarGift.name_hidden) {
+        } else if (myProfile && savedStarGift.gift instanceof TL_diamonds.TL_starGift && savedStarGift.name_hidden) {
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(getString(
                 (message != null && !TextUtils.isEmpty(message.text)) ? R.string.Gift2InSenderMessageHidden2 : R.string.Gift2InSenderHidden2)
@@ -4774,12 +4711,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             beforeTableTextView.setVisibility(View.GONE);
         }
 
-        if (!hosted && !TextUtils.isEmpty(owner_address) && !TextUtils.isEmpty(gift_address)) {
-            afterTableTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2InBlockchain), () -> {
-                Browser.openUrlInSystemBrowser(getContext(), MessagesController.getInstance(currentAccount).tonBlockchainExplorerUrl + gift_address);
-            }), true, dp(8f / 3f), dp(.66f)));
-            afterTableTextView.setVisibility(View.VISIBLE);
-        } else if (myProfile && isMine(currentAccount, dialogId)) {
+        if (myProfile && isMine(currentAccount, dialogId)) {
             if (dialogId >= 0) {
                 final SpannableStringBuilder sb = new SpannableStringBuilder();
                 if (savedStarGift.unsaved) {
@@ -5145,21 +5077,11 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             });
         }
 
-        final String owner_address = stargift == null ? null : stargift.owner_address;
-        final String gift_address = stargift == null ? null : stargift.gift_address;
-        final boolean hosted = stargift != null && stargift.host_id != null;
-
         if (refunded) {
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(getString(R.string.Gift2Refunded));
             beforeTableTextView.setTextColor(Theme.getColor(Theme.key_text_RedBold, resourcesProvider));
-        } else if (hosted && !TextUtils.isEmpty(owner_address) && !TextUtils.isEmpty(gift_address)) {
-            beforeTableTextView.setVisibility(View.VISIBLE);
-            beforeTableTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2InBlockchain), () -> {
-                Browser.openUrlInSystemBrowser(getContext(), MessagesController.getInstance(currentAccount).tonBlockchainExplorerUrl + gift_address);
-            }), true, dp(8f / 3f), dp(.66f)));
-            beforeTableTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2, resourcesProvider));
-        } else if (TextUtils.isEmpty(owner_address) && TextUtils.isEmpty(gift_address) && name_hidden && !self) {
+        } else if (name_hidden && !self) {
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(
                 out ?
@@ -5171,12 +5093,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             beforeTableTextView.setVisibility(View.GONE);
         }
 
-        if (!hosted && !TextUtils.isEmpty(owner_address) && !TextUtils.isEmpty(gift_address)) {
-            afterTableTextView.setVisibility(View.VISIBLE);
-            afterTableTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.Gift2InBlockchain), () -> {
-                Browser.openUrlInSystemBrowser(getContext(), MessagesController.getInstance(currentAccount).tonBlockchainExplorerUrl + gift_address);
-            }), true, dp(8f / 3f), dp(.66f)));
-        } else if (!converted && !refunded && stargift != null && isMine(currentAccount, getDialogId()) && auctionPeer == null) {
+        if (!converted && !refunded && stargift != null && isMine(currentAccount, getDialogId()) && auctionPeer == null) {
             afterTableTextView.setVisibility(View.VISIBLE);
             if (getDialogId() >= 0) {
                 final SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -6363,23 +6280,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         }
     }
 
-    private void cantWithBlockchainGiftAlert(int action) {
-        final AlertDialog.Builder a = new AlertDialog.Builder(getContext(), resourcesProvider);
-        a.setTitle(getString(R.string.Gift2CantDoTitle));
-        a.setMessage(getString(R.string.Gift2CantDoText));
-        final TL_diamonds.TL_starGiftUnique gift = getUniqueGift();
-        if (gift != null && !TextUtils.isEmpty(gift.slug)) {
-            a.setPositiveButton(getString(R.string.OpenFragment), (di, w) -> {
-                Browser.openUrlInSystemBrowser(getContext(), "https://crystalpiece.su/gift/" + gift.slug);
-            });
-        }
-        a.setNegativeButton(getString(R.string.Cancel), null);
-        a.show();
-    }
-
     public void onTransferClick(View view) {
         if (view.getAlpha() < 0.99f) {
-            cantWithBlockchainGiftAlert(0);
             return;
         }
         openTransfer();
@@ -6395,74 +6297,21 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             return;
         }
 
-        final TL_diamonds.TL_starGiftUnique gift;
-        final int can_export_at;
-        final long transfer_stars;
-        if (savedStarGift != null && savedStarGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
-            gift = (TL_diamonds.TL_starGiftUnique) savedStarGift.gift;
-            can_export_at = savedStarGift.can_export_at;
-            transfer_stars = savedStarGift.transfer_stars;
-        } else if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
+        if (!(savedStarGift != null && savedStarGift.gift instanceof TL_diamonds.TL_starGiftUnique)) {
+            if (messageObject == null || messageObject.messageOwner == null || !(messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique)) {
+                return;
+            }
             TLRPC.TL_messageActionDiamondGiftUnique action = (TLRPC.TL_messageActionDiamondGiftUnique) messageObject.messageOwner.action;
             if (!(action.gift instanceof TL_diamonds.TL_starGiftUnique)) {
                 return;
             }
-            gift = (TL_diamonds.TL_starGiftUnique) action.gift;
-            can_export_at = action.can_export_at;
-            transfer_stars = action.transfer_stars;
-        } else {
-            return;
         }
-        final int now = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
 
         final UserSelectorBottomSheet[] sheet = new UserSelectorBottomSheet[1];
         sheet[0] = new UserSelectorBottomSheet(getContext(), currentAccount, 0, BirthdayController.getInstance(currentAccount).getState(), UserSelectorBottomSheet.TYPE_TRANSFER, true, resourcesProvider);
 //        sheet[0].setTitle(LocaleController.formatString(R.string.Gift2Transfer, getGiftName()));
         sheet[0].setTitle(getString(R.string.Gift2TransferShort));
-        final int days = now > can_export_at ? 0 : (int) Math.max(1, Math.round((float) Math.max(0, can_export_at - now) / (60 * 60 * 24f)));
-        sheet[0].addTONOption(days);
         sheet[0].setOnUserSelector(dialogId -> {
-            if (dialogId == -99) {
-                if (now < can_export_at) {
-                    new AlertDialog.Builder(getContext(), resourcesProvider)
-                        .setTitle(getString(R.string.Gift2ExportTONUnlocksAlertTitle))
-                        .setMessage(formatPluralString("Gift2ExportTONUnlocksAlertText", Math.max(1, days)))
-                        .setPositiveButton(getString(R.string.OK), null)
-                        .show();
-                } else {
-                    final LinearLayout topView = new LinearLayout(getContext());
-                    topView.setOrientation(LinearLayout.VERTICAL);
-                    topView.addView(new GiftTransferTopView(getContext(), gift), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
-                    final TextView titleView = new TextView(getContext());
-                    titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-                    titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                    titleView.setTypeface(AndroidUtilities.bold());
-                    titleView.setText(getString(R.string.Gift2ExportTONFragmentTitle));
-                    topView.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 24, 4, 24, 14));
-                    final TextView textView = new TextView(getContext());
-                    textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                    textView.setText(AndroidUtilities.replaceTags(formatString(R.string.Gift2ExportTONFragmentText, getGiftName())));
-                    topView.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 24, 0, 24, 4));
-                    new AlertDialog.Builder(getContext(), resourcesProvider)
-                        .setView(topView)
-                        .setPositiveButton(getString(R.string.Gift2ExportTONFragmentOpen), (di, w) -> {
-                            final Browser.Progress progress = di.makeButtonLoading(w);
-                            final TwoStepVerificationActivity passwordFragment = new TwoStepVerificationActivity();
-                            passwordFragment.setDelegate(2, password -> initTONTransfer(password, passwordFragment));
-                            passwordFragment.setDelegateString(getGiftName());
-                            progress.init();
-                            passwordFragment.preload(() -> {
-                                sheet[0].dismiss();
-                                progress.end();
-                                presentFragment(passwordFragment);
-                            });
-                        })
-                        .setNegativeButton(getString(R.string.Cancel), null)
-                        .show();
-                }
-                return;
-            }
             final Runnable showAlert = () -> {
                 openTransferAlert(dialogId, progress -> {
                     progress.init();
@@ -6608,124 +6457,6 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             .create()
             .setShowDiamondsBalance(true)
             .show();
-    }
-
-    private void initTONTransfer(TLRPC.InputCheckPasswordSRP password, TwoStepVerificationActivity passwordFragment) {
-        TL_diamonds.getStarGiftWithdrawalUrl req = new TL_diamonds.getStarGiftWithdrawalUrl();
-        req.stargift = getInputDiamondGift();
-        if (req.stargift == null) {
-            return;
-        }
-        req.password = password;
-        ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-            if (getContext() == null) return;
-            if (error != null) {
-                if ("PASSWORD_MISSING".equals(error.text) || error.text.startsWith("PASSWORD_TOO_FRESH_") || error.text.startsWith("SESSION_TOO_FRESH_")) {
-                    if (passwordFragment != null) {
-                        passwordFragment.needHideProgress();
-                    }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle(LocaleController.getString(R.string.Gift2TransferToTONAlertTitle));
-
-                    LinearLayout linearLayout = new LinearLayout(getContext());
-                    linearLayout.setPadding(AndroidUtilities.dp(24), AndroidUtilities.dp(2), AndroidUtilities.dp(24), 0);
-                    linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    builder.setView(linearLayout);
-
-                    TextView messageTextView = new TextView(getContext());
-                    messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                    messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                    messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
-                    messageTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.Gift2TransferToTONAlertText)));
-                    linearLayout.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-
-                    LinearLayout linearLayout2 = new LinearLayout(getContext());
-                    linearLayout2.setOrientation(LinearLayout.HORIZONTAL);
-                    linearLayout.addView(linearLayout2, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 11, 0, 0));
-
-                    ImageView dotImageView = new ImageView(getContext());
-                    dotImageView.setImageResource(R.drawable.list_circle);
-                    dotImageView.setPadding(LocaleController.isRTL ? AndroidUtilities.dp(11) : 0, AndroidUtilities.dp(9), LocaleController.isRTL ? 0 : AndroidUtilities.dp(11), 0);
-                    dotImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogTextBlack), PorterDuff.Mode.MULTIPLY));
-
-                    messageTextView = new TextView(getContext());
-                    messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                    messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                    messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
-                    messageTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.Gift2TransferToTONAlertText1)));
-                    if (LocaleController.isRTL) {
-                        linearLayout2.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                        linearLayout2.addView(dotImageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT));
-                    } else {
-                        linearLayout2.addView(dotImageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
-                        linearLayout2.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                    }
-
-                    linearLayout2 = new LinearLayout(getContext());
-                    linearLayout2.setOrientation(LinearLayout.HORIZONTAL);
-                    linearLayout.addView(linearLayout2, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 11, 0, 0));
-
-                    dotImageView = new ImageView(getContext());
-                    dotImageView.setImageResource(R.drawable.list_circle);
-                    dotImageView.setPadding(LocaleController.isRTL ? AndroidUtilities.dp(11) : 0, AndroidUtilities.dp(9), LocaleController.isRTL ? 0 : AndroidUtilities.dp(11), 0);
-                    dotImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogTextBlack), PorterDuff.Mode.MULTIPLY));
-
-                    messageTextView = new TextView(getContext());
-                    messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                    messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                    messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
-                    messageTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.Gift2TransferToTONAlertText2)));
-                    if (LocaleController.isRTL) {
-                        linearLayout2.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                        linearLayout2.addView(dotImageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT));
-                    } else {
-                        linearLayout2.addView(dotImageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
-                        linearLayout2.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                    }
-
-                    if ("PASSWORD_MISSING".equals(error.text)) {
-                        builder.setPositiveButton(LocaleController.getString(R.string.Gift2TransferToTONSetPassword), (dialogInterface, i) -> presentFragment(new TwoStepVerificationSetupActivity(TwoStepVerificationSetupActivity.TYPE_INTRO, null)));
-                        builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-                    } else {
-                        messageTextView = new TextView(getContext());
-                        messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                        messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                        messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
-                        messageTextView.setText(LocaleController.getString(R.string.Gift2TransferToTONAlertText3));
-                        linearLayout.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 11, 0, 0));
-
-                        builder.setNegativeButton(LocaleController.getString(R.string.OK), null);
-                    }
-                    if (passwordFragment != null) {
-                        passwordFragment.showDialog(builder.create());
-                    } else {
-                        builder.show();
-                    }
-                } else if ("SRP_ID_INVALID".equals(error.text)) {
-                    TL_account.getPassword getPasswordReq = new TL_account.getPassword();
-                    ConnectionsManager.getInstance(currentAccount).sendRequest(getPasswordReq, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
-                        if (error2 == null) {
-                            TL_account.Password currentPassword = (TL_account.Password) response2;
-                            passwordFragment.setCurrentPasswordInfo(null, currentPassword);
-                            TwoStepVerificationActivity.initPasswordNewAlgo(currentPassword);
-                            initTONTransfer(passwordFragment.getNewSrpPassword(), passwordFragment);
-                        }
-                    }), ConnectionsManager.RequestFlagWithoutLogin);
-                } else {
-                    if (passwordFragment != null) {
-                        passwordFragment.needHideProgress();
-                        passwordFragment.finishFragment();
-                    }
-                    BulletinFactory.showError(error);
-                }
-            } else {
-                passwordFragment.needHideProgress();
-                passwordFragment.finishFragment();
-                if (response instanceof TL_diamonds.starGiftWithdrawalUrl) {
-                    Browser.openUrlInSystemBrowser(getContext(), ((TL_diamonds.starGiftWithdrawalUrl) response).url);
-                }
-            }
-        }));
     }
 
     private void presentFragment(BaseFragment fragment) {
@@ -6991,8 +6722,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         if (button.isLoading() || gift == null) return;
 
         final long to = slugDiamondGift != null && resale && dialogId != 0 ? dialogId : UserConfig.getInstance(currentAccount).getClientUserId();
-        final AmountUtils.Currency currency = gift.resale_ton_only ?
-            AmountUtils.Currency.TON : AmountUtils.Currency.STARS;
+        final AmountUtils.Currency currency = AmountUtils.Currency.STARS;
 
         if (slugDiamondGift != null && resale) {
             GiftMessageBottomSheet giftMessageBottomSheet = new GiftMessageBottomSheet(getContext(), resourcesProvider, gift, to);
@@ -7019,7 +6749,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             giftMessageBottomSheet.setLoading(true);
         }
 
-        DiamondsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, to, message, hideMyName, form -> {
+        DiamondsController.getInstance(currentAccount).getResellingGiftForm(gift, to, message, hideMyName, form -> {
             button.setLoading(false);
             if (giftMessageBottomSheet != null) {
                 giftMessageBottomSheet.setLoading(false);
@@ -7029,7 +6759,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
             new ResaleBuyTransferAlert(getContext(), resourcesProvider, gift, initial, currentAccount, to, getGiftName(), false, (state, progress) -> {
                 progress.init();
-                DiamondsController.getInstance(currentAccount, state.currency).buyResellingGift(state.form, gift, to, message, hideMyName, (status, err) -> {
+                DiamondsController.getInstance(currentAccount).buyResellingGift(state.form, gift, to, message, hideMyName, (status, err) -> {
                     progress.end();
                     if (status) {
                         if (boughtGift != null) {
@@ -7797,13 +7527,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             this.form = paymentForm;
 
             final long amountForm = DiamondsController.getFormDiamondsPrice(paymentForm);
-            if (currency == AmountUtils.Currency.STARS) {
-                this.amount = AmountUtils.Amount.fromDecimal(amountForm, AmountUtils.Currency.STARS);
-            } else if (currency == AmountUtils.Currency.TON) {
-                this.amount = AmountUtils.Amount.fromNano(amountForm, AmountUtils.Currency.TON);
-            } else {
-                this.amount = AmountUtils.Amount.fromNano(0, AmountUtils.Currency.STARS);
-            }
+            this.amount = AmountUtils.Amount.fromDecimal(amountForm, AmountUtils.Currency.STARS);
         }
     }
 
@@ -7813,21 +7537,17 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         public final int currentAccount;
         public final long dialogId;
         private final String giftName;
-        private final boolean canSwitchToTON;
         private final Theme.ResourcesProvider resourcesProvider;
 
         public final AlertDialog alertDialog;
-        private final @Nullable HorizontalRoundTabsLayout currencyTabsView;
         private final TextView textInfoView;
         private BalanceCloud balanceCloud;
         private TextView positiveButton;
-        private FrameLayout rootView;
 
         private Browser.Progress lastPositiveButtonProgress;
         private final HashMap<AmountUtils.Currency, PaymentFormState> forms = new HashMap<>();
         private final HashSet<AmountUtils.Currency> loadingForms = new HashSet<>();
         private AmountUtils.Currency selectedCurrency;
-        private @Nullable  HintView2 tonHint;
 
         public ResaleBuyTransferAlert(
             Context context,
@@ -7849,9 +7569,6 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             this.resourcesProvider = resourcesProvider;
             this.giftName = giftName;
 
-            final boolean isTonOnly = gift.resale_ton_only;
-            this.canSwitchToTON = !isTonOnly;
-
             final TLObject obj = dialogId >= 0 ?
                 MessagesController.getInstance(currentAccount).getUser(dialogId):
                 MessagesController.getInstance(currentAccount).getChat(-dialogId);
@@ -7859,52 +7576,9 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             LinearLayout topView = new LinearLayout(context);
             topView.setOrientation(LinearLayout.VERTICAL);
 
-            FrameLayout frameView = new FrameLayout(context) {
-                private final int[] c = new int[2];
-                @Override
-                protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-                    super.onLayout(changed, left, top, right, bottom);
-                    if (currencyTabsView != null && currencyTabsView.linearLayout.getChildCount() >= 2 && tonHint != null && rootView != null) {
-
-                        rootView.getLocationInWindow(c);
-                        float px = c[0] - rootView.getTranslationX();
-                        float py = c[1] - rootView.getTranslationY();
-
-                        View child = currencyTabsView.linearLayout.getChildAt(1);
-                        child.getLocationInWindow(c);
-                        float cx = c[0] - child.getTranslationX();
-                        float cy = c[1] - child.getTranslationY();
-
-                        tonHint.setTranslationY(cy - py - tonHint.getMeasuredHeight() - currencyTabsView.getMeasuredHeight());
-                        tonHint.setJointPx(0f, cx - px + child.getMeasuredWidth() / 2f - dp(12));
-                    }
-                }
-            };
+            FrameLayout frameView = new FrameLayout(context);
             frameView.addView(topView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-            if (!isTonOnly) {
-                currencyTabsView = new HorizontalRoundTabsLayout(context, resourcesProvider);
-                ArrayList<CharSequence> tabs = new ArrayList<>();
-                tabs.add(getString(R.string.Gift2BuyInDiamonds));
-                tabs.add(getString(R.string.Gift2BuyInTON));
-                currencyTabsView.setTabs(tabs, x -> {
-                    selectedCurrency = x == 0 ?
-                            AmountUtils.Currency.STARS :
-                            AmountUtils.Currency.TON;
-
-                    onUpdateCurrency(true);
-                });
-                topView.addView(currencyTabsView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 18, 0, 18, 12));
-            } else {
-                currencyTabsView = null;
-
-                TextView textTonOnlyView = new TextView(context);
-                textTonOnlyView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
-                textTonOnlyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                textTonOnlyView.setText(getString(R.string.Gift2BuyPriceOnlyTON));
-                textTonOnlyView.setGravity(Gravity.CENTER);
-                topView.addView(textTonOnlyView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 24, 4, 24, 4));
-            }
             topView.addView(new GiftTransferTopView(context, gift, obj), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
 
             textInfoView = new TextView(context);
@@ -7932,16 +7606,12 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                         return;
                     }
 
-                    final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount, selectedCurrency);
+                    final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
                     final AmountUtils.Amount balance = diamondsController.balanceAvailable() ?
                             AmountUtils.Amount.of(diamondsController.getBalance()) : null;
 
                     if (balance != null && state.amount.asNano() > balance.asNano()) {
-                        if (selectedCurrency == AmountUtils.Currency.STARS) {
-                            new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, state.amount.asDecimal(), DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY_RESALE, null, null, 0).show();
-                        } else if (selectedCurrency == AmountUtils.Currency.TON){
-                            new TONIntroActivity.DiamondsNeededSheet(context, resourcesProvider, state.amount, true, null).show();
-                        }
+                        new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, state.amount.asDecimal(), DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY_RESALE, null, null, 0).show();
                         return;
                     }
 
@@ -7961,44 +7631,22 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             alertDialog.setShowDiamondsBalance(true).show();
             positiveButton = (TextView) alertDialog.getButton(Dialog.BUTTON_POSITIVE);
             balanceCloud = alertDialog.getDiamondsBalanceCloud();
-            rootView = alertDialog.getFullscreenContainerView();
 
-            if (rootView != null && canSwitchToTON) {
-                tonHint = new HintView2(context, HintView2.DIRECTION_BOTTOM)
-                        .setMultilineText(true)
-                        .setTextAlign(Layout.Alignment.ALIGN_NORMAL)
-                        .setDuration(5000)
-                        .setText(getString(R.string.Gift2BuyPricePayHintTON)).show();
-                tonHint.setPadding(dp(7.33f), 0, dp(7.33f), 0);
-                rootView.addView(tonHint, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 100, Gravity.TOP, 0, 26, 0, 0));
-            }
-
-            onUpdateCurrency(false);
+            onUpdateCurrency();
         }
 
-        private void onUpdateCurrency(boolean animated) {
+        private void onUpdateCurrency() {
             final AmountUtils.Currency currency = selectedCurrency;
             final PaymentFormState state = forms.get(currency);
 
             textInfoView.animate().alpha(state != null ? 1f : 0.25f).start();
             textInfoView.setEnabled(state != null);
             positiveButton.setEnabled(state != null);
-            balanceCloud.setCurrency(currency, animated);
-            if (currencyTabsView != null) {
-                currencyTabsView.setSelectedIndex(currency == AmountUtils.Currency.TON ? 1 : 0, animated);
-            }
-            if (currency == AmountUtils.Currency.TON && tonHint != null && tonHint.shown()) {
-                tonHint.hide();
-            }
 
             if (balanceCloud != null) {
-                if (currency == AmountUtils.Currency.STARS) {
-                    balanceCloud.setOnClickListener(v -> {
-                        new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
-                    });
-                } else {
-                    balanceCloud.setOnClickListener(v -> {});
-                }
+                balanceCloud.setOnClickListener(v -> {
+                    new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
+                });
             }
 
             if (lastPositiveButtonProgress != null) {
@@ -8009,33 +7657,24 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             if (state != null) {
                 final boolean isSelf = dialogId == UserConfig.getInstance(currentAccount).getClientUserId();
 
-                if (state.currency == AmountUtils.Currency.STARS) {
-                    positiveButton.setText(replaceDiamonds(formatPluralStringComma("Gift2BuyDoPrice2", (int) state.amount.asDecimal())));
-                    textInfoView.setText(AndroidUtilities.replaceTags(isSelf ?
-                        formatPluralStringComma("Gift2BuyPriceSelfText", (int) state.amount.asDecimal(), giftName) :
-                        formatPluralStringComma("Gift2BuyPriceText", (int) state.amount.asDecimal(), giftName, DialogObject.getShortName(dialogId))
-                    ));
-                }
-                if (state.currency == AmountUtils.Currency.TON) {
-                    positiveButton.setText(replaceDiamonds(true, LocaleController.formatString(R.string.Gift2BuyDoPrice2TON, state.amount.asFormatString())));
-                    textInfoView.setText(AndroidUtilities.replaceTags(isSelf ?
-                        LocaleController.formatString(R.string.Gift2BuyPriceSelfTextTON, state.amount.asFormatString(), giftName):
-                        LocaleController.formatString(R.string.Gift2BuyPriceTextTON, state.amount.asFormatString(), giftName, DialogObject.getShortName(dialogId))
-                    ));
-                }
+                positiveButton.setText(replaceDiamonds(formatPluralStringComma("Gift2BuyDoPrice2", (int) state.amount.asDecimal())));
+                textInfoView.setText(AndroidUtilities.replaceTags(isSelf ?
+                    formatPluralStringComma("Gift2BuyPriceSelfText", (int) state.amount.asDecimal(), giftName) :
+                    formatPluralStringComma("Gift2BuyPriceText", (int) state.amount.asDecimal(), giftName, DialogObject.getShortName(dialogId))
+                ));
             } else {
                 lastPositiveButtonProgress = alertDialog.makeButtonLoading(Dialog.BUTTON_POSITIVE, false, false);
                 lastPositiveButtonProgress.init();
 
                 if (loadingForms.add(currency)) {
-                    DiamondsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, dialogId, form -> {
+                    DiamondsController.getInstance(currentAccount).getResellingGiftForm(gift, dialogId, form -> {
                         if (lastPositiveButtonProgress != null && currency == selectedCurrency) {
                             lastPositiveButtonProgress.end();
                         }
                         loadingForms.remove(currency);
                         if (form != null) {
                             forms.put(currency, new PaymentFormState(currency, form));
-                            onUpdateCurrency(true);
+                            onUpdateCurrency();
                         }
                     });
                 }

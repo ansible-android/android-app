@@ -317,7 +317,6 @@ import org.ansible.ui.Stories.recorder.HintView2;
 import org.ansible.ui.Stories.recorder.PreviewView;
 import org.ansible.ui.Stories.recorder.StoryEntry;
 import org.ansible.ui.Stories.recorder.StoryRecorder;
-import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.BotAdView;
 import org.ansible.ui.bots.BotCommandsMenuContainer;
 import org.ansible.ui.bots.BotCommandsMenuView;
@@ -3165,11 +3164,6 @@ public class ChatActivity extends BaseFragment implements
                 builder.setNegativeButton(LocaleController.getString(R.string.Cancel), (dialogInterface, i) -> finishFragment());
                 showDialog(builder.create());
             }, timeout * 1000L);
-        }
-
-        if (ChatObject.isMonoForum(currentChat)) {
-            // reload balance if needed
-            DiamondsController.getTonInstance(currentAccount).canUseTon();
         }
 
         if (isTopic || getMessagesController().isMonoForumWithManageRights(dialog_id) && getTopicId() != 0) {
@@ -14839,25 +14833,18 @@ public class ChatActivity extends BaseFragment implements
                     replyIconImageView.setImageResource(R.drawable.filled_paid_suggest_24);
                     replyNameTextView.setText(LocaleController.getString(R.string.PostSuggestionsOfferChangeTitle));
 
-                    final boolean isTon = messageSuggestionParams.amount != null && messageSuggestionParams.amount.currency == AmountUtils.Currency.TON;
-                    final ColoredImageSpan[] spanArr = new ColoredImageSpan[1];
-
                     final String amountString = messageSuggestionParams.amount != null ? messageSuggestionParams.amount.asDecimalString(): "0";
 
                     if (messageSuggestionParams.isEmpty()) {
                         replyObjectTextView.setText(LocaleController.getString(R.string.SuggestAPostBelowSubtitle));
                     } else if (messageSuggestionParams.time <= 0) {
-                        replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(isTon,
-                                LocaleController.formatString(R.string.SuggestAPostBelowSubtitleDiamonds, amountString ), 0.66f, spanArr));
+                        replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(
+                                LocaleController.formatString(R.string.SuggestAPostBelowSubtitleDiamonds, amountString ), 0.66f));
                     } else {
-                        replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(isTon,
+                        replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(
                                 LocaleController.formatSpannable(R.string.SuggestAPostBelowSubtitleDiamondsAndTime, amountString,
                                         Emoji.replaceEmoji("\uD83D\uDCC6 " + MessageSuggestionOfferSheet.formatDateTime(messageSuggestionParams.time), replyObjectTextView.getPaint().getFontMetricsInt(), true)
-                                ), 0.66f, spanArr));
-                    }
-
-                    if (isTon && spanArr[0] != null) {
-                        spanArr[0].setColorKey(Theme.key_chat_replyPanelIcons);
+                                ), 0.66f));
                     }
 
                     if (chatActivityEnterTopView.isEditMode()) {
@@ -15357,25 +15344,18 @@ public class ChatActivity extends BaseFragment implements
                 replyNameTextView.setText(LocaleController.getString(R.string.SuggestAPostBelow));
 
 
-                final boolean isTon = suggestionParams.amount != null && suggestionParams.amount.currency == AmountUtils.Currency.TON;
-                final ColoredImageSpan[] spanArr = new ColoredImageSpan[1];
-
                 final String amountString = suggestionParams.amount != null ? suggestionParams.amount.asDecimalString(): "0";
 
                 if (suggestionParams.isEmpty()) {
                     replyObjectTextView.setText(LocaleController.getString(R.string.SuggestAPostBelowSubtitle));
                 } else if (suggestionParams.time <= 0) {
-                    replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(isTon,
-                        LocaleController.formatString(R.string.SuggestAPostBelowSubtitleDiamonds, amountString ), 0.66f, spanArr));
+                    replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(
+                        LocaleController.formatString(R.string.SuggestAPostBelowSubtitleDiamonds, amountString ), 0.66f));
                 } else {
-                    replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(isTon,
+                    replyObjectTextView.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(
                         LocaleController.formatSpannable(R.string.SuggestAPostBelowSubtitleDiamondsAndTime, amountString,
                             Emoji.replaceEmoji("\uD83D\uDCC6 " + MessageSuggestionOfferSheet.formatDateTime(suggestionParams.time), replyObjectTextView.getPaint().getFontMetricsInt(), true)
-                    ), 0.66f, spanArr));
-                }
-
-                if (isTon && spanArr[0] != null) {
-                    spanArr[0].setColorKey(Theme.key_chat_replyPanelIcons);
+                    ), 0.66f));
                 }
             }
 
@@ -25400,8 +25380,7 @@ public class ChatActivity extends BaseFragment implements
             }
             if ((messageObject.isDice() && !messageObject.isForwarded()) || TlUtils.isInstance(messageObject.messageOwner.action,
                     TLRPC.TL_messageActionGiftPremium.class,
-                    TLRPC.TL_messageActionGiftCode.class,
-                    TLRPC.TL_messageActionGiftTon.class)) {
+                    TLRPC.TL_messageActionGiftCode.class)) {
                 messageObject.wasUnread = true;
             }
             if (chatMode == MODE_SCHEDULED && messageObject.hasValidGroupId() && messagesDict[0].indexOfKey(messageObject.getId()) >= 0) {
@@ -34320,21 +34299,17 @@ public class ChatActivity extends BaseFragment implements
                 return;
             }
 
-            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount, amountRequired.currency);
+            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
             if (AmountUtils.Amount.ofSafe(diamondsController.getBalance()).asNano() < amountRequired.asNano()) {
-                if (amountRequired.currency == AmountUtils.Currency.STARS) {
-                    new DiamondsIntroActivity.DiamondsNeededSheet(getContext(), getResourceProvider(), amountRequired.asDecimal(),
-                        DiamondsIntroActivity.DiamondsNeededSheet.TYPE_PRIVATE_MESSAGE,
-                        ForumUtilities.getMonoForumTitle(currentAccount, getDialogId(), true), null, getDialogId()).show();
-                } else if (amountRequired.currency == AmountUtils.Currency.TON) {
-                    new TONIntroActivity.DiamondsNeededSheet(getContext(), getResourceProvider(), amountRequired, true, null).show();
-                }
+                new DiamondsIntroActivity.DiamondsNeededSheet(getContext(), getResourceProvider(), amountRequired.asDecimal(),
+                    DiamondsIntroActivity.DiamondsNeededSheet.TYPE_PRIVATE_MESSAGE,
+                    ForumUtilities.getMonoForumTitle(currentAccount, getDialogId(), true), null, getDialogId()).show();
             } else {
                 runnable.run();
             }
         };
 
-        final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount, amountRequired.currency);
+        final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
         if (!diamondsController.balanceAvailable()) {
             diamondsController.getBalance(true, onLoad, true);
         } else {
@@ -40012,9 +39987,7 @@ public class ChatActivity extends BaseFragment implements
                         ssb.append("\n\n");
 
                         AmountUtils.Amount amount = AmountUtils.Amount.ofSafe(message.suggested_post.price);
-                        final int permille = amount.currency == AmountUtils.Currency.TON ?
-                                getMessagesController().config.tonSuggestedPostCommissionPermille.get():
-                                getMessagesController().config.diamondsSuggestedPostCommissionPermille.get();
+                        final int permille = getMessagesController().config.diamondsSuggestedPostCommissionPermille.get();
 
                         if (isDirectAdmin) {
                             amount = AmountUtils.Amount.fromNano(amount.asNano()  / 1000 * permille, amount.currency);
@@ -41451,24 +41424,7 @@ public class ChatActivity extends BaseFragment implements
                     });
                 };
 
-                if (message.isStakeableDice()) {
-                    getMessagesController().loadStakeDiceInfo(available -> {
-                        if (available) {
-                            StakedDiceSheet.showStakeToast(ChatActivity.this, message.getDiceValue(), message.getStakedDiceAmount(), stake -> {
-                                if (checkSlowModeAlert()) {
-                                    SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(message.getDiceEmoji(), dialog_id, replyingMessageObject, getThreadMessage(), null, false, null, null, null, true, 0, 0, null, false);
-                                    params.sendMessageChatArguments = getMessageChatSendParams();
-                                    params.dice_stake = stake;
-                                    getSendMessagesHelper().sendMessage(params);
-                                }
-                            });
-                        } else {
-                            toastForNotStackedDice.run();
-                        }
-                    });
-                } else {
-                    toastForNotStackedDice.run();
-                }
+                toastForNotStackedDice.run();
             } else if (message.isAnimatedEmoji() && (!message.isAnimatedAnimatedEmoji() || emojiAnimationsOverlay.supports(MessageObject.findAnimatedEmojiEmoticon(message.getDocument())) && currentUser != null) || message.isPremiumSticker()) {
                 restartSticker(cell);
                 emojiAnimationsOverlay.onTapItem(cell, ChatActivity.this, true);

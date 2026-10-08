@@ -6,7 +6,7 @@ public class LinkifyPort {
 
     private static String IANA_TOP_LEVEL_DOMAINS =
             "(?:"
-                    + "(?:aaa|adnl|aarp|abb|abbott|abogado|academy|accenture|accountant|accountants|aco|active"
+                    + "(?:aaa|aarp|abb|abbott|abogado|academy|accenture|accountant|accountants|aco|active"
                     + "|actor|ads|adult|aeg|aero|afl|agency|aig|airforce|airtel|allfinanz|alsace|amica|amsterdam"
                     + "|android|apartments|app|apple|aquarelle|aramco|archi|army|arpa|arte|asia|associates"
                     + "|attorney|auction|audio|auto|autos|axa|azure|a[cdefgilmoqrstuwxz])"
@@ -67,7 +67,7 @@ public class LinkifyPort {
                     + "|sky|skype|sncf|soccer|social|software|sohu|solar|solutions|sony|soy|space|spiegel|spreadbetting"
                     + "|srl|stada|starhub|statoil|stc|stcgroup|stockholm|studio|study|style|sucks|supplies"
                     + "|supply|support|surf|surgery|suzuki|swatch|swiss|sydney|systems|s[abcdeghijklmnortuvxyz])"
-                    + "|(?:ton|tab|taipei|tatamotors|tatar|tattoo|tax|taxi|team|tech|technology|tel|telefonica"
+                    + "|(?:tab|taipei|tatamotors|tatar|tattoo|tax|taxi|team|tech|technology|tel|telefonica"
                     + "|temasek|tennis|thd|theater|theatre|tickets|tienda|tips|tires|tirol|today|tokyo|tools"
                     + "|top|toray|toshiba|tours|town|toyota|toys|trade|trading|training|travel|trust|tui|t[cdfghjklmnortvwz])"
                     + "|(?:ubs|university|uno|uol|u[agksyz])"
@@ -174,7 +174,7 @@ public class LinkifyPort {
     private static final String HOST_NAME = "(" + IRI_LABEL + "\\.)+" + TLD;
     private static final String DOMAIN_NAME_STR = "(" + HOST_NAME + "|" + IP_ADDRESS_STRING + ")";
     private static final Pattern DOMAIN_NAME = Pattern.compile(DOMAIN_NAME_STR);
-    private static final String PROTOCOL = "(?i:http|https|ton|tg|tonsite)://";
+    private static final String PROTOCOL = "(?i:http|https|tg)://";
     private static final String WORD_BOUNDARY = "(?:\\b|$|^)";
     private static final String USER_INFO = "(?:[a-zA-Z0-9\\$\\-\\_\\.\\+\\!\\*\\'\\(\\)"
             + "\\,\\;\\?\\&\\=]|(?:\\%[a-fA-F0-9]{2})){1,64}(?:\\:(?:[a-zA-Z0-9\\$\\-\\_"

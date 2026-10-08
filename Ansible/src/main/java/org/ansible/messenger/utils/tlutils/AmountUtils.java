@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 
 public class AmountUtils {
-    public enum Currency { STARS, TON }
+    public enum Currency { STARS }
 
     public static class Amount {
         public final Currency currency;
@@ -88,15 +88,11 @@ public class AmountUtils {
                 switch (currency) {
                     case STARS:
                         return LocaleController.formatPluralStringSpaced("DiamondsCount", (int) asDecimal());
-                    case TON:
-                        return LocaleController.formatPluralStringSpaced("TonCount", (int) asDecimal());
                 }
             } else {
                 switch (currency) {
                     case STARS:
                         return LocaleController.formatString(R.string.DiamondsCountX, asDecimalString());
-                    case TON:
-                        return LocaleController.formatString(R.string.TonCountX, asDecimalString());
                 }
             }
 
@@ -136,9 +132,7 @@ public class AmountUtils {
         }
 
         public static Amount fromUsd(double usd, AmountUtils.Currency currency) {
-            if (currency == AmountUtils.Currency.TON) {
-                return AmountUtils.Amount.fromDecimal(usd / MessagesController.getInstance(UserConfig.selectedAccount).config.tonUsdRate.get(), AmountUtils.Currency.TON).round(2);
-            } else if (currency == AmountUtils.Currency.STARS) {
+            if (currency == AmountUtils.Currency.STARS) {
                 return AmountUtils.Amount.fromDecimal(usd * 100000 / MessagesController.getInstance(UserConfig.selectedAccount).diamondsUsdSellRate1000, AmountUtils.Currency.STARS).round(0);
             }
 
@@ -148,8 +142,6 @@ public class AmountUtils {
         public double convertToUsd() {
             if (this.currency == Currency.STARS) {
                 return this.asDouble() / 1000 * MessagesController.getInstance(UserConfig.selectedAccount).diamondsUsdSellRate1000 / 100;
-            } else if (this.currency == Currency.TON) {
-                return this.asDouble() * MessagesController.getInstance(UserConfig.selectedAccount).config.tonUsdRate.get();
             }
             return 0;
         }
@@ -168,12 +160,6 @@ public class AmountUtils {
                 final long decimals = getDecimals(currency);
                 amount.amount = nanos / decimals;
                 amount.nanos = (int) (nanos % decimals);
-                return amount;
-            }
-
-            if (currency == AmountUtils.Currency.TON) {
-                final TL_diamonds.StarsAmount amount = new TL_diamonds.TL_starsTonAmount();
-                amount.amount = nanos;
                 return amount;
             }
 
@@ -223,8 +209,6 @@ public class AmountUtils {
         public static Amount of(TL_diamonds.StarsAmount amount) {
             if (amount instanceof TL_diamonds.TL_starsAmount) {
                 return fromNano(amount.amount * getDecimals(Currency.STARS) + amount.nanos, Currency.STARS);
-            } else if (amount instanceof TL_diamonds.TL_starsTonAmount) {
-                return fromNano(amount.amount, Currency.TON);
             }
 
             return null;

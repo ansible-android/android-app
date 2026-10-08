@@ -190,7 +190,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             invalidate();
         } else if (id == NotificationCenter.stopSpoilers) {
             setSpoilersSuppressed(true);
-        } else if (id == NotificationCenter.didUpdatePremiumGiftStickers || id == NotificationCenter.diamondGiftsLoaded || id == NotificationCenter.didUpdateTonGiftStickers) {
+        } else if (id == NotificationCenter.didUpdatePremiumGiftStickers || id == NotificationCenter.diamondGiftsLoaded) {
             MessageObject messageObject = currentMessageObject;
             if (messageObject != null) {
                 setMessageObject(messageObject, true);
@@ -842,18 +842,10 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                         document = action.gift.getDocument();
                     }
                 } else {
-                    if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftTon) {
-                        packName = UserConfig.getInstance(currentAccount).premiumTonStickerPack;
-                        if (packName == null) {
-                            MediaDataController.getInstance(currentAccount).checkTonGiftStickers();
-                            return;
-                        }
-                    } else {
-                        packName = UserConfig.getInstance(currentAccount).premiumGiftsStickerPack;
-                        if (packName == null) {
-                            MediaDataController.getInstance(currentAccount).checkPremiumGiftStickers();
-                            return;
-                        }
+                    packName = UserConfig.getInstance(currentAccount).premiumGiftsStickerPack;
+                    if (packName == null) {
+                        MediaDataController.getInstance(currentAccount).checkPremiumGiftStickers();
+                        return;
                     }
 
                     set = MediaDataController.getInstance(currentAccount).getStickerSetByName(packName);
@@ -866,22 +858,18 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                         String monthsEmoticon;
                         if (messageObject.type == MessageObject.TYPE_GIFT_STARS) {
                             String emoji;
-                            if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftTon) {
-                                emoji = DiamondsIntroActivity.getTonGiftEmoji(messageObject.messageOwner.action.cryptoAmount);
+                            final long stars;
+                            if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftDiamonds) {
+                                stars = ((TLRPC.TL_messageActionGiftDiamonds) messageObject.messageOwner.action).stars;
                             } else {
-                                final long stars;
-                                if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftDiamonds) {
-                                    stars = ((TLRPC.TL_messageActionGiftDiamonds) messageObject.messageOwner.action).stars;
-                                } else {
-                                    stars = ((TLRPC.TL_messageActionPrizeDiamonds) messageObject.messageOwner.action).stars;
-                                }
-                                if (stars <= 1000) {
-                                    emoji = "2⃣";
-                                } else if (stars < 2500) {
-                                    emoji = "3⃣";
-                                } else {
-                                    emoji = "4⃣";
-                                }
+                                stars = ((TLRPC.TL_messageActionPrizeDiamonds) messageObject.messageOwner.action).stars;
+                            }
+                            if (stars <= 1000) {
+                                emoji = "2⃣";
+                            } else if (stars < 2500) {
+                                emoji = "3⃣";
+                            } else {
+                                emoji = "4⃣";
                             }
                             for (int i = 0; i < set.packs.size(); ++i) {
                                 TLRPC.TL_stickerPack pack = set.packs.get(i);
@@ -1154,7 +1142,6 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         }
 
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.didUpdatePremiumGiftStickers);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.didUpdateTonGiftStickers);
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondGiftsLoaded);
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diceStickersDidLoad);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
@@ -1188,7 +1175,6 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             giftPremiumText.attach();
         }
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.didUpdatePremiumGiftStickers);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.didUpdateTonGiftStickers);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondGiftsLoaded);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diceStickersDidLoad);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
@@ -1590,8 +1576,6 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             DiamondsIntroActivity.showTransactionSheet(getContext(), currentAccount, currentMessageObject.messageOwner.date, currentMessageObject.messageOwner.from_id, currentMessageObject.messageOwner.peer_id, (TLRPC.TL_messageActionGiftDiamonds) currentMessageObject.messageOwner.action, avatarStoryParams.resourcesProvider);
         } else if (currentMessageObject.messageOwner.action instanceof TLRPC.TL_messageActionPrizeDiamonds) {
             DiamondsIntroActivity.showTransactionSheet(getContext(), currentAccount, currentMessageObject.messageOwner.date, currentMessageObject.messageOwner.from_id, currentMessageObject.messageOwner.peer_id, (TLRPC.TL_messageActionPrizeDiamonds) currentMessageObject.messageOwner.action, avatarStoryParams.resourcesProvider);
-        } else if (currentMessageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftTon) {
-            DiamondsIntroActivity.showTransactionSheet(getContext(), currentAccount, currentMessageObject.messageOwner.date, currentMessageObject.messageOwner.from_id, currentMessageObject.messageOwner.peer_id, (TLRPC.TL_messageActionGiftTon) currentMessageObject.messageOwner.action, avatarStoryParams.resourcesProvider);
         } else if (currentMessageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift) {
             final TLRPC.TL_messageActionDiamondGift action = (TLRPC.TL_messageActionDiamondGift) currentMessageObject.messageOwner.action;
             if (action.forceIn) return;
@@ -2280,21 +2264,6 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                         giftRectSize,
                         true,
                             false);
-                } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftTon) {
-                    createGiftPremiumLayouts(
-                        getString(R.string.ActionGiftTonTitle),
-                        null,
-                        null, currentMessageObject.messageText,
-                        false, getString(R.string.ActionGiftDiamondsView),
-                        11, null,
-                        giftRectSize,
-                        true,
-                        false);
-                    textLayout = null;
-                    textHeight = 0;
-                    titleLayout = null;
-                    titleHeight = 0;
-                    textY = 0;
                 } else {
                     createGiftPremiumLayouts(
                         getString(R.string.ActionDiamondGiveawayPrizeTitle),

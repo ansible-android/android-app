@@ -60,9 +60,6 @@ public class BotDiamondsController {
     private final HashMap<Long, Long> lastLoadedBotDiamondsStats = new HashMap<>();
     private final HashMap<Long, TLRPC.TL_payments_starsRevenueStats> botDiamondsStats = new HashMap<>();
 
-    private final HashMap<Long, Long> lastLoadedTonStats = new HashMap<>();
-    private final HashMap<Long, TLRPC.TL_payments_starsRevenueStats> tonStats = new HashMap<>();
-
     public TL_diamonds.StarsAmount getBotDiamondsBalance(long did) {
         TLRPC.TL_payments_starsRevenueStats botStats = getStarsRevenueStats(did);
         return botStats == null ? TL_diamonds.StarsAmount.ofDiamonds(0) : botStats.status.current_balance;
@@ -70,11 +67,6 @@ public class BotDiamondsController {
 
     public void invalidateDiamondsBalance(long did) {
         getStarsRevenueStats(did, true);
-    }
-
-    public long getTONBalance(long did) {
-        TLRPC.TL_payments_starsRevenueStats botStats = getTONRevenueStats(did, false);
-        return botStats == null || botStats.status == null || botStats.status.current_balance == null ? 0 : botStats.status.current_balance.amount;
     }
 
     public long getAvailableBalance(long did) {
@@ -86,10 +78,6 @@ public class BotDiamondsController {
         return getStarsRevenueStats(did) != null;
     }
 
-    public boolean isTONBalanceAvailable(long did) {
-        return getTONRevenueStats(did, false) != null;
-    }
-
     public TLRPC.TL_payments_starsRevenueStats getStarsRevenueStats(long did) {
         return getStarsRevenueStats(did, false);
     }
@@ -99,19 +87,9 @@ public class BotDiamondsController {
         return stats != null && stats.status != null && (stats.status.available_balance.amount > 0 || stats.status.overall_revenue.amount > 0 || stats.status.current_balance.amount > 0);
     }
 
-    public boolean botHasTON(long did) {
-        TLRPC.TL_payments_starsRevenueStats stats = getTONRevenueStats(did, false);
-        return stats != null && stats.status != null && (stats.status.current_balance.amount > 0 || stats.status.available_balance.amount > 0 || stats.status.overall_revenue.amount > 0);
-    }
-
     public void preloadDiamondsStats(long did) {
         Long lastLoaded = lastLoadedBotDiamondsStats.get(did);
         getStarsRevenueStats(did, lastLoaded == null || System.currentTimeMillis() - lastLoaded > 1000 * 30);
-    }
-
-    public void preloadTonStats(long did) {
-        Long lastLoaded = lastLoadedTonStats.get(did);
-        getTONRevenueStats(did, lastLoaded == null || System.currentTimeMillis() - lastLoaded > 1000 * 30);
     }
 
     public TLRPC.TL_payments_starsRevenueStats getStarsRevenueStats(long did, boolean force) {
@@ -135,41 +113,14 @@ public class BotDiamondsController {
         return botStats;
     }
 
-    public TLRPC.TL_payments_starsRevenueStats getTONRevenueStats(long did, boolean force) {
-        Long lastLoaded = lastLoadedTonStats.get(did);
-        TLRPC.TL_payments_starsRevenueStats botStats = tonStats.get(did);
-        if (lastLoaded == null || System.currentTimeMillis() - lastLoaded > 1000 * 60 * 5 || force) {
-            TLRPC.TL_payments_getDiamondsRevenueStats req = new TLRPC.TL_payments_getDiamondsRevenueStats();
-            req.ton = true;
-            req.dark = Theme.isCurrentThemeDark();
-            req.peer = MessagesController.getInstance(currentAccount).getInputPeer(did);
-            final int stats_dc;
-            TLRPC.ChatFull chatFull = MessagesController.getInstance(currentAccount).getChatFull(-did);
-            if (chatFull != null) {
-                stats_dc = chatFull.stats_dc;
-            } else {
-                stats_dc = ConnectionsManager.DEFAULT_DATACENTER_ID;
-            }
-            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                if (res instanceof TLRPC.TL_payments_starsRevenueStats) {
-                    TLRPC.TL_payments_starsRevenueStats r = (TLRPC.TL_payments_starsRevenueStats) res;
-                    tonStats.put(did, r);
-                } else {
-                    tonStats.put(did, null);
-                }
-                lastLoadedTonStats.put(did, System.currentTimeMillis());
-                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.botDiamondsUpdated, did);
-            }), null, null, 0, stats_dc, ConnectionsManager.ConnectionTypeGeneric, true);
-        }
-        return botStats;
-    }
-
     public void onUpdate(TL_update.TL_updateDiamondsRevenueStatus update) {
         if (update == null) return;
+        // Ansible: TON не поддерживается, такое обновление отбрасываем.
+        if (update.status != null && update.status.current_balance instanceof TL_diamonds.TL_starsTonAmount) return;
         long dialogId = DialogObject.getPeerDialogId(update.peer);
         if (dialogId < 0) {
             if (ChannelMonetizationLayout.instance != null && ChannelMonetizationLayout.instance.dialogId == DialogObject.getPeerDialogId(update.peer)) {
-                ChannelMonetizationLayout.instance.setupBalances(update.status.current_balance instanceof TL_diamonds.TL_starsTonAmount, update.status);
+                ChannelMonetizationLayout.instance.setupBalances(update.status);
                 ChannelMonetizationLayout.instance.reloadTransactions();
             }
         } else {

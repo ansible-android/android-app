@@ -1,7 +1,6 @@
 package org.ansible.ui.Components.Premium.boosts;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
-import static org.ansible.messenger.LocaleController.formatPluralString;
 import static org.ansible.messenger.LocaleController.formatPluralStringComma;
 import static org.ansible.messenger.LocaleController.getString;
 
@@ -12,7 +11,6 @@ import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -62,7 +60,6 @@ import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.Components.BulletinFactory;
 import org.ansible.ui.Components.CheckBox2;
-import org.ansible.ui.Components.CombinedDrawable;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.ItemOptions;
 import org.ansible.ui.Components.LayoutHelper;
@@ -426,12 +423,6 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             if (view instanceof SelectorUserCell) {
                 TLRPC.User user = ((SelectorUserCell) view).getUser();
                 TLRPC.Chat chat = ((SelectorUserCell) view).getChat();
-                if (user == null && chat == null && type == TYPE_TRANSFER) {
-                    if (onUserSelectedListener != null) {
-                        onUserSelectedListener.run(-99L);
-                    }
-                    return;
-                }
                 if (user == null && chat == null) return;
                 long id = user != null ? user.id : -chat.id;
                 if (type == TYPE_TRANSFER) {
@@ -874,8 +865,6 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         return h;
     }
 
-    private Drawable tonIcon;
-
     @SuppressLint("NotifyDataSetChanged")
     public void updateItems(boolean animated, boolean notify) {
         oldItems.clear();
@@ -904,17 +893,6 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
                 }
             }
         } else {
-            if (includeTonOption && type == TYPE_TRANSFER) {
-                if (tonIcon == null) {
-                    final CombinedDrawable icon = new CombinedDrawable(
-                        Theme.createCircleDrawable(dp(46), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)),
-                        getContext().getResources().getDrawable(R.drawable.mini_gram_72).mutate()
-                    );
-                    icon.setIconSize(dp(24), dp(24));
-                    tonIcon = icon;
-                }
-                items.add(Item.asCustomUser(2, tonIcon, getString(R.string.Gift2ExportTONTitle), tonDays > 0 ? formatPluralString("Gift2ExportTONUnlocksIn", tonDays) : ""));
-            }
             final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(UserConfig.getInstance(currentAccount).getClientUserId());
             if (userFull == null) {
                 MessagesController.getInstance(currentAccount).loadFullUser(UserConfig.getInstance(currentAccount).getCurrentUser(), 0, true);
@@ -1114,14 +1092,6 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     public UserSelectorBottomSheet setOnUsersSelector(Utilities.Callback2<Boolean, HashSet<Long>> listener) {
         onUsersSelectedListener = listener;
         return this;
-    }
-
-    private boolean includeTonOption;
-    private int tonDays;
-    public void addTONOption(int days) {
-        includeTonOption = true;
-        tonDays = days;
-        updateItems(false, true);
     }
 
 

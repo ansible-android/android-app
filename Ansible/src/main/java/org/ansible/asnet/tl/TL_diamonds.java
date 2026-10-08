@@ -2530,7 +2530,8 @@ public class TL_diamonds {
 
         @Override
         public AmountUtils.Currency getCurrency() {
-            return AmountUtils.Currency.TON;
+            // Ansible: TON не поддерживается, у такой суммы нет валюты клиента.
+            return null;
         }
 
         public void readParams(InputSerializedData stream, boolean exception) {

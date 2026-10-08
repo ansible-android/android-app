@@ -1035,14 +1035,12 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     public final GiveawayMessageCell giveawayMessageCell = new GiveawayMessageCell(this);
     public final GiveawayResultsMessageCell giveawayResultsMessageCell = new GiveawayResultsMessageCell(this);
 
-    private boolean playedDice;
     private long diamondsPrice;
     private Text diamondsPriceText;
     private LinkPath diamondsPriceTextPath;
     private CornerPathEffect diamondsPriceTextPathEffect;
     public int diamondsPriceTopPadding;
 
-    private long diceStakeOutcome;
     private Text bottomActionText;
     private LinkPath bottomActionTextPath;
     private CornerPathEffect bottomActionTextPathEffect;
@@ -6930,7 +6928,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             if (messageIdChanged) {
                 isPressed = false;
                 isCheckPressed = true;
-                playedDice = false;
             }
             gamePreviewPressed = false;
             sideButtonPressed = false;
@@ -11070,7 +11067,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
             final int diamondsPriceMessagesCount;
             final long diamondsPrice;
-            final long diceStakeOutcome = currentMessageObject == null || !playedDice ? 0 : currentMessageObject.getStakedDiceWinAmount();
             if (currentMessageObject != null && currentMessageObject.getDialogId() < 0) {
                 diamondsPrice = 0;
                 diamondsPriceMessagesCount = 0;
@@ -11135,46 +11131,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 } else {
                     diamondsPriceText = null;
                     diamondsPriceTopPadding = 0;
-                }
-            }
-            if (this.diceStakeOutcome != diceStakeOutcome) {
-                this.diceStakeOutcome = diceStakeOutcome;
-                if (diceStakeOutcome != 0) {
-                    final CharSequence text;
-                    if (currentMessageObject.isOutOwner() && !currentMessageObject.isForwarded()) {
-                        if (diceStakeOutcome > 0) {
-                            text = DiamondsIntroActivity.replaceDiamond(formatString(R.string.StakeDiceActionYouWon, DiamondsIntroActivity.formatTON(diceStakeOutcome)), 0.825f);
-                        } else {
-                            text = DiamondsIntroActivity.replaceDiamond(formatString(R.string.StakeDiceActionYouLost, DiamondsIntroActivity.formatTON(-diceStakeOutcome)), 0.825f);
-                        }
-                    } else {
-                        final TLObject fromObject = currentMessageObject.getFromPeerObject();
-                        if (diceStakeOutcome > 0) {
-                            text = DiamondsIntroActivity.replaceDiamond(replaceWithLink(formatString(R.string.StakeDiceActionWon, DiamondsIntroActivity.formatTON(diceStakeOutcome)), "un1", fromObject), 0.825f);
-                        } else {
-                            text = DiamondsIntroActivity.replaceDiamond(replaceWithLink(formatString(R.string.StakeDiceActionLost, DiamondsIntroActivity.formatTON(-diceStakeOutcome)), "un1", fromObject), 0.825f);
-                        }
-                    }
-                    bottomActionText = new Text(text, 14, AndroidUtilities.bold())
-                        .multiline(3)
-                        .setMaxWidth(currentMessageObject.getMaxMessageTextWidth())
-                        .align(Layout.Alignment.ALIGN_CENTER)
-                        .lineSpacing(dp(2));
-                    if (bottomActionTextPath == null) {
-                        bottomActionTextPath = new LinkPath();
-                        bottomActionTextPath.setUseCornerPathImplementation(true);
-                        bottomActionTextPathEffect = new CornerPathEffect(dp(16));
-                    } else {
-                        bottomActionTextPath.rewind();
-                    }
-                    bottomActionTextPath.setPadding(dp(9), dp(2.66f));
-                    bottomActionPadding = (int) (bottomActionText.getHeight() + dp(6.66f));
-                    bottomActionTextPath.setCurrentLayout(bottomActionText.getLayout(), 0, 0);
-                    bottomActionText.getLayout().getSelectionPath(0, text.length(), bottomActionTextPath);
-                    bottomActionTextPath.closeRects();
-                } else {
-                    bottomActionText = null;
-                    bottomActionPadding = 0;
                 }
             }
 
@@ -15141,25 +15097,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
         }
         transitionParams.recordDrawingState();
-
-        checkStakedDice();
-    }
-
-    private void checkStakedDice() {
-        if (currentMessageObject == null || !currentMessageObject.isStakedDice()) return;
-        if (playedDice) return;
-
-        final Drawable drawable = photoImage.getDrawable();
-        if (!(drawable instanceof RLottieDiceDrawable)) return;
-        final RLottieDiceDrawable lottieDrawable = (RLottieDiceDrawable) drawable;
-        if (!lottieDrawable.hasBaseDice()) return;
-
-        if (!playedDice && lottieDrawable.isDiceRevealed()) {
-            playedDice = true;
-            if (delegate != null) {
-                delegate.forceUpdate(this, false);
-            }
-        }
     }
 
     public void startRevealMedia() {
@@ -18487,10 +18424,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
         } else {
             currentTimeString = timeString;
-        }
-        if (currentMessageObject.isStakedDice()) {
-            currentTimeString = TextUtils.concat("💎", DiamondsIntroActivity.formatTON(currentMessageObject.getStakedDiceAmount()), "  ", currentTimeString);
-            currentTimeString = DiamondsIntroActivity.replaceDiamond(currentTimeString, 0.55f, null, 0, dp(-.33f), 1.05f);
         }
         final long diamondsPrice = currentMessageObject.getDialogId() < 0 ? getDiamondsPrice() : 0;
         if (diamondsPrice > 0) {

@@ -49,7 +49,6 @@ import org.ansible.ui.Diamonds.BotDiamondsActivity;
 import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 import org.ansible.ui.Stories.recorder.StoryRecorder;
-import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.ChannelAffiliateProgramsFragment;
 import org.ansible.ui.web.WebBrowserSettings;
 
@@ -82,9 +81,6 @@ public class LinkManager {
 
         final String scheme = uri.getScheme();
 
-        if ("tonsite".equalsIgnoreCase(scheme))
-            return handleTonsite(uri);
-
         if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))
             return handleHttp(uri);
 
@@ -92,11 +88,6 @@ public class LinkManager {
             return handleTg(uri);
 
         return false;
-    }
-
-    private boolean handleTonsite(Uri uri) {
-        Browser.openUrl(activity, uri);
-        return true;
     }
 
     private boolean handleHttp(Uri uri) {
@@ -1195,11 +1186,6 @@ public class LinkManager {
             if ("do-not-hide-ads".equalsIgnoreCase(second)) {
                 scrollTo("showAdsRow");
             }
-            return true;
-        }
-
-        if ("ton".equalsIgnoreCase(first)) {
-            presentFragment(new TONIntroActivity());
             return true;
         }
 

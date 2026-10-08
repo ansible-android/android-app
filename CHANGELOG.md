@@ -10,6 +10,71 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.2] - 2026-10-08
+
+### Removed
+- **TON is cut out of the client.** Ansible has no TON: the backend never
+  issues TON amounts, and requests carrying the `ton` flag were answered with
+  Diamonds data — so every "TON balance" the app showed was the Diamonds balance
+  under a TON label, while the "Offer TON" and "Pay in TON" tabs were offered to
+  every user of the standalone build. All of it is gone: 51 Java files touched
+  (+412 / −4839 lines), 170 strings and 19 resource files removed.
+  - **Screens and entry points**: the TON balance screen (`TONIntroActivity`)
+    with its `as://ton` and `as://settings/ton` links and the settings and
+    profile rows; the staked-dice sheet (`StakedDiceSheet`).
+  - **Second balance**: the TON twin of `DiamondsController`
+    (`getTonInstance`, `getInstance(int, boolean|Currency)`, `canUseTon`) and
+    `AmountUtils.Currency.TON`. There is one controller and one currency now.
+  - **Currency choice**: the Diamonds/TON tabs in the suggested-post price
+    sheet, the gift offer sheet and the resale purchase dialog (where the
+    "Pay in TON" tab and its hint used to show on every listing); the
+    "only accept TON" switch in the resale price sheet; the "Diamonds only"
+    listing filter, which had no meaning without TON listings.
+  - **Monetization**: the TON ad-revenue half of the channel screen (balance,
+    withdrawal, TON transactions, the "Switch Off Ads" toggle and the learn-more
+    sheet), the TON mode of the bot revenue screen, TON balance rows in the
+    profile and the bot editor, the TON chart formatter. The channel tab now
+    opens on `can_view_stars_revenue` alone and behaves exactly as it already
+    did when TON revenue was unavailable.
+  - **Gifts**: "Send via Blockchain" and the Fragment withdrawal flow, the
+    "in TON Blockchain" plaques, wallet-address rows, TON resale prices and
+    badges, the TON gift service message and its sticker set (which the app
+    used to request in the background).
+  - **Staked dice**: tapping a dice no longer sends a game-info request; the
+    stake send path and the win/lose rendering are removed. Plain dice are
+    untouched.
+  - **TON sites**: the `tonsite://` intent filter and the `ton://` package
+    query in the manifest, gateway proxying of `.ton` / `.adnl` hosts in the
+    in-app browser, and their recognition in message text. Such links are now
+    ordinary unknown schemes and domains.
+  - **Leftovers**: `ton_*` app-config keys, `tonlib` log plumbing, the
+    blockchain date row and "View in Blockchain Explorer" button in the
+    transaction sheet.
+
+### Changed
+- An update carrying a TON amount is now dropped instead of being written
+  into the Diamonds balance or the Diamonds revenue cache.
+- The collectible username and phone sheets show the regular-currency price
+  only; the TON amount and its icon are gone.
+
+### Unchanged on purpose
+- **TL vocabulary stays frozen**: constructors, fields and flags named `ton`
+  remain in the schema classes, they are simply never set. The one edit there
+  is `TL_starsTonAmount.getCurrency()`, which now returns `null` because the
+  enum constant it returned no longer exists; the wire format is untouched.
+- **`BillingController.formatCurrency` keeps its `"TON"` branch.** A currency
+  code is server data, and without that branch the string would reach
+  `java.util.Currency.getInstance` and throw.
+- **Wallet is not TON**: the attach-bot row in Settings, the wallet tab
+  animation, the `wallet_*` Lottie files used by 2-step verification and quiz
+  feedback, and Google Pay are left alone. So are the end-to-end call
+  "blockchain" and the MRZ country code `TON` (Tonga).
+- **Fragment entry points without a TON flag stay**: login by Fragment code,
+  "Buy on Fragment", Diamonds withdrawal.
+- `AmountUtils.Currency` keeps its type and every signature that takes it;
+  only the constant is gone, so the compiler proves that no code path can
+  build or handle a TON amount.
+
 ## [0.2.1] - 2026-10-07
 
 ### Changed

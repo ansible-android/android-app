@@ -230,7 +230,6 @@ import org.ansible.ui.Stories.StoryViewer;
 import org.ansible.ui.Stories.recorder.StoryEntry;
 import org.ansible.ui.Stories.recorder.StoryRecorder;
 import org.ansible.ui.Stories.LiveStoryPipOverlay;
-import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.BotWebViewAttachedSheet;
 import org.ansible.ui.bots.BotWebViewSheet;
 import org.ansible.ui.bots.WebViewRequestProps;
@@ -1952,13 +1951,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         final String scheme = data.getScheme();
                         if (scheme != null) {
                             switch (scheme) {
-                                case "tonsite":
-                                    Browser.openUrl(this, data);
-                                    intent.setAction(null);
-                                    if (progress != null) {
-                                        progress.end();
-                                    }
-                                    return false;
                                 case "http":
                                 case "https": {
                                     String host = data.getHost().toLowerCase();
@@ -2709,12 +2701,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         }
                                         String purpose = data.getQueryParameter("purpose");
                                         DiamondsController.getInstance(intentAccount[0]).showDiamondsTopup(this, balance, purpose);
-                                    } else if (url.startsWith("as:ton") || url.startsWith("as://ton")) {
-                                        if (progress != null) {
-                                            progress.end();
-                                        }
-                                        presentFragment(new TONIntroActivity());
-                                        return pushOpened;
                                     } else if (url.startsWith("as:stars") || url.startsWith("as://stars")) {
                                         if (progress != null) {
                                             progress.end();

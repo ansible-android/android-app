@@ -217,10 +217,8 @@ public class WebActionBar extends FrameLayout {
                 o.addIf(!isLocal, R.drawable.msg_share, getString(R.string.ShareFile), click.run(share_item));
                 o.add(R.drawable.msg_settings_old, getString(R.string.Settings), click.run(settings_item));
             } else if (menuType == ArticleViewer.PageLayout.TYPE_WEB) {
-                if (!isTonsite) {
-                    o.add(R.drawable.msg_openin, getString(R.string.OpenInExternalApp), click.run(open_item));
-                    o.addGap();
-                }
+                o.add(R.drawable.msg_openin, getString(R.string.OpenInExternalApp), click.run(open_item));
+                o.addGap();
                 if (hasForward) {
                     o.add(R.drawable.msg_arrow_forward, getString(R.string.WebForward), click.run(forward_item));
                 }
@@ -498,7 +496,6 @@ public class WebActionBar extends FrameLayout {
     public int menuIconColor;
     public boolean hasForward;
     public boolean hasLoaded;
-    public boolean isTonsite;
     public boolean isLocal;
 
     public void setHasForward(boolean value) {
@@ -517,9 +514,6 @@ public class WebActionBar extends FrameLayout {
         menuIconColor = Theme.multAlpha(menuTextColor, .6f);
     }
 
-    public void setIsTonsite(boolean value) {
-        this.isTonsite = value;
-    }
     public void setIsLocal(boolean local) {
         this.isLocal = local;
     }

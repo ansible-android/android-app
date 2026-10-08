@@ -65,7 +65,6 @@ import org.ansible.ui.Components.ButtonSpan;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.EditTextBoldCursor;
 import org.ansible.ui.Components.Forum.ForumUtilities;
-import org.ansible.ui.Components.HorizontalRoundTabsLayout;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.OutlineTextContainerView;
 import org.ansible.ui.Components.RecyclerListView;
@@ -76,7 +75,6 @@ import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
-import org.ansible.ui.TON.TONIntroActivity;
 
 import java.util.ArrayList;
 
@@ -86,7 +84,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     private final String giftName;
     private final long dialogId;
 
-    private final @Nullable HorizontalRoundTabsLayout currencyTabsView;
     private final OutlineTextContainerView diamondsCountEditOutline;
     private final EditTextBoldCursor diamondsCountEditField;
     private final TextView diamondsCountEditHint;
@@ -96,7 +93,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     private final ButtonWithCounterView buttonView;
     private final AnimatedTextView dollarsEqView;
     private final ImageView iconDiamonds;
-    private final ImageView iconTon;
 
     private final AmountUtils.AmountLimits inputAmountLimits = new AmountUtils.AmountLimits();
     private AmountUtils.Amount inputAmount;
@@ -144,8 +140,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         waitingKeyboard = true;
         smoothKeyboardAnimationEnabled = true;
 
-        boolean allowTON = DiamondsController.getTonInstance(currentAccount).canUseTon();
-
         if (dialogId > 0) {
             final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(dialogId);
             if (userFull == null) {
@@ -164,17 +158,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
             config.diamondsDiamondGiftResaleAmountMax.get()
         ), AmountUtils.Currency.STARS);
 
-        final AmountUtils.Amount minOfferTon = AmountUtils.Amount.fromNano(Math.max(
-            minOfferDiamonds.convertTo(AmountUtils.Currency.TON).round(2).asNano(),
-            config.tonDiamondGiftResaleAmountMin.get()
-        ), AmountUtils.Currency.TON);
-        final AmountUtils.Amount maxOfferTon = AmountUtils.Amount.fromNano(Math.max(
-            minOfferTon.asNano() * 2,
-            config.tonDiamondGiftResaleAmountMax.get()
-        ), AmountUtils.Currency.TON);
-
         inputAmountLimits.set(minOfferDiamonds, maxOfferDiamonds);
-        inputAmountLimits.set(minOfferTon, maxOfferTon);
 
         balanceCloud = new BalanceCloud(context, currentAccount, resourcesProvider);
         balanceCloud.setScaleX(0.6f);
@@ -185,9 +169,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         container.addView(balanceCloud, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 48, 0, 0));
         ScaleStateListAnimator.apply(balanceCloud);
         balanceCloud.setOnClickListener(v -> {
-            if (inputAmount.currency == AmountUtils.Currency.STARS) {
-                new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
-            }
+            new DiamondsIntroActivity.DiamondsOptionsSheet(context, resourcesProvider).show();
         });
 
         fixNavigationBar(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
@@ -200,26 +182,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
 
         diamondsCountEditField = new EditTextBoldCursor(context);
-
-        /* Tabs */
-
-        if (allowTON) {
-            currencyTabsView = new HorizontalRoundTabsLayout(context, resourcesProvider);
-            ArrayList<CharSequence> tabs = new ArrayList<>();
-            tabs.add(getString(R.string.SuggestedOfferDiamonds));
-            tabs.add(getString(R.string.SuggestedOfferTON));
-            currencyTabsView.setTabs(tabs, x -> {
-                final AmountUtils.Currency currency = x == 0 ?
-                        AmountUtils.Currency.STARS :
-                        AmountUtils.Currency.TON;
-
-                setAmount(AmountUtils.Amount.fromNano(0, currency), true, false, true);
-                diamondsCountEditField.setText("");
-            });
-            layout.addView(currencyTabsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 18, 0, 18, 18));
-        } else {
-            currencyTabsView = null;
-        }
 
         /* Body */
 
@@ -255,11 +217,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
             iconDiamonds = new ImageView(context);
             iconDiamonds.setImageResource(R.drawable.diamond);
             diamondsCountEditOutline.addView(iconDiamonds, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
-
-            iconTon = new ImageView(context);
-            iconTon.setImageResource(R.drawable.mini_gram_72);
-            iconTon.setColorFilter(0xFF3391d4);
-            diamondsCountEditOutline.addView(iconTon, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
             dollarsEqView = new AnimatedTextView(context);
             dollarsEqView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
@@ -336,16 +293,12 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
                 return;
             }
 
-            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount, inputAmount.currency);
+            final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
             final AmountUtils.Amount balance = diamondsController.balanceAvailable() ?
                 AmountUtils.Amount.of(diamondsController.getBalance()) : null;
 
             if ((balance == null || balance.asNano() < inputAmount.asNano())) {
-                if (inputAmount.currency == AmountUtils.Currency.STARS) {
-                    new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, inputAmount.asDecimal(), DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY_RESALE, null, null, dialogId).show();
-                } else if (inputAmount.currency == AmountUtils.Currency.TON){
-                    new TONIntroActivity.DiamondsNeededSheet(context, resourcesProvider, inputAmount, true, null).show();
-                }
+                new DiamondsIntroActivity.DiamondsNeededSheet(context, resourcesProvider, inputAmount.asDecimal(), DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY_RESALE, null, null, dialogId).show();
             } else {
                 openConfirmAlert();
             }
@@ -413,7 +366,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     }
 
     private final ColoredImageSpan[] spanRefDiamonds = new ColoredImageSpan[1];
-    private final ColoredImageSpan[] spanRefTon = new ColoredImageSpan[1];
 
     private void setAmount(@Nullable AmountUtils.Amount amount, boolean updateEditField, boolean force, boolean animated) {
         AmountUtils.Amount oldAmount = inputAmount;
@@ -461,26 +413,13 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     }
 
     private void onCurrencyChanged(boolean animated) {
-        if (currencyTabsView != null) {
-            currencyTabsView.setSelectedIndex(inputAmount.currency == AmountUtils.Currency.STARS ? 0 : 1, animated);
-        }
-
         final String userName = DialogObject.getShortName(dialogId);
-        if (inputAmount.currency == AmountUtils.Currency.STARS) {
-            publishingTimeHint.setText(replaceTags(formatString(R.string.GiftOfferDurationInfoDiamonds, userName)));
+        publishingTimeHint.setText(replaceTags(formatString(R.string.GiftOfferDurationInfoDiamonds, userName)));
 
-            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
-            diamondsCountEditField.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(Long.toString(inputAmountLimits.getMax(inputAmount.currency).asDecimal()).length())
-            });
-        } else if (inputAmount.currency == AmountUtils.Currency.TON) {
-            publishingTimeHint.setText(replaceTags(formatString(R.string.GiftOfferDurationInfoTON, userName)));
-
-            diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            diamondsCountEditField.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(Long.toString(inputAmountLimits.getMax(inputAmount.currency).asDecimal()).length() + 3)
-            });
-        }
+        diamondsCountEditField.setInputType(InputType.TYPE_CLASS_NUMBER);
+        diamondsCountEditField.setFilters(new InputFilter[]{
+            new InputFilter.LengthFilter(Long.toString(inputAmountLimits.getMax(inputAmount.currency).asDecimal()).length())
+        });
 
         if (animated) {
             iconDiamonds.animate()
@@ -489,28 +428,14 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
                     .scaleY(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f)
                     .setDuration(180L)
                     .start();
-            iconTon.animate()
-                    .alpha(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .scaleX(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .scaleY(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f)
-                    .setDuration(180L)
-                    .start();
         } else {
             iconDiamonds.setAlpha(inputAmount.currency == AmountUtils.Currency.STARS ? 1f : 0f);
-            iconTon.setAlpha(inputAmount.currency == AmountUtils.Currency.TON ? 1f : 0f);
-        }
-
-        if (balanceCloud != null) {
-            balanceCloud.setCurrency(inputAmount.currency, animated);
         }
     }
-
-    private boolean isFullyVisible;
 
     @Override
     public void onOpenAnimationEnd() {
         super.onOpenAnimationEnd();
-        isFullyVisible = true;
         checkBalanceCloudVisibility();
     }
 
@@ -521,16 +446,15 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     }
 
     private void checkBalanceCloudVisibility() {
-        final boolean balanceCloudVisible = isFullyVisible && !isDismissed() && balanceCloud != null && containerView.getY() > dp(32) || currencyTabsView == null;
-        if (this.balanceCloudVisible != balanceCloudVisible)  {
-            this.balanceCloudVisible = balanceCloudVisible;
+        if (!balanceCloudVisible) {
+            balanceCloudVisible = true;
             if (balanceCloud != null) {
-                balanceCloud.setEnabled(balanceCloudVisible);
-                balanceCloud.setClickable(balanceCloudVisible);
+                balanceCloud.setEnabled(true);
+                balanceCloud.setClickable(true);
                 balanceCloud.animate()
-                    .scaleX(balanceCloudVisible ? 1f : 0.6f)
-                    .scaleY(balanceCloudVisible ? 1f : 0.6f)
-                    .alpha(balanceCloudVisible ? 1f : 0f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .alpha(1f)
                     .setDuration(180L)
                     .start();
             }
@@ -538,11 +462,10 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     }
 
     private void checkButtonOfferText(boolean animated) {
-        final boolean isTon = inputAmount.currency == AmountUtils.Currency.TON;
-        buttonView.setText(DiamondsIntroActivity.replaceDiamonds(isTon,
-            LocaleController.formatString(R.string.GiftOfferButtonDiamonds, isTon ? inputAmount.asDecimalString() :
+        buttonView.setText(DiamondsIntroActivity.replaceDiamonds(
+            LocaleController.formatString(R.string.GiftOfferButtonDiamonds,
                 LocaleController.formatNumber(inputAmount.asDecimal(), ',')),
-            isTon ? spanRefTon: spanRefDiamonds
+            spanRefDiamonds
         ), animated);
     }
 
@@ -560,34 +483,20 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     }
 
     private void checkAmountInputText(boolean ignoredAnimated) {
-        final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferDiamondsToOffer :
-                R.string.GiftOfferTONToOffer;
-
-        diamondsCountEditOutline.setText(getString(key));
+        diamondsCountEditOutline.setText(getString(R.string.GiftOfferDiamondsToOffer));
     }
 
     private void checkAmountInputTextHint(boolean ignoredAnimated) {
         final AmountUtils.Currency currency = inputAmount.currency;
 
         if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_BIG) != 0) {
-            final int key = currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferDiamondsToOfferInfoIsHigh :
-                R.string.GiftOfferTONToOfferInfoIsHigh;
-            diamondsCountEditHint.setText(replaceTags(formatString(key,
+            diamondsCountEditHint.setText(replaceTags(formatString(R.string.GiftOfferDiamondsToOfferInfoIsHigh,
                 inputAmountLimits.getMax(currency).asFormatString(), giftName)));
         } else if ((inputAmountError & ERROR_FLAG_AMOUNT_TOO_SMALL) != 0) {
-            final int key = currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferDiamondsToOfferInfoIsLow :
-                R.string.GiftOfferTONToOfferInfoIsLow;
-            diamondsCountEditHint.setText(replaceTags(formatString(key,
+            diamondsCountEditHint.setText(replaceTags(formatString(R.string.GiftOfferDiamondsToOfferInfoIsLow,
                 inputAmountLimits.getMin(currency).asFormatString(), giftName)));
         } else {
-            final int key = inputAmount.currency == AmountUtils.Currency.STARS ?
-                R.string.GiftOfferDiamondsToOfferInfo :
-                R.string.GiftOfferTONToOfferInfo;
-
-            diamondsCountEditHint.setText(replaceTags(formatString(key, giftName)));
+            diamondsCountEditHint.setText(replaceTags(formatString(R.string.GiftOfferDiamondsToOfferInfo, giftName)));
         }
 
         diamondsCountEditHint.setTextColor(getThemedColor((inputAmountError & (~ERROR_FLAG_AMOUNT_NOT_ENOUGH)) == 0 ?
@@ -597,9 +506,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
     private void checkRateText(boolean animated) {
         final StringBuilder sb = new StringBuilder(10).append('~');
 
-        final double rate = inputAmount.currency == AmountUtils.Currency.TON ?
-                (MessagesController.getInstance(currentAccount).config.tonUsdRate.get()):
-                (MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * 0.00001);
+        final double rate = MessagesController.getInstance(currentAccount).diamondsUsdWithdrawRate1000 * 0.00001;
 
         sb.append(BillingController.getInstance().formatCurrency((long) (inputAmount.asDouble() * rate * 100), "USD", 2));
 
@@ -641,7 +548,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         final String amountFmt = inputAmount.asFormatString();
         // final String amountFmtFee = getFee().asFormatString();
         // final String amountFmtFull = getFullOfferWithFee().asFormatString();
-        final boolean isTon = inputAmount.currency == AmountUtils.Currency.TON;
 
         final LinearLayout topView = new LinearLayout(getContext());
         topView.setOrientation(LinearLayout.VERTICAL);
@@ -656,9 +562,8 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         final TextView textView = new TextView(getContext());
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        textView.setText(AndroidUtilities.replaceTags(inputAmount.currency == AmountUtils.Currency.STARS ?
-            formatString(R.string.GiftOfferTransferInfoTextDiamonds, amountFmt, DialogObject.getShortName(dialogId), giftName) :
-            formatString(R.string.GiftOfferTransferInfoTextTON, amountFmt, DialogObject.getShortName(dialogId), giftName)
+        textView.setText(AndroidUtilities.replaceTags(
+            formatString(R.string.GiftOfferTransferInfoTextDiamonds, amountFmt, DialogObject.getShortName(dialogId), giftName)
         ));
         topView.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 24, 4, 24, 4));
         final TableView tableView = new TableView(getContext(), resourcesProvider);
@@ -668,7 +573,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
         tableView.addRow(
             getString(R.string.GiftOfferRowOffer),
-            replaceDiamondsWithPlain(isTon, formatString(R.string.GiftOfferAmount, amountFmt), 0.8f));
+            replaceDiamondsWithPlain(formatString(R.string.GiftOfferAmount, amountFmt), 0.8f));
         if (paywall > 0) {
             tableView.addRow(getString(R.string.GiftOfferRowFee),
                 replaceDiamondsWithPlain(formatString(R.string.GiftOfferAmount, paywallAmount.asFormatString()), 0.8f));
@@ -682,30 +587,19 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         if (paywall == 0) {
-            ssb.append(replaceDiamonds(isTon, formatString(R.string.GiftOfferPay, amountFmt)));
+            ssb.append(replaceDiamonds(formatString(R.string.GiftOfferPay, amountFmt)));
         } else {
-            if (isTon) {
-                final CharSequence tonFmt = replaceDiamonds(true, formatString(R.string.GiftOfferPayMultiPart, amountFmt));
-                final CharSequence diamondsFmt = replaceDiamonds(formatString(R.string.GiftOfferPayMultiPart, paywallAmount.asFormatString()));
-                ssb.append(LocaleController.formatSpannable(R.string.GiftOfferPayMulti, tonFmt, diamondsFmt));
-            } else {
-                String fmt = AmountUtils.Amount.fromNano(inputAmount.asNano() + paywallAmount.asNano(), AmountUtils.Currency.STARS).asFormatString();
-                ssb.append(replaceDiamonds(formatString(R.string.GiftOfferPay, fmt)));
-            }
+            String fmt = AmountUtils.Amount.fromNano(inputAmount.asNano() + paywallAmount.asNano(), AmountUtils.Currency.STARS).asFormatString();
+            ssb.append(replaceDiamonds(formatString(R.string.GiftOfferPay, fmt)));
         }
 
         new AlertDialog.Builder(getContext(), resourcesProvider)
             .setView(topView)
             .setPositiveButton(ssb, (di, w) -> {
                 if (paywall > 0) {
-                    final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount, AmountUtils.Currency.STARS);
+                    final DiamondsController diamondsController = DiamondsController.getInstance(currentAccount);
                     final AmountUtils.Amount balance = diamondsController.balanceAvailable() ? AmountUtils.Amount.of(diamondsController.getBalance()) : null;
-                    final AmountUtils.Amount needed;
-                    if (isTon) {
-                        needed = AmountUtils.Amount.fromDecimal(paywall, AmountUtils.Currency.STARS);
-                    } else {
-                        needed = AmountUtils.Amount.fromNano(inputAmount.asNano() + paywallAmount.asNano(), AmountUtils.Currency.STARS);
-                    }
+                    final AmountUtils.Amount needed = AmountUtils.Amount.fromNano(inputAmount.asNano() + paywallAmount.asNano(), AmountUtils.Currency.STARS);
                     if ((balance == null || balance.asNano() < needed.asNano())) {
                         new DiamondsIntroActivity.DiamondsNeededSheet(getContext(), resourcesProvider, needed.asDecimal(), DiamondsIntroActivity.DiamondsNeededSheet.TYPE_STAR_GIFT_BUY_RESALE, null, null, dialogId).show();
                         return;
@@ -777,8 +671,6 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         final String amountFmt = amount.asFormatString();
         final String amountMinusFeeFmt = amountWithFee.asFormatString();
 
-        final boolean isTon = amount.currency == AmountUtils.Currency.TON;
-
         final LinearLayout topView = new LinearLayout(context);
         topView.setOrientation(LinearLayout.VERTICAL);
         topView.addView(new DiamondGiftSheet.GiftTransferTopView(context, gift, obj), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
@@ -786,9 +678,8 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
         final TextView textView = new TextView(context);
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        textView.setText(AndroidUtilities.replaceTags(amount.currency == AmountUtils.Currency.STARS ?
-                formatString(R.string.GiftOfferTransferInfoTextSellDiamonds, amountFmt, DialogObject.getShortName(dialogId), giftName, amountMinusFeeFmt) :
-                formatString(R.string.GiftOfferTransferInfoTextSellTON, amountFmt, DialogObject.getShortName(dialogId), giftName, amountMinusFeeFmt)
+        textView.setText(AndroidUtilities.replaceTags(
+                formatString(R.string.GiftOfferTransferInfoTextSellDiamonds, amountFmt, DialogObject.getShortName(dialogId), giftName, amountMinusFeeFmt)
         ));
         topView.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 24, 4, 24, 4));
 
@@ -840,7 +731,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
         new AlertDialog.Builder(context, resourcesProvider)
                 .setView(topView)
-                .setPositiveButton(replaceDiamonds(isTon, formatString(R.string.GiftOfferSellFor, amountMinusFeeFmt)), (di, w) -> {
+                .setPositiveButton(replaceDiamonds(formatString(R.string.GiftOfferSellFor, amountMinusFeeFmt)), (di, w) -> {
                     final Browser.Progress progress = di.makeButtonLoading(AlertDialog.BUTTON_POSITIVE);
                     progress.init();
 
@@ -871,9 +762,7 @@ public class GiftOfferSheet extends BottomSheetWithRecyclerListView {
 
     private static AmountUtils.Amount getAmountMinusFee(int currentAccount, AmountUtils.Amount amount) {
         final AmountUtils.Currency currency = amount.currency;
-        final int permille = currency == AmountUtils.Currency.STARS ?
-            MessagesController.getInstance(currentAccount).config.diamondsDiamondGiftResaleCommissionPermille.get():
-            MessagesController.getInstance(currentAccount).config.tonDiamondGiftResaleCommissionPermille.get();
+        final int permille = MessagesController.getInstance(currentAccount).config.diamondsDiamondGiftResaleCommissionPermille.get();
 
         return AmountUtils.Amount.fromNano(amount.asNano() * permille / 1000, currency);
     }

@@ -1,7 +1,5 @@
 package org.ansible.ui.Charts.view_data;
 
-import static org.ansible.messenger.AndroidUtilities.dp;
-
 import android.graphics.Canvas;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -11,14 +9,9 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.BillingController;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.ChannelMonetizationLayout;
 import org.ansible.ui.Charts.data.ChartData;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Diamonds.DiamondsIntroActivity;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 public class ChartHorizontalLinesData {
 
@@ -73,7 +66,7 @@ public class ChartHorizontalLinesData {
                 if (k > 0) {
                     float v2 = (values[i] / k);
                     if (skipFloatValues) {
-                        if (v2 - ((long) v2) < 0.01f || formatter == ChartData.FORMATTER_TON || formatter == ChartData.FORMATTER_XTR) {
+                        if (v2 - ((long) v2) < 0.01f || formatter == ChartData.FORMATTER_XTR) {
                             valuesStr2[i] = format(1, secondTextPaint, (long) v2, formatter);
                         } else {
                             valuesStr2[i] = "";
@@ -121,7 +114,7 @@ public class ChartHorizontalLinesData {
                 if (k > 0) {
                     float v = (values[i] / k);
                     if (skipFloatValues) {
-                        if (v - ((long) v) < 0.01f || formatter == ChartData.FORMATTER_TON || formatter == ChartData.FORMATTER_XTR) {
+                        if (v - ((long) v) < 0.01f || formatter == ChartData.FORMATTER_XTR) {
                             valuesStr2[i] = format(1, secondTextPaint, (long) v, formatter);
                         } else {
                             valuesStr2[i] = "";
@@ -134,23 +127,8 @@ public class ChartHorizontalLinesData {
         }
     }
 
-    private DecimalFormat formatterTON;
     public CharSequence format(int a, TextPaint paint, long v, int formatter) {
-        if (formatter == ChartData.FORMATTER_TON) {
-            if (a == 1) {
-                return "≈" + BillingController.getInstance().formatCurrency(v, "USD");
-            }
-            if (formatterTON == null) {
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-                symbols.setDecimalSeparator('.');
-                formatterTON = new DecimalFormat("#.##", symbols);
-                formatterTON.setMinimumFractionDigits(2);
-                formatterTON.setMaximumFractionDigits(6);
-                formatterTON.setGroupingUsed(false);
-            }
-            formatterTON.setMaximumFractionDigits(v > 1_000_000_000 ? 2 : 6);
-            return ChannelMonetizationLayout.replaceTON("TON " + formatterTON.format(v / 1_000_000_000.0), paint, .8f, -dp(.66f), false);
-        } else if (formatter == ChartData.FORMATTER_XTR) {
+        if (formatter == ChartData.FORMATTER_XTR) {
             if (a == 1) {
                 return "≈" + BillingController.getInstance().formatCurrency(v, "USD");
             }

@@ -7874,12 +7874,10 @@ public class AlertsCreator {
 
         final long unsafePaidSuggestedPostTime = MessagesController.getInstance(currentAccount).config.diamondsSuggestedPostAgeMin.get(TimeUnit.SECONDS);
         boolean hasUnsafePaidSuggestedPostDiamonds = false;
-        boolean hasUnsafePaidSuggestedPostTon = false;
         if (selectedMessage != null) {
             hasNonDiceMessages = !selectedMessage.isDice() || Math.abs(currentDate - selectedMessage.messageOwner.date) > 24 * 60 * 60;
             if (selectedMessage.isPaidSuggestedPostProtected()) {
                 hasUnsafePaidSuggestedPostDiamonds |= selectedMessage.messageOwner.paid_suggested_post_stars;
-                hasUnsafePaidSuggestedPostTon |= selectedMessage.messageOwner.paid_suggested_post_ton;
             }
 
         } else {
@@ -7891,7 +7889,6 @@ public class AlertsCreator {
                     }
                     if (msg.isPaidSuggestedPostProtected()) {
                         hasUnsafePaidSuggestedPostDiamonds |= msg.messageOwner.paid_suggested_post_stars;
-                        hasUnsafePaidSuggestedPostTon |= msg.messageOwner.paid_suggested_post_ton;
                     }
                 }
             }
@@ -7901,7 +7898,6 @@ public class AlertsCreator {
                 MessageObject messageObject = selectedGroup.messages.get(a);
                 if (messageObject.isPaidSuggestedPostProtected()) {
                     hasUnsafePaidSuggestedPostDiamonds |= messageObject.messageOwner.paid_suggested_post_stars;
-                    hasUnsafePaidSuggestedPostTon |= messageObject.messageOwner.paid_suggested_post_ton;
                 }
             }
         }
@@ -8272,12 +8268,6 @@ public class AlertsCreator {
 
             builder.setTitle(getString(R.string.SuggestionDiamondsWillBeLost));
             builder.setMessage(replaceTags(LocaleController.formatString(R.string.SuggestionDiamondsWillBeLostInfo, hours)));
-            builder.setPositiveButton(LocaleController.getString(R.string.SuggestionDiamondsWillBeLostDelete), deleteAction);
-        } else if (hasUnsafePaidSuggestedPostTon) {
-            final int hours = (int) MessagesController.getInstance(currentAccount).config.diamondsSuggestedPostAgeMin.get(TimeUnit.HOURS);
-
-            builder.setTitle(getString(R.string.SuggestionTONWillBeLost));
-            builder.setMessage(replaceTags(LocaleController.formatString(R.string.SuggestionTONWillBeLostInfo, hours)));
             builder.setPositiveButton(LocaleController.getString(R.string.SuggestionDiamondsWillBeLostDelete), deleteAction);
         } else if (isActiveGiveawayAndOwner && !isSavedMessages) {
             builder.setTitle(LocaleController.getString(R.string.BoostingGiveawayDeleteMsgTitle));

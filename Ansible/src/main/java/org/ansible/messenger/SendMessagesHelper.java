@@ -55,7 +55,6 @@ import org.json.JSONObject;
 import org.ansible.messenger.audioinfo.AudioInfo;
 import org.ansible.messenger.support.SparseLongArray;
 import org.ansible.messenger.utils.EphemeralMessagesHelper;
-import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.messenger.utils.tlutils.TLKeyboardHelper;
 import org.ansible.messenger.utils.tlutils.TlUtils;
 import org.ansible.asnet.ConnectionsManager;
@@ -94,7 +93,6 @@ import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.OAuthSheet;
 import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Diamonds.DiamondsIntroActivity;
-import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.BotWebViewSheet;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.Components.LayoutHelper;
@@ -4533,12 +4531,6 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         final TLRPC.TL_messageMediaDice mediaDice = new TLRPC.TL_messageMediaDice();
                         mediaDice.emoticon = message;
                         mediaDice.value = -1;
-                        if (sendMessageParams.dice_stake > 0) {
-                            mediaDice.game_outcome = new TLRPC.TL_messages_emojiGameOutcome();
-                            mediaDice.game_outcome.seed = new byte[] {};
-                            mediaDice.game_outcome.ton_amount = 0;
-                            mediaDice.game_outcome.stake_ton_amount = sendMessageParams.dice_stake;
-                        }
                         newMsg.media = mediaDice;
                         type = MEDIA_TYPE_DICE;
                         caption = "";
@@ -5678,21 +5670,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             inputMedia = inputMediaPoll;
                         }
                     } else if (type == MEDIA_TYPE_DICE) {
-                        if (sendMessageParams.dice_stake > 0) {
-                            final TLRPC.TL_inputMediaStakeDice inputMediaStakeDice = new TLRPC.TL_inputMediaStakeDice();
-                            inputMediaStakeDice.ton_amount = sendMessageParams.dice_stake;
-                            inputMediaStakeDice.client_seed = Utilities.random.generateSeed(32);
-                            final TLRPC.EmojiGameInfo info = getMessagesController().stakeDiceInfo;
-                            if (!(info instanceof TLRPC.TL_emojiGameDiceInfo)) {
-                                return;
-                            }
-                            inputMediaStakeDice.game_hash = ((TLRPC.TL_emojiGameDiceInfo) info).game_hash;
-                            inputMedia = inputMediaStakeDice;
-                        } else {
-                            TLRPC.TL_inputMediaDice inputMediaDice = new TLRPC.TL_inputMediaDice();
-                            inputMediaDice.emoticon = message;
-                            inputMedia = inputMediaDice;
-                        }
+                        TLRPC.TL_inputMediaDice inputMediaDice = new TLRPC.TL_inputMediaDice();
+                        inputMediaDice.emoticon = message;
+                        inputMedia = inputMediaDice;
                     } else if (type == MEDIA_TYPE_STORY) {
                         TLRPC.TL_inputMediaStory inputMediaStory = new TLRPC.TL_inputMediaStory();
                         inputMediaStory.id = sendingStory.id;
@@ -7989,39 +7969,6 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     return;
                 }
             }
-            if (error != null && req instanceof TLRPC.TL_messages_sendMedia && ((TLRPC.TL_messages_sendMedia) req).media instanceof TLRPC.TL_inputMediaStakeDice) {
-                if ("GAME_HASH_INVALID".equalsIgnoreCase(error.text)) {
-                    getConnectionsManager().sendRequestTyped(new TLRPC.TL_messages_getEmojiGameInfo(), AndroidUtilities::runOnUIThread, (res, err) -> {
-                        if (res instanceof TLRPC.TL_emojiGameDiceInfo) {
-                            final String game_hash = ((TLRPC.TL_emojiGameDiceInfo) res).game_hash;
-                            final TLRPC.TL_messages_sendMedia r = (TLRPC.TL_messages_sendMedia) req;
-                            if (r.media instanceof TLRPC.TL_inputMediaStakeDice) {
-                                ((TLRPC.TL_inputMediaStakeDice) r.media).game_hash = game_hash;
-                            }
-                            performSendMessageRequest(r, msgObj, originalPath, parentMessage, check, delayedMessage, parentObject, params, scheduled);
-                        }
-                    });
-                    return;
-                } else if ("BALANCE_TOO_LOW".equalsIgnoreCase(error.text)) {
-                    final TLRPC.TL_inputMediaStakeDice media = (TLRPC.TL_inputMediaStakeDice) ((TLRPC.TL_messages_sendMedia) req).media;
-                    final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
-                    if (lastFragment != null) {
-                        AndroidUtilities.runOnUIThread(() -> {
-                            new TONIntroActivity.DiamondsNeededSheet(
-                                lastFragment.getContext(),
-                                lastFragment.getResourceProvider(),
-                                AmountUtils.Amount.fromNano(media.ton_amount, AmountUtils.Currency.TON),
-                                false,
-                                () -> performSendMessageRequest(req, msgObj, originalPath, parentMessage, check, delayedMessage, parentObject, params, scheduled)
-                            ).show();
-                            final ArrayList<MessageObject> arrayList = new ArrayList<>();
-                            arrayList.add(msgObj);
-                            cancelSendingMessage(arrayList);
-                        });
-                        return;
-                    }
-                }
-            }
             if (req instanceof TLRPC.TL_messages_addPollAnswer) {
                 AndroidUtilities.runOnUIThread(() -> {
                     if (error == null) {
@@ -8489,7 +8436,6 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 mediaDice.value = mediaDiceNew.value;
                 mediaDice.flags = mediaDiceNew.flags;
                 mediaDice.game_outcome = mediaDiceNew.game_outcome;
-                DiamondsController.getInstance(currentAccount, true).invalidateBalance();
             } else if (newMsg.media.photo != null) {
                 strippedOld = FileLoader.getClosestPhotoSizeWithSize(newMsg.media.photo.sizes, 40);
                 if (sentMessage != null && sentMessage.media != null && sentMessage.media.photo != null) {
@@ -12137,7 +12083,6 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         public MessageSuggestionParams suggestionParams;
         public boolean isLivePhoto;
         public long livePhotoTimestamp;
-        public long dice_stake;
         public long ephemeralReceiverBotId;
         public TL_iv.RichMessage richMessage;
         public ArrayList<TLRPC.InputUser> richMessageInputUsers;

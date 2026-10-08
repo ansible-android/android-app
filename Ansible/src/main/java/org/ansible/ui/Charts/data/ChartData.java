@@ -30,7 +30,6 @@ public class ChartData {
 
     public float oneDayPercentage = 0f;
 
-    public static final int FORMATTER_TON = 1;
     public static final int FORMATTER_XTR = 2;
 
     public int xTickFormatter = 0;
@@ -113,7 +112,6 @@ public class ChartData {
 
     public int getFormatter(String value) {
         if (TextUtils.isEmpty(value)) return 0;
-        if (value.contains("TON")) return FORMATTER_TON;
         if (value.contains(DiamondsController.currency)) return FORMATTER_XTR;
         return 0;
     }

@@ -317,7 +317,6 @@ public class MediaDataController extends BaseController {
     private boolean recentGifsLoaded;
 
     private boolean loadingPremiumGiftStickers;
-    private boolean loadingPremiumTonStickers;
     private boolean loadingGenericAnimations;
     private boolean loadingDefaultTopicIcons;
 
@@ -1329,9 +1328,6 @@ public class MediaDataController extends BaseController {
             return "defaultTopicIcons";
         if (i instanceof TLRPC.TL_inputStickerSetEmojiDefaultStatuses)
             return "emojiDefaultStatuses";
-        if (i instanceof TLRPC.TL_inputStickerSetTonGifts) {
-            return "tonGifts";
-        }
         return "null";
     }
 
@@ -2700,38 +2696,6 @@ public class MediaDataController extends BaseController {
                 processLoadedDiceStickers(getUserConfig().premiumGiftsStickerPack, false, stickerSet, false, (int) (System.currentTimeMillis() / 1000));
 
                 getNotificationCenter().postNotificationName(NotificationCenter.didUpdatePremiumGiftStickers);
-            }
-        }));
-    }
-
-    public void checkTonGiftStickers() {
-        if (getUserConfig().premiumTonStickerPack != null) {
-            String packName = getUserConfig().premiumTonStickerPack;
-            TLRPC.TL_messages_stickerSet set = getStickerSetByName(packName);
-            if (set == null) {
-                set = getStickerSetByEmojiOrName(packName);
-            }
-            if (set == null) {
-                MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(packName, false, true);
-            }
-        }
-        if (loadingPremiumTonStickers || System.currentTimeMillis() - getUserConfig().lastUpdatedTonGiftsStickerPack < 86400000) {
-            return;
-        }
-        loadingPremiumTonStickers = true;
-
-        TLRPC.TL_messages_getStickerSet req = new TLRPC.TL_messages_getStickerSet();
-        req.stickerset = new TLRPC.TL_inputStickerSetTonGifts();
-        getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-            if (response instanceof TLRPC.TL_messages_stickerSet) {
-                TLRPC.TL_messages_stickerSet stickerSet = (TLRPC.TL_messages_stickerSet) response;
-                getUserConfig().premiumTonStickerPack = stickerSet.set.short_name;
-                getUserConfig().lastUpdatedTonGiftsStickerPack = System.currentTimeMillis();
-                getUserConfig().saveConfig(false);
-
-                processLoadedDiceStickers(getUserConfig().premiumTonStickerPack, false, stickerSet, false, (int) (System.currentTimeMillis() / 1000));
-
-                getNotificationCenter().postNotificationName(NotificationCenter.didUpdateTonGiftStickers);
             }
         }));
     }
@@ -8622,7 +8586,6 @@ public class MediaDataController extends BaseController {
         checkMenuBots(true);
         checkPremiumPromo();
         checkPremiumGiftStickers();
-        checkTonGiftStickers();
         checkGenericAnimations();
         getMessagesController().getAvailableEffects();
     }

@@ -72,7 +72,6 @@ import org.ansible.ui.Components.SharedMediaLayout;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PaymentFormActivity;
 import org.ansible.ui.ProfileActivity;
-import org.ansible.ui.TON.TONIntroActivity;
 import org.ansible.ui.bots.BotWebViewSheet;
 
 import java.util.ArrayList;
@@ -96,35 +95,21 @@ public class DiamondsController {
     public static final int PERIOD_MINUTE = 60;
     public static final int PERIOD_5MINUTES = 300;
 
-    private static volatile DiamondsController[][] Instance = new DiamondsController[2][UserConfig.MAX_ACCOUNT_COUNT];
-    private static final Object[][] lockObjects = new Object[2][UserConfig.MAX_ACCOUNT_COUNT];
+    private static volatile DiamondsController[] Instance = new DiamondsController[UserConfig.MAX_ACCOUNT_COUNT];
+    private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
     static {
-        for (int a = 0; a < 2; ++a) {
-            for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-                lockObjects[a][i] = new Object();
-            }
+        for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
+            lockObjects[i] = new Object();
         }
     }
 
-    public static DiamondsController getTonInstance(int num) {
-        return getInstance(num, true);
-    }
-
     public static DiamondsController getInstance(int num) {
-        return getInstance(num, false);
-    }
-
-    public static DiamondsController getInstance(int num, AmountUtils.Currency currency) {
-        return getInstance(num, currency == AmountUtils.Currency.TON);
-    }
-
-    public static DiamondsController getInstance(int num, boolean ton) {
-        DiamondsController localInstance = Instance[ton ? 1 : 0][num];
+        DiamondsController localInstance = Instance[num];
         if (localInstance == null) {
-            synchronized (lockObjects[ton ? 1 : 0][num]) {
-                localInstance = Instance[ton ? 1 : 0][num];
+            synchronized (lockObjects[num]) {
+                localInstance = Instance[num];
                 if (localInstance == null) {
-                    Instance[ton ? 1 : 0][num] = localInstance = new DiamondsController(num, ton);
+                    Instance[num] = localInstance = new DiamondsController(num);
                 }
             }
         }
@@ -132,11 +117,9 @@ public class DiamondsController {
     }
 
     public final int currentAccount;
-    public final boolean ton;
 
-    private DiamondsController(int account, boolean ton) {
+    private DiamondsController(int account) {
         this.currentAccount = account;
-        this.ton = ton;
     }
 
     // ===== STAR BALANCE =====
@@ -155,7 +138,7 @@ public class DiamondsController {
     public AmountUtils.Amount getBalanceAmount() {
         AmountUtils.Amount amount = AmountUtils.Amount.of(getBalance());
         if (amount == null) {
-            amount = AmountUtils.Amount.fromNano(0, ton ? AmountUtils.Currency.TON : AmountUtils.Currency.STARS);
+            amount = AmountUtils.Amount.fromNano(0, AmountUtils.Currency.STARS);
         }
 
         return amount;
@@ -173,7 +156,6 @@ public class DiamondsController {
         if ((!balanceLoaded || System.currentTimeMillis() - lastBalanceLoaded > 1000 * 60) && !balanceLoading || force) {
             balanceLoading = true;
             TL_diamonds.TL_payments_getDiamondsStatus req = new TL_diamonds.TL_payments_getDiamondsStatus();
-            req.ton = ton;
             req.peer = new TLRPC.TL_inputPeerSelf();
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
                 boolean updatedTransactions = false;
@@ -237,17 +219,6 @@ public class DiamondsController {
             return AmountUtils.Amount.fromDecimal(Math.max(0, b.asDecimal() - minus), b.currency).toTl();
         }
         return balance;
-    }
-
-    public boolean canUseTon() {
-        if (!ton) {
-            return false;
-        }
-        if (TONIntroActivity.allowTopUp()) {
-            return true;
-        }
-        TL_diamonds.StarsAmount amount = getBalance();
-        return amount.nanos != 0 || amount.amount != 0;
     }
 
     public void invalidateBalance() {
@@ -587,7 +558,6 @@ public class DiamondsController {
         loading[type] = true;
 
         TL_diamonds.TL_payments_getDiamondsTransactions req = new TL_diamonds.TL_payments_getDiamondsTransactions();
-        req.ton = ton;
         req.peer = new TLRPC.TL_inputPeerSelf();
         req.inbound = type == INCOMING_TRANSACTIONS;
         req.outbound = type == OUTGOING_TRANSACTIONS;
@@ -647,7 +617,7 @@ public class DiamondsController {
     }
 
     public void loadSubscriptions() {
-        if (ton || subscriptionsLoading || subscriptionsEndReached) return;
+        if (subscriptionsLoading || subscriptionsEndReached) return;
         subscriptionsLoading = true;
         final TL_diamonds.TL_getDiamondsSubscriptions req = new TL_diamonds.TL_getDiamondsSubscriptions();
         req.peer = new TLRPC.TL_inputPeerSelf();
@@ -2825,7 +2795,6 @@ public class DiamondsController {
         final TLRPC.TL_inputInvoiceDiamondGiftResale inputInvoice = new TLRPC.TL_inputInvoiceDiamondGiftResale();
         inputInvoice.slug = gift.slug;
         inputInvoice.to_id = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
-        inputInvoice.ton = ton;
         inputInvoice.message = message;
         inputInvoice.show_name = !hideMyName;
 
@@ -2890,7 +2859,6 @@ public class DiamondsController {
         final TLRPC.TL_inputInvoiceDiamondGiftResale inputInvoice = new TLRPC.TL_inputInvoiceDiamondGiftResale();
         inputInvoice.slug = gift.slug;
         inputInvoice.to_id = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
-        inputInvoice.ton = ton;
         inputInvoice.message = message;
         inputInvoice.show_name = !hideMyName;
 
@@ -4418,7 +4386,7 @@ public class DiamondsController {
             return true;
         }
 
-        AmountUtils.Amount balance = getInstance(currentAccount, amount.currency).getBalanceAmount();
+        AmountUtils.Amount balance = getInstance(currentAccount).getBalanceAmount();
         return balance.asNano() >= amount.asNano();
     }
 }

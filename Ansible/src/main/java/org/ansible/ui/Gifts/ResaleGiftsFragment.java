@@ -62,7 +62,6 @@ import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
 import org.ansible.ui.Components.BulletinFactory;
-import org.ansible.ui.Components.CheckBox2;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.EditTextCaption;
@@ -128,7 +127,6 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
     private View filtersDivider;
     private UniversalRecyclerView listView;
     private FrameLayout clearFiltersContainer;
-    private FrameLayout onlyDiamondsContainer;
     private TextView clearFiltersButton;
     private LargeEmptyView emptyView;
     private boolean emptyViewVisible;
@@ -195,7 +193,6 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
         this.fragmentView = fragmentView;
 
         DiamondsIntroActivity.DiamondsBalanceView balanceView = new DiamondsIntroActivity.DiamondsBalanceView(context, currentAccount, resourceProvider);
-        balanceView.withTon();
         ScaleStateListAnimator.apply(balanceView);
         balanceView.setOnClickListener(v -> {
             if (balanceView.lastBalance <= 0) return;
@@ -259,51 +256,6 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
         fragmentView.addView(filtersDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 2.0f / AndroidUtilities.density, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
 
-        final LinearLayout checkboxLayout = new LinearLayout(context);
-        checkboxLayout.setPadding(dp(4), 0, dp(15), 0);
-        checkboxLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-        final CheckBox2 checkbox = new CheckBox2(context, 24, resourceProvider);
-        checkbox.setColor(Theme.key_radioBackgroundChecked, Theme.key_checkboxDisabled, Theme.key_checkboxCheck);
-        checkbox.setDrawUnchecked(true);
-        checkbox.setChecked(false, false);
-        checkbox.setDrawBackgroundAsArc(10);
-        checkbox.setTranslationX(dp(4));
-        checkbox.setScaleX(0.8f);
-        checkbox.setScaleY(0.8f);
-        checkboxLayout.addView(checkbox, LayoutHelper.createLinear(26, 26, Gravity.CENTER_VERTICAL));
-
-        final TextView checkboxTextView = new TextView(context);
-        checkboxTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourceProvider));
-        checkboxTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        checkboxTextView.setText(LocaleController.getString(R.string.GiftResaleDiamondsOnly));
-        checkboxLayout.addView(checkboxTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 9, 0, 0, 0));
-        checkboxLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(18), 0, Theme.blendOver(getThemedColor(Theme.key_windowBackgroundWhite), Theme.multAlpha(getThemedColor(Theme.key_featuredStickers_addButton), 0.10f))));
-
-
-        onlyDiamondsContainer = new FrameLayout(context);
-        onlyDiamondsContainer.setPadding(dp(8), dp(8), dp(8), dp(8));
-        onlyDiamondsContainer.setBackground(iBlur3Factory.create(onlyDiamondsContainer)
-            .setColorProvider(BlurredBackgroundProviderImpl.shadow(resourceProvider))
-            .setPadding(dp(8))
-            .setRadius(dp(18)));
-        onlyDiamondsContainer.setOnClickListener(v -> {
-            if (list != null) {
-                list.starsOnly = !list.starsOnly;
-                checkbox.setChecked(list.starsOnly, true);
-                list.reload();
-            }
-        });
-        onlyDiamondsContainer.addView(checkboxLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT));
-        ScaleStateListAnimator.apply(onlyDiamondsContainer, 0.04f, 1.5f);
-        fragmentView.addView(onlyDiamondsContainer, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 36 + 8 + 8, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0, 0, AndroidUtilities.navigationBarHeight / AndroidUtilities.density));
-
-        DiamondsController tc = DiamondsController.getTonInstance(currentAccount);
-        if (tc.balanceAvailable() && !tc.getBalanceAmount().isZero()) {
-            onlyDiamondsContainer.setVisibility(View.GONE);
-        }
-
-
         clearFiltersContainer = new FrameLayout(context);
         clearFiltersContainer.setPadding(dp(8), dp(8), dp(8), dp(8));
         clearFiltersContainer.setBackground(iBlur3Factory.create(clearFiltersContainer)
@@ -347,21 +299,6 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
                 })
                 .add(R.drawable.menu_sort_number, getString(ResaleGiftsList.Sorting.BY_NUMBER.buttonStringResId), () -> {
                     list.setSorting(ResaleGiftsList.Sorting.BY_NUMBER);
-                })
-                .addGap()
-                .addChecked(!list.starsOnly, getString(R.string.GiftResaleFilterAllListings), () -> {
-                    if (list.starsOnly) {
-                        list.starsOnly = false;
-                        checkbox.setChecked(false, true);
-                        list.reload();
-                    }
-                })
-                .addChecked(list.starsOnly, getString(R.string.GiftResaleFilterForDiamondsOnly), () -> {
-                    if (!list.starsOnly) {
-                        list.starsOnly = true;
-                        checkbox.setChecked(true, true);
-                        list.reload();
-                    }
                 })
                 .setDrawScrim(false)
                 .setOnTopOfScrim()
@@ -927,7 +864,6 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
     @Override
     public void onFactorChanged(int id, float factor, float fraction, FactorAnimator callee) {
         if (id == ANIMATOR_ID_CLEAR_FILTERS_BUTTON_VISIBLE) {
-            onlyDiamondsContainer.setTranslationY(-dp(44 + 8) * factor);
             FragmentFloatingButton.setAnimatedVisibility(clearFiltersContainer, factor);
         }
     }
@@ -1001,8 +937,6 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
 
         }
 
-        private boolean starsOnly;
-
         private boolean for_craft;
         public ResaleGiftsList forCraft() {
             this.for_craft = true;
@@ -1023,7 +957,6 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             req.offset = last_offset == null ? "" : last_offset;
             req.limit = 15;
             req.for_craft = for_craft;
-            req.stars_only = starsOnly;
             if (sorting == Sorting.BY_NUMBER) {
                 req.sort_by_num = true;
                 req.sort_by_price = false;
@@ -2144,15 +2077,14 @@ public class ResaleGiftsFragment extends BaseFragment implements FactorAnimator.
             final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
             progressDialog.showDelayed(400);
             final long to = UserConfig.getInstance(currentAccount).getClientUserId();
-            final AmountUtils.Currency currency = gift.resale_ton_only ? AmountUtils.Currency.TON : AmountUtils.Currency.STARS;
-            DiamondsController.getInstance(currentAccount, currency).getResellingGiftForm(gift, to, form -> {
+            DiamondsController.getInstance(currentAccount).getResellingGiftForm(gift, to, form -> {
                 progressDialog.dismiss();
                 if (form == null) return;
-                final DiamondGiftSheet.PaymentFormState initial = new DiamondGiftSheet.PaymentFormState(currency, form);
+                final DiamondGiftSheet.PaymentFormState initial = new DiamondGiftSheet.PaymentFormState(AmountUtils.Currency.STARS, form);
 
                 new DiamondGiftSheet.ResaleBuyTransferAlert(getContext(), resourcesProvider, gift, initial, currentAccount, to, gift.title + " #" + LocaleController.formatNumber(gift.num, ','), true, (state, progress) -> {
                     progress.init();
-                    DiamondsController.getInstance(currentAccount, state.currency).buyResellingGift(state.form, gift, to, (status, err) -> {
+                    DiamondsController.getInstance(currentAccount).buyResellingGift(state.form, gift, to, (status, err) -> {
                         progress.end();
                         if (status) {
                             if (onSelect != null) {

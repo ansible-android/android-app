@@ -219,7 +219,6 @@ public class NotificationCenter {
     public static final int boostedChannelByUser = totalEvents++;
     public static final int boostByChannelCreated = totalEvents++;
     public static final int didUpdatePremiumGiftStickers = totalEvents++;
-    public static final int didUpdateTonGiftStickers = totalEvents++;
     public static final int didUpdatePremiumGiftFieldIcon = totalEvents++;
     public static final int storiesEnabledUpdate = totalEvents++;
     public static final int storiesBlocklistUpdate = totalEvents++;

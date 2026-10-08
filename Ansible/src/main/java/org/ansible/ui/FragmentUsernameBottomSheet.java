@@ -7,9 +7,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.FrameLayout;
@@ -35,7 +32,6 @@ import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.BulletinFactory;
-import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkSpanDrawable;
 import org.ansible.ui.Components.RLottieImageView;
@@ -89,18 +85,17 @@ public class FragmentUsernameBottomSheet {
         }
 
         final String money = BillingController.getInstance().formatCurrency(info.amount, info.currency);
-        final String crypto_money = BillingController.getInstance().formatCurrency(info.crypto_amount, info.crypto_currency);
 
         String title;
         String message;
         String link;
         if (type == TYPE_USERNAME) {
             title = LocaleController.formatString(R.string.FragmentUsernameTitle, "@" + name);
-            message = LocaleController.formatString(R.string.FragmentUsernameMessage, LocaleController.formatShortDateTime(info.purchase_date), crypto_money, TextUtils.isEmpty(money) ? "" : "(" + money + ")");
+            message = LocaleController.formatString(R.string.FragmentUsernameMessage, LocaleController.formatShortDateTime(info.purchase_date), money, "").trim();
             link = MessagesController.getInstance(UserConfig.selectedAccount).linkPrefix + "/" + name;
         } else if (type == TYPE_PHONE) {
             title = LocaleController.formatString(R.string.FragmentPhoneTitle, PhoneFormat.getInstance().format("+" + name));
-            message = LocaleController.formatString(R.string.FragmentPhoneMessage, LocaleController.formatShortDateTime(info.purchase_date), crypto_money, TextUtils.isEmpty(money) ? "" : "(" + money + ")");
+            message = LocaleController.formatString(R.string.FragmentPhoneMessage, LocaleController.formatShortDateTime(info.purchase_date), money, "").trim();
             link = PhoneFormat.getInstance().format("+" + name);
         } else {
             return;
@@ -117,11 +112,7 @@ public class FragmentUsernameBottomSheet {
 
         CharSequence titleSpanned = AndroidUtilities.replaceSingleTag(title, copy);
 
-        final SpannableString tonIcon = new SpannableString("TON");
-        ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_gram_16);
-        span.setWidth(dp(13));
-        tonIcon.setSpan(span, 0, tonIcon.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        CharSequence messageSpanned = AndroidUtilities.replaceCharSequence("TON", AndroidUtilities.replaceTags(message), tonIcon);
+        CharSequence messageSpanned = AndroidUtilities.replaceTags(message);
 
         TextView headerView = new LinkSpanDrawable.LinksTextView(context);
         headerView.setTypeface(AndroidUtilities.bold());

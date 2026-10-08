@@ -663,7 +663,6 @@ public class MessagesController extends BaseController implements NotificationCe
     public long diamondsRevenueWithdrawalMin;
     public long diamondsPaidPostAmountMax;
     public int botPreviewMediasMax;
-    public String tonProxyAddress;
     public String weatherSearchUsername;
     public boolean storyWeatherPreload;
     public boolean diamondsGiftsEnabled;
@@ -702,7 +701,6 @@ public class MessagesController extends BaseController implements NotificationCe
     public int stargiftsConvertPeriodMax;
     public boolean videoIgnoreAltDocuments;
     public boolean disableBotFullscreenBlur;
-    public String tonBlockchainExplorerUrl;
     public long diamondsPaidMessageAmountMax;
     public int diamondsPaidMessageCommissionPermille;
     public int stargiftsPinnedToTopLimit;
@@ -720,9 +718,6 @@ public class MessagesController extends BaseController implements NotificationCe
     public HashSet<Long> whitelistedBots;
     public int[] diamondsGroupcallMessageLimits;
     public int diamondsGroupcallMessageAmountMax;
-    public long tonStakeddiceStakeAmountMin;
-    public long tonStakeddiceStakeAmountMax;
-    public long[] tonStakediceStakeSuggestedAmounts;
     public int[][] stargiftsCraftAttributesPermilles;
 
     private final SharedPreferences notificationsPreferences;
@@ -1724,7 +1719,6 @@ public class MessagesController extends BaseController implements NotificationCe
         stargiftsConvertPeriodMax = mainPreferences.getInt("stargiftsConvertPeriodMax", isTest ? 300 : 90 * 86400);
         videoIgnoreAltDocuments = mainPreferences.getBoolean("videoIgnoreAltDocuments", false);
         disableBotFullscreenBlur = mainPreferences.getBoolean("disableBotFullscreenBlur", false);
-        tonBlockchainExplorerUrl = mainPreferences.getString("tonBlockchainExplorerUrl", "https://tonviewer.com/");
         diamondsPaidMessageAmountMax = mainPreferences.getLong("starsPaidMessageAmountMax", 10_000L);
         diamondsPaidMessageCommissionPermille = mainPreferences.getInt("starsPaidMessageCommissionPermille", 850);
         stargiftsPinnedToTopLimit = mainPreferences.getInt("stargiftsPinnedToTopLimit", 6);
@@ -1785,7 +1779,6 @@ public class MessagesController extends BaseController implements NotificationCe
         botPreviewMediasMax = mainPreferences.getInt("botPreviewMediasMax", 10);
         webAppAllowedProtocols = mainPreferences.getStringSet("webAppAllowedProtocols", new HashSet<>(Arrays.asList("http", "https")));
         ignoreRestrictionReasons = mainPreferences.getStringSet("ignoreRestrictionReasons", new HashSet<>(Arrays.asList()));
-        tonProxyAddress = mainPreferences.getString("tonProxyAddress", "magic.org");
         weatherSearchUsername = mainPreferences.getString("weatherSearchUsername", "izweatherbot");
         storyWeatherPreload = mainPreferences.getBoolean("storyWeatherPreload", true);
         diamondsGiftsEnabled = mainPreferences.getBoolean("starsGiftsEnabled", true);
@@ -1802,9 +1795,6 @@ public class MessagesController extends BaseController implements NotificationCe
         starrefMaxCommissionPermille = mainPreferences.getInt("starrefMaxCommissionPermille", 400);
         botVerificationDescriptionLengthLimit = mainPreferences.getInt("botVerificationDescriptionLengthLimit", 70);
         paidReactionsPrivacyTime = mainPreferences.getLong("paidReactionsAnonymousTime", 0);
-        tonStakeddiceStakeAmountMin = mainPreferences.getLong("tonStakeddiceStakeAmountMin", 100000000L);
-        tonStakeddiceStakeAmountMax = mainPreferences.getLong("tonStakeddiceStakeAmountMax", 50000000000L);
-        tonStakediceStakeSuggestedAmounts = Arrays.stream(mainPreferences.getString("tonStakediceStakeSuggestedAmounts", "100000000,1000000000,2000000000,5000000000,10000000000,20000000000").split(",")).mapToLong(Long::parseLong).toArray();
         stargiftsCraftAttributesPermilles = Arrays.stream(mainPreferences.getString("stargiftsCraftAttributesPermilles", "90,,80,200,,70,190,460,,60,180,450,1000").split(",,"))
                 .map(r -> Arrays.stream(r.split(","))
                     .mapToInt(Integer::parseInt)
@@ -4006,17 +3996,6 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                     break;
                 }
-                case "ton_blockchain_explorer_url": {
-                    if (value.value instanceof TLRPC.TL_jsonString) {
-                        TLRPC.TL_jsonString str = (TLRPC.TL_jsonString) value.value;
-                        if (!TextUtils.equals(str.value, tonBlockchainExplorerUrl)) {
-                            tonBlockchainExplorerUrl = str.value;
-                            editor.putString("tonBlockchainExplorerUrl", tonBlockchainExplorerUrl);
-                            changed = true;
-                        }
-                    }
-                    break;
-                }
                 case "stars_paid_message_amount_max": {
                     if (value.value instanceof TLRPC.TL_jsonNumber) {
                         TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
@@ -4580,17 +4559,6 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                     break;
                 }
-                case "ton_proxy_address": {
-                    if (value.value instanceof TLRPC.TL_jsonString) {
-                        TLRPC.TL_jsonString str = (TLRPC.TL_jsonString) value.value;
-                        if (!TextUtils.equals(str.value, tonProxyAddress)) {
-                            tonProxyAddress = str.value;
-                            editor.putString("tonProxyAddress", tonProxyAddress);
-                            changed = true;
-                        }
-                    }
-                    break;
-                }
                 case "web_app_allowed_protocols": {
                     HashSet<String> newProtocols = new HashSet<>();
                     if (value.value instanceof TLRPC.TL_jsonArray) {
@@ -4944,42 +4912,6 @@ public class MessagesController extends BaseController implements NotificationCe
                         final int[] tiers = parseTiers((TLRPC.TL_jsonArray) value.value);
                         if (!tiersEqual(tiers, diamondsGroupcallMessageLimits)) {
                             editor.putString("starsGroupcallMessageLimits", tiersToString(diamondsGroupcallMessageLimits = tiers));
-                            changed = true;
-                        }
-                    }
-                    break;
-                }
-                case "ton_stakedice_stake_amount_min": {
-                    if (value.value instanceof TLRPC.TL_jsonNumber) {
-                        final TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if (tonStakeddiceStakeAmountMin != (long) num.value) {
-                            editor.putLong("tonStakeddiceStakeAmountMin", tonStakeddiceStakeAmountMin = (long) num.value);
-                            changed = true;
-                        }
-                    }
-                    break;
-                }
-                case "ton_stakedice_stake_amount_max": {
-                    if (value.value instanceof TLRPC.TL_jsonNumber) {
-                        final TLRPC.TL_jsonNumber num = (TLRPC.TL_jsonNumber) value.value;
-                        if (tonStakeddiceStakeAmountMax != (long) num.value) {
-                            editor.putLong("tonStakeddiceStakeAmountMax", tonStakeddiceStakeAmountMax = (long) num.value);
-                            changed = true;
-                        }
-                    }
-                    break;
-                }
-                case "ton_stakedice_stake_suggested_amounts": {
-                    if (value.value instanceof TLRPC.TL_jsonArray) {
-                        final TLRPC.TL_jsonArray arr = (TLRPC.TL_jsonArray) value.value;
-                        final long[] values = new long[arr.value.size()];
-                        for (int i = 0; i < arr.value.size(); ++i) {
-                            if (arr.value.get(i) instanceof TLRPC.TL_jsonNumber) {
-                                values[i] = (long) ((TLRPC.TL_jsonNumber) arr.value.get(i)).value;
-                            }
-                        }
-                        if (!Arrays.equals(values, tonStakediceStakeSuggestedAmounts)) {
-                            editor.putString("tonStakeddiceStakeSuggestedAmounts", Arrays.stream(tonStakediceStakeSuggestedAmounts = values).mapToObj(String::valueOf).collect(Collectors.joining(",")));
                             changed = true;
                         }
                     }
@@ -18718,8 +18650,6 @@ public class MessagesController extends BaseController implements NotificationCe
             } else if (baseUpdate instanceof TL_update.TL_updateGroupCallEncryptedMessage) {
                 GroupCallMessagesController.getInstance(currentAccount)
                     .processUpdate((TL_update.TL_updateGroupCallEncryptedMessage) baseUpdate);
-            } else if (baseUpdate instanceof TL_update.TL_updateEmojiGameInfo) {
-                stakeDiceInfo = ((TL_update.TL_updateEmojiGameInfo) baseUpdate).info;
             } else if (baseUpdate instanceof TL_update.TL_updateReadMessagesContents) {
                 TL_update.TL_updateReadMessagesContents update = (TL_update.TL_updateReadMessagesContents) baseUpdate;
                 markContentAsReadMessagesDate = update.date;
@@ -20076,9 +20006,11 @@ public class MessagesController extends BaseController implements NotificationCe
                         getNotificationsController().processNewMessages(messageObjects, true, false, null);
                     } else if (baseUpdate instanceof TL_update.TL_updateDiamondsBalance) {
                         TL_update.TL_updateDiamondsBalance update = (TL_update.TL_updateDiamondsBalance) baseUpdate;
-                        final boolean ton = update.balance instanceof TL_diamonds.TL_starsTonAmount;
-                        DiamondsController.getInstance(currentAccount, ton).updateBalance(update.balance);
-                        DiamondsController.getInstance(currentAccount, ton).invalidateTransactions(false);
+                        // Ansible: TON не поддерживается, такое обновление отбрасываем.
+                        if (!(update.balance instanceof TL_diamonds.TL_starsTonAmount)) {
+                            DiamondsController.getInstance(currentAccount).updateBalance(update.balance);
+                            DiamondsController.getInstance(currentAccount).invalidateTransactions(false);
+                        }
                     } else if (baseUpdate instanceof TL_update.TL_updateUser) {
                         TL_update.TL_updateUser update = (TL_update.TL_updateUser) baseUpdate;
                         TLRPC.User currentUser = getUser(update.user_id);
@@ -25185,31 +25117,6 @@ public class MessagesController extends BaseController implements NotificationCe
     public void markEmailSuggestionAsShown() {
         emailSuggestionWasShown = true;
     }
-
-    private ArrayList<Utilities.Callback<Boolean>> loadingStakeDiceInfo;
-    public TLRPC.EmojiGameInfo stakeDiceInfo;
-    public void loadStakeDiceInfo(Utilities.Callback<Boolean> isAvailable) {
-        if (stakeDiceInfo != null) {
-            isAvailable.run(stakeDiceInfo instanceof TLRPC.TL_emojiGameDiceInfo);
-            return;
-        }
-        if (loadingStakeDiceInfo != null) {
-            loadingStakeDiceInfo.add(isAvailable);
-            return;
-        }
-        loadingStakeDiceInfo = new ArrayList<>();
-        loadingStakeDiceInfo.add(isAvailable);
-        getConnectionsManager().sendRequestTyped(new TLRPC.TL_messages_getEmojiGameInfo(), AndroidUtilities::runOnUIThread, (res, err) -> {
-            if (res != null) {
-                stakeDiceInfo = res;
-            }
-            for (Utilities.Callback<Boolean> callback : loadingStakeDiceInfo) {
-                callback.run(stakeDiceInfo instanceof TLRPC.TL_emojiGameDiceInfo);
-            }
-            loadingStakeDiceInfo = null;
-        });
-    }
-
 
     public boolean isWebBrowserUseCustomTabs() {
         return !isWebBrowserInAppEnabled() && (webBrowserSettings == null || webBrowserSettings.display_close_button);

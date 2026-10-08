@@ -1944,8 +1944,7 @@ public class NotificationsController extends BaseController implements Notificat
                             TLRPC.TL_messageActionGiftPremium.class,
                             TLRPC.TL_messageActionDiamondGiftUnique.class,
                             TLRPC.TL_messageActionPaidMessagesPrice.class,
-                            TLRPC.TL_messageActionPaidMessagesRefunded.class,
-                            TLRPC.TL_messageActionGiftTon.class
+                            TLRPC.TL_messageActionPaidMessagesRefunded.class
                     )) {
                         return messageObject.messageText.toString();
                     } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPhoneCall) {
@@ -2607,7 +2606,7 @@ public class NotificationsController extends BaseController implements Notificat
                             msg = LocaleController.formatString(R.string.NotificationUnrecognizedDevice, getUserConfig().getCurrentUser().first_name, date, messageObject.messageOwner.action.title, messageObject.messageOwner.action.address);
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGameScore || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPaymentSent || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionPaymentSentMe) {
                             msg = messageObject.messageText.toString();
-                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftPremium || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftTon) {
+                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGiftPremium) {
                             msg = messageObject.messageText.toString();
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
                             msg = messageObject.messageText.toString();

@@ -1955,7 +1955,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
             windowView.openingPage = true;
             actionBar.setMenuColors(pages[0] != null && SharedConfig.adaptableColorInBrowser ? pages[0].getBackgroundColor() : getThemedColor(Theme.key_iv_background));
             actionBar.setColors(pages[0] != null && SharedConfig.adaptableColorInBrowser ? pages[0].getActionBarColor() : getThemedColor(Theme.key_iv_background), true);
-            actionBar.setIsTonsite(pages[0] != null && pages[0].isTonsite());
             actionBar.setIsLocal(pages[0] != null && pages[0].isLocal());
             AndroidUtilities.runOnUIThread(pageSwitchAnimation::start);
         }
@@ -2208,7 +2207,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
         animatorSet.start();
         actionBar.setMenuColors(pages[0] != null && SharedConfig.adaptableColorInBrowser ? pages[0].getBackgroundColor() : getThemedColor(Theme.key_iv_background));
         actionBar.setColors(pages[0] != null && SharedConfig.adaptableColorInBrowser ? pages[0].getActionBarColor() : getThemedColor(Theme.key_iv_background), true);
-        actionBar.setIsTonsite(pages[0] != null && pages[0].isTonsite());
         actionBar.setIsLocal(pages[0] != null && pages[0].isLocal());
         closeAnimationInProgress = true;
     }
@@ -2369,7 +2367,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
         animatorSet.start();
         actionBar.setMenuColors(pages[0] != null && SharedConfig.adaptableColorInBrowser ? pages[0].getBackgroundColor() : getThemedColor(Theme.key_iv_background));
         actionBar.setColors(pages[0] != null && SharedConfig.adaptableColorInBrowser ? pages[0].getActionBarColor() : getThemedColor(Theme.key_iv_background), true);
-        actionBar.setIsTonsite(pages[0] != null && pages[0].isTonsite());
         actionBar.setIsLocal(pages[0] != null && pages[0].isLocal());
         closeAnimationInProgress = true;
     }
@@ -4390,7 +4387,7 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
                     if (addressBarList != null) {
                         BotWebViewContainer.MyWebView webView = page.getWebView();
                         final String title = webView != null ? webView.getTitle() : null;
-                        final String url = BotWebViewContainer.magic2tonsite(webView != null ? webView.getUrl() : null);
+                        final String url = webView != null ? webView.getUrl() : null;
                         addressBarList.setCurrent(
                             webView != null ? webView.getFavicon() : null,
                             TextUtils.isEmpty(title) ? getString(R.string.WebEmpty) : title,
@@ -4778,7 +4775,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
                     if (pages[0].adapter.currentPage == null) return;
                     url = pages[0].adapter.currentPage.url;
                 }
-                url = BotWebViewContainer.magic2tonsite(url);
                 showDialog(new ShareAlert(parentActivity, null, url, false, url, false, AndroidUtilities.computePerceivedBrightness(actionBar.getBackgroundColor()) < .721f ? new DarkThemeResourceProvider() : null));
             } else if (id == WebActionBar.bookmark_item) {
                 String url;
@@ -5073,7 +5069,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
     }
 
     public static void addBookmark(String url, int currentAccount, FrameLayout container, Sheet sheet, Theme.ResourcesProvider resourcesProvider) {
-        url = BotWebViewContainer.magic2tonsite(url);
         final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
         SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(url, selfId));
         TLRPC.TL_message msg = new TLRPC.TL_message();
@@ -14866,7 +14861,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
                             actionBar.forwardButtonDrawable.setState(false);
                         }
                         actionBar.setHasForward(forwardButton);
-                        actionBar.setIsTonsite(pages[0] != null && pages[0].isTonsite());
                         actionBar.setIsLocal(pages[0] != null && pages[0].isLocal());
                     }
                 }
@@ -15122,26 +15116,24 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
                         return lastFormattedUrl;
                     }
                     try {
-                        Uri uri = Uri.parse(BotWebViewContainer.magic2tonsite(lastUrl = webView.getUrl()));
+                        Uri uri = Uri.parse(lastUrl = webView.getUrl());
                         String url = (uri.getScheme() != null && (uri.getScheme().equalsIgnoreCase("http") || uri.getScheme().equalsIgnoreCase("https"))) ? uri.getSchemeSpecificPart() : uri.toString();
-                        if (!isTonsite()) {
+                        try {
                             try {
-                                try {
-                                    Uri uri2 = Uri.parse(url);
-                                    if (uri2.getHost() == null) uri2 = uri;
-                                    String hostname = Browser.IDN_toUnicode(uri2.getHost());
-                                    String[] levels = hostname.split("\\.");
-                                    if (levels.length > 2 && actionBar != null && HintView2.measureCorrectly(hostname, actionBar.titlePaint) > AndroidUtilities.displaySize.x - dp(3 * 54)) {
-                                        hostname = levels[levels.length - 2] + '.' + levels[levels.length - 1];
-                                    }
-                                    url = Browser.replace(uri2, null, "", hostname, null);
-                                } catch (Exception e) {
-                                    FileLog.e(e, false);
+                                Uri uri2 = Uri.parse(url);
+                                if (uri2.getHost() == null) uri2 = uri;
+                                String hostname = Browser.IDN_toUnicode(uri2.getHost());
+                                String[] levels = hostname.split("\\.");
+                                if (levels.length > 2 && actionBar != null && HintView2.measureCorrectly(hostname, actionBar.titlePaint) > AndroidUtilities.displaySize.x - dp(3 * 54)) {
+                                    hostname = levels[levels.length - 2] + '.' + levels[levels.length - 1];
                                 }
-                                url = URLDecoder.decode(url.replaceAll("\\+", "%2b"), "UTF-8");
+                                url = Browser.replace(uri2, null, "", hostname, null);
                             } catch (Exception e) {
-                                FileLog.e(e);
+                                FileLog.e(e, false);
                             }
+                            url = URLDecoder.decode(url.replaceAll("\\+", "%2b"), "UTF-8");
+                        } catch (Exception e) {
+                            FileLog.e(e);
                         }
                         if (url.startsWith("//"))
                             url = url.substring(2);
@@ -15334,13 +15326,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
 
         public BotWebViewContainer.MyWebView getWebView() {
             return webViewContainer != null ? webViewContainer.getWebView() : null;
-        }
-
-        public boolean isTonsite() {
-            if (!isWeb()) return false;
-            BotWebViewContainer.MyWebView webView = getWebView();
-            if (webView == null) return false;
-            return BotWebViewContainer.isTonsite(BotWebViewContainer.magic2tonsite(webView.getUrl()));
         }
 
         public boolean isLocal() {
@@ -16434,7 +16419,6 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
 
         public void set(String url, int code, String description) {
             titleView.setText(getString(R.string.WebErrorTitle));
-            url = BotWebViewContainer.magic2tonsite(url);
             CharSequence cs = AndroidUtilities.replaceTags(url == null || Uri.parse(url) == null || Uri.parse(url).getAuthority() == null ? getString(R.string.WebErrorInfo) : formatString(R.string.WebErrorInfoDomain, Uri.parse(url).getAuthority()));
             cs = Emoji.replaceEmoji(cs, descriptionView.getPaint().getFontMetricsInt(), false);
             descriptionView.setText(cs);

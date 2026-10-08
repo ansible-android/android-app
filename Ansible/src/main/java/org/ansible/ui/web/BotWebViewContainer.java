@@ -159,10 +159,8 @@ import org.ansible.ui.bots.WebViewRequestProps;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.IDN;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -3654,68 +3652,6 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
 
     private static int tags = 0;
 
-    public static boolean isTonsite(String url) {
-        return url != null && isTonsite(Uri.parse(url));
-    }
-
-    public static boolean isTonsite(Uri uri) {
-        if ("tonsite".equals(uri.getScheme())) {
-            return true;
-        }
-        String host = uri.getAuthority();
-        if (host == null && uri.getScheme() == null) {
-            host = Uri.parse("http://" + uri.toString()).getAuthority();
-        }
-        return host != null && (host.endsWith(".ton") || host.endsWith(".adnl"));
-    }
-
-    public static WebResourceResponse proxyTON(WebResourceRequest req) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return proxyTON(req.getMethod(), req.getUrl().toString(), req.getRequestHeaders());
-        }
-        return null;
-    }
-
-    public static String rotateTONHost(String hostname) {
-        try {
-            hostname = IDN.toASCII(hostname, IDN.ALLOW_UNASSIGNED);
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-        final String[] parts = hostname.split("\\.");
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < parts.length; ++i) {
-            if (i > 0) {
-                sb.append("-d");
-            }
-            sb.append(parts[i].replaceAll("\\-", "-h"));
-        }
-        sb.append(".").append(MessagesController.getInstance(UserConfig.selectedAccount).tonProxyAddress);
-        return sb.toString();
-    }
-
-    public static WebResourceResponse proxyTON(String method, String url, Map<String, String> headers) {
-        try {
-            url = Browser.replaceHostname(Uri.parse(url), rotateTONHost(AndroidUtilities.getHostAuthority(url)), "https");
-            URL urlObj = new URL(url);
-            HttpURLConnection urlConnection = (HttpURLConnection) urlObj.openConnection();
-            urlConnection.setRequestMethod(method);
-            if (headers != null) {
-                for (Map.Entry<String, String> e : headers.entrySet()) {
-                    urlConnection.addRequestProperty(e.getKey(), e.getValue());
-                }
-            }
-            urlConnection.connect();
-            InputStream inputStream = urlConnection.getInputStream();
-            final String contentType = urlConnection.getContentType();
-            final String mimeType = contentType.split(";", 2)[0];
-            return new WebResourceResponse(mimeType, urlConnection.getContentEncoding(), inputStream);
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-        return null;
-    }
-
     public static class DangerousWebWarning {
         public final String url;
         public final String threatType;
@@ -3918,11 +3854,6 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
                 public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         d("shouldInterceptRequest " + (request == null ? null : request.getUrl()));
-                        if (request != null && isTonsite(request.getUrl())) {
-                            d("proxying ton");
-                            firstRequest = false;
-                            return proxyTON(request);
-                        }
                         if (!bot && opener != null && firstRequest) {
                             HttpURLConnection connection = null;
                             try {
@@ -4018,7 +3949,7 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
                         currentHistoryEntry = new BrowserHistory.Entry();
                         currentHistoryEntry.id = Utilities.fastRandom.nextLong();
                         currentHistoryEntry.time = System.currentTimeMillis();
-                        currentHistoryEntry.url = magic2tonsite(getUrl());
+                        currentHistoryEntry.url = getUrl();
                         currentHistoryEntry.meta = WebMetadataCache.WebMetadata.from(MyWebView.this);
                         BrowserHistory.pushHistory(currentHistoryEntry);
                     }
@@ -4033,10 +3964,6 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
                 @Override
                 public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                     d("shouldInterceptRequest " + url);
-                    if (isTonsite(url)) {
-                        d("proxying ton");
-                        return proxyTON("GET", url, null);
-                    }
                     return super.shouldInterceptRequest(view, url);
                 }
 
@@ -4112,7 +4039,7 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
                                 FileLog.e(e);
                             }
                         }
-                        if (uriNew != null && uriNew.getScheme() != null && !("https".equals(uriNew.getScheme()) || "http".equals(uriNew.getScheme()) || "tonsite".equals(uriNew.getScheme()))) {
+                        if (uriNew != null && uriNew.getScheme() != null && !("https".equals(uriNew.getScheme()) || "http".equals(uriNew.getScheme()))) {
                             d("shouldOverrideUrlLoading("+url+") = true (browser open)");
                             Browser.openUrl(getContext(), uriNew);
                             return true;
@@ -5050,7 +4977,6 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //                CookieManager.getInstance().flush();
 //            }
-            url = tonsite2magic(url);
             currentUrl = url;
             d("loadUrl " + url);
             super.loadUrl(url);
@@ -5068,7 +4994,6 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
             final String ourl = url;
             checkCachedMetaProperties(url);
             openedByUrl = url;
-            url = tonsite2magic(url);
             currentUrl = url;
             d("loadUrl " + url + " " + additionalHttpHeaders);
             super.loadUrl(url, additionalHttpHeaders);
@@ -5085,7 +5010,6 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
             final String ourl = url;
             applyCachedMeta(meta);
             openedByUrl = url;
-            url = tonsite2magic(url);
             currentUrl = url;
             d("loadUrl " + url + " with cached meta");
             super.loadUrl(url);
@@ -5277,36 +5201,6 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
     private final int tag = tags++;
     public void d(String s) {
         FileLog.d("[webviewcontainer] #" + tag + " " + s);
-    }
-
-    private static HashMap<String, String> rotatedTONHosts;
-
-    private static String tonsite2magic(String url) {
-        if (url == null) return url;
-        final Uri uri = Uri.parse(url);
-        if (isTonsite(uri)) {
-            String tonsite_host = AndroidUtilities.getHostAuthority(url);
-            try {
-                tonsite_host = IDN.toASCII(tonsite_host, IDN.ALLOW_UNASSIGNED);
-            } catch (Exception e) {}
-            String magic_host = rotateTONHost(tonsite_host);
-            if (rotatedTONHosts == null) rotatedTONHosts = new HashMap<>();
-            rotatedTONHosts.put(magic_host, tonsite_host);
-            url = Browser.replaceHostname(Uri.parse(url), magic_host, "https");
-        }
-        return url;
-    }
-
-    public static String magic2tonsite(String url) {
-        if (rotatedTONHosts == null) return url;
-        if (url == null) return url;
-        String host = AndroidUtilities.getHostAuthority(url);
-        if (host == null || !host.endsWith("." + MessagesController.getInstance(UserConfig.selectedAccount).tonProxyAddress)) {
-            return url;
-        }
-        String tonsite_host = rotatedTONHosts.get(host);
-        if (tonsite_host == null) return url;
-        return Browser.replace(Uri.parse(url), "tonsite", null, tonsite_host, null);
     }
 
     public static JSONObject obj() {

@@ -9,17 +9,12 @@ import android.view.MotionEvent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.graphics.ColorUtils;
-
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.BillingController;
 import org.ansible.messenger.LocaleController;
-import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkSpanDrawable;
 
@@ -30,17 +25,11 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
 
     private final TextView textView1;
     private final LinkSpanDrawable.LinksTextView textView2;
-    private AmountUtils.Currency currency;
 
     public BalanceCloud(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
-        this(context, currentAccount, AmountUtils.Currency.STARS, resourcesProvider);
-    }
-
-    public BalanceCloud(Context context, int currentAccount, AmountUtils.Currency currency, Theme.ResourcesProvider resourcesProvider) {
         super(context);
         this.currentAccount = currentAccount;
         this.resourcesProvider = resourcesProvider;
-        this.currency = currency;
 
         setOrientation(VERTICAL);
         setPadding(dp(18), dp(9), dp(18), dp(9));
@@ -63,40 +52,17 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
         updateBalance(false);
     }
 
-    public void setCurrency(AmountUtils.Currency currency, boolean animated) {
-        if (this.currency != currency) {
-            this.currency = currency;
-            updateBalance(animated);
-        }
-
-    }
-
-    private final ColoredImageSpan[] coloredImageSpansTon = new ColoredImageSpan[1];
-
     private void updateBalance(boolean animated) {
-        final DiamondsController c = DiamondsController.getInstance(currentAccount, currency);
+        final DiamondsController c = DiamondsController.getInstance(currentAccount);
         final AmountUtils.Amount balance = c.getBalanceAmount();
 
-        if (currency == AmountUtils.Currency.STARS) {
-            textView1.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatString(R.string.Gift2MessageDiamondsInfo, LocaleController.formatNumber(balance.asDecimal(), ',')), .60f));
+        textView1.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatString(R.string.Gift2MessageDiamondsInfo, LocaleController.formatNumber(balance.asDecimal(), ',')), .60f));
 
-            textView2.setTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
-            textView2.setLinkTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
-            textView2.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.Gift2MessageDiamondsInfoLink), () -> {
-                new DiamondsIntroActivity.DiamondsOptionsSheet(getContext(), resourcesProvider).show();
-            }), true, dp(8f / 3f), dp(1)));
-        } else if (currency == AmountUtils.Currency.TON) {
-            textView1.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(true, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.Gift2MessageDiamondsInfoTON, balance.asDecimalString())), .60f, coloredImageSpansTon));
-            coloredImageSpansTon[0].setColorKey(Theme.key_undo_cancelColor);
-
-            final StringBuilder sb = new StringBuilder(10);
-            sb.append('~');
-            sb.append(BillingController.getInstance().formatCurrency((long) (balance.asDouble() * MessagesController.getInstance(currentAccount).config.tonUsdRate.get() * 100), "USD", 2));
-
-            textView2.setTextColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), Theme.getColor(Theme.key_undo_background, resourcesProvider), 0.33f));
-            textView2.setLinkTextColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), Theme.getColor(Theme.key_undo_background, resourcesProvider), 0.33f));
-            textView2.setText(sb);
-        }
+        textView2.setTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
+        textView2.setLinkTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
+        textView2.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.Gift2MessageDiamondsInfoLink), () -> {
+            new DiamondsIntroActivity.DiamondsOptionsSheet(getContext(), resourcesProvider).show();
+        }), true, dp(8f / 3f), dp(1)));
     }
 
     @Override

@@ -1,11 +1,8 @@
 package org.ansible.ui.Diamonds;
 
-import static org.ansible.messenger.AndroidUtilities.REPLACING_TAG_TYPE_LINK_NBSP;
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.formatPluralStringComma;
-import static org.ansible.messenger.LocaleController.formatString;
 import static org.ansible.messenger.LocaleController.getString;
-import static org.ansible.ui.ChannelMonetizationLayout.replaceTON;
 import static org.ansible.ui.ChatEditActivity.applyNewSpan;
 
 import android.app.Activity;
@@ -31,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.NestedScrollingParent3;
 import androidx.core.view.NestedScrollingParentHelper;
 import androidx.core.view.ViewCompat;
@@ -49,11 +45,9 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.ConnectionsManager;
-import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
 import org.ansible.asnet.tl.TL_diamonds;
-import org.ansible.asnet.tl.TL_stats;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BackDrawable;
@@ -66,7 +60,6 @@ import org.ansible.ui.Components.BulletinFactory;
 import org.ansible.ui.Components.ChatAvatarContainer;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.EditTextBoldCursor;
-import org.ansible.ui.Components.FlickerLoadingView;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.OutlineTextContainerView;
 import org.ansible.ui.Components.RecyclerListView;
@@ -81,15 +74,12 @@ import org.ansible.ui.TwoStepVerificationSetupActivity;
 import org.ansible.ui.bots.AffiliateProgramFragment;
 import org.ansible.ui.bots.ChannelAffiliateProgramsFragment;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class BotDiamondsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public static final int TYPE_STARS = 0;
-    public static final int TYPE_TON = 1;
 
     public final int type;
     public final long bot_id;
@@ -105,10 +95,6 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
     private final ChannelMonetizationLayout.ProceedOverview availableValue = ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotDiamondsOverviewAvailableBalance));
     private final ChannelMonetizationLayout.ProceedOverview totalValue = ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotDiamondsOverviewTotalBalance));
     private final ChannelMonetizationLayout.ProceedOverview totalProceedsValue =     ChannelMonetizationLayout.ProceedOverview.as("XTR", getString(R.string.BotDiamondsOverviewTotalProceeds));
-
-    private final ChannelMonetizationLayout.ProceedOverview tonAvailableValue =      ChannelMonetizationLayout.ProceedOverview.as("TON", getString(R.string.BotMonetizationOverviewAvailable));
-    private final ChannelMonetizationLayout.ProceedOverview tonLastWithdrawalValue = ChannelMonetizationLayout.ProceedOverview.as("TON", getString(R.string.BotMonetizationOverviewLastWithdrawal));
-    private final ChannelMonetizationLayout.ProceedOverview tonLifetimeValue =       ChannelMonetizationLayout.ProceedOverview.as("TON", getString(R.string.BotMonetizationOverviewTotal));
 
     private final CharSequence withdrawInfo;
 
@@ -129,12 +115,6 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
     private ColoredImageSpan[] diamondRef = new ColoredImageSpan[1];
     private int shakeDp = 4;
 
-    private LinearLayout tonBalanceLayout;
-    private RelativeSizeSpan tonBalanceTitleSizeSpan;
-    private AnimatedTextView tonBalanceTitle;
-    private AnimatedTextView tonBalanceSubtitle;
-    private ButtonWithCounterView tonBalanceButton;
-
     private double rate;
 
     public BotDiamondsActivity(int type, long botId) {
@@ -147,8 +127,6 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
             if (!self) {
                 BotDiamondsController.getInstance(currentAccount).invalidateTransactions(bot_id, true);
             }
-        } else if (type == TYPE_TON) {
-            BotDiamondsController.getInstance(currentAccount).preloadTonStats(bot_id);
         }
 
         withdrawInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(self ? formatPluralStringComma("SelfDiamondsWithdrawInfo", (int) getMessagesController().diamondsRevenueWithdrawalMin) : getString(R.string.BotDiamondsWithdrawInfo), () -> {
@@ -171,11 +149,7 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
         TLRPC.User bot = getMessagesController().getUser(bot_id);
         avatarContainer.setUserAvatar(bot, true);
         avatarContainer.setTitle(UserObject.getUserName(bot));
-        if (type == BotDiamondsActivity.TYPE_STARS) {
-            avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsDiamonds));
-        } else {
-            avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsTON));
-        }
+        avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsDiamonds));
 
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -192,7 +166,7 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), false);
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
-        transactionsLayout = new DiamondsIntroActivity.DiamondsTransactionsLayout(context, currentAccount, false, bot_id, getClassGuid(), getResourceProvider());
+        transactionsLayout = new DiamondsIntroActivity.DiamondsTransactionsLayout(context, currentAccount, bot_id, getClassGuid(), getResourceProvider());
 
         balanceLayout = new LinearLayout(context) {
             @Override
@@ -344,63 +318,10 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
         }
         balanceLayout.addView(balanceButtonsLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.FILL_HORIZONTAL, 18, 13, 18, 0));
 
-        tonBalanceLayout = new LinearLayout(context) {
-            @Override
-            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                super.onMeasure(
-                        MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY),
-                        heightMeasureSpec
-                );
-            }
-        };
-        tonBalanceLayout.setOrientation(LinearLayout.VERTICAL);
-        tonBalanceLayout.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourceProvider));
-        tonBalanceLayout.setPadding(0, 0, 0, dp(17));
-
-        tonBalanceTitle = new AnimatedTextView(context, false, true, true);
-        tonBalanceTitle.setTypeface(AndroidUtilities.bold());
-        tonBalanceTitle.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourceProvider));
-        tonBalanceTitle.setTextSize(dp(32));
-        tonBalanceTitle.setGravity(Gravity.CENTER);
-        tonBalanceTitleSizeSpan = new RelativeSizeSpan(65f / 96f);
-        tonBalanceLayout.addView(tonBalanceTitle, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 38, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 22, 15, 22, 0));
-
-        tonBalanceSubtitle = new AnimatedTextView(context, true, true, true);
-        tonBalanceSubtitle.setGravity(Gravity.CENTER);
-        tonBalanceSubtitle.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourceProvider));
-        tonBalanceSubtitle.setTextSize(dp(14));
-        tonBalanceLayout.addView(tonBalanceSubtitle, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 17, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 22, 4, 22, 0));
-
-        tonBalanceButton = new ButtonWithCounterView(context, resourceProvider);
-        tonBalanceButton.setEnabled(MessagesController.getInstance(currentAccount).channelRevenueWithdrawalEnabled);
-        tonBalanceButton.setText(getString(self ? R.string.MonetizationSelfWithdraw : R.string.MonetizationWithdraw), false);
-        tonBalanceButton.setVisibility(View.GONE);
-        tonBalanceButton.setOnClickListener(v -> {
-            if (!v.isEnabled() || tonBalanceButton.isLoading()) {
-                return;
-            }
-            TwoStepVerificationActivity passwordFragment = new TwoStepVerificationActivity();
-            passwordFragment.setDelegate(1, password -> initWithdraw(false, 0, password, passwordFragment));
-            tonBalanceButton.setLoading(true);
-            passwordFragment.preload(() -> {
-                tonBalanceButton.setLoading(false);
-                presentFragment(passwordFragment);;
-            });
-        });
-        tonBalanceLayout.addView(tonBalanceButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.FILL_HORIZONTAL, 18, 13, 18, 0));
-
         listView = new UniversalRecyclerView(this, this::fillItems, this::onItemClick, this::onItemLongClick);
         listView.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
         listView.setSections();
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (type == TYPE_TON && (!listView.canScrollVertically(1) || isLoadingVisible())) {
-                    loadTonTransactions();
-                }
-            }
-        });
         actionBar.setAdaptiveBackground(listView);
 
         return fragmentView = frameLayout;
@@ -443,7 +364,7 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
 
         final long stars = balanceEditTextValue;
         TwoStepVerificationActivity passwordFragment = new TwoStepVerificationActivity();
-        passwordFragment.setDelegate(1, password -> initWithdraw(true, stars, password, passwordFragment));
+        passwordFragment.setDelegate(1, password -> initWithdraw(stars, password, passwordFragment));
         balanceButton.setLoading(true);
         passwordFragment.preload(() -> {
             balanceButton.setLoading(false);
@@ -453,13 +374,6 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
 
     private final int BALANCE = 1;
     private final int BUTTON_AFFILIATE = 2;
-
-    private CharSequence titleInfo;
-    private CharSequence proceedsInfo;
-    private CharSequence balanceInfo;
-    private boolean proceedsAvailable;
-    private StatisticActivity.ChartViewData impressionsChart;
-    private StatisticActivity.ChartViewData revenueChart;
 
     private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         final BotDiamondsController s = BotDiamondsController.getInstance(currentAccount);
@@ -505,135 +419,13 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
                 }
                 items.add(UItem.asFullscreenCustom(transactionsLayout, 0));
             }
-        } else if (type == TYPE_TON) {
-            TLRPC.TL_payments_starsRevenueStats stats = s.getTONRevenueStats(bot_id, true);
-            if (!self) {
-                if (titleInfo == null) {
-                    titleInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(formatString(R.string.BotMonetizationInfo, 50), -1, REPLACING_TAG_TYPE_LINK_NBSP, () -> {
-                        showDialog(ChannelMonetizationLayout.makeLearnSheet(getContext(), true, resourceProvider));
-                    }, resourceProvider), true);
-                }
-                items.add(UItem.asCenterShadow(titleInfo));
-            }
-            if (impressionsChart == null && stats != null) {
-                impressionsChart = StatisticActivity.createViewData(stats.top_hours_graph, getString(R.string.BotMonetizationGraphImpressions), 0);
-                if (impressionsChart != null) {
-                    impressionsChart.useHourFormat = true;
-                }
-            }
-            if (impressionsChart != null && !impressionsChart.isEmpty) {
-                items.add(UItem.asChart(StatisticActivity.VIEW_TYPE_BAR_LINEAR, stats_dc, impressionsChart));
-                items.add(UItem.asShadow(-1, null));
-            }
-            if (revenueChart == null && stats != null) {
-                if (stats.revenue_graph != null) {
-                    stats.revenue_graph.rate = (float) (1_000_000_000.0 / 100.0 / stats.usd_rate);
-                }
-                revenueChart = StatisticActivity.createViewData(stats.revenue_graph, getString(R.string.BotMonetizationGraphRevenue), 2);
-            }
-            if (revenueChart != null && !revenueChart.isEmpty) {
-                items.add(UItem.asChart(StatisticActivity.VIEW_TYPE_STACKBAR, stats_dc, revenueChart));
-                items.add(UItem.asShadow(-2, null));
-            }
-            if (!proceedsAvailable && stats != null && stats.status != null) {
-                double ton_rate = stats.usd_rate;
-                tonAvailableValue.crypto_amount = stats.status.available_balance.amount;
-                tonAvailableValue.amount = (long) (tonAvailableValue.crypto_amount / 1_000_000_000.0 * ton_rate * 100.0);
-                setBalance(tonAvailableValue.crypto_amount, tonAvailableValue.amount);
-                tonAvailableValue.currency = "USD";
-                tonLastWithdrawalValue.crypto_amount = stats.status.current_balance.amount;
-                tonLastWithdrawalValue.amount = (long) (tonLastWithdrawalValue.crypto_amount / 1_000_000_000.0 * ton_rate * 100.0);
-                tonLastWithdrawalValue.currency = "USD";
-                tonLifetimeValue.contains1 = true;
-                tonLifetimeValue.crypto_amount = stats.status.overall_revenue.amount;
-                tonLifetimeValue.amount = (long) (tonLifetimeValue.crypto_amount / 1_000_000_000.0 * ton_rate * 100.0);
-                tonLifetimeValue.currency = "USD";
-                proceedsAvailable = true;
-                tonBalanceButton.setVisibility(stats.status.available_balance.amount > 0 && stats.status.withdrawal_enabled ? View.VISIBLE : View.GONE);
-            }
-            if (proceedsAvailable) {
-                items.add(UItem.asBlackHeader(getString(R.string.BotMonetizationOverview)));
-                items.add(UItem.asProceedOverview(tonAvailableValue));
-                items.add(UItem.asProceedOverview(tonLastWithdrawalValue));
-                items.add(UItem.asProceedOverview(tonLifetimeValue));
-                if (proceedsInfo == null) {
-                    final int proceedsInfoText = R.string.BotMonetizationProceedsTONInfo;
-                    final int proceedsInfoLink = R.string.BotMonetizationProceedsTONInfoLink;
-                    proceedsInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(proceedsInfoText), -1, REPLACING_TAG_TYPE_LINK_NBSP, () -> {
-                        Browser.openUrl(getContext(), getString(proceedsInfoLink));
-                    }, resourceProvider), true);
-                }
-                items.add(UItem.asShadow(-4, proceedsInfo));
-            }
-
-            items.add(UItem.asBlackHeader(getString(R.string.BotMonetizationBalance)));
-            items.add(UItem.asCustom(tonBalanceLayout));
-            if (balanceInfo == null) {
-                balanceInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(MessagesController.getInstance(currentAccount).channelRevenueWithdrawalEnabled ? R.string.BotMonetizationBalanceInfo : R.string.BotMonetizationBalanceInfoNotAvailable), -1, REPLACING_TAG_TYPE_LINK_NBSP, () -> {
-                    Browser.openUrl(getContext(), getString(R.string.BotMonetizationBalanceInfoLink));
-                }), true);
-            }
-            items.add(UItem.asShadow(-5, balanceInfo));
-            if (!tonTransactionsEndReached || !tonTransactions.isEmpty()) {
-                items.add(UItem.asBlackHeader(getString(R.string.BotMonetizationTransactions)));
-                for (TL_diamonds.StarsTransaction t : tonTransactions) {
-                    items.add(DiamondsIntroActivity.DiamondsTransactionView.Factory.asTransaction(t, true));
-                }
-                if (!tonTransactionsEndReached) {
-                    items.add(UItem.asFlicker(1, FlickerLoadingView.DIALOG_CELL_TYPE));
-                    items.add(UItem.asFlicker(2, FlickerLoadingView.DIALOG_CELL_TYPE));
-                    items.add(UItem.asFlicker(3, FlickerLoadingView.DIALOG_CELL_TYPE));
-                }
-            }
-            items.add(UItem.asShadow(-6, null));
         }
-    }
-
-    private boolean tonTransactionsLoading = false;
-    private boolean tonTransactionsEndReached = false;
-    private final ArrayList<TL_diamonds.StarsTransaction> tonTransactions = new ArrayList<>();
-    private String tonTransactionsLastOffset = "";
-    private void loadTonTransactions() {
-        if (tonTransactionsLoading || tonTransactionsEndReached || tonTransactionsLastOffset == null) return;
-        tonTransactionsLoading = true;
-        TL_diamonds.TL_payments_getDiamondsTransactions req = new TL_diamonds.TL_payments_getDiamondsTransactions();
-        req.ton = true;
-        req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
-        req.offset = tonTransactionsLastOffset;
-        req.limit = tonTransactions.isEmpty() ? 5 : 20;
-        ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-            if (res instanceof TL_diamonds.StarsStatus) {
-                TL_diamonds.StarsStatus r = (TL_diamonds.StarsStatus) res;
-                MessagesController.getInstance(currentAccount).putUsers(r.users, false);
-                MessagesController.getInstance(currentAccount).putChats(r.chats, false);
-                tonTransactionsLastOffset = r.next_offset;
-                tonTransactions.addAll(r.history);
-                tonTransactionsEndReached = r.history.isEmpty() || r.next_offset == null;
-            } else if (err != null) {
-                BulletinFactory.showError(err);
-                tonTransactionsEndReached = true;
-            }
-            tonTransactionsLoading = false;
-            if (listView.adapter != null) {
-                listView.adapter.update(true);
-            }
-        }));
-    }
-
-    public boolean isLoadingVisible() {
-        for (int i = 0; i < listView.getChildCount(); ++i) {
-            if (listView.getChildAt(i) instanceof FlickerLoadingView)
-                return true;
-        }
-        return false;
     }
 
     private void onItemClick(UItem item, View view, int pos, float x, float y) {
         if (item.instanceOf(DiamondsIntroActivity.DiamondsTransactionView.Factory.class)) {
             TL_diamonds.StarsTransaction t = (TL_diamonds.StarsTransaction) item.object;
             DiamondsIntroActivity.showTransactionSheet(getContext(), true, bot_id, currentAccount, t, getResourceProvider());
-        } else if (item.object instanceof TL_stats.BroadcastRevenueTransaction) {
-            ChannelMonetizationLayout.showTransactionSheet(getContext(), currentAccount, (TL_stats.BroadcastRevenueTransaction) item.object, bot_id, resourceProvider);
         } else if (item.id == BUTTON_AFFILIATE) {
             presentFragment(new ChannelAffiliateProgramsFragment(bot_id));
         }
@@ -663,26 +455,6 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
 
         AndroidUtilities.cancelRunOnUIThread(setBalanceButtonText);
         setBalanceButtonText.run();
-    }
-
-    private DecimalFormat formatter;
-    private void setBalance(long crypto_amount, long amount) {
-        if (formatter == null) {
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-            symbols.setDecimalSeparator('.');
-            formatter = new DecimalFormat("#.##", symbols);
-            formatter.setMinimumFractionDigits(2);
-            formatter.setMaximumFractionDigits(6);
-            formatter.setGroupingUsed(false);
-        }
-        formatter.setMaximumFractionDigits(crypto_amount / 1_000_000_000.0 > 1.5 ? 2 : 6);
-        SpannableStringBuilder ssb = new SpannableStringBuilder(replaceTON("TON " + formatter.format(crypto_amount / 1_000_000_000.0), tonBalanceTitle.getPaint(), .9f, true));
-        int index = TextUtils.indexOf(ssb, ".");
-        if (index >= 0) {
-            ssb.setSpan(tonBalanceTitleSizeSpan, index, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        tonBalanceTitle.setText(ssb);
-        tonBalanceSubtitle.setText("≈" + BillingController.getInstance().formatCurrency(amount, "USD"));
     }
 
     private SpannableStringBuilder lock;
@@ -912,28 +684,17 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
         }
     }
 
-    private void initWithdraw(boolean stars, long stars_amount, TLRPC.InputCheckPasswordSRP password, TwoStepVerificationActivity passwordFragment) {
+    private void initWithdraw(long stars_amount, TLRPC.InputCheckPasswordSRP password, TwoStepVerificationActivity passwordFragment) {
         Activity parentActivity = getParentActivity();
         TLRPC.User currentUser = UserConfig.getInstance(currentAccount).getCurrentUser();
         if (parentActivity == null || currentUser == null) return;
 
-        TLObject r;
-        if (stars) {
-            TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl req = new TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl();
-            req.ton = false;
-            req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
-            req.password = password != null ? password : new TLRPC.TL_inputCheckPasswordEmpty();
-            req.flags |= 2;
-            req.amount = stars_amount;
-            r = req;
-        } else {
-            TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl req = new TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl();
-            req.ton = true;
-            req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
-            req.password = password != null ? password : new TLRPC.TL_inputCheckPasswordEmpty();
-            r = req;
-        }
-        ConnectionsManager.getInstance(currentAccount).sendRequest(r, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+        TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl req = new TLRPC.TL_payments_getDiamondsRevenueWithdrawalUrl();
+        req.peer = MessagesController.getInstance(currentAccount).getInputPeer(bot_id);
+        req.password = password != null ? password : new TLRPC.TL_inputCheckPasswordEmpty();
+        req.flags |= 2;
+        req.amount = stars_amount;
+        ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
             if (error != null) {
                 if ("PASSWORD_MISSING".equals(error.text) || error.text.startsWith("PASSWORD_TOO_FRESH_") || error.text.startsWith("SESSION_TOO_FRESH_")) {
                     if (passwordFragment != null) {
@@ -1023,7 +784,7 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
                             TL_account.Password currentPassword = (TL_account.Password) response2;
                             passwordFragment.setCurrentPasswordInfo(null, currentPassword);
                             TwoStepVerificationActivity.initPasswordNewAlgo(currentPassword);
-                            initWithdraw(stars, stars_amount, passwordFragment.getNewSrpPassword(), passwordFragment);
+                            initWithdraw(stars_amount, passwordFragment.getNewSrpPassword(), passwordFragment);
                         }
                     }), ConnectionsManager.RequestFlagWithoutLogin);
                 } else {
@@ -1036,9 +797,7 @@ public class BotDiamondsActivity extends BaseFragment implements NotificationCen
             } else {
                 passwordFragment.needHideProgress();
                 passwordFragment.finishFragment();
-                if (response instanceof TL_stats.TL_broadcastRevenueWithdrawalUrl) {
-                    Browser.openUrlInSystemBrowser(getContext(), ((TL_stats.TL_broadcastRevenueWithdrawalUrl) response).url);
-                } else if (response instanceof TLRPC.TL_payments_starsRevenueWithdrawalUrl) {
+                if (response instanceof TLRPC.TL_payments_starsRevenueWithdrawalUrl) {
                     balanceEditTextAll = true;
                     Browser.openUrlInSystemBrowser(getContext(), ((TLRPC.TL_payments_starsRevenueWithdrawalUrl) response).url);
                 }

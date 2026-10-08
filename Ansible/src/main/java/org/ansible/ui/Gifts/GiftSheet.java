@@ -82,7 +82,6 @@ import org.ansible.messenger.UserObject;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.utils.Choreographer60FpsContent;
 import org.ansible.messenger.utils.DrawableUtils;
-import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
@@ -1069,7 +1068,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         private final FrameLayout.LayoutParams avatarViewLayout2;
         private final FrameLayout pinnedView;
         private final ImageView pinnedImageView;
-        private final ImageView tonOnlySaleView;
         public final TextView chanceTextView;
         public final BackupImageView imageView;
         public FrameLayout.LayoutParams imageViewLayoutParams;
@@ -1184,13 +1182,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
 
             card.addView(pinnedView, LayoutHelper.createFrame(20, 20, Gravity.TOP | Gravity.LEFT, 2, 2, 2, 2));
 
-            tonOnlySaleView = new ImageView(context);
-            tonOnlySaleView.setImageResource(R.drawable.mini_gram_14);
-            tonOnlySaleView.setPadding(0, dp(2), 0, 0);
-            tonOnlySaleView.setVisibility(GONE);
-            tonOnlySaleView.setScaleType(ImageView.ScaleType.CENTER);
-            card.addView(tonOnlySaleView, LayoutHelper.createFrame(20, 20, Gravity.TOP | Gravity.LEFT, 3, 3, 3, 3));
-
             chanceTextView = new TextView(context);
             chanceTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 10);
             chanceTextView.setTypeface(AndroidUtilities.bold());
@@ -1297,18 +1288,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
 
         public void setSelected(boolean selected, boolean animated) {
             cardBackground.setSelected(selected, animated);
-            if (animated) {
-                tonOnlySaleView.animate()
-                    .translationX(selected ? dp(6) : 0)
-                    .translationY(selected ? dp(6) : 0)
-                    .setDuration(320)
-                    .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
-                    .start();
-            } else {
-                tonOnlySaleView.animate().cancel();
-                tonOnlySaleView.setTranslationX(selected ? dp(6) : 0);
-                tonOnlySaleView.setTranslationY(selected ? dp(6) : 0);
-            }
         }
 
         public void invalidateCustom() {
@@ -1393,15 +1372,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 canvas.translate(priceLayout.getX(), priceLayout.getY());
                 canvas.saveLayerAlpha(0, 0, priceLayout.getWidth(), priceLayout.getHeight(), (int) (0xFF * (1.0f - progress) * priceLayout.getAlpha()), Canvas.ALL_SAVE_FLAG);
                 priceLayout.draw(canvas);
-                canvas.restore();
-                canvas.restore();
-            }
-
-            if (tonOnlySaleView != null && tonOnlySaleView.getVisibility() == View.VISIBLE) {
-                canvas.save();
-                canvas.translate(tonOnlySaleView.getX(), tonOnlySaleView.getY());
-                canvas.saveLayerAlpha(0, 0, tonOnlySaleView.getWidth(), tonOnlySaleView.getHeight(), (int) (0xFF * (1.0f - progress) * tonOnlySaleView.getAlpha()), Canvas.ALL_SAVE_FLAG);
-                tonOnlySaleView.draw(canvas);
                 canvas.restore();
                 canvas.restore();
             }
@@ -1634,10 +1604,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             subtitleView.setVisibility(View.GONE);
             imageView.setTranslationY(0);
             lockView.setVisibility(View.GONE);
-            tonOnlySaleView.setVisibility(gift.resale_ton_only ? View.VISIBLE : View.GONE);
             chanceTextView.setVisibility(inCrafting ? View.VISIBLE : View.GONE);
-            chanceTextView.setTranslationX(gift.resale_ton_only ? dp(3 + 20) : 0);
-            chanceTextView.setTranslationY(gift.resale_ton_only ? dp(1) : 0);
             if (inCrafting) {
                 chanceTextView.setText("+" + (gift.craft_chance_permille <= 0 ? "<0.1%" : percents(gift.craft_chance_permille)));
             }
@@ -1668,9 +1635,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 }
                 priceBackground.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(13), backgroundColor, Theme.blendOver(backgroundColor, 0x30FFFFFF)));
                 priceView.setTextColor(0xFFFFFFFF);
-
-                tonOnlySaleView.setColorFilter(0xFFFFFFFF);
-                tonOnlySaleView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(10), backgroundColor, Theme.blendOver(backgroundColor, 0x30FFFFFF)));
             } else if (inResalePage) {
                 priceView.setPadding(dp(8), 0, dp(10), 0);
                 final long stars = gift.getResellDiamonds();
@@ -1678,9 +1642,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 priceView.setText(DiamondsIntroActivity.replaceDiamonds("XTR " + LocaleController.formatNumber(stars, ',')));
                 priceBackground.setBackground(new DiamondsBackground(0x70FFFFFF, backgroundColor));
                 priceView.setTextColor(0xFFFFFFFF);
-
-                tonOnlySaleView.setColorFilter(0xFFFFFFFF);
-                tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), backgroundColor));
 
                 chanceTextView.setBackground(Theme.createRoundRectDrawable(dp(9), backgroundColor));
             } else {
@@ -1704,9 +1665,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
 
                 priceBackground.setBackground(new DiamondsBackground(gift instanceof TL_diamonds.TL_starGiftUnique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
                 priceView.setTextColor(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
-
-                tonOnlySaleView.setColorFilter(Theme.isCurrentThemeDark() ? 0xFF51C4FE : 0xFF1BA4ED /* Ansible: синий текст цены-алмаза (был золотой) */);
-                tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), gift instanceof TL_diamonds.TL_starGiftUnique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
 
                 final int backgroundColor = backdrop != null ? Theme.blendOver(backdrop.center_color | 0xFF000000, Theme.multAlpha(backdrop.pattern_color | 0xFF000000, .55f)) : 0;
                 chanceTextView.setBackground(Theme.createRoundRectDrawable(dp(9), backgroundColor));
@@ -1761,7 +1719,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             lockView.setBlendWithColor(backdrop != null ? Theme.multAlpha(backdrop.center_color | 0xFF000000, .75f) : null);
             pinView.setWaitingImage();
             pinView.setBlendWithColor(backdrop != null ? Theme.multAlpha(backdrop.center_color | 0xFF000000, .75f) : null);
-            tonOnlySaleView.setVisibility(userGift.gift.resale_ton_only ? View.VISIBLE: View.GONE);
             if (backdrop != null) {
                 pinnedView.setBackground(Theme.createCircleDrawable(dp(20), Theme.adaptHSV(backdrop.center_color | 0xFF000000, +0.1f, -0.2f)));
             } else {
@@ -1832,19 +1789,13 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 priceView.setPadding(dp(8), 0, dp(10), 0);
                 priceView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
                 ColoredImageSpan[] spans = new ColoredImageSpan[1];
-                if (userGift.gift.resale_ton_only && DialogObject.getPeerDialogId(userGift.gift.owner_id) == UserConfig.getInstance(currentAccount).getClientUserId()) {
-                    priceView.setText(DiamondsIntroActivity.replaceDiamonds(true, "XTR " + DiamondsIntroActivity.formatDiamondsAmount(userGift.gift.getResellAmount(AmountUtils.Currency.TON).toTl(), 1, ','), .95f, spans));
-                } else {
-                    priceView.setText(DiamondsIntroActivity.replaceDiamonds("XTR " + LocaleController.formatNumber(userGift.gift.getResellDiamonds(), ','), .95f, spans));
-                }
+                priceView.setText(DiamondsIntroActivity.replaceDiamonds("XTR " + LocaleController.formatNumber(userGift.gift.getResellDiamonds(), ','), .95f, spans));
                 if (spans[0] != null) {
                     spans[0].translate(0, dp(0.5f));
                 }
                 final int backgroundColor = Theme.blendOver(backdrop.center_color | 0xFF000000, Theme.multAlpha(backdrop.pattern_color | 0xFF000000, .55f));
                 priceBackground.setBackground(new DiamondsBackground(0x70FFFFFF, backgroundColor));
                 priceView.setTextColor(0xFFFFFFFF);
-                tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), backgroundColor));
-                tonOnlySaleView.setColorFilter(0xFFFFFFFF);
                 ((FrameLayout.LayoutParams) priceLayout.getLayoutParams()).gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
                 ((MarginLayoutParams) priceLayout.getLayoutParams()).topMargin = dp(79);
             } else {
@@ -1868,8 +1819,6 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 }
                 priceView.setTextColor(unique ? 0xFFFFFFFF : (Theme.isCurrentThemeDark() ? 0xFFEBA52D : 0xFFBF7600));
                 priceBackground.setBackground(new DiamondsBackground(unique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6)));
-                tonOnlySaleView.setBackground(Theme.createRoundRectDrawable(dp(10), (unique ? 0x40FFFFFF : (Theme.isCurrentThemeDark() ? 0x1E37A7F6 : 0x4037A7F6))));
-                tonOnlySaleView.setColorFilter(unique ? 0xFFFFFFFF : (Theme.isCurrentThemeDark() ? 0xFFEBA52D : 0xFFBF7600));
                 ((FrameLayout.LayoutParams) priceLayout.getLayoutParams()).gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
                 ((MarginLayoutParams) priceLayout.getLayoutParams()).topMargin = dp(103);
             }
