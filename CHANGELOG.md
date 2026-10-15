@@ -10,6 +10,18 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.3] - 2026-10-15
+
+### Changed
+- **Anonymous numbers: variable length and server-driven prefix.** The anonymous
+  number prefix is read from the server app config (`fragment_prefixes`, default
+  `777`) instead of a hardcoded value, and the subscriber part is now variable
+  length — 1 to 8 digits, grouped by four from the left — instead of a fixed
+  eight. This affects recognition of anonymous numbers in profiles, the
+  collectible info card, number formatting across the app, and the login screen,
+  where short anonymous numbers can now be entered. The bundled fallback country
+  entry for anonymous numbers matches the new prefix.
+
 ## [0.2.2] - 2026-10-08
 
 ### Removed

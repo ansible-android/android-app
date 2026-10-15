@@ -121,6 +121,7 @@ import org.json.JSONObject;
 import org.ansible.PhoneFormat.PhoneFormat;
 import org.ansible.messenger.AccountInstance;
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.AnonymousNumbers;
 import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.AuthTokensHelper;
 import org.ansible.messenger.BillingController;
@@ -2908,7 +2909,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             boolean allowCancelCall = getParentActivity().checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED;
                             boolean allowReadCallLog = Build.VERSION.SDK_INT < Build.VERSION_CODES.P || getParentActivity().checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED;
                             boolean allowReadPhoneNumbers = Build.VERSION.SDK_INT < Build.VERSION_CODES.O || getParentActivity().checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS) == PackageManager.PERMISSION_GRANTED;;
-                            if (codeField != null && "888".equals(codeField.getText())) {
+                            if (codeField != null && AnonymousNumbers.isPrefix(codeField.getText().toString())) {
                                 allowCall = true;
                                 allowCancelCall = true;
                                 allowReadCallLog = true;

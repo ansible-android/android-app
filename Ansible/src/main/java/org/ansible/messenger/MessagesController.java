@@ -4597,6 +4597,20 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                     break;
                 }
+                case "fragment_prefixes": {
+                    ArrayList<String> newFragmentPrefixes = new ArrayList<>();
+                    if (value.value instanceof TLRPC.TL_jsonArray) {
+                        TLRPC.TL_jsonArray array = (TLRPC.TL_jsonArray) value.value;
+                        for (int b = 0, N2 = array.value.size(); b < N2; b++) {
+                            TLRPC.JSONValue val = array.value.get(b);
+                            if (val instanceof TLRPC.TL_jsonString) {
+                                newFragmentPrefixes.add(((TLRPC.TL_jsonString) val).value);
+                            }
+                        }
+                    }
+                    AnonymousNumbers.setPrefixes(newFragmentPrefixes);
+                    break;
+                }
                 case "weather_search_username": {
                     if (value.value instanceof TLRPC.TL_jsonString) {
                         TLRPC.TL_jsonString str = (TLRPC.TL_jsonString) value.value;

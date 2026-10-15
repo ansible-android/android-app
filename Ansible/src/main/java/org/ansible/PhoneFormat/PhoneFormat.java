@@ -26,6 +26,7 @@ package org.ansible.PhoneFormat;
 
 import androidx.annotation.NonNull;
 
+import org.ansible.messenger.AnonymousNumbers;
 import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.FileLog;
 
@@ -190,6 +191,10 @@ public class PhoneFormat {
         }
         try {
             String str = strip(orig);
+            String digits = str.startsWith("+") ? str.substring(1) : str;
+            if (AnonymousNumbers.isAnonymous(digits)) {
+                return AnonymousNumbers.format(digits);
+            }
 
             if (str.startsWith("+")) {
                 String rest = str.substring(1);
@@ -236,6 +241,10 @@ public class PhoneFormat {
             return true;
         }
         String str = strip(phoneNumber);
+        String digits = str.startsWith("+") ? str.substring(1) : str;
+        if (AnonymousNumbers.isAnonymous(digits)) {
+            return true;
+        }
 
         if (str.startsWith("+")) {
             String rest = str.substring(1);

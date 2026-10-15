@@ -131,6 +131,7 @@ import androidx.viewpager.widget.ViewPager;
 import org.ansible.PhoneFormat.PhoneFormat;
 import org.ansible.messenger.AccountInstance;
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.AnonymousNumbers;
 import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.AuthTokensHelper;
 import org.ansible.messenger.BillingController;
@@ -7401,7 +7402,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return false;
             }
 
-            if (position == phoneRow && user.phone.startsWith("888")) {
+            if (position == phoneRow && AnonymousNumbers.isAnonymous(user.phone)) {
                 final TL_fragment.TL_inputCollectiblePhone input = new TL_fragment.TL_inputCollectiblePhone();
                 final String phone = input.phone = user.phone;
                 final TL_fragment.TL_getCollectibleInfo req = new TL_fragment.TL_getCollectibleInfo();
@@ -13472,7 +13473,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             text = LocaleController.getString(R.string.PhoneHidden);
                             phoneNumber = null;
                         }
-                        isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
+                        isFragmentPhoneNumber = AnonymousNumbers.isAnonymous(phoneNumber);
                         detailCell.setTextAndValue(text, LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile), false);
                     } else if (position == noteRow) {
                         final TLRPC.UserFull userInfo = getMessagesController().getUserFull(userId);

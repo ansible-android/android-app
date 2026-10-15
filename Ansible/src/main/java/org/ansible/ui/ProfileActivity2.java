@@ -42,6 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.PhoneFormat.PhoneFormat;
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.AnonymousNumbers;
 import org.ansible.messenger.BirthdayController;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.DialogObject;
@@ -562,7 +563,7 @@ public class ProfileActivity2 extends BaseFragment implements
             phoneNumber = null;
         }
 
-        final boolean isFragment = phoneNumber != null && phoneNumber.matches("888\\d{8}");
+        final boolean isFragment = AnonymousNumbers.isAnonymous(phoneNumber);
         items.add(TextDetailCell.Factory.of(
             ID_PHONE,
             phoneNumber != null ? PhoneFormat.getInstance().format("+" + phoneNumber) : getString(R.string.PhoneHidden),
