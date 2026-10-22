@@ -31,7 +31,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.CodeHighlighting;
+import org.ansible.utils.code.highlight.CodeHighlighting;
 import org.ansible.messenger.Emoji;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.R;

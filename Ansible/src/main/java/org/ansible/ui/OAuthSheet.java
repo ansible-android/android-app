@@ -319,11 +319,17 @@ public class OAuthSheet {
         layout.addView(buttonsLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL, 12, 12, 12, 8));
 
         final BottomSheet sheet = b.create();
+        sheet.setDelegate(new BottomSheet.BottomSheetDelegate() {
+            @Override public boolean canDismiss() {
+                return !login.isLoading();
+            }
+        });
+        final boolean[] dismissed = {false};
         sheet.setBackgroundColor(fragment.getThemedColor(Theme.key_windowBackgroundGray));
 
         final String[] selectedMatchCode = new String[] { matchCode };
         final Utilities.Callback<Integer> switchAccount = account -> {
-            if (selectedAccount[0] == account) return;
+            if (selectedAccount[0] == account || login.isLoading() || cancel.isLoading()) return;
 
             final AlertDialog progressDialog = new AlertDialog(ApplicationLoader.applicationContext, AlertDialog.ALERT_TYPE_SPINNER);
             progressDialog.showDelayed(200);
@@ -371,6 +377,7 @@ public class OAuthSheet {
         });
         final boolean[] processed = new boolean[1];
         cancel.setOnClickListener(v -> {
+            if (login.isLoading()) return;
             if (request == null || TextUtils.isEmpty(request.url)) {
                 processed[0] = true;
                 sheet.dismiss();
@@ -417,21 +424,28 @@ public class OAuthSheet {
             req.write_allowed = allowMessages != null && allowMessages.isChecked();
             req.share_phone_number = allowPhoneNumber[0];
 
-            ConnectionsManager.getInstance(selectedAccount[0]).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
-                processed[0] = true;
-                sheet.dismiss();
-                if (err != null) {
-                    if ("URL_EXPIRED".equalsIgnoreCase(err.text)) {
-                        getBulletinFactory()
-                            .createSimpleBulletin(R.raw.error, getString(R.string.BotAuthLoggedInFailTitle), TextUtils.isEmpty(domain) ? getString(R.string.BotAuthLoggedInFailNoDomain) : replaceSingleLinkBold(formatString(R.string.BotAuthLoggedInFail, domain), Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider)))
-                            .show();
-                    } else {
-                        getBulletinFactory().showForError(err);
-                    }
-                } else {
-                    handle(external, selectedAccount[0], request, res, originUrl, r, null, req.share_phone_number, webView);
+            final Runnable submit = () -> {
+                if (dismissed[0]) {
+                    return;
                 }
-            });
+                ConnectionsManager.getInstance(selectedAccount[0]).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
+                    login.setLoading(false);
+                    processed[0] = true;
+                    sheet.dismiss();
+                    if (err != null) {
+                        if ("URL_EXPIRED".equalsIgnoreCase(err.text)) {
+                            getBulletinFactory()
+                                .createSimpleBulletin(R.raw.error, getString(R.string.BotAuthLoggedInFailTitle), TextUtils.isEmpty(domain) ? getString(R.string.BotAuthLoggedInFailNoDomain) : replaceSingleLinkBold(formatString(R.string.BotAuthLoggedInFail, domain), Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider)))
+                                .show();
+                        } else {
+                            getBulletinFactory().showForError(err);
+                        }
+                    } else {
+                        handle(external, selectedAccount[0], request, res, originUrl, r, null, req.share_phone_number, webView);
+                    }
+                });
+            };
+            submit.run();
         };
         final Runnable beforeAccept = () -> {
             if (!r.match_codes.isEmpty() && TextUtils.isEmpty(selectedMatchCode[0])) {
@@ -465,6 +479,7 @@ public class OAuthSheet {
             }
         });
         sheet.setOnDismissListener(d -> {
+            dismissed[0] = true;
             showing = null;
             if (showingMatchCodes[0] != null) {
                 showingMatchCodes[0].dismiss();
@@ -477,9 +492,13 @@ public class OAuthSheet {
             showing = null;
         }
 
-        if (!r.match_codes_first || r.match_codes.isEmpty() || !TextUtils.isEmpty(selectedMatchCode[0])) {
+        final Runnable showConfirmation = () -> {
             showing = sheet;
             sheet.show();
+        };
+
+        if (!r.match_codes_first || r.match_codes.isEmpty() || !TextUtils.isEmpty(selectedMatchCode[0])) {
+            showConfirmation.run();
         } else {
             showing = showMatchCodeSheet(context, currentAccount, r.match_codes, domain, code -> {
                 final AlertDialog progressDialog = new AlertDialog(context, AlertDialog.ALERT_TYPE_SPINNER);
@@ -491,8 +510,7 @@ public class OAuthSheet {
                 ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
                     progressDialog.dismiss();
                     if (res instanceof TLRPC.TL_boolTrue) {
-                        showing = sheet;
-                        sheet.show();
+                        showConfirmation.run();
                     } else {
                         if (showing != null) {
                             showing.dismiss();

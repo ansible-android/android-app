@@ -360,7 +360,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
 
     public final ReactionsLayoutInBubble reactionsLayoutInBubble = new ReactionsLayoutInBubble(this);
     public float diamondGiftLayoutX, diamondGiftLayoutY;
-    public final DiamondGiftUniqueActionLayout diamondGiftLayout;
+    public DiamondGiftUniqueActionLayout diamondGiftLayout;
 
     public SuggestBirthdayActionLayout birthdayLayout;
 
@@ -512,8 +512,6 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         avatarDrawable = new AvatarDrawable();
         TAG = DownloadController.getInstance(currentAccount).generateObserverTag();
 
-        diamondGiftLayout = new DiamondGiftUniqueActionLayout(currentAccount, this, resourcesProvider);
-
         giftTitlePaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics()));
         giftSubtitlePaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, getResources().getDisplayMetrics()));
         giftTextPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, getResources().getDisplayMetrics()));
@@ -603,7 +601,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
     }
 
     private boolean offerExpired;
-    
+
     public void setMessageObject(MessageObject messageObject, boolean force) {
         if (messageObject == null) return;
         if (currentMessageObject == messageObject && (textLayout == null || TextUtils.equals(textLayout.getText(), messageObject.messageText)) && (hasReplyMessage || messageObject.replyMessageObject == null) && !force && messageObject.type != MessageObject.TYPE_SUGGEST_PHOTO && !messageObject.forceUpdate) {
@@ -658,7 +656,16 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             birthdayLayout.detach();
             birthdayLayout = null;
         }
-        diamondGiftLayout.set(messageObject, !messageIdChanged);
+        if (diamondGiftLayout == null && messageObject.messageOwner != null
+                && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique) {
+            diamondGiftLayout = new DiamondGiftUniqueActionLayout(currentAccount, this, themeDelegate);
+            if (isCellAttachedToWindow()) {
+                diamondGiftLayout.attach();
+            }
+        }
+        if (diamondGiftLayout != null) {
+            diamondGiftLayout.set(messageObject, !messageIdChanged);
+        }
         imageReceiver.setAutoRepeatCount(0);
         imageReceiver.clearDecorators();
         if (messageObject.type != MessageObject.TYPE_ACTION_WALLPAPER) {
@@ -782,7 +789,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                 forceWasUnread = messageObject.wasUnread;
                 imageReceiver.setAllowStartLottieAnimation(false);
                 imageReceiver.setDelegate(giftStickerDelegate);
-                imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.premium_gift, messageObject.getId() + "_" + R.raw.premium_gift, dp(160), dp(160)));
+                imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.premium_gift, dp(160), dp(160)));
             } else {
                 TLRPC.TL_messages_stickerSet set = null;
                 TLRPC.Document document = null;
@@ -1056,7 +1063,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         if (getPaddingTop() != topicSeparatorTopPadding) {
             setPadding(0, topicSeparatorTopPadding, 0, 0);
         }
-        rippleView.setVisibility(isButtonLayout(messageObject) && !diamondGiftLayout.has() ? VISIBLE : GONE);
+        rippleView.setVisibility(isButtonLayout(messageObject) && !hasDiamondGiftLayout() ? VISIBLE : GONE);
         ForumUtilities.applyTopicToMessage(messageObject);
         requestLayout();
     }
@@ -1148,7 +1155,9 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         avatarStoryParams.onDetachFromWindow();
 
         transitionParams.onDetach();
-        diamondGiftLayout.detach();
+        if (diamondGiftLayout != null) {
+            diamondGiftLayout.detach();
+        }
         reactionsLayoutInBubble.onDetachFromWindow();
         if (topicSeparator != null) {
             topicSeparator.detach();
@@ -1162,6 +1171,8 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
     public boolean isCellAttachedToWindow() {
         return attachedToWindow;
     }
+
+    private NotificationCenter.ObserversGroup observersGroup;
 
     @Override
     protected void onAttachedToWindow() {
@@ -1182,7 +1193,9 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         if (currentMessageObject != null && currentMessageObject.type == MessageObject.TYPE_SUGGEST_PHOTO) {
             setMessageObject(currentMessageObject, true);
         }
-        diamondGiftLayout.attach();
+        if (diamondGiftLayout != null) {
+            diamondGiftLayout.attach();
+        }
         reactionsLayoutInBubble.onAttachToWindow();
         if (topicSeparator != null) {
             topicSeparator.attach();
@@ -1244,7 +1257,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             return true;
         }
 
-        if (diamondGiftLayout.has() && diamondGiftLayout.onTouchEvent(diamondGiftLayoutX, diamondGiftLayoutY, event)) {
+        if (hasDiamondGiftLayout() && diamondGiftLayout.onTouchEvent(diamondGiftLayoutX, diamondGiftLayoutY, event)) {
             return true;
         }
 
@@ -1833,7 +1846,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         }
 
         int exactlyHeight = 0;
-        if (diamondGiftLayout.has()) {
+        if (hasDiamondGiftLayout()) {
             if (!diamondGiftLayout.repost) {
                 exactlyHeight += textY + textHeight + dp(4 + 6 + 6);
             }
@@ -1974,8 +1987,12 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         reactionsLayoutInBubble.y = getMeasuredHeight() - getPaddingTop() - reactionsLayoutInBubble.totalHeight;
     }
 
+    public boolean hasDiamondGiftLayout() {
+        return diamondGiftLayout != null && diamondGiftLayout.has();
+    }
+
     private boolean isNewStyleButtonLayout() {
-        return diamondGiftLayout.has()
+        return hasDiamondGiftLayout()
             || birthdayLayout != null
             || currentMessageObject.type == MessageObject.TYPE_GIFT_THEME_UPDATE
             || currentMessageObject.type == MessageObject.TYPE_COMMUNITY_CHANGED
@@ -2431,7 +2448,11 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
                     messageText = LocaleController.getString(R.string.ActionGiftPremiumText);
                 }
                 String actionName = getString(isGiftCode() && !isSelfGiftCode() ? R.string.GiftPremiumUseGiftBtn : R.string.ActionGiftPremiumView);
-                createGiftPremiumLayouts(formatPluralStringComma("ActionGiftPremiumTitle2", messageObject.messageOwner.action.months), null, null, messageText, true, actionName, 11, null, giftRectSize, false, false);
+                if (messageObject.messageOwner.action.months >= 1) {
+                    createGiftPremiumLayouts(formatPluralStringComma("ActionGiftPremiumTitle2", messageObject.messageOwner.action.months), null, null, messageText, true, actionName, 11, null, giftRectSize, false, false);
+                } else {
+                    createGiftPremiumLayouts(formatPluralStringComma("ActionGiftPremiumTitle2Days", messageObject.messageOwner.action.days), null, null, messageText, true, actionName, 11, null, giftRectSize, false, false);
+                }
             } else if (messageObject.type == MessageObject.TYPE_SUGGEST_PHOTO) {
                 TLRPC.TL_messageActionSuggestProfilePhoto actionSuggestProfilePhoto = (TLRPC.TL_messageActionSuggestProfilePhoto) messageObject.messageOwner.action;
                 String description;
@@ -2706,7 +2727,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         MessageObject messageObject = currentMessageObject;
         final float expanded = giftPremiumTextExpandedAnimated.set(!giftPremiumTextCollapsed);
         int imageSize = stickerSize;
-        if (!diamondGiftLayout.has() && birthdayLayout == null && isButtonLayout(messageObject)) {
+        if (!hasDiamondGiftLayout() && birthdayLayout == null && isButtonLayout(messageObject)) {
             stickerSize = giftRectSize - dp(106);
             if (isNewStyleButtonLayout()) {
                 imageSize = getImageSize(messageObject);
@@ -2766,7 +2787,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
 
         drawBackground(canvas, false);
 
-        if (diamondGiftLayout.has()) {
+        if (hasDiamondGiftLayout()) {
             canvas.save();
             canvas.translate(diamondGiftLayoutX = (getWidth() - diamondGiftLayout.getWidth()) / 2.0f, diamondGiftLayoutY = diamondGiftLayout.repost ? dp(4) : textY + textHeight + dp(4 + 6 + 6));
             diamondGiftLayout.draw(canvas);
@@ -2895,7 +2916,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
             canvas.restore();
         }
 
-        if (!diamondGiftLayout.has() && isButtonLayout(messageObject)) {
+        if (!hasDiamondGiftLayout() && isButtonLayout(messageObject)) {
             canvas.save();
             float x = (previousWidth - giftRectSize) / 2f;
             if (messageObject.type != MessageObject.TYPE_ACTION_WALLPAPER) {
@@ -3481,7 +3502,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         }
 
         MessageObject messageObject = currentMessageObject;
-        if (diamondGiftLayout.has()) {
+        if (hasDiamondGiftLayout()) {
             float w = diamondGiftLayout.getWidth() + dp(4 + 4);
             float x = (getWidth() - w) / 2f;
             float y = diamondGiftLayout.repost ? 0 : textY + textHeight + dp(12);
@@ -3819,7 +3840,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
 
     @Override
     public int getBoundsLeft() {
-        if (diamondGiftLayout.has()) {
+        if (hasDiamondGiftLayout()) {
             final int giftLayoutLeft = (int) (getWidth() - (diamondGiftLayout.getWidth() + dp(8))) / 2;
             if (diamondGiftLayout.repost) {
                 return giftLayoutLeft;
@@ -3838,7 +3859,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
 
     @Override
     public int getBoundsRight() {
-        if (diamondGiftLayout.has()) {
+        if (hasDiamondGiftLayout()) {
             final int giftLayoutRight = (int) (getWidth() + (diamondGiftLayout.getWidth() + dp(8))) / 2;
             if (diamondGiftLayout.repost) {
                 return giftLayoutRight;
@@ -3960,7 +3981,7 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         AnimatedEmojiSpan.drawAnimatedEmojis(canvas, textLayout, animatedEmojiStack, 0, spoilers, 0, 0, 0, 1f, textLayout != null ? getAdaptiveEmojiColorFilter(textLayout.getPaint().getColor()) : null);
         canvas.restore();
 
-        if (diamondGiftLayout.has()) {
+        if (hasDiamondGiftLayout()) {
             canvas.save();
             canvas.translate((getWidth() - diamondGiftLayout.getWidth()) / 2.0f, diamondGiftLayout.repost ? dp(4) : textY + textHeight + dp(4 + 6 + 6));
             diamondGiftLayout.drawOutbounds(canvas);

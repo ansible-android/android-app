@@ -30,8 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.exoplayer2.util.Consumer;
-
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.ContactsController;
@@ -45,6 +43,7 @@ import org.ansible.messenger.NotificationsController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
+import org.ansible.messenger.Utilities;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_stories;
@@ -131,7 +130,7 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
     StoryViewer storyViewer;
     SearchField searchField;
     final FiltersState sharedFilterState;
-    Consumer<SelfStoryViewsPage> onSharedStateChanged;
+    Utilities.Callback<SelfStoryViewsPage> onSharedStateChanged;
     final FiltersState state = new FiltersState();
     HeaderView headerView;
     boolean isSearchDebounce;
@@ -172,7 +171,7 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
         return true;
     }
 
-    public SelfStoryViewsPage(StoryViewer storyViewer, @NonNull Context context, FiltersState sharedFilterState, Consumer<SelfStoryViewsPage> onSharedStateChanged) {
+    public SelfStoryViewsPage(StoryViewer storyViewer, @NonNull Context context, FiltersState sharedFilterState, Utilities.Callback<SelfStoryViewsPage> onSharedStateChanged) {
         super(context);
         this.sharedFilterState = sharedFilterState;
         //this.sharedFilterState = null;
@@ -1604,7 +1603,7 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
                                 }
                                 updateViewState(true);
                                 reload();
-                                onSharedStateChanged.accept(SelfStoryViewsPage.this);
+                                onSharedStateChanged.run(SelfStoryViewsPage.this);
                             }
                             if (popupMenu != null) {
                                 popupMenu.dismiss();
@@ -1624,7 +1623,7 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
                                 }
                                 updateViewState(true);
                                 reload();
-                                onSharedStateChanged.accept(SelfStoryViewsPage.this);
+                                onSharedStateChanged.run(SelfStoryViewsPage.this);
                             }
                             if (popupMenu != null) {
                                 popupMenu.dismiss();

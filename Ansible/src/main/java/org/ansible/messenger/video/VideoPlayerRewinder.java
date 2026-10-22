@@ -4,7 +4,7 @@ import static org.ansible.messenger.AndroidUtilities.dp;
 
 import android.util.Log;
 
-import com.google.android.exoplayer2.C;
+import androidx.media3.common.C;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.Utilities;

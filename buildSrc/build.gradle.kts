@@ -5,9 +5,13 @@ plugins {
 
 gradlePlugin {
     plugins {
-        register("lottiePreParser") {
-            id = "org.ansible.lottie-meta"
-            implementationClass = "org.ansible.lottie.LottieMetaPlugin"
+        register("telegramBuildPlugin") {
+            id = "org.ansible.build-plugin"
+            implementationClass = "org.ansible.plugin.TelegramBuildPlugin"
+        }
+        register("telegramBuildAppPlugin") {
+            id = "org.ansible.build-app-plugin"
+            implementationClass = "org.ansible.plugin.TelegramBuildAppPlugin"
         }
         register("testGenerator") {
             id = "test-generator"
@@ -36,7 +40,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
     implementation(gradleApi())
-    implementation("com.android.tools.build:gradle:8.10.1")
+    implementation("com.android.tools.build:gradle:8.13.2")
 
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")

@@ -13,9 +13,10 @@ import android.media.browse.MediaBrowser;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
-import android.os.SystemClock;
 import android.service.media.MediaBrowserService;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class MusicBrowserService extends MediaBrowserService {
     }
 
     @Override
-    public void onLoadChildren(String parentMediaId, Result<List<MediaBrowser.MediaItem>> result) {
+    public void onLoadChildren(@NonNull String parentMediaId, @NonNull Result<List<MediaBrowser.MediaItem>> result) {
         AnsibleMediaSession holder = AnsibleMediaSession.getInstance(this);
         if (holder.isPasscodeLocked()) {
             Toast.makeText(getApplicationContext(), LocaleController.getString(R.string.EnterYourAnsiblePasscode), Toast.LENGTH_LONG).show();

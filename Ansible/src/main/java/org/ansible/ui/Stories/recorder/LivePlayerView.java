@@ -4,12 +4,10 @@ import static org.ansible.messenger.AndroidUtilities.dp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
@@ -33,16 +31,13 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.voip.VideoCapturerDevice;
-import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RLottieDrawable;
-import org.ansible.ui.Stories.PeerStoriesView;
 import org.ansible.ui.Stories.PeerStoriesView.VideoPlayerSharedScope;
-import org.webrtc.EglBase;
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.TextureViewRenderer;
@@ -528,7 +523,7 @@ public class LivePlayerView extends FrameLayout implements RendererCommon.Render
             super.setVisibility(visibility);
             if (visibility == View.VISIBLE) {
                 if (!hasSetImage) {
-                    final RLottieDrawable drawable = new RLottieDrawable(R.raw.utyan_empty2, "utyan_empty2", dp(130), dp(130));
+                    final RLottieDrawable drawable = new RLottieDrawable(R.raw.utyan_empty2, dp(130), dp(130));
                     imageView.setImageDrawable(drawable);
                     hasSetImage = true;
                 }

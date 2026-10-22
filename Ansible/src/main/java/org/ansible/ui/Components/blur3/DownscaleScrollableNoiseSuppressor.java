@@ -19,6 +19,7 @@ import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.utils.RenderNodeEffects;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.blur3.capture.IBlur3Capture;
+import org.ansible.utils.glass.positions.GlassPositionsArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -459,6 +460,18 @@ public class DownscaleScrollableNoiseSuppressor {
 
     public int getRenderNodesCount() {
         return rectRenderNodesCount;
+    }
+
+    public void setupRenderNodes(GlassPositionsArray positions) {
+        rectRenderNodesCount = positions.size();
+
+        while (rectRenderNodesCount > rectRenderNodes.size()) {
+            rectRenderNodes.add(new SourcePart());
+        }
+
+        for (int a = 0; a < rectRenderNodesCount; a++) {
+            rectRenderNodes.get(a).setPosition(positions.get(a));
+        }
     }
 
     public void setupRenderNodes(List<RectF> positions, int count) {

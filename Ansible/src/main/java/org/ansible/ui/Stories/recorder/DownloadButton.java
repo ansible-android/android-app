@@ -20,7 +20,6 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,6 @@ import org.ansible.messenger.VideoEncodingService;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedFloat;
-import org.ansible.ui.Components.BulletinFactory;
 import org.ansible.ui.Components.ButtonBounce;
 import org.ansible.ui.Components.CircularProgressDrawable;
 import org.ansible.ui.Components.CubicBezierInterpolator;
@@ -553,7 +551,7 @@ public class DownloadButton extends ImageView {
                 lottieDrawable.recycle(true);
             }
 
-            lottieDrawable = new RLottieDrawable(resId, "" + resId, dp(36), dp(36));
+            lottieDrawable = new RLottieDrawable(resId, dp(36), dp(36));
             lottieDrawable.setCallback(this);
             lottieDrawable.start();
 

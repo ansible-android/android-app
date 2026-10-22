@@ -10,8 +10,6 @@ package org.ansible.SQLite;
 
 import android.os.SystemClock;
 
-import com.google.android.exoplayer2.util.Log;
-
 import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.FileLog;
 import org.ansible.asnet.NativeByteBuffer;

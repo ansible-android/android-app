@@ -26,7 +26,6 @@ import android.provider.Settings;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Property;
 import android.util.TypedValue;
@@ -50,7 +49,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.DocumentObject;
 import org.ansible.messenger.Emoji;
@@ -2091,7 +2089,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
 
         private void updateImage(ReactionsLayoutInBubble.VisibleReaction react) {
             if (react != null && react.isDiamond) {
-                enterImageView.getImageReceiver().setImageBitmap(new RLottieDrawable(R.raw.star_reaction, "star_reaction", dp(30), dp(30)));
+                enterImageView.getImageReceiver().setImageBitmap(new RLottieDrawable(R.raw.star_reaction, dp(30), dp(30)));
                 loopImageView.getImageReceiver().setImageBitmap(getContext().getResources().getDrawable(R.drawable.star_reaction));
                 if (particles == null) {
                     particles = new DiamondsReactionsSheet.Particles(DiamondsReactionsSheet.Particles.TYPE_RADIAL, SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH ? 45 : 18);

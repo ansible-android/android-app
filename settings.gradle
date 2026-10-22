@@ -6,3 +6,13 @@ include ':Ansible_AppStandalone'
 include ':Ansible_AppTests'
 include ':jlatexmath'
 project(':jlatexmath').projectDir = file('Ansible/lib/jlatexmath/jlatexmath')
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+gradle.ext.androidxMediaModulePrefix = 'Ansible_Modules:media3:media-'
+apply from: file("Ansible_Modules/media/core_settings.gradle")

@@ -51,7 +51,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.AiTonesController;
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.CodeHighlighting;
+import org.ansible.utils.code.highlight.CodeHighlighting;
 import org.ansible.messenger.Emoji;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.FileLog;
@@ -956,7 +956,7 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
     protected CharSequence getTitle() {
         if (title == null) {
             title = getString(R.string.AIEditor);
-            titleLoadingDrawable = new RLottieDrawable(R.raw.emoji_stars, "emoji_stars", dp(24), dp(24));
+            titleLoadingDrawable = new RLottieDrawable(R.raw.emoji_stars, dp(24), dp(24));
             titleLoadingDrawable.setAllowDecodeSingleFrame(true);
             titleLoadingDrawable.setAutoRepeat(1);
         }

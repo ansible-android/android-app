@@ -5,8 +5,11 @@ import android.text.TextUtils;
 
 import org.ansible.asnet.TLRPC;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class AppGlobalConfig {
@@ -64,6 +67,7 @@ public class AppGlobalConfig {
 
     public final ConfigInt botsCreateLimitDefault = ofInt("bots_create_limit_default", 20);
     public final ConfigInt botsCreateLimitPremium = ofInt("bots_create_limit_premium", 40);
+    public final ConfigInt botAdditionalUsernamesLimit = ofInt("bot_additional_usernames_limit", 2);
 
     public final ConfigString phoneCountryIso2 = ofString("phone_country_iso2", "en");
 
@@ -91,7 +95,11 @@ public class AppGlobalConfig {
     public final ConfigInt quickReplyMessagesLimit = ofInt("quick_reply_messages_limit", 20);
     public final ConfigInt ephemeralWelcomeMessagesMax = ofInt("ephemeral_welcome_messages_max", 5);
 
+    public final ConfigBoolean roundVideoRecorder2Allowed = ofBoolean("round_video_recorder_2_allowed", true);
+
     public final ConfigBoolean diamondsSpendTopUpInvoiceDisabled = ofBoolean("stars_spend_topup_invoice_disabled", false);
+
+    public final ConfigStringSet botAllowedSuffixes = ofStringSet("bot_allowed_suffixes", Collections.singleton("bot"));
 
     /* * */
 
@@ -298,6 +306,55 @@ public class AppGlobalConfig {
         }
     }
 
+    public static class ConfigStringSet {
+        private final Internal handler;
+
+        private ConfigStringSet(String name, Set<String> defaultValue) {
+            this.handler = new Internal(name, defaultValue);
+        }
+
+        public Set<String> get() {
+            return handler.value;
+        }
+
+        private static class Internal implements ConfigInternal {
+            private final String name;
+            private final Set<String> defaultValue;
+            private Set<String> value;
+
+            private Internal(String name, Set<String> defaultValue) {
+                this.name = name;
+                this.defaultValue = defaultValue == null ? null : new HashSet<>(defaultValue);
+            }
+
+            @Override
+            public boolean apply(SharedPreferences.Editor editor, TLRPC.JSONValue tlValue) {
+                if (tlValue instanceof TLRPC.TL_jsonArray) {
+                    TLRPC.TL_jsonArray array = (TLRPC.TL_jsonArray) tlValue;
+                    HashSet<String> newValue = new HashSet<>();
+                    for (int i = 0, N = array.value.size(); i < N; i++) {
+                        TLRPC.JSONValue item = array.value.get(i);
+                        if (item instanceof TLRPC.TL_jsonString) {
+                            newValue.add(((TLRPC.TL_jsonString) item).value);
+                        }
+                    }
+                    if (!newValue.equals(value)) {
+                        value = newValue;
+                        editor.putStringSet(name, new HashSet<>(value));
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void load(SharedPreferences preferences) {
+                Set<String> stored = preferences.getStringSet(name, defaultValue);
+                value = stored == null ? null : new HashSet<>(stored);
+            }
+        }
+    }
+
     public static class ConfigBoolean {
         private final Internal handler;
 
@@ -383,6 +440,13 @@ public class AppGlobalConfig {
 
     private ConfigString ofString(String name, String defaultValue) {
         ConfigString config = new ConfigString(name, defaultValue);
+        map.put(name, config.handler);
+
+        return config;
+    }
+
+    private ConfigStringSet ofStringSet(String name, Set<String> defaultValue) {
+        ConfigStringSet config = new ConfigStringSet(name, defaultValue);
         map.put(name, config.handler);
 
         return config;

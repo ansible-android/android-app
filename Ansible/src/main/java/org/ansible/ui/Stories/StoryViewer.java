@@ -45,13 +45,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.Insets;
-import androidx.core.math.MathUtils;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import androidx.media3.exoplayer.ExoPlayer;
+import org.ansible.ui.AspectRatioFrameLayout;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.AnimationNotificationsLocker;
@@ -71,11 +70,9 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.pip.PipSource;
 import org.ansible.messenger.pip.source.IPipSourceDelegate;
-import org.ansible.messenger.pip.utils.PipPermissions;
 import org.ansible.messenger.pip.utils.PipUtils;
 import org.ansible.messenger.support.LongSparseIntArray;
 import org.ansible.messenger.video.VideoPlayerHolderBase;
-import org.ansible.messenger.voip.VoIPService;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
@@ -90,7 +87,6 @@ import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RadialProgress;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.SizeNotifierFrameLayout;
-import org.ansible.ui.Stories.LiveStoryPipOverlay;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.Stories.recorder.LivePlayerView;
 

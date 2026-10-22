@@ -32,7 +32,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.CodeHighlighting;
+import org.ansible.utils.code.highlight.CodeHighlighting;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.AppGlobalConfig;

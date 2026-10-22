@@ -3,7 +3,7 @@ package org.ansible.messenger;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.android.exoplayer2.util.Log;
+
 
 import org.ansible.asnet.SerializedData;
 import org.ansible.asnet.TLRPC;

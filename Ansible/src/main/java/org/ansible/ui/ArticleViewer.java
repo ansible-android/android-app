@@ -114,19 +114,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
-
 import org.json.JSONObject;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.AnimationNotificationsLocker;
 import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.BotGuardHelper;
 import org.ansible.messenger.ChatObject;
-import org.ansible.messenger.CodeHighlighting;
+import org.ansible.utils.code.highlight.CodeHighlighting;
 import org.ansible.messenger.DownloadController;
 import org.ansible.messenger.Emoji;
 import org.ansible.messenger.FileLoader;
-import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.FileStreamLoadOperation;
 import org.ansible.messenger.ImageLoader;
@@ -164,7 +161,6 @@ import org.ansible.ui.ActionBar.BottomSheetTabDialog;
 import org.ansible.ui.ActionBar.BottomSheetTabs;
 import org.ansible.ui.ActionBar.BottomSheetTabsOverlay;
 import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.Cells.CheckBoxCell;
 import org.ansible.ui.Cells.HeaderCell;
 import org.ansible.ui.Cells.TextSelectionHelper;
 import org.ansible.ui.Components.AlertsCreator;
@@ -15469,11 +15465,11 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
 
             if (webView != null) {
                 webView.onResume();
-                pageLayout.webViewContainer.replaceWebView(UserConfig.selectedAccount, webView, proxy);
+                pageLayout.webViewContainer.replaceWebView(UserConfig.selectedAccount, webView, proxy, lastUrl, false);
                 pageLayout.setWebBgColor(true, actionBarColor);
                 pageLayout.setWebBgColor(false, backgroundColor);
             } else if (lastUrl != null) {
-                pageLayout.webViewContainer.loadUrl(UserConfig.selectedAccount, lastUrl);
+                pageLayout.webViewContainer.loadUrl(UserConfig.selectedAccount, lastUrl, false);
             }
         }
         

@@ -22,11 +22,9 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ApplicationLoader;
-import org.ansible.messenger.Bitmaps;
 import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.FileLog;
@@ -38,7 +36,6 @@ import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.SerializedData;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -441,7 +438,9 @@ public class CameraController implements MediaRecorder.OnInfoListener {
                                 }
                                 orientation = 0;
                                 matrix.postScale(-1, 1);
-                                Bitmap scaled = Bitmaps.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                                int width = bitmap.getWidth();
+                                int height = bitmap.getHeight();
+                                Bitmap scaled = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
                                 if (scaled != bitmap) {
                                     bitmap.recycle();
                                 }

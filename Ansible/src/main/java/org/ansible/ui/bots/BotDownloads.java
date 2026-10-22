@@ -4,7 +4,6 @@ import static org.ansible.messenger.AndroidUtilities.dp;
 
 import android.app.Activity;
 import android.app.DownloadManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -20,7 +19,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.os.LocaleList;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -28,16 +26,12 @@ import android.util.Pair;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.ColorUtils;
-
-import com.google.android.exoplayer2.util.MimeTypes;
 
 import org.json.JSONObject;
 import org.ansible.messenger.AndroidUtilities;
@@ -50,36 +44,26 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.Utilities;
-import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.Bulletin;
-import org.ansible.ui.Components.BulletinFactory;
 import org.ansible.ui.Components.CircularProgressDrawable;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LoadingSpan;
 import org.ansible.ui.Components.RLottieDrawable;
-import org.ansible.ui.GradientClip;
 import org.ansible.ui.LaunchActivity;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 public class BotDownloads {
 
@@ -711,7 +695,7 @@ public class BotDownloads {
                 if (this.done) return;
                 this.done = true;
                 this.cancelled = cancelled;
-                doneDrawable = new RLottieDrawable(cancelled ? R.raw.error : R.raw.contact_check, cancelled ? "error" : "contact_check", dp(40), dp(40));
+                doneDrawable = new RLottieDrawable(cancelled ? R.raw.error : R.raw.contact_check, dp(40), dp(40));
                 doneDrawable.setMasterParent(view);
                 doneDrawable.setAllowDecodeSingleFrame(true);
                 doneDrawable.start();

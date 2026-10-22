@@ -7,13 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.SurfaceTexture;
 import android.graphics.drawable.Drawable;
-import android.icu.util.Measure;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.view.TextureView;
 import android.widget.FrameLayout;
 
@@ -21,8 +18,8 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import androidx.media3.exoplayer.ExoPlayer;
+import org.ansible.ui.AspectRatioFrameLayout;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ApplicationLoader;
@@ -38,10 +35,8 @@ import org.ansible.messenger.video.VideoPlayerHolderBase;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.CombinedDrawable;
-import org.ansible.ui.Components.VideoPlayer;
 import org.ansible.ui.Components.voip.CellFlickerDrawable;
 import org.ansible.ui.PremiumPreviewFragment;
-import org.ansible.ui.Stories.StoryViewer;
 
 import java.io.File;
 import java.net.URLEncoder;

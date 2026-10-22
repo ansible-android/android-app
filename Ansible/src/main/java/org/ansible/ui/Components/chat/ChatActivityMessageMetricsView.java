@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.SystemClock;
 import android.text.TextPaint;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,7 @@ import android.view.ViewTreeObserver;
 import androidx.annotation.NonNull;
 import androidx.core.math.MathUtils;
 
-import com.google.android.exoplayer2.util.Log;
+
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.BuildVars;

@@ -5,7 +5,6 @@ import android.os.Build;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -14,7 +13,7 @@ import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 
-import org.ansible.messenger.CodeHighlighting;
+import org.ansible.utils.code.highlight.CodeHighlighting;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.asnet.TLRPC;
