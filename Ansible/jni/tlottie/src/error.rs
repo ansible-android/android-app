@@ -48,6 +48,12 @@ pub enum JsonErrorKind {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum Limit {
+  /// Generated geometry or raster storage exceeds the per-frame budget.
+  RenderGeometry,
+  /// Cumulative evaluation, rasterization or pixel work exceeds the frame budget.
+  RenderWork,
+  /// Render surface and scratch storage exceeds the memory budget.
+  RenderMemory,
   /// Input larger than [`crate::Limits::max_input_bytes`].
   InputBytes,
   /// JSON nesting deeper than [`crate::Limits::max_nesting_depth`].
@@ -70,6 +76,12 @@ pub enum Limit {
   SolidLayers,
   /// More keyframes on one property than [`crate::Limits::max_keyframes`].
   Keyframes,
+  /// Inherited values exceed [`crate::Limits::max_inherited_keyframe_bytes`].
+  InheritedKeyframeBytes,
+  /// Cumulative parser allocations exceed the configured limit.
+  ParseMemory,
+  /// Cumulative parser token/scan work exceeds the configured limit.
+  ParseWork,
   /// More points in one path than [`crate::Limits::max_path_points`].
   PathPoints,
   /// A path coordinate exceeded [`crate::Limits::max_path_coordinate_abs`].

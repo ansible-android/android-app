@@ -8,7 +8,20 @@ fn stroke(pts: &[(f32, f32)], closed: bool, hw: f32, cap: Cap, join: Join, ml: f
   let mut pool = Vec::new();
   let mut segments = Vec::new();
   let mut out = Vec::new();
-  stroke_outline(&v, &anchors, closed, hw, cap, join, ml, &mut pool, &mut segments, &mut out);
+  stroke_outline(
+    &v,
+    &anchors,
+    closed,
+    hw,
+    cap,
+    join,
+    ml,
+    &mut pool,
+    &mut segments,
+    &mut out,
+    &crate::renderer::frame::budget::Budget::default(),
+  )
+  .unwrap();
   out
 }
 
@@ -92,7 +105,51 @@ fn no_panic_garbage() {
     let mut segments = Vec::new();
     let mut out = Vec::new();
     for closed in [false, true] {
-      stroke_outline(&v, &anchors, closed, 2.0, Cap::Round, Join::Round, 4.0, &mut pool, &mut segments, &mut out);
+      stroke_outline(
+        &v,
+        &anchors,
+        closed,
+        2.0,
+        Cap::Round,
+        Join::Round,
+        4.0,
+        &mut pool,
+        &mut segments,
+        &mut out,
+        &crate::renderer::frame::budget::Budget::default(),
+      )
+      .unwrap();
+    }
+  }
+}
+
+#[test]
+fn bulk_bound_covers_caps_joins_cusps_and_reversals() {
+  let points: Vec<Vec2> = (0..64).map(|i| Vec2::new((i % 3) as f32 * 9.0, (i % 7) as f32 * 2.0)).collect();
+  for closed in [false, true] {
+    for hw in [0.01, 2.0, 200.0, 1e6] {
+      for cap in [Cap::Butt, Cap::Square, Cap::Round] {
+        for join in [Join::Bevel, Join::Miter, Join::Round] {
+          for authored in [false, true] {
+            let mut out = Vec::new();
+            stroke_outline(
+              &points,
+              &vec![authored; points.len()],
+              closed,
+              hw,
+              cap,
+              join,
+              4.0,
+              &mut Vec::new(),
+              &mut Vec::new(),
+              &mut out,
+              &crate::renderer::frame::budget::Budget::default(),
+            )
+            .unwrap();
+            assert!(!out.is_empty());
+          }
+        }
+      }
     }
   }
 }

@@ -35,7 +35,7 @@ pub(crate) struct Contour {
 const KAPPA: f32 = 0.552_284_8;
 
 /// Max line segments a single cubic can flatten to.
-const MAX_SEGS: usize = 128;
+pub(crate) const MAX_SEGS: usize = 128;
 
 /// Segment length as rlottie measures it (VLine::length, vline.h):
 /// `max(|dx|,|dy|) + 0.375·min(|dx|,|dy|)` — a fast non-Euclidean hypot
@@ -52,7 +52,7 @@ pub(crate) fn seg_len_rlottie(dx: f32, dy: f32) -> f32 {
   }
 }
 
-fn flatten_cubic(out: &mut Vec<Vec2>, anchors: &mut Vec<bool>, p0: Vec2, c1: Vec2, c2: Vec2, p1: Vec2, tolerance: f32) {
+pub(crate) fn cubic_segments(p0: Vec2, c1: Vec2, c2: Vec2, p1: Vec2, tolerance: f32) -> usize {
   // Error-bounded uniform flattening: for n segments the max deviation is
   // <= 3/4 * M / n^2 where M is the largest second-difference norm of the
   // control polygon (measured 0.74·M/n²; the oft-quoted 3/16 bound is for
@@ -63,7 +63,11 @@ fn flatten_cubic(out: &mut Vec<Vec2>, anchors: &mut Vec<bool>, p0: Vec2, c1: Vec
   let d2b = ((c1.x - 2.0 * c2.x + p1.x).abs()).max((c1.y - 2.0 * c2.y + p1.y).abs());
   let m_norm = d2a.max(d2b);
   let coefficient = 0.75 / tolerance.clamp(0.01, 4.0);
-  let n = ((m_norm * coefficient).sqrt().ceil() as usize).clamp(2, MAX_SEGS);
+  ((m_norm * coefficient).sqrt().ceil() as usize).clamp(2, MAX_SEGS)
+}
+
+fn flatten_cubic(out: &mut Vec<Vec2>, anchors: &mut Vec<bool>, p0: Vec2, c1: Vec2, c2: Vec2, p1: Vec2, tolerance: f32) {
+  let n = cubic_segments(p0, c1, c2, p1, tolerance);
   let step = 1.0 / n as f32;
   let mut t = step;
   for _ in 0..n.saturating_sub(1) {
@@ -101,8 +105,10 @@ pub(crate) fn flatten_path_reusing(data: &PathData, m: &Mat2x3, tolerance: f32, 
   contour.points.clear();
   contour.anchors.clear();
   contour.inv_lin = None;
-  contour.points.reserve(n * 4);
-  contour.anchors.reserve(n * 4);
+  // Straight paths need one point per vertex, plus the closing endpoint.
+  // Curves grow on demand under the flattener preflight budget.
+  contour.points.reserve_exact(n.saturating_add(1));
+  contour.anchors.reserve_exact(n.saturating_add(1));
   if n == 0 {
     return contour;
   }
@@ -302,18 +308,17 @@ pub(crate) fn quad_contains_box(quad: &[Vec2; 4], x0: f32, y0: f32, x1: f32, y1:
   true
 }
 
-pub(crate) fn clip_to_quad(c: &Contour, quad: &[Vec2; 4]) -> Contour {
+pub(crate) fn clip_to_quad(c: &Contour, quad: &[Vec2; 4], budget: &crate::renderer::frame::budget::Budget) -> crate::Result<Contour> {
   // Orientation of the quad decides which side is "inside".
   let area = (quad[1].x - quad[0].x) * (quad[2].y - quad[0].y) - (quad[2].x - quad[0].x) * (quad[1].y - quad[0].y);
   let sign = if area >= 0.0 { 1.0f32 } else { -1.0f32 };
-  let mut pts = c.points.clone();
+  budget.points(c.points.len())?;
+  let mut pts = Vec::new();
+  pts.try_reserve_exact(c.points.len()).map_err(|_| crate::Error::LimitExceeded(crate::Limit::RenderMemory))?;
+  pts.extend_from_slice(&c.points);
   for e in 0..4usize {
     if pts.len() < 3 {
-      return Contour {
-        points: Vec::new(),
-        anchors: Vec::new(),
-        inv_lin: None,
-      };
+      return Ok(Contour::default());
     }
     let a = match quad.get(e) {
       Some(p) => *p,
@@ -335,7 +340,14 @@ pub(crate) fn clip_to_quad(c: &Contour, quad: &[Vec2; 4]) -> Contour {
       let t = (ex * (a.y - p.y) - ey * (a.x - p.x)) / denom;
       Vec2::new(p.x + dpx * t.clamp(0.0, 1.0), p.y + dpy * t.clamp(0.0, 1.0))
     };
-    let mut out: Vec<Vec2> = Vec::with_capacity(pts.len() + 4);
+    budget.work(pts.len())?;
+    if pts.iter().all(&inside) {
+      continue;
+    }
+    let maximum = pts.len().saturating_mul(2);
+    budget.points(maximum)?;
+    let mut out: Vec<Vec2> = Vec::new();
+    out.try_reserve_exact(maximum).map_err(|_| crate::Error::LimitExceeded(crate::Limit::RenderMemory))?;
     for (i, cur) in pts.iter().enumerate() {
       let prev = match i.checked_sub(1).and_then(|j| pts.get(j)).or_else(|| pts.last()) {
         Some(p) => p,
@@ -354,24 +366,23 @@ pub(crate) fn clip_to_quad(c: &Contour, quad: &[Vec2; 4]) -> Contour {
     }
     pts = out;
   }
-  Contour {
+  Ok(Contour {
     points: pts,
     anchors: Vec::new(),
     inv_lin: None,
-  }
+  })
 }
 
 /// Sutherland–Hodgman clip of a polygon to the rect [0,w]×[0,h].
 /// Keeps winding; coverage outside the viewport is discarded exactly.
-pub(crate) fn clip_contour(c: &Contour, w: f32, h: f32) -> Contour {
-  let mut pts = c.points.clone();
+pub(crate) fn clip_contour(c: &Contour, w: f32, h: f32, budget: &crate::renderer::frame::budget::Budget) -> crate::Result<Contour> {
+  budget.points(c.points.len())?;
+  let mut pts = Vec::new();
+  pts.try_reserve_exact(c.points.len()).map_err(|_| crate::Error::LimitExceeded(crate::Limit::RenderMemory))?;
+  pts.extend_from_slice(&c.points);
   for edge in 0..4u8 {
     if pts.len() < 3 {
-      return Contour {
-        points: Vec::new(),
-        anchors: Vec::new(),
-        inv_lin: None,
-      };
+      return Ok(Contour::default());
     }
     let inside = |p: &Vec2| -> bool {
       match edge {
@@ -396,7 +407,14 @@ pub(crate) fn clip_contour(c: &Contour, w: f32, h: f32) -> Contour {
         Vec2::new(a.x + (b.x - a.x) * t, bound_x)
       }
     };
-    let mut out: Vec<Vec2> = Vec::with_capacity(pts.len() + 4);
+    budget.work(pts.len())?;
+    if pts.iter().all(&inside) {
+      continue;
+    }
+    let maximum = pts.len().saturating_mul(2);
+    budget.points(maximum)?;
+    let mut out: Vec<Vec2> = Vec::new();
+    out.try_reserve_exact(maximum).map_err(|_| crate::Error::LimitExceeded(crate::Limit::RenderMemory))?;
     for (i, cur) in pts.iter().enumerate() {
       let prev = match i.checked_sub(1).and_then(|j| pts.get(j)) {
         Some(p) => p,
@@ -418,11 +436,11 @@ pub(crate) fn clip_contour(c: &Contour, w: f32, h: f32) -> Contour {
     }
     pts = out;
   }
-  Contour {
+  Ok(Contour {
     points: pts,
     anchors: Vec::new(),
     inv_lin: None,
-  }
+  })
 }
 
 /// Extracts the sub-polyline covering arclength range [l0, l1] of a contour.
@@ -648,10 +666,32 @@ mod round_corners_tests;
 
 /// Splits a polyline into dash sub-polylines. `pattern` is (dash, gap)
 /// lengths already resolved; `offset` shifts the pattern start.
+#[cfg(test)]
 pub(crate) fn dash_polyline(points: &[Vec2], anchors: &[bool], closed: bool, pattern: &[f32], offset: f32) -> Vec<(Vec<Vec2>, Vec<bool>)> {
   let mut d = VDasher::new(points, anchors, closed, pattern, offset);
   d.run();
   d.out
+}
+
+/// Renderer entry: account for dash iterations before they scan or allocate.
+#[cfg(feature = "cpu")]
+pub(crate) fn dash_polyline_bounded<'a>(
+  points: &'a [Vec2],
+  anchors: &'a [bool],
+  closed: bool,
+  pattern: &[f32],
+  offset: f32,
+  budget: &'a crate::renderer::frame::budget::Budget,
+) -> crate::Result<Vec<(Vec<Vec2>, Vec<bool>)>> {
+  budget.work(points.len())?;
+  budget.points(points.len())?;
+  let mut d = VDasher::new(points, anchors, closed, pattern, offset);
+  d.budget = Some(budget);
+  d.run();
+  match d.error {
+    Some(error) => Err(error),
+    None => Ok(d.out),
+  }
 }
 
 /// Faithful port of rlottie's VDasher (vdasher.cpp) operating over the
@@ -667,6 +707,12 @@ pub(crate) fn dash_polyline(points: &[Vec2], anchors: &[bool], closed: bool, pat
 /// and snaps the phase — visible as fused dashes at a path's tail
 /// (DuckEmoji chain).
 struct VDasher<'a> {
+  #[cfg(feature = "cpu")]
+  budget: Option<&'a crate::renderer::frame::budget::Budget>,
+  #[cfg(feature = "cpu")]
+  error: Option<crate::Error>,
+  #[cfg(feature = "cpu")]
+  cycle_length: f64,
   points: &'a [Vec2],
   anchors: &'a [bool],
   /// pattern as (length, gap) pairs
@@ -697,7 +743,15 @@ impl<'a> VDasher<'a> {
         pairs.push((first.max(0.0), 0.0));
       }
     }
+    #[cfg(feature = "cpu")]
+    let cycle_length = pairs.iter().flat_map(|&(l, g)| [l, g]).filter(|v| *v >= 1e-4).map(f64::from).sum();
     VDasher {
+      #[cfg(feature = "cpu")]
+      cycle_length,
+      #[cfg(feature = "cpu")]
+      budget: None,
+      #[cfg(feature = "cpu")]
+      error: None,
       points,
       anchors,
       pairs,
@@ -789,6 +843,15 @@ impl<'a> VDasher<'a> {
     if self.discard || span.is_empty() {
       return;
     }
+    #[cfg(feature = "cpu")]
+    if let Some(budget) = self.budget {
+      // Charge the output on both dash branches. A whole-element dash may
+      // skip the split loop, but still allocates points and two Vec headers.
+      if let Err(error) = budget.dash_output(span.len(), self.start_new_segment) {
+        self.error = Some(error);
+        return;
+      }
+    }
     if self.start_new_segment {
       let mut piece = (Vec::new(), Vec::new());
       for &(p, a) in span {
@@ -868,7 +931,26 @@ impl<'a> VDasher<'a> {
       self.current_length -= remaining;
       self.add_span(&collect(0.0, elem_len));
     } else {
+      // A complete pattern cycle consumes cycle_length. Allow an initial
+      // partial cycle and a factor of two for f32 subtraction rounding. The
+      // work cap keeps the cycle/phase count below the precision at which a
+      // whole cycle could stop making progress. Charge all scans and splits
+      // here, before entering the dash loop (including discarded gaps).
+      #[cfg(feature = "cpu")]
+      if let Some(budget) = self.budget {
+        let cycles = ((2.0 * elem_len as f64 / self.cycle_length).ceil() as usize).saturating_add(1);
+        let iterations = cycles.saturating_mul(2 * self.pairs.len());
+        let work = iterations.saturating_mul(verts.len().saturating_add(2 * self.pairs.len() + 2));
+        if let Err(error) = budget.work(work).and_then(|()| budget.points(iterations.saturating_mul(4))) {
+          self.error = Some(error);
+          return;
+        }
+      }
       while remaining > self.current_length {
+        #[cfg(feature = "cpu")]
+        if self.error.is_some() {
+          return;
+        }
         remaining -= self.current_length;
         let target = local + self.current_length;
         self.add_span(&collect(local, target));
@@ -904,6 +986,13 @@ impl<'a> VDasher<'a> {
       return;
     }
     if no_length || no_gap {
+      #[cfg(feature = "cpu")]
+      if let Some(budget) = self.budget {
+        if let Err(error) = budget.dash_output(self.points.len(), true) {
+          self.error = Some(error);
+          return;
+        }
+      }
       let mut piece = (Vec::new(), Vec::new());
       for (i, p) in self.points.iter().enumerate() {
         piece.0.push(*p);
@@ -930,6 +1019,10 @@ impl<'a> VDasher<'a> {
     self.move_to();
 
     for w in bounds.windows(2) {
+      #[cfg(feature = "cpu")]
+      if self.error.is_some() {
+        return;
+      }
       let (Some(&a), Some(&b)) = (w.first(), w.get(1)) else {
         continue;
       };
@@ -943,5 +1036,56 @@ impl<'a> VDasher<'a> {
 
     // drop degenerate 1-point pieces
     self.out.retain(|p| p.0.len() >= 2);
+  }
+}
+
+/// Shared allocation/work estimate and raster-mode selection. Built once per
+/// uncached paint, then passed through to the backend.
+pub(crate) struct RasterMetrics {
+  pub(crate) x0: f32,
+  pub(crate) y0: f32,
+  pub(crate) x1: f32,
+  pub(crate) y1: f32,
+  pub(crate) perim: f32,
+  pub(crate) points: usize,
+}
+impl RasterMetrics {
+  pub(crate) fn new(contours: &[Contour]) -> Self {
+    let (mut x0, mut y0, mut x1, mut y1) = (f32::MAX, f32::MAX, f32::MIN, f32::MIN);
+    let mut perim = 0.0f32;
+    let mut points = 0usize;
+    for c in contours {
+      points = points.saturating_add(c.points.len());
+      let mut prev: Option<Vec2> = c.points.last().copied();
+      for p in &c.points {
+        x0 = x0.min(p.x);
+        y0 = y0.min(p.y);
+        x1 = x1.max(p.x);
+        y1 = y1.max(p.y);
+        if let Some(q) = prev {
+          perim += (p.x - q.x).abs() + (p.y - q.y).abs();
+        }
+        prev = Some(*p);
+      }
+    }
+    Self { x0, y0, x1, y1, perim, points }
+  }
+  pub(crate) fn sparse(&self, canvas_px: usize) -> bool {
+    let Self { x0, y0, x1, y1, perim, .. } = *self;
+    if !(x1 > x0 && y1 > y0) {
+      return false;
+    }
+    if ((x1 - x0).max(y1 - y0)) <= 42.0 {
+      return false;
+    }
+    let density = if canvas_px <= 160 * 160 {
+      12.0
+    } else if canvas_px <= 448 * 448 {
+      18.0
+    } else {
+      6.0
+    };
+    let s = perim * density < (x1 - x0) * (y1 - y0);
+    s
   }
 }

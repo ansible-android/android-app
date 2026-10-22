@@ -105,6 +105,7 @@ impl CPURenderer {
       Some((raster, cells)) => Canvas::with_raster_and_rows(pixels, self.width, self.height, raster, cells, self.antialias, dirty_rows),
       None => Canvas::with_retained_rows(pixels, self.width, self.height, self.antialias, dirty_rows),
     };
+    canvas.raster_mode = geometry.raster_mode;
     if destination_dirty {
       // `Canvas` uses an empty dirty box to select a gradient copy fast
       // path. It is recreated for each streamed command, so carry the
@@ -180,7 +181,20 @@ impl CPURenderer {
         };
         let _source_dirty = self.surface_dirty.pop().unwrap_or_else(DirtyBox::empty);
         let source_rows = self.surface_rows.pop().unwrap_or_default();
-        apply_matte(&mut target, &source, kind, source_opacity, self.comp.channel_order);
+        // Matte multiplication cannot make a transparent target nonzero,
+        // including inverted mattes. Visit only rows written by the target.
+        let width = self.width;
+        if width != 0 && !target_dirty.is_empty() {
+          let height = target.len().min(source.len()) / width;
+          for y in target_dirty.y0.min(height)..target_dirty.y1.saturating_add(1).min(height) {
+            let Some(bounds) = target_rows.get(y).filter(|bounds| !bounds.is_empty()) else { continue };
+            let start = y * width + bounds.x0.min(width);
+            let end = y * width + bounds.x1.saturating_add(1).min(width);
+            if let (Some(target), Some(source)) = (target.get_mut(start..end), source.get(start..end)) {
+              apply_matte(target, source, kind, source_opacity, self.comp.channel_order);
+            }
+          }
+        }
         let width = self.width;
         composite_over_rows(self.active(), &target, width, &target_rows, target_dirty, opacity);
         if !target_dirty.is_empty() {
@@ -220,7 +234,7 @@ impl CPURenderer {
     if first && last {
       let mut active_rows = self.surface_rows.pop();
       if let Some(rows) = active_rows.as_deref_mut() {
-        if mode_s_wins(geometry.raw_contours(), len) {
+        if geometry.raster_mode.unwrap_or_else(|| mode_s_wins(geometry.raw_contours(), len)) {
           let mut cells = self.state.take_cells(self.width, self.height);
           cells.reset();
           cells.fill_contours(geometry.raw_contours());
@@ -240,7 +254,7 @@ impl CPURenderer {
         self.state.take_u8(len, 0)
       };
       let width = self.width;
-      if mode_s_wins(geometry.raw_contours(), len) {
+      if geometry.raster_mode.unwrap_or_else(|| mode_s_wins(geometry.raw_contours(), len)) {
         let mut cells = self.state.take_cells(self.width, self.height);
         cells.reset();
         cells.fill_contours(geometry.raw_contours());
@@ -282,7 +296,7 @@ impl CPURenderer {
     }
     let mut coverage = self.state.take_u8(len, 0);
     let width = self.width;
-    if mode_s_wins(geometry.raw_contours(), len) {
+    if geometry.raster_mode.unwrap_or_else(|| mode_s_wins(geometry.raw_contours(), len)) {
       let mut cells = self.state.take_cells(self.width, self.height);
       cells.reset();
       cells.fill_contours(geometry.raw_contours());
@@ -488,8 +502,7 @@ fn paint_is_retained(cache: &CovCache, key: u128, paint: Paint<'_>, alpha_only: 
   if !alpha_only {
     return cache.contains(gradient.source_key);
   }
-  let first_alpha = gradient.lut.first().copied().unwrap_or(0) >> 24;
-  if gradient.lut.iter().all(|pixel| pixel >> 24 == first_alpha) {
+  if gradient.lut.uniform_alpha().is_some() {
     false
   } else {
     cache.contains(gradient.source_key ^ (1u128 << 127))
@@ -511,17 +524,26 @@ fn fill_gradient<const TRACK_ROWS: bool>(
       canvas.fill_gradient_translated_alpha::<TRACK_ROWS>(cache, key, gradient.source_key, contours, translation, fill_rule(gradient.rule), &gradient.lut, map, gradient.alpha);
       return;
     }
-    canvas.fill_gradient_translated::<TRACK_ROWS>(cache, key, gradient.source_key, contours, translation, fill_rule(gradient.rule), &gradient.lut, map);
+    canvas.fill_gradient_translated_with_metadata::<TRACK_ROWS>(
+      cache,
+      key,
+      gradient.source_key,
+      contours,
+      translation,
+      fill_rule(gradient.rule),
+      &gradient.lut,
+      map,
+      gradient.lut.is_opaque(),
+    );
     return;
   }
 
-  let first_alpha = gradient.lut.first().copied().unwrap_or(0) >> 24;
-  if gradient.lut.iter().all(|pixel| pixel >> 24 == first_alpha) {
+  if let Some(first_alpha) = gradient.lut.uniform_alpha() {
     let color = crate::math::Color {
       r: 0.0,
       g: 0.0,
       b: 0.0,
-      a: first_alpha as f32 / 255.0 * f32::from(gradient.alpha) / 255.0,
+      a: f32::from(first_alpha) / 255.0 * f32::from(gradient.alpha) / 255.0,
     };
     canvas.fill_translated::<TRACK_ROWS>(cache, key, contours, translation, fill_rule(gradient.rule), color, 1.0);
     return;

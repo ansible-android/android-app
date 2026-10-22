@@ -24,7 +24,11 @@ use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
 
+use crate::composition::parse::MAX_GROUP_DEPTH;
 use crate::{CPURenderer, Composition, Error, Limits, RenderOptions};
+
+// Keep renderer regressions independent of parser resource checks.
+const LIMITS_CHECK: bool = false;
 
 const FRAME_TIME_BUDGET: Duration = Duration::from_millis(1_500);
 const MEM_BUDGET: usize = 32 << 20;
@@ -114,6 +118,9 @@ macro_rules! assert_lottie {
     assert_lottie!($json, $size, $frame_start, $frame_end, $options, false);
   };
   ($json: expr, $size: expr, $frame_start: expr, $frame_end: expr, $options: expr, $expect_error: expr) => {
+    assert_lottie!($json, $size, $frame_start, $frame_end, $options, $expect_error, false);
+  };
+  ($json: expr, $size: expr, $frame_start: expr, $frame_end: expr, $options: expr, $expect_error: expr, $parser_only: expr) => {
     let json = $json;
     let size: u32 = $size;
     let frame_start: u32 = $frame_start;
@@ -123,11 +130,18 @@ macro_rules! assert_lottie {
     let budget = (frame_end - frame_start) * FRAME_TIME_BUDGET;
     let counter = Arc::new(AtomicUsize::new(0));
     let worker_counter = Arc::clone(&counter);
+    let phase = Arc::new(AtomicUsize::new(0));
+    let worker_phase = Arc::clone(&phase);
     let (tx, rx) = mpsc::channel();
     thread::spawn(move || {
       WORKER_BYTES.with(|slot| slot.set(Arc::as_ptr(&worker_counter)));
       let result = (|| -> Result<(), Error> {
-        let composition = Composition::parse(json.as_bytes(), &Limits::default())?;
+        let parsed = crate::composition::parse::with_limits_check($parser_only || LIMITS_CHECK, || Composition::parse(json.as_bytes(), &Limits::default()));
+        if $parser_only {
+          assert!(matches!(parsed, Err(Error::LimitExceeded(_))), "parser regression must be rejected before rendering");
+        }
+        let composition = parsed?;
+        worker_phase.store(1, Ordering::Relaxed);
         let mut cpu = CPURenderer::new(composition);
         if options.alpha_only {
           let mut alpha = vec![0u8; (size * size).try_into().unwrap()];
@@ -152,9 +166,10 @@ macro_rules! assert_lottie {
         Err(TryRecvError::Disconnected) => panic!("render worker vanished before reporting"),
         Err(TryRecvError::Empty) => {}
       }
+      let phase = if phase.load(Ordering::Relaxed) == 0 { "parsing" } else { "rendering" };
       let used = counter.load(Ordering::Relaxed);
-      assert!(used <= MEM_BUDGET, "render allocated {used} bytes, over the {MEM_BUDGET}-byte budget");
-      assert!(start.elapsed() <= budget, "render did not finish within the frame budget");
+      assert!(used <= MEM_BUDGET, "{phase} allocated {used} bytes, over the {MEM_BUDGET}-byte budget");
+      assert!(start.elapsed() <= budget, "{phase} did not finish within the frame budget");
       thread::sleep(Duration::from_millis(1));
     };
     if expect_error {
@@ -162,6 +177,15 @@ macro_rules! assert_lottie {
     } else {
       assert!(rendered.is_ok() || matches!(rendered, Err(Error::LimitExceeded(_))), "{rendered:?}");
     }
+  };
+}
+
+// These cases exhaust memory while constructing the model, before a renderer
+// exists. Keep parser coverage explicit rather than claiming a renderer guard
+// fixed them. All other DoS cases use LIMITS_CHECK above.
+macro_rules! assert_parser_lottie {
+  ($json: expr) => {
+    assert_lottie!($json, 64, 0, 1, RenderOptions::default(), true, true);
   };
 }
 
@@ -655,6 +679,30 @@ fn luma_matte_pairs_json(pairs_count: usize, size: usize) -> String {
   format!(r#"{{"v":"5.5.0","w":{size},"h":{size},"fr":60,"ip":0,"op":60,"layers":[{layers}]}}"#)
 }
 
+fn zero_point_repeater_arena_json(paths: usize) -> String {
+  let mut items = String::new();
+  for _ in 0..paths {
+    items.push_str(r#"{"ty":"sh","ks":{"a":0,"k":{"c":true,"v":[]}}},"#);
+  }
+  format!(
+    r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"fl","c":{{"a":0,"k":[1,0,0]}},"o":{{"a":0,"k":100}}}},{items}{{"ty":"rp","c":{{"a":0,"k":64}},"o":{{"a":0,"k":0}},"tr":{{"p":{{"a":0,"k":[0.01,0.01]}}}}}},{{"ty":"tr"}}]}}]}}]}}"#
+  )
+}
+
+fn trim_cleared_repeater_arena_json(rects: usize) -> String {
+  let mut items = String::new();
+  for i in 0..rects {
+    items.push_str(&format!(
+      r#"{{"ty":"rc","p":{{"a":0,"k":[{},{}]}},"s":{{"a":0,"k":[1,1]}},"r":{{"a":0,"k":0}}}},"#,
+      i % 64,
+      (i / 64) % 64
+    ));
+  }
+  format!(
+    r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{items}{{"ty":"fl","c":{{"a":0,"k":[1,0,0]}},"o":{{"a":0,"k":100}}}},{{"ty":"tm","s":{{"a":0,"k":0}},"e":{{"a":0,"k":0}},"o":{{"a":0,"k":0}},"m":1}},{{"ty":"rp","c":{{"a":0,"k":64}},"o":{{"a":0,"k":0}},"tr":{{"p":{{"a":0,"k":[0.01,0.01]}}}}}},{{"ty":"tr"}}]}}]}}]}}"#
+  )
+}
+
 fn unsorted_scalar_keyframes_json(count: usize, value: &str) -> String {
   let mut kfs = format!(r#"{{"t":-1,"s":[{value}]}},{{"t":0,"s":[{value}]}}"#);
   for _ in 0..count {
@@ -776,6 +824,14 @@ fn layer_shapes_before_ty_delayed_dispatch_json(items_count: usize, junk_fields:
     shapes.push_str(&format!(r#"{{"ty":"tr"{junk}}}"#));
   }
   format!(r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"shapes":[{shapes}],"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}}}}]}}"#)
+}
+
+fn nested_shape_groups_json(depth: usize) -> String {
+  let mut group = r#"{"ty":"fl","c":{"a":0,"k":[1,0,0,1]},"o":{"a":0,"k":100}}"#.to_string();
+  for _ in 0..depth {
+    group = format!(r#"{{"ty":"gr","it":[{group}]}}"#);
+  }
+  format!(r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{group}]}}]}}"#)
 }
 
 fn many_minimal_masks_json(masks_count: usize) -> String {
@@ -1097,6 +1153,43 @@ fn keyframe_value_inheritance_stays_bounded() {
   let json = format!(
     r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"sh","ks":{{"a":1,"k":[{kfs}]}}}},{{"ty":"fl","c":{{"a":0,"k":[1,0,0]}},"o":{{"a":0,"k":100}}}},{{"ty":"tr"}}]}}]}}]}}"#
   );
+  assert_parser_lottie!(json);
+}
+
+#[test]
+fn shape_group_nesting_at_the_parser_limit_stays_on_the_worker_stack() {
+  // `MAX_GROUP_DEPTH` is 32, so 24 nested shape groups are accepted input.
+  // The recursive parser's debug frames are large enough to overflow the
+  // default 2 MiB test-worker stack at this depth, aborting the whole process.
+  let mut item = r#"{"ty":"fl","c":{"a":0,"k":[1,0,0,1]},"o":{"a":0,"k":100}}"#.to_string();
+  for _ in 0..24 {
+    item = format!(r#"{{"ty":"gr","it":[{item}]}}"#);
+  }
+  let json = format!(r#"{{"fr":30,"ip":0,"op":60,"w":64,"h":64,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{item}]}}]}}"#);
+  let _ = Composition::parse(json.as_bytes(), &Limits::default());
+}
+
+#[test]
+fn keyframe_path_inheritance_within_limits_stays_bounded() {
+  // `max_keyframes` and `max_path_points` bound only one axis each. A first
+  // path at the point cap, followed by value-less keyframes just below the
+  // keyframe cap, makes every inherited keyframe deep-clone that whole path.
+  // The file is legal and parse succeeds, but the model peaks far above the
+  // memory budget before any rendering starts.
+  let mut verts = String::new();
+  for i in 0..Limits::default().max_path_points {
+    if i > 0 {
+      verts.push(',');
+    }
+    verts.push_str(&format!("[{},{}]", i % 60, (i / 60) % 60));
+  }
+  let mut kfs = format!(r#"{{"t":0,"s":[{{"c":true,"v":[{verts}],"i":[],"o":[]}}]}}"#);
+  for t in 1..Limits::default().max_keyframes {
+    kfs.push_str(&format!(r#",{{"t":{t}}}"#));
+  }
+  let json = format!(
+    r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"sh","ks":{{"a":1,"k":[{kfs}]}}}},{{"ty":"fl","c":{{"a":0,"k":[1,0,0]}},"o":{{"a":0,"k":100}}}},{{"ty":"tr"}}]}}]}}]}}"#
+  );
   assert_lottie!(json);
 }
 
@@ -1172,7 +1265,7 @@ fn gradient_keyframe_value_inheritance_stays_bounded() {
   let json = format!(
     r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"rc","p":{{"a":0,"k":[32,32]}},"s":{{"a":0,"k":[64,64]}},"r":{{"a":0,"k":0}}}},{{"ty":"gf","s":{{"a":0,"k":[0,0]}},"e":{{"a":0,"k":[64,64]}},"g":{{"p":2,"k":{{"a":1,"k":[{kfs}]}}}},"o":{{"a":0,"k":100}}}},{{"ty":"tr"}}]}}]}}]}}"#
   );
-  assert_lottie!(json);
+  assert_parser_lottie!(json);
 }
 
 #[test]
@@ -1191,7 +1284,7 @@ fn oversized_static_gradient_stop_table_stays_bounded() {
   let json = format!(
     r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"rc","p":{{"a":0,"k":[32,32]}},"s":{{"a":0,"k":[64,64]}},"r":{{"a":0,"k":0}}}},{{"ty":"gf","s":{{"a":0,"k":[0,0]}},"e":{{"a":0,"k":[64,64]}},"g":{{"p":2,"k":{{"a":0,"k":[{stops}]}}}},"o":{{"a":0,"k":100}}}},{{"ty":"tr"}}]}}]}}]}}"#
   );
-  assert_lottie!(json);
+  assert_parser_lottie!(json);
 }
 
 #[test]
@@ -1240,6 +1333,36 @@ fn asset_layers_delayed_dispatch_stays_bounded() {
   // max-legal layer-list variant live for untrusted precomp JSON.
   let json = asset_layers_delayed_dispatch_json(4095, 300);
   assert_lottie!(json);
+}
+
+#[test]
+fn nested_shape_groups_stay_on_the_thread_stack() {
+  // Parse-time ABORT (not a budget breach): the `gr` -> `it` -> `gr` walk
+  // (parse_shape_list -> parse_shape_item -> for_each_field -> `it` arm ->
+  // parse_shape_list(depth+1)) costs ~88 KiB of thread stack per group level
+  // in debug builds (~9 KiB in release), while MAX_GROUP_DEPTH=32 is accepted
+  // unconditionally and only 33+ returns Err(LimitExceeded(NestingDepth)). So
+  // a few hundred bytes of legal JSON abort the whole process with "has
+  // overflowed its stack" whenever the caller's stack is smaller than the
+  // recursion: 24 nested groups die on the 2 MiB std::thread::spawn default
+  // (debug), and 32 die on the 128 KiB musl default (release). A DoS budget
+  // can never catch this: a stack overflow is an unconditional SIGSEGV->abort,
+  // not a panic. Nesting must therefore be bounded by a guard on actual stack
+  // cost (or the walk made iterative), so parsing legal max-depth input on a
+  // small-stack thread must TERMINATE, with Ok or a clean LimitExceeded.
+  for depth in [24, MAX_GROUP_DEPTH] {
+    let json = nested_shape_groups_json(depth);
+    let worker = thread::Builder::new()
+      .stack_size(128 << 10)
+      .spawn(move || Composition::parse(json.as_bytes(), &Limits::default()).map(|_| ()))
+      .unwrap();
+    let parsed = worker.join().unwrap_or_else(|_| panic!("depth {depth}: parse worker panicked"));
+    assert!(matches!(parsed, Ok(()) | Err(Error::LimitExceeded(_))), "depth {depth}: {parsed:?}");
+  }
+  // The pre-existing structural guard must keep rejecting over-deep input
+  // cleanly (this one already holds; the fix must not lose it).
+  let over = Composition::parse(nested_shape_groups_json(MAX_GROUP_DEPTH + 1).as_bytes(), &Limits::default());
+  assert!(matches!(over, Err(Error::LimitExceeded(crate::Limit::NestingDepth))), "{over:?}");
 }
 
 #[test]
@@ -1331,7 +1454,7 @@ fn static_path_tangent_padding_stays_bounded() {
   let json = format!(
     r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"sh","ks":{{"a":0,"k":{{"c":true,"v":[{verts}]}}}}}},{{"ty":"fl","c":{{"a":0,"k":[1,0,0]}},"o":{{"a":0,"k":100}}}},{{"ty":"tr"}}]}}]}}]}}"#
   );
-  assert_lottie!(json);
+  assert_parser_lottie!(json);
 }
 
 #[test]
@@ -1454,6 +1577,15 @@ fn repeated_individual_trims_over_large_paths_stay_bounded() {
 }
 
 #[test]
+fn individual_trim_over_overflowed_scale_stays_bounded() {
+  // A layer scale large enough to overflow f32 maps the geometry to infinities.
+  // `inf * 0` and `inf - inf` then make an individual trim's measured length
+  // NaN; `f32::clamp` panics on NaN bounds instead of returning a limit error.
+  let json = r#"{"fr":30,"ip":0,"op":12,"w":64,"h":64,"layers":[{"ty":4,"ks":{"s":{"a":0,"k":[1e40,1e40]}},"shapes":[{"ty":"el","p":{"a":0,"k":[0,0]},"s":{"a":0,"k":[10,10]}},{"ty":"tm","s":{"a":0,"k":0},"e":{"a":0,"k":50},"m":2}]}]}"#;
+  assert_lottie!(json);
+}
+
+#[test]
 fn curved_mask_flattening_stays_bounded() {
   // Mask geometry is flattened before clipping just like visible paths, but
   // mask paths are outside the shape-item budget. A single mask with many
@@ -1484,7 +1616,7 @@ fn many_minimal_masks_stay_bounded() {
   // Mask count has no explicit default limit. Even one-point masks can balloon
   // parser/model memory when a hostile layer carries a very long masks array.
   let json = many_minimal_masks_json(120_000);
-  assert_lottie!(json);
+  assert_parser_lottie!(json);
 }
 
 #[test]
@@ -1760,7 +1892,7 @@ fn gradient_stroke_static_stop_table_stays_bounded() {
   let json = format!(
     r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"sh","ks":{{"a":0,"k":{{"c":false,"v":[[0,32],[64,32]],"i":[],"o":[]}}}}}},{{"ty":"gs","s":{{"a":0,"k":[0,0]}},"e":{{"a":0,"k":[64,64]}},"g":{{"p":2,"k":{{"a":0,"k":[{stops}]}}}},"w":{{"a":0,"k":1}},"o":{{"a":0,"k":100}}}},{{"ty":"tr"}}]}}]}}]}}"#
   );
-  assert_lottie!(json);
+  assert_parser_lottie!(json);
 }
 
 #[test]
@@ -2234,6 +2366,32 @@ fn matte_reuses_masked_precomp_stays_bounded() {
 }
 
 #[test]
+fn nested_track_matte_target_surfaces_stay_bounded() {
+  // A track-matte consumer that is itself a precomp keeps both its matte-source
+  // and target surfaces live while it descends into the child asset. Fifteen
+  // nested precomp mattes therefore hold 32 full 511x511 RGBA canvases at once.
+  let source = r#"{"ty":4,"ind":10,"ip":0,"op":60,"st":0,"ks":{},"shapes":[{"ty":"gr","it":[{"ty":"rc","p":{"a":0,"k":[256,256]},"s":{"a":0,"k":[511,511]},"r":{"a":0,"k":0}},{"ty":"fl","c":{"a":0,"k":[0,1,0]},"o":{"a":0,"k":100}},{"ty":"tr"}]}]}"#;
+  let mut assets = String::new();
+  for i in 0..15 {
+    if i > 0 {
+      assets.push(',');
+    }
+    let child = if i + 1 < 15 { format!("a{}", i + 1) } else { "leaf".to_string() };
+    assets.push_str(&format!(
+      r#"{{"id":"a{i}","layers":[{source},{{"ty":0,"ind":11,"refId":"{child}","tt":1,"ip":0,"op":60,"st":0,"ks":{{}}}}]}}"#
+    ));
+  }
+  assets.push_str(&format!(r#",{{"id":"leaf","layers":[{source}]}}"#));
+  let json = format!(r#"{{"v":"5.7.4","fr":60,"ip":0,"op":60,"w":511,"h":511,"layers":[{source},{{"ty":0,"ind":1,"refId":"a0","tt":1,"ip":0,"op":60,"st":0,"ks":{{}}}}],"assets":[{assets}]}}"#);
+  // Sweep both sides of the depth/canvas-size boundary, including a second
+  // frame with retained scratch/cache allocations. Stay below the 512px
+  // mapped-surface threshold so the accounting allocator sees every plane.
+  for size in [448, 480, 485, 486, 500, 511] {
+    assert_lottie!(json.clone(), size, 0, 2);
+  }
+}
+
+#[test]
 fn rounded_polystar_many_fills_repeater_stays_bounded() {
   // Rounded polystars are generated geometry, not JSON-authored path points.
   // Combining one with many paints and max-legal repeater copies covers the
@@ -2435,4 +2593,422 @@ fn duplicate_scalar_property_k_keyframes_stay_bounded() {
     r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":0,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"rc","p":{{"a":0,"k":[32,32]}},"s":{{"a":0,"k":[64,64]}},"r":{{"a":0,"k":0}}}},{{"ty":"fl","c":{{"a":0,"k":[1,0,0]}},"o":{{"a":1,{duplicate_k}}}}},{{"ty":"tr"}}]}}]}}]}}"#
   );
   assert_lottie!(json);
+}
+
+#[test]
+fn zero_chord_dashed_bezier_stays_bounded() {
+  // bbox.tgs: 46 vertices all on [256,256] with every tangent at 140000, so
+  // chord and bbox both measure zero while the real curve is ~294k px per
+  // segment — a 0.005 dash period slices that into ~1.3e9 pieces. The
+  // keyframe hides behind a precomp with `st:-1`, current on root frame 0.
+  let vertices = (0..46).map(|_| "[256,256]").collect::<Vec<_>>().join(",");
+  let tangents = (0..46).map(|_| "[140000,140000]").collect::<Vec<_>>().join(",");
+  let json = format!(
+    r#"{{"v":"5.7.4","fr":60,"ip":0,"op":2,"w":512,"h":512,"assets":[{{"id":"c1","layers":[{{"ddd":0,"ind":1,"ty":4,"nm":"shape_layer","ip":0,"op":2,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[
+      {{"ty":"sh","ks":{{"a":1,"k":[
+        {{"t":0,"s":[{{"c":false,"v":[[256,256],[258,256]],"i":[[0,0],[0,0]],"o":[[0,0],[0,0]]}}],"i":{{"x":[0.833],"y":[0.833]}},"o":{{"x":[0.167],"y":[0.167]}}}},
+        {{"t":1,"s":[{{"c":false,"v":[{vertices}],"i":[{tangents}],"o":[{tangents}]}}]}}
+      ]}}}},
+      {{"ty":"st","c":{{"a":0,"k":[0,0,0,1]}},"o":{{"a":0,"k":100}},"w":{{"a":0,"k":2}},"lc":1,"lj":1,"d":[
+        {{"n":"d","v":{{"a":0,"k":0.005}}}},{{"n":"g","v":{{"a":0,"k":0.005}}}},{{"n":"o","v":{{"a":0,"k":0}}}}
+      ]}},
+      {{"ty":"tr","p":{{"a":0,"k":[256,256]}},"a":{{"a":0,"k":[0,0]}},"s":{{"a":0,"k":[100,100]}},"r":{{"a":0,"k":0}},"o":{{"a":0,"k":100}}}}
+    ]}}]}}]}}],"layers":[{{"ddd":0,"ind":1,"ty":0,"nm":"wrap","refId":"c1","ip":0,"op":2,"st":-1,"w":512,"h":512}}]}}"#
+  );
+  assert_lottie!(json, 512, 0, 2);
+}
+
+#[test]
+fn overshooting_easing_dashed_path_stays_bounded() {
+  // Both authored paths fit PR #8's dash estimate: 45 * 100 / 2.2 < 2048.
+  // At frame 1, x handles (0, 1) select u=0.5, but y handles (100, 100)
+  // yield progress 75.125. Tangents grow to 7512.5, so the intermediate
+  // curve exceeds the authored-keyframe estimate by over 75 times.
+  let vertices = (0..46).map(|_| "[32,32]").collect::<Vec<_>>().join(",");
+  let zero = (0..46).map(|_| "[0,0]").collect::<Vec<_>>().join(",");
+  let tangents = (0..46).map(|_| "[100,100]").collect::<Vec<_>>().join(",");
+  let json = format!(
+    r#"{{"v":"5.7.4","fr":60,"ip":0,"op":3,"w":64,"h":64,"layers":[{{"ty":4,"ind":1,"ip":0,"op":3,"ks":{{}},"shapes":[
+      {{"ty":"sh","ks":{{"a":1,"k":[
+        {{"t":0,"s":[{{"c":false,"v":[{vertices}],"i":[{zero}],"o":[{zero}]}}],"o":{{"x":0,"y":100}},"i":{{"x":1,"y":100}}}},
+        {{"t":2,"s":[{{"c":false,"v":[{vertices}],"i":[{tangents}],"o":[{tangents}]}}]}}
+      ]}}}},
+      {{"ty":"st","c":{{"k":[0,0,0,1]}},"o":{{"k":100}},"w":{{"k":2}},"lc":1,"lj":2,"d":[
+        {{"n":"d","v":{{"k":1.1}}}},{{"n":"g","v":{{"k":1.1}}}},{{"n":"o","v":{{"k":0}}}}
+      ]}}
+    ]}}]}}"#
+  );
+  assert_lottie!(json, 64, 1, 2);
+}
+
+#[test]
+fn single_vertex_closed_dashed_bezier_stays_bounded() {
+  // A closed path with one vertex still has a cubic from that vertex back
+  // to itself. PR #8's count < 2 shortcut reports zero length, although
+  // the tangents create a large out-and-back curve and millions of dashes.
+  let json = r#"{"v":"5.7.4","fr":60,"ip":0,"op":1,"w":64,"h":64,"layers":[{"ty":4,"ind":1,"ip":0,"op":1,"ks":{},"shapes":[
+    {"ty":"sh","ks":{"k":{"c":true,"v":[[32,32]],"i":[[140000,140000]],"o":[[140000,140000]]}}},
+    {"ty":"st","c":{"k":[0,0,0,1]},"o":{"k":100},"w":{"k":2},"lc":1,"lj":1,"d":[
+      {"n":"d","v":{"k":0.005}},{"n":"g","v":{"k":0.005}},{"n":"o","v":{"k":0}}
+    ]}
+  ]}]}"#;
+  assert_lottie!(json);
+}
+
+#[test]
+fn renderer_rejects_generated_work_after_successful_parse() {
+  // Parsing MUST succeed with its resource checks bypassed. A parser error
+  // cannot satisfy these renderer-specific assertions.
+  for (case, (json, frame)) in [
+    (animated_repeater_product_json().to_string(), 1.0),
+    (dense_in_bounds_raster_edge_storm_json(), 0.0),
+    (many_fills_over_large_path_json(), 0.0),
+    (curve_flattening_json(Limits::default().max_path_points + 1), 0.0),
+    (gradient_opacity_stop_lut_json(Limits::default().max_gradient_stop_values + 1), 0.0),
+    (inverted_difference_masks_json(Limits::default().max_masks_per_layer + 1), 0.0),
+    (trim_cleared_repeater_arena_json(9_990), 0.0),
+  ]
+  .into_iter()
+  .enumerate()
+  {
+    let composition = crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+    let mut renderer = CPURenderer::new(composition);
+    let mut rgba = vec![0; 64 * 64];
+    let mut alpha = vec![0; 64 * 64];
+    assert!(
+      matches!(renderer.render(frame, &mut rgba, 64, 64, RenderOptions::default()), Err(Error::LimitExceeded(_))),
+      "case {case}"
+    );
+    assert!(
+      matches!(renderer.render_alpha8(frame, &mut alpha, 64, 64, RenderOptions::default()), Err(Error::LimitExceeded(_))),
+      "case {case}"
+    );
+  }
+}
+
+#[test]
+fn renderer_recovers_after_mid_frame_dash_limit() {
+  let json = animated_tiny_dash_period_json().replace("0.0011", "0.02");
+  let composition = crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  let mut renderer = CPURenderer::new(composition);
+  let mut rgba = vec![0; 64 * 64];
+  renderer.render(0.0, &mut rgba, 64, 64, RenderOptions::default()).unwrap();
+  let expected = rgba.clone();
+  for _ in 0..3 {
+    assert!(matches!(renderer.render(1.0, &mut rgba, 64, 64, RenderOptions::default()), Err(Error::LimitExceeded(_))));
+    renderer.render(0.0, &mut rgba, 64, 64, RenderOptions::default()).unwrap();
+    assert_eq!(rgba, expected);
+  }
+  let mut alpha = vec![0; 64 * 64];
+  renderer.render_alpha8(0.0, &mut alpha, 64, 64, RenderOptions::default()).unwrap();
+  let expected = alpha.clone();
+  assert!(matches!(renderer.render_alpha8(1.0, &mut alpha, 64, 64, RenderOptions::default()), Err(Error::LimitExceeded(_))));
+  renderer.render_alpha8(0.0, &mut alpha, 64, 64, RenderOptions::default()).unwrap();
+  assert_eq!(alpha, expected);
+}
+
+#[test]
+fn renderer_rejects_large_canvas_before_allocating_fallback() {
+  // Luma matte forces Alpha8 through the RGBA fallback. Even a tiny output
+  // slice must not cause that fallback to allocate an enormous surface first.
+  let json = luma_matte_pairs_json(1, 64);
+  let composition = Composition::parse(json.as_bytes(), &Limits::default()).unwrap();
+  let mut renderer = CPURenderer::new(composition);
+  assert_eq!(
+    renderer.render(0.0, &mut [], 8192, 8192, RenderOptions::default()),
+    Err(Error::LimitExceeded(crate::Limit::RenderMemory))
+  );
+  assert_eq!(
+    renderer.render_alpha8(0.0, &mut [], 8192, 8192, RenderOptions::default()),
+    Err(Error::LimitExceeded(crate::Limit::RenderMemory))
+  );
+}
+
+// Regression inputs from https://github.com/dkaraush/tlottie/pull/11.
+// Fixtures are unchanged; assertions exercise renderer budgets in both output
+// formats, including frame 1 for animated attacks, after successful parsing
+// with parser resource checks disabled. Safe completion or LimitExceeded is valid.
+
+#[test]
+fn pr11_nested_compounding_repeaters_stay_bounded() {
+  let json = r#"{
+    "v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,
+    "layers":[{"ty":4,"ind":1,"ip":0,"op":60,"st":0,"ks":{},"shapes":[
+      {"ty":"gr","it":[
+        {"ty":"rc","p":{"a":0,"k":[32,32]},"s":{"a":0,"k":[8,8]},"r":{"a":0,"k":0}},
+        {"ty":"rp","c":{"a":0,"k":64},"o":{"a":0,"k":0},"tr":{"p":{"a":0,"k":[1,0]}}},
+        {"ty":"gr","it":[
+          {"ty":"rp","c":{"a":0,"k":64},"o":{"a":0,"k":0},"tr":{"p":{"a":0,"k":[0,1]}}},
+          {"ty":"gr","it":[
+            {"ty":"rp","c":{"a":0,"k":64},"o":{"a":0,"k":0},"tr":{"p":{"a":0,"k":[1,1]}}},
+            {"ty":"tr"}
+          ]},
+          {"ty":"tr"}
+        ]},
+        {"ty":"fl","c":{"a":0,"k":[1,0,0]},"o":{"a":0,"k":100}},
+        {"ty":"tr"}
+      ]}
+    ]}]
+  }"#;
+  crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  assert_lottie!(json.clone(), 64, 0, 2);
+  assert_lottie!(
+    json,
+    64,
+    0,
+    2,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn pr11_repeater_multiplied_dashed_stroke_stays_bounded() {
+  let json = r#"{
+    "v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,
+    "layers":[{"ty":4,"ind":1,"ip":0,"op":60,"st":0,"ks":{},"shapes":[
+      {"ty":"gr","it":[
+        {"ty":"rc","p":{"a":0,"k":[32,32]},"s":{"a":0,"k":[50,50]},"r":{"a":0,"k":0}},
+        {"ty":"st","c":{"a":0,"k":[1,0,0,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":2},"lc":1,"lj":1,"d":[
+          {"n":"d","v":{"a":0,"k":1}},{"n":"g","v":{"a":0,"k":1}}
+        ]},
+        {"ty":"rp","c":{"a":0,"k":64},"o":{"a":0,"k":0},"tr":{"p":{"a":0,"k":[1,0]}}},
+        {"ty":"tr"}
+      ]}
+    ]}]
+  }"#;
+  crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  assert_lottie!(json.clone(), 64, 0, 2);
+  assert_lottie!(
+    json,
+    64,
+    0,
+    2,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn pr11_nested_group_repeater_multiplied_dash_stays_bounded() {
+  let json = r#"{
+    "v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,
+    "layers":[{"ty":4,"ind":1,"ip":0,"op":60,"st":0,"ks":{},"shapes":[
+      {"ty":"gr","it":[
+        {"ty":"gr","it":[
+          {"ty":"rc","p":{"a":0,"k":[32,32]},"s":{"a":0,"k":[50,50]},"r":{"a":0,"k":0}},
+          {"ty":"st","c":{"a":0,"k":[1,0,0,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":2},"lc":1,"lj":1,"d":[
+            {"n":"d","v":{"a":0,"k":1}},{"n":"g","v":{"a":0,"k":1}}
+          ]},
+          {"ty":"tr"}
+        ]},
+        {"ty":"rp","c":{"a":0,"k":64},"o":{"a":0,"k":0},"tr":{"p":{"a":0,"k":[1,0]}}},
+        {"ty":"tr"}
+      ]}
+    ]}]
+  }"#;
+  crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  assert_lottie!(json.clone(), 64, 0, 2);
+  assert_lottie!(
+    json,
+    64,
+    0,
+    2,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn pr11_animated_polystar_points_stays_bounded() {
+  let json = r#"{
+    "v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,
+    "layers":[{"ty":4,"ind":1,"ip":0,"op":60,"st":0,"ks":{},"shapes":[
+      {"ty":"gr","it":[
+        {"ty":"sr","sy":1,"pt":{"a":1,"k":[{"t":0,"s":[5]},{"t":1,"s":[1e38]}]},"p":{"a":0,"k":[32,32]},"r":{"a":0,"k":0},"ir":{"a":0,"k":10},"or":{"a":0,"k":20},"is":{"a":0,"k":0},"os":{"a":0,"k":0}},
+        {"ty":"fl","c":{"a":0,"k":[1,0,0]},"o":{"a":0,"k":100}},
+        {"ty":"tr"}
+      ]}
+    ]}]
+  }"#;
+  crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  assert_lottie!(json.clone(), 64, 0, 2);
+  assert_lottie!(
+    json,
+    64,
+    0,
+    2,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn pr11_dashed_polystar_tiny_period_stays_bounded() {
+  let json = r#"{
+    "v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,
+    "layers":[{"ty":4,"ind":1,"ip":0,"op":60,"st":0,"ks":{},"shapes":[
+      {"ty":"gr","it":[
+        {"ty":"sr","sy":1,"pt":{"a":0,"k":5},"p":{"a":0,"k":[32,32]},"r":{"a":0,"k":0},"ir":{"a":0,"k":500},"or":{"a":0,"k":1000},"is":{"a":0,"k":0},"os":{"a":0,"k":0}},
+        {"ty":"st","c":{"a":0,"k":[1,0,0,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":2},"lc":1,"lj":1,"d":[
+          {"n":"d","v":{"a":0,"k":0.01}},{"n":"g","v":{"a":0,"k":0.01}}
+        ]},
+        {"ty":"tr"}
+      ]}
+    ]}]
+  }"#;
+  crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  assert_lottie!(json.clone(), 64, 0, 2);
+  assert_lottie!(
+    json,
+    64,
+    0,
+    2,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn pr11_dashed_rect_tiny_period_stays_bounded() {
+  let json = r#"{
+    "v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,
+    "layers":[{"ty":4,"ind":1,"ip":0,"op":60,"st":0,"ks":{},"shapes":[
+      {"ty":"gr","it":[
+        {"ty":"rc","p":{"a":0,"k":[32,32]},"s":{"a":0,"k":[1000,1000]},"r":{"a":0,"k":0}},
+        {"ty":"st","c":{"a":0,"k":[1,0,0,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":2},"lc":1,"lj":1,"d":[
+          {"n":"d","v":{"a":0,"k":0.01}},{"n":"g","v":{"a":0,"k":0.01}}
+        ]},
+        {"ty":"tr"}
+      ]}
+    ]}]
+  }"#;
+  crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  assert_lottie!(json.clone(), 64, 0, 2);
+  assert_lottie!(
+    json,
+    64,
+    0,
+    2,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn pr11_animated_focal_radial_gradient_stays_bounded() {
+  let mut shapes = String::new();
+  for _ in 0..161 {
+    shapes.push_str(r#"{"ty":"gf","t":2,"s":{"a":0,"k":[0,0]},"e":{"a":0,"k":[10,10]},"g":{"p":2,"k":{"a":0,"k":[0,1,0,0,1,0,1,0]}},"h":{"a":1,"k":[{"t":0,"s":[0]},{"t":1,"s":[100]}]},"a":{"a":0,"k":0},"o":{"a":0,"k":100}},"#);
+  }
+  let json = format!(
+    r#"{{"v":"5.5.0","w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ind":1,"ip":0,"op":60,"st":0,"ks":{{}},"shapes":[{{"ty":"gr","it":[{{"ty":"rc","p":{{"a":0,"k":[32,32]}},"s":{{"a":0,"k":[10,10]}},"r":{{"a":0,"k":0}}}},{shapes}{{"ty":"tr"}}]}}]}}]}}"#
+  );
+  crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+  assert_lottie!(json.clone(), 64, 0, 2);
+  assert_lottie!(
+    json,
+    64,
+    0,
+    2,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn repeater_over_zero_point_geometry_stays_bounded() {
+  // Parser-legal file: a fill placed BEFORE 9,990 empty paths keeps the
+  // paint source-item accounting at zero, item count stays under
+  // max_shapes_per_layer, and a single 64-copy repeater is far below the
+  // product caps. Because the duplicated contours carry no points, the
+  // point-weighted repeater charges are zero, yet `apply_repeater` still
+  // duplicates every arena entry: ~640k fixed-size `Contour` records
+  // (~50 MB with Vec growth) were materialized before the next entry-count
+  // check could fire. The arena-entry charge must stop it within the budget.
+  let json = zero_point_repeater_arena_json(9_990);
+  assert!(Composition::parse(json.as_bytes(), &Limits::default()).is_ok());
+  assert_lottie!(json.clone());
+  assert_lottie!(
+    json,
+    64,
+    0,
+    1,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    }
+  );
+}
+
+#[test]
+fn repeater_over_trim_cleared_geometry_stays_bounded() {
+  // Same entry-count explosion without the empty-path trick: a full-width
+  // trim (s == e) clears the points of 9,990 rect contours, so the paint
+  // source items are behind the fill (parser needs a bypass) and the
+  // repeater's `points x copies` charge sees zero again. Must be rejected
+  // by the renderer before the arena duplicates.
+  assert_lottie!(trim_cleared_repeater_arena_json(9_990), 64, 0, 1, RenderOptions::default(), true);
+  assert_lottie!(
+    trim_cleared_repeater_arena_json(9_990),
+    64,
+    0,
+    1,
+    RenderOptions {
+      alpha_only: true,
+      ..RenderOptions::default()
+    },
+    true
+  );
+}
+
+#[test]
+fn renderer_recovers_after_non_finite_trim_length() {
+  // Finite authored scales can overflow during evaluation too. Exercise
+  // both trim modes and output formats, without relying on parser rejection.
+  for scale in ["1e40", "3e38"] {
+    for mode in [1, 2] {
+      let json = format!(
+        r#"{{"fr":30,"ip":0,"op":3,"w":64,"h":64,"layers":[{{"ty":4,"ks":{{"s":{{"k":[{{"t":0,"s":[100,100],"h":1}},{{"t":1,"s":[{scale},{scale}],"h":1}},{{"t":2,"s":[100,100]}}]}}}},"shapes":[{{"ty":"el","p":{{"k":[16,16]}},"s":{{"k":[10,10]}}}},{{"ty":"tm","s":{{"k":0}},"e":{{"k":50}},"m":{mode}}},{{"ty":"fl","c":{{"k":[1,0,0]}},"o":{{"k":100}}}}]}}]}}"#
+      );
+      let comp = crate::composition::parse::with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).unwrap();
+      let mut renderer = CPURenderer::new(comp);
+      let mut rgba = vec![0; 64 * 64];
+      renderer.render(0.0, &mut rgba, 64, 64, RenderOptions::default()).unwrap();
+      let expected = rgba.clone();
+      assert!(expected.iter().any(|&pixel| pixel != 0));
+      let result = renderer.render(1.0, &mut rgba, 64, 64, RenderOptions::default());
+      assert!(
+        result == Err(Error::LimitExceeded(crate::Limit::PathCoordinate)) || (scale == "3e38" && result.is_ok()),
+        "scale={scale}, mode={mode}: {result:?}"
+      );
+      renderer.render(2.0, &mut rgba, 64, 64, RenderOptions::default()).unwrap();
+      assert_eq!(rgba, expected);
+      let mut alpha = vec![0; 64 * 64];
+      renderer.render_alpha8(0.0, &mut alpha, 64, 64, RenderOptions::default()).unwrap();
+      let expected = alpha.clone();
+      assert!(expected.iter().any(|&pixel| pixel != 0));
+      let result = renderer.render_alpha8(1.0, &mut alpha, 64, 64, RenderOptions::default());
+      assert!(
+        result == Err(Error::LimitExceeded(crate::Limit::PathCoordinate)) || (scale == "3e38" && result.is_ok()),
+        "scale={scale}, mode={mode}: {result:?}"
+      );
+      renderer.render_alpha8(2.0, &mut alpha, 64, 64, RenderOptions::default()).unwrap();
+      assert_eq!(alpha, expected);
+    }
+  }
 }

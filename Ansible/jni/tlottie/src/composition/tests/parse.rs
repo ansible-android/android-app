@@ -262,6 +262,23 @@ fn layer_prefix_color_propagates_through_a_precomp_instance() {
 }
 
 #[test]
+fn empty_prefix_overrides_layers_with_and_without_nm() {
+  let json = r#"{"fr":30,"ip":0,"op":30,"w":16,"h":16,"layers":[
+    {"ty":4,"nm":"Anything","ind":1,"ip":0,"op":30,"ks":{},"shapes":[]},
+    {"ty":4,"ind":2,"ip":0,"op":30,"ks":{},"shapes":[]}
+  ]}"#;
+  let options = ParseOptions {
+    layer_color_replacements: vec![LayerColorReplacement {
+      layer_name_prefix: String::new(),
+      color: 0xff00_00ff,
+    }],
+    ..ParseOptions::default()
+  };
+  let comp = parse_composition(json.as_bytes(), &Limits::default(), &options).unwrap();
+  assert!(comp.layers.iter().all(|layer| layer.color_override.is_some()));
+}
+
+#[test]
 fn parses_round_corners_modifier() {
   let comp = parse(
     r#"{"fr":30,"ip":0,"op":30,"w":100,"h":100,"layers":[
@@ -316,4 +333,110 @@ fn static_content_with_a_visibility_transition_keeps_declared_frames() {
   .unwrap();
   assert!(!comp.is_static());
   assert_eq!(comp.frame_count(), 30);
+}
+#[test]
+fn polystar_limit_checks_later_values_and_explicit_ends() {
+  for keyframes in [r#"[{"t":0,"s":[5]},{"t":1,"s":[129]}]"#, r#"[{"t":0,"s":[5],"e":[129]},{"t":1,"s":[5]}]"#] {
+    let json = alloc::format!(r#"{{"w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ip":0,"op":60,"shapes":[{{"ty":"sr","p":{{"k":[32,32]}},"pt":{{"a":1,"k":{keyframes}}}}}]}}]}}"#);
+    assert!(matches!(Composition::parse(json.as_bytes(), &Limits::default()), Err(Error::LimitExceeded(Limit::PolystarPoints))));
+    assert!(with_limits_check(false, || Composition::parse(json.as_bytes(), &Limits::default())).is_ok());
+  }
+}
+
+#[test]
+fn focal_gradient_limit_checks_fill_and_stroke_timelines() {
+  for kind in ["gf", "gs"] {
+    for keyframes in [r#"[{"t":0,"s":[0]},{"t":1,"s":[100]}]"#, r#"[{"t":0,"s":[0],"e":[100]},{"t":1,"s":[0]}]"#] {
+      let json = alloc::format!(
+        r#"{{"w":64,"h":64,"fr":60,"ip":0,"op":60,"layers":[{{"ty":4,"ip":0,"op":60,"shapes":[{{"ty":"{kind}","t":2,"s":{{"k":[0,0]}},"e":{{"k":[64,64]}},"w":{{"k":2}},"g":{{"p":2,"k":{{"k":[0,1,0,0,1,0,0,1]}}}},"h":{{"a":1,"k":{keyframes}}}}}]}}]}}"#
+      );
+      let limits = Limits {
+        max_focal_radial_gradients_per_layer: 0,
+        ..Limits::default()
+      };
+      assert!(matches!(Composition::parse(json.as_bytes(), &limits), Err(Error::LimitExceeded(Limit::FocalRadialGradientsPerLayer))));
+      assert!(with_limits_check(false, || Composition::parse(json.as_bytes(), &limits)).is_ok());
+    }
+  }
+}
+
+#[test]
+fn inherited_keyframe_heap_budget_is_cumulative_and_preserves_end_values() {
+  // A missing start inherits the explicit segment end, then that same value
+  // propagates to the next missing start. Check paths and gradient tables.
+  for json in [r#"[{"t":0,"s":[1,2],"e":[3,4]},{"t":1},{"t":2}]"#, r#"[{"t":0,"s":[1,2]},{"t":1},{"t":2}]"#] {
+    let limits = Limits {
+      max_inherited_keyframe_bytes: 16,
+      ..Limits::default()
+    };
+    let mut c = Cursor::new(json.as_bytes(), 128);
+    let prop = parse_keyframes(&mut c, &limits, |c| parse_f32_list(c, limits.max_gradient_stop_values, Limit::GradientStopValues)).unwrap();
+    let expected = if json.contains("\"e\"") { 3.0 } else { 1.0 };
+    assert_eq!(prop.eval(2.0).0[0], expected);
+    // A fork and another property share the same composition-wide counter.
+    let mut fork = c.fork_at(0);
+    assert!(matches!(
+      parse_keyframes(&mut fork, &limits, |c| parse_f32_list(c, limits.max_gradient_stop_values, Limit::GradientStopValues)),
+      Err(Error::LimitExceeded(Limit::InheritedKeyframeBytes))
+    ));
+    let limits = Limits {
+      max_inherited_keyframe_bytes: 15,
+      ..limits
+    };
+    assert!(matches!(
+      parse_keyframes(&mut Cursor::new(json.as_bytes(), 128), &limits, |c| parse_f32_list(
+        c,
+        limits.max_gradient_stop_values,
+        Limit::GradientStopValues
+      )),
+      Err(Error::LimitExceeded(Limit::InheritedKeyframeBytes))
+    ));
+  }
+}
+
+#[test]
+fn inherited_path_budget_charges_padded_tangents_before_cloning() {
+  let json = br#"[{"t":0,"s":[{"v":[[1,2],[3,4]],"i":[],"o":[]}]},{"t":1}]"#;
+  for (maximum, succeeds) in [(48, true), (47, false)] {
+    let limits = Limits {
+      max_inherited_keyframe_bytes: maximum,
+      ..Limits::default()
+    };
+    let result = with_limits_check(false, || parse_keyframes(&mut Cursor::new(json, 128), &limits, |c| parse_path_value(c, &limits)));
+    assert_eq!(result.is_ok(), succeeds);
+    if !succeeds {
+      assert!(matches!(result, Err(Error::LimitExceeded(Limit::InheritedKeyframeBytes))));
+    }
+  }
+}
+
+#[test]
+fn group_walk_preserves_siblings_transforms_and_shared_limits() {
+  // Exercise both field orders and resume the parent after the child list.
+  for group in [
+    r#"{"ty":"gr","it":[{"ty":"tr","p":{"k":[3,4]}},{"ty":"gr","it":[{"ty":"rc","p":{"k":[5,6]},"s":{"k":[7,8]}}]},{"ty":"el","p":{"k":[9,10]},"s":{"k":[11,12]}}]}"#,
+    r#"{"it":[{"ty":"tr","p":{"k":[3,4]}},{"it":[{"ty":"rc","p":{"k":[5,6]},"s":{"k":[7,8]}}],"ty":"gr"},{"ty":"el","p":{"k":[9,10]},"s":{"k":[11,12]}}],"ty":"gr"}"#,
+  ] {
+    let json = alloc::format!(r#"[{group},{{"ty":"fl","c":{{"k":[1,0,0,1]}}}}]"#);
+    let mut counts = ShapeCounts::default();
+    let limits = Limits::default();
+    let (shapes, _) = parse_shape_list(&mut Cursor::new(json.as_bytes(), 128), &limits, 0, &mut counts).unwrap();
+    assert_eq!(counts.items, 6);
+    assert_eq!(counts.paints, 1);
+    assert_eq!(counts.paint_source_items, 1);
+    let Shape::Group(group) = &shapes[0] else { panic!("expected group") };
+    assert_eq!(group.transform.position.eval(0.0), Vec2::new(3.0, 4.0));
+    assert!(matches!(&group.shapes[..], [Shape::Group(_), Shape::Ellipse(_)]));
+    let Shape::Group(child) = &group.shapes[0] else { panic!("expected child group") };
+    assert!(matches!(&child.shapes[..], [Shape::Rect(_)]));
+    assert!(matches!(shapes[1], Shape::Fill(_)));
+    let limits = Limits { max_shapes_per_layer: 5, ..limits };
+    assert!(matches!(
+      parse_shape_list(&mut Cursor::new(json.as_bytes(), 128), &limits, 0, &mut ShapeCounts::default()),
+      Err(Error::LimitExceeded(Limit::ShapesPerLayer))
+    ));
+  }
+  for json in [br#"[{"ty":"gr","it":[]},]"#.as_slice(), br#"[{"ty":"gr","it":[,]}]"#] {
+    assert!(parse_shape_list(&mut Cursor::new(json, 128), &Limits::default(), 0, &mut ShapeCounts::default()).is_err());
+  }
 }

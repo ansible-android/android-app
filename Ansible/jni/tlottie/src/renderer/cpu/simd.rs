@@ -62,14 +62,14 @@ fn use_avx512() -> bool {
 /// `ca = (cov*sa+127)/255`, source channels scaled by `ca`, then
 /// premultiplied source-over into `dst`. `sr/sg/sb/sa` are 0..=255.
 /// Mirrors (and on NEON must match bit-for-bit) the scalar loop.
-pub(crate) fn fill_span_solid(dst: &mut [u32], cov: &[u8], sr: u32, sg: u32, sb: u32, sa: u32, large_canvas: bool) {
+pub(crate) fn fill_span_solid(dst: &mut [u32], cov: &[u8], sr: u32, sg: u32, sb: u32, sa: u32, _large_canvas: bool) {
   // Opaque source: full-coverage pixels are EXACTLY the source color
   // (ca=255 -> s_x=x, inv=0 -> o=s), so interior runs become plain stores
   // — large fills are memory-bound and interiors dominate at 320/720px.
   if sa == 255 {
     let color = crate::pixel::pack_premultiplied_rgba(sr, sg, sb, 255);
     #[cfg(target_arch = "aarch64")]
-    if large_canvas && dst.len() >= SIMD_MIN_SPAN {
+    if dst.len() >= SIMD_MIN_SPAN {
       let n = dst.len().min(cov.len());
       let full = n - n % 8;
       let (dst_v, dst_tail) = dst.split_at_mut(full);
@@ -85,7 +85,7 @@ pub(crate) fn fill_span_solid(dst: &mut [u32], cov: &[u8], sr: u32, sg: u32, sb:
       return;
     }
     #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
-    if large_canvas && dst.len() >= SIMD_MIN_SPAN && use_avx2() {
+    if _large_canvas && dst.len() >= SIMD_MIN_SPAN && use_avx2() {
       if use_avx512() {
         let n = dst.len().min(cov.len());
         let full = n - n % 16;
@@ -168,7 +168,15 @@ pub(crate) fn fill_span_solid(dst: &mut [u32], cov: &[u8], sr: u32, sg: u32, sb:
       let n = dst.len().min(cov.len());
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = n - n % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = n
+        - n
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (dst_v, dst_tail) = dst.split_at_mut(full);
       let (cov_v, cov_tail) = cov.split_at(full.min(cov.len()));
       if use_avx512 {
@@ -294,7 +302,15 @@ pub(crate) fn fill_span_uniform(dst: &mut [u32], cov: u8, sr: u32, sg: u32, sb: 
     if dst.len() >= SIMD_MIN_SPAN {
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = dst.len() - dst.len() % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = dst.len()
+        - dst.len()
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (dst_v, dst_tail) = dst.split_at_mut(full);
       if use_avx512 {
         // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -345,6 +361,25 @@ fn fill_span_uniform_scalar(dst: &mut [u32], ca: u32, s_r: u32, s_g: u32, s_b: u
   }
 }
 
+#[inline]
+fn linear_uniform_lut_color(lut: &[u32], row_base: f32, dt: f32, x_start: f32, len: usize, scale: f32) -> Option<u32> {
+  if len < SIMD_MIN_SPAN || lut.is_empty() {
+    return None;
+  }
+  let last_x = x_start + len.saturating_sub(1) as f32;
+  let first_t = row_base + x_start * dt;
+  let last_t = row_base + last_x * dt;
+  if !first_t.is_finite() || !last_t.is_finite() {
+    return None;
+  }
+  let first_idx = (first_t.clamp(0.0, 1.0) * scale + 0.5) as usize;
+  let last_idx = (last_t.clamp(0.0, 1.0) * scale + 0.5) as usize;
+  if first_idx != last_idx {
+    return None;
+  }
+  lut.get(first_idx).copied()
+}
+
 /// Fills `out` with LUT colors for a FULL-COVERAGE linear gradient run,
 /// sampled like `lut_sample`. Positions are SEGMENTATION-INVARIANT: each
 /// pixel evaluates `t(X) = row_base + X·dt` as one rounded expression from
@@ -354,6 +389,10 @@ fn fill_span_uniform_scalar(dst: &mut [u32], ca: u32, s_r: u32, s_g: u32, s_b: u
 /// protocol as the radial/focal kernels.
 pub(crate) fn linear_lut_fill(out: &mut [u32], lut: &[u32], row_base: f32, dt: f32, x_start: f32) {
   let scale = (lut.len().saturating_sub(1)) as f32;
+  if let Some(color) = linear_uniform_lut_color(lut, row_base, dt, x_start, out.len(), scale) {
+    out.fill(color);
+    return;
+  }
   #[cfg(target_arch = "aarch64")]
   {
     if out.len() >= SIMD_MIN_SPAN {
@@ -383,7 +422,15 @@ pub(crate) fn linear_lut_fill(out: &mut [u32], lut: &[u32], row_base: f32, dt: f
     if out.len() >= SIMD_MIN_SPAN {
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = out.len() - out.len() % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = out.len()
+        - out.len()
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (head, tail) = out.split_at_mut(full);
       if use_avx512 {
         // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -468,7 +515,15 @@ pub(crate) fn radial_lut_fill(out: &mut [u32], lut: &[u32], dd0x: f32, dd0y: f32
     if out.len() >= SIMD_MIN_SPAN {
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = out.len() - out.len() % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = out.len()
+        - out.len()
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (head, tail) = out.split_at_mut(full);
       if use_avx512 {
         // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -551,7 +606,15 @@ pub(crate) fn focal_lut_fill(out: &mut [u32], lut: &[u32], g0x: f32, g0y: f32, s
     if out.len() >= SIMD_MIN_SPAN {
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = out.len() - out.len() % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = out.len()
+        - out.len()
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (head, tail) = out.split_at_mut(full);
       if use_avx512 {
         // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -660,7 +723,15 @@ pub(crate) fn composite_over_span(dst: &mut [u32], src: &[u32], k: u32) {
       let n = dst.len().min(src.len());
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = n - n % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = n
+        - n
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (dst_v, dst_tail) = dst.split_at_mut(full);
       let (src_v, src_tail) = src.split_at(full);
       if use_avx512 {
@@ -734,6 +805,40 @@ fn over_px_k255(d: &mut u32, s: u32) {
   *d = (a.min(255) << 24) | (r.min(255) << 16) | (g.min(255) << 8) | b.min(255);
 }
 
+/// Source-over a single premultiplied color over a whole span. Linear
+/// gradients use this when both span endpoints quantize to the same LUT
+/// entry, including fully clamped regions before/after the gradient ramp.
+fn over_uniform_premultiplied(dst: &mut [u32], src: u32) {
+  if src == 0 {
+    return;
+  }
+  let sa = (src >> 24) & 0xff;
+  if sa == 255 {
+    dst.fill(src);
+    return;
+  }
+  #[cfg(target_arch = "aarch64")]
+  {
+    if dst.len() >= SIMD_MIN_SPAN {
+      let full = dst.len() - dst.len() % 8;
+      let (head, tail) = dst.split_at_mut(full);
+      // SAFETY: NEON is mandatory on aarch64; `head` is a multiple of eight
+      // pixels and the packed channels are already premultiplied by `sa`.
+      #[allow(unsafe_code)]
+      unsafe {
+        neon::fill_span_uniform_neon(head, sa, src & 0xff, (src >> 8) & 0xff, (src >> 16) & 0xff)
+      };
+      for pixel in tail {
+        over_px_k255(pixel, src);
+      }
+      return;
+    }
+  }
+  for pixel in dst {
+    over_px_k255(pixel, src);
+  }
+}
+
 /// FUSED linear gradient generate+blend: for each pixel computes the LUT
 /// color exactly like [`linear_lut_fill`] and immediately source-overs it
 /// into `dst` (k=255), in a single pass with no materialized src plane.
@@ -742,6 +847,10 @@ fn over_px_k255(d: &mut u32, s: u32) {
 /// deterministic on the same inputs, so fusing them preserves every byte.
 pub(crate) fn linear_lut_over(dst: &mut [u32], lut: &[u32], row_base: f32, dt: f32, x_start: f32) {
   let scale = (lut.len().saturating_sub(1)) as f32;
+  if let Some(color) = linear_uniform_lut_color(lut, row_base, dt, x_start, dst.len(), scale) {
+    over_uniform_premultiplied(dst, color);
+    return;
+  }
   #[cfg(target_arch = "aarch64")]
   {
     if dst.len() >= SIMD_MIN_SPAN {
@@ -771,7 +880,15 @@ pub(crate) fn linear_lut_over(dst: &mut [u32], lut: &[u32], row_base: f32, dt: f
     if dst.len() >= SIMD_MIN_SPAN {
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = dst.len() - dst.len() % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = dst.len()
+        - dst.len()
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (head, tail) = dst.split_at_mut(full);
       if use_avx512 {
         // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -846,7 +963,15 @@ pub(crate) fn radial_lut_over(dst: &mut [u32], lut: &[u32], dd0x: f32, dd0y: f32
     if dst.len() >= SIMD_MIN_SPAN {
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = dst.len() - dst.len() % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = dst.len()
+        - dst.len()
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (head, tail) = dst.split_at_mut(full);
       if use_avx512 {
         // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -925,7 +1050,15 @@ pub(crate) fn focal_lut_over(dst: &mut [u32], lut: &[u32], g0x: f32, g0y: f32, s
     if dst.len() >= SIMD_MIN_SPAN {
       let use_avx2 = use_avx2();
       let use_avx512 = use_avx512();
-      let full = dst.len() - dst.len() % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+      let full = dst.len()
+        - dst.len()
+          % if use_avx512 {
+            16
+          } else if use_avx2 {
+            8
+          } else {
+            4
+          };
       let (head, tail) = dst.split_at_mut(full);
       if use_avx512 {
         // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1010,8 +1143,16 @@ pub(crate) fn alpha_blend_solid(dst: &mut [u8], coverage: &[u8], alpha: u8) {
   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
   if n >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
-      let use_avx512 = use_avx512();
-    let full = n - n % if use_avx512 { 64 } else if use_avx2 { 32 } else { 16 };
+    let use_avx512 = use_avx512();
+    let full = n
+      - n
+        % if use_avx512 {
+          64
+        } else if use_avx2 {
+          32
+        } else {
+          16
+        };
     let (head, tail) = dst[..n].split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1069,8 +1210,16 @@ pub(crate) fn alpha_blend_product(dst: &mut [u8], lhs: &[u8], rhs: &[u8]) {
   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
   if n >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
-      let use_avx512 = use_avx512();
-    let full = n - n % if use_avx512 { 64 } else if use_avx2 { 32 } else { 16 };
+    let use_avx512 = use_avx512();
+    let full = n
+      - n
+        % if use_avx512 {
+          64
+        } else if use_avx2 {
+          32
+        } else {
+          16
+        };
     let (head, tail) = dst[..n].split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1135,8 +1284,16 @@ pub(crate) fn alpha_blend_uniform(dst: &mut [u8], coverage: u8, alpha: u8) {
   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
   if dst.len() >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
-      let use_avx512 = use_avx512();
-    let full = dst.len() - dst.len() % if use_avx512 { 64 } else if use_avx2 { 32 } else { 16 };
+    let use_avx512 = use_avx512();
+    let full = dst.len()
+      - dst.len()
+        % if use_avx512 {
+          64
+        } else if use_avx2 {
+          32
+        } else {
+          16
+        };
     let (head, tail) = dst.split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1196,8 +1353,16 @@ pub(crate) fn alpha_composite_over(dst: &mut [u8], src: &[u8], opacity: u8) {
   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
   if n >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
-      let use_avx512 = use_avx512();
-    let full = n - n % if use_avx512 { 64 } else if use_avx2 { 32 } else { 16 };
+    let use_avx512 = use_avx512();
+    let full = n
+      - n
+        % if use_avx512 {
+          64
+        } else if use_avx2 {
+          32
+        } else {
+          16
+        };
     let (head, tail) = dst[..n].split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1255,8 +1420,16 @@ pub(crate) fn alpha_multiply(dst: &mut [u8], factors: &[u8]) {
   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
   if n >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
-      let use_avx512 = use_avx512();
-    let full = n - n % if use_avx512 { 64 } else if use_avx2 { 32 } else { 16 };
+    let use_avx512 = use_avx512();
+    let full = n
+      - n
+        % if use_avx512 {
+          64
+        } else if use_avx2 {
+          32
+        } else {
+          16
+        };
     let (head, tail) = dst[..n].split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1313,8 +1486,16 @@ pub(crate) fn alpha_matte(dst: &mut [u8], src: &[u8], opacity: u8, inverted: boo
   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
   if n >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
-      let use_avx512 = use_avx512();
-    let full = n - n % if use_avx512 { 64 } else if use_avx2 { 32 } else { 16 };
+    let use_avx512 = use_avx512();
+    let full = n
+      - n
+        % if use_avx512 {
+          64
+        } else if use_avx2 {
+          32
+        } else {
+          16
+        };
     let (head, tail) = dst[..n].split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1373,8 +1554,16 @@ pub(crate) fn alpha_mask_combine(dst: &mut [u8], src: &[u8], mode: u8, inverted:
   #[cfg(all(target_arch = "x86_64", target_feature = "sse2"))]
   if n >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
-      let use_avx512 = use_avx512();
-    let full = n - n % if use_avx512 { 64 } else if use_avx2 { 32 } else { 16 };
+    let use_avx512 = use_avx512();
+    let full = n
+      - n
+        % if use_avx512 {
+          64
+        } else if use_avx2 {
+          32
+        } else {
+          16
+        };
     let (head, tail) = dst[..n].split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.
@@ -1448,7 +1637,15 @@ pub(crate) fn apply_matte_alpha(dst: &mut [u32], src: &[u32], source_opacity: u8
   if n >= SIMD_MIN_SPAN {
     let use_avx2 = use_avx2();
     let use_avx512 = use_avx512();
-    let full = n - n % if use_avx512 { 16 } else if use_avx2 { 8 } else { 4 };
+    let full = n
+      - n
+        % if use_avx512 {
+          16
+        } else if use_avx2 {
+          8
+        } else {
+          4
+        };
     let (head, tail) = dst[..n].split_at_mut(full);
     if use_avx512 {
       // SAFETY: `use_avx512` gates on `is_x86_feature_detected!("avx2"|"avx512f"|"avx512bw"|"avx512dq"|"avx512vl")`.

@@ -8,6 +8,8 @@
 use crate::compat::FloatExt as _;
 use crate::geometry::Contour;
 use crate::math::Vec2;
+use crate::renderer::frame::budget::Budget;
+use crate::{Error, Limit, Result};
 use alloc::vec::Vec;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -133,7 +135,8 @@ pub(crate) fn stroke_outline(
   pool: &mut Vec<Vec<Vec2>>,
   segments: &mut Vec<StrokeSegment>,
   out: &mut Vec<Contour>,
-) {
+  budget: &Budget,
+) -> Result<()> {
   let ml = if miter_limit.is_finite() { miter_limit.max(1.0) } else { 4.0 };
   let anchor_at = |i: usize| anchors.get(i).copied().unwrap_or(true);
 
@@ -142,7 +145,9 @@ pub(crate) fn stroke_outline(
   let n = pts.len();
   let seg_count = if closed { n } else { n.saturating_sub(1) };
   segments.clear();
-  segments.reserve(seg_count);
+  budget.work(seg_count)?;
+  segments.try_reserve(seg_count).map_err(|_| Error::LimitExceeded(Limit::RenderMemory))?;
+  out.try_reserve(2).map_err(|_| Error::LimitExceeded(Limit::RenderMemory))?;
   let mut dropped_gap = false;
   for s in 0..seg_count {
     let Some(&p0) = pts.get(s) else { continue };
@@ -172,25 +177,36 @@ pub(crate) fn stroke_outline(
   // open end cap).
   let seam_gap = dropped_gap || segments.first().is_some_and(|s| s.gap_before);
   if segments.is_empty() {
-    return;
+    return Ok(());
   }
 
+  // A corner emits at most one inside point and max(2, arc_steps)
+  // outside points; segment ends add two, and the initial offsets add two.
+  // Open assembly may copy either complete border and adds two round caps.
+  // Charge this upper bound once, before growing either outline vector.
+  let step = (8.0 * ARC_TOL / hw.max(1e-3)).sqrt().clamp(0.0655, 0.35);
+  let arc_steps = ((core::f32::consts::PI / step).ceil() as usize).clamp(1, 48);
+  let border_points = segments.len().saturating_mul(arc_steps.max(2) + 3).saturating_add(2);
+  let reserved = border_points.saturating_mul(if closed { 1 } else { 2 }).saturating_add(2 * arc_steps);
+  budget.points(reserved)?;
   let mut b0 = Border::new(pool.pop().unwrap_or_default());
   let mut b1 = Border::new(pool.pop().unwrap_or_default());
   b0.pts.clear();
   b1.pts.clear();
-  let cap_pts = 2 + (core::f32::consts::PI / 0.0655) as usize;
-  b0.pts.reserve(2 * segments.len() + cap_pts + 8);
-  b1.pts.reserve(2 * segments.len() + 8);
+  // Reserve the straight borders only. Corners and round caps grow on
+  // demand within the preflight bound; tiny butt-capped dashes otherwise
+  // retain dozens of unused points per output contour.
+  b0.pts.try_reserve_exact(2 * segments.len()).map_err(|_| Error::LimitExceeded(Limit::RenderMemory))?;
+  b1.pts.try_reserve_exact(2 * segments.len()).map_err(|_| Error::LimitExceeded(Limit::RenderMemory))?;
 
   // Subpath start: moveto on each border (movable = false).
   let (first_d, first_p) = match segments.first() {
     Some(s) => (s.d, s.p),
-    None => return,
+    None => return Ok(()),
   };
   let n0 = Vec2::new(-first_d.y * hw, first_d.x * hw);
-  b0.pts.push(Vec2::new(first_p.x + n0.x, first_p.y + n0.y));
-  b1.pts.push(Vec2::new(first_p.x - n0.x, first_p.y - n0.y));
+  b0.line_to(Vec2::new(first_p.x + n0.x, first_p.y + n0.y), false);
+  b1.line_to(Vec2::new(first_p.x - n0.x, first_p.y - n0.y), false);
 
   let mut prev_d = first_d;
   let mut prev_len = segments.first().map_or(0.0, |s| if s.is_line { s.len } else { 0.0 });
@@ -227,6 +243,7 @@ pub(crate) fn stroke_outline(
     prev_raw = seg.len;
   }
 
+  let mut generated;
   if closed {
     // Seam corner back into the first segment (VFT:1640-1660), then
     // close border 0 unreversed / border 1 reversed (VFT:1663-1664).
@@ -248,6 +265,7 @@ pub(crate) fn stroke_outline(
       join,
       ml,
     );
+    generated = b0.pts.len() + b1.pts.len();
     ring_close(&mut b0.pts, false);
     ring_close(&mut b1.pts, true);
     // Canonical flip: FT-natural band winding is opposite the legacy
@@ -307,14 +325,20 @@ pub(crate) fn stroke_outline(
     // reversed, start cap — one closed loop.
     let last = match segments.last() {
       Some(s) => s,
-      None => return,
+      None => return Ok(()),
     };
     let end_center = Vec2::new(last.p.x + last.d.x * last.len, last.p.y + last.d.y * last.len);
+    generated = b0.pts.len() + b1.pts.len();
+    let original_len = b0.pts.len();
     let mut loop_pts = b0.pts;
     emit_cap(&mut loop_pts, end_center, last.d, hw, cap);
+    loop_pts
+      .try_reserve_exact(b1.pts.len() + if cap == Cap::Round { 2 * arc_steps } else { 0 })
+      .map_err(|_| Error::LimitExceeded(Limit::RenderMemory))?;
     loop_pts.extend(b1.pts.iter().rev().copied());
     pool.push(b1.pts);
     emit_cap(&mut loop_pts, first_p, Vec2::new(-first_d.x, -first_d.y), hw, cap);
+    generated += loop_pts.len() - original_len;
     // Canonical flip (see closed case).
     loop_pts.reverse();
     if loop_pts.len() >= 3 {
@@ -327,6 +351,9 @@ pub(crate) fn stroke_outline(
       pool.push(loop_pts);
     }
   }
+  debug_assert!(generated <= reserved);
+  budget.finish_expansion(reserved, generated);
+  Ok(())
 }
 
 /// FT process_corner (VFT:1033-1060) + inside (VFT:846-897) + outside
@@ -550,15 +577,18 @@ pub(crate) fn stroke_polyline(
   segments: &mut Vec<StrokeSegment>,
   out: &mut Vec<Contour>,
   _solo: bool,
-) {
+  budget: &Budget,
+) -> Result<()> {
   if !(hw > 0.0) || !hw.is_finite() {
-    return;
+    return Ok(());
   }
 
   let mut pts = pool.pop().unwrap_or_default();
   pts.clear();
-  pts.reserve(points.len());
-  let mut anchors = Vec::with_capacity(points.len());
+  budget.points(points.len())?;
+  pts.try_reserve(points.len()).map_err(|_| Error::LimitExceeded(Limit::RenderMemory))?;
+  let mut anchors = Vec::new();
+  anchors.try_reserve(points.len()).map_err(|_| Error::LimitExceeded(Limit::RenderMemory))?;
   for (index, point) in points.iter().enumerate() {
     if !(point.x.is_finite() && point.y.is_finite()) {
       continue;
@@ -585,15 +615,16 @@ pub(crate) fn stroke_polyline(
 
   if pts.len() < 2 {
     pool.push(pts);
-    return;
+    return Ok(());
   }
 
-  stroke_outline(&pts, &anchors, closed, hw, cap, join, miter_limit, pool, segments, out);
+  stroke_outline(&pts, &anchors, closed, hw, cap, join, miter_limit, pool, segments, out, budget)?;
   if segments.capacity() > SEGMENT_REUSE_CAP {
     *segments = Vec::new();
   }
   pts.clear();
   pool.push(pts);
+  Ok(())
 }
 
 #[cfg(test)]
