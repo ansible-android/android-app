@@ -49,7 +49,7 @@ dependencies {
         rootProject.allprojects.forEach {
             if (it.hasProperty('releaseArtifactId')
                     && it.releaseArtifactId.startsWith('media3-')) {
-              implementation project(':TMessagesProj_Modules:media3:' + it.name)
+              implementation project(':Ansible_Modules:media3:' + it.name)
             }
         }
     }
