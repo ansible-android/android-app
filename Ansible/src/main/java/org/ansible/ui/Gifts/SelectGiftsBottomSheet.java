@@ -361,7 +361,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
                 if (g.collection_id.contains(collectionId))
                     continue;
                 items.add(
-                        GiftSheet.GiftCell.Factory.asStarGift(0, g, true, true, false)
+                        GiftSheet.GiftCell.Factory.asDiamondGift(0, g, true, true, false)
                                 .setChecked(selectedGiftIds.contains(g.msg_id == 0 ? g.saved_id : g.msg_id))
                                 .setSpanCount(1)
                 );
