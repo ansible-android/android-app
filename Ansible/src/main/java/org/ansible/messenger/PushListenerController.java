@@ -225,17 +225,6 @@ public class PushListenerController {
                         FileLog.d(tag + " " + loc_key);
                     }
                     switch (loc_key) {
-                        case "MESSAGE_WALLET_TONCONNECT_REQUEST":
-                        case "MESSAGE_WALLET_TONCONNECT_REQUEST_DAPP": {
-                            JSONArray args = json.optJSONArray("loc_args");
-                            String dapp = "MESSAGE_WALLET_TONCONNECT_REQUEST_DAPP".equals(loc_key) && args != null
-                                    ? args.optString(1, null) : null;
-                            NotificationsController.getInstance(currentAccount).showTonConnectNotification(dapp, time);
-                            ConnectionsManager.onInternalPushReceived(currentAccount);
-                            ConnectionsManager.getInstance(currentAccount).resumeNetworkMaybe();
-                            countDownLatch.countDown();
-                            return;
-                        }
                         case "DC_UPDATE": {
                             int dc = custom.getInt("dc");
                             String addr = custom.getString("addr");
@@ -570,22 +559,6 @@ public class PushListenerController {
                                         case "MESSAGE_RECURRING_PAY": {
                                             messageText = LocaleController.formatString("NotificationMessageRecurringPay", R.string.NotificationMessageRecurringPay, args[0], args[1]);
                                             message1 = getString(R.string.PaymentInvoice);
-                                            break;
-                                        }
-                                        case "MESSAGE_GRAM_TRANSFER":
-                                        case "MESSAGE_GRAM_TRANSFER_COMMENT":
-                                        case "MESSAGE_GRAM_TRANSFER_UNKNOWN":
-                                        case "MESSAGE_GRAM_TRANSFER_UNKNOWN_COMMENT": {
-                                            boolean unknown = loc_key.startsWith("MESSAGE_GRAM_TRANSFER_UNKNOWN");
-                                            boolean comment = loc_key.endsWith("_COMMENT");
-                                            if (args == null || args.length < (comment ? 3 : 2)) {
-                                                break;
-                                            }
-                                            int stringId = unknown
-                                                    ? (comment ? R.string.NotificationGramTransferUnknownComment : R.string.NotificationGramTransferUnknown)
-                                                    : (comment ? R.string.NotificationGramTransferComment : R.string.NotificationGramTransfer);
-                                            messageText = LocaleController.formatString(stringId, (Object[]) args);
-                                            message1 = messageText;
                                             break;
                                         }
                                         case "MESSAGE_TEXT":
@@ -1719,15 +1692,6 @@ public class PushListenerController {
             }
             case "REACT_STARGIFT_UNPACK_UPGRADE": {
                 return LocaleController.formatString(R.string.PushReactStarGiftUnpackUpgrade, args);
-            }
-            case "REACT_GRAM_TRANSFER": {
-                return LocaleController.formatString(R.string.PushReactGramTransfer, args);
-            }
-            case "REACT_GRAM_TRANSFER_COMMENT": {
-                return LocaleController.formatString(R.string.PushReactGramTransferComment, args);
-            }
-            case "REACT_WALLET_TONCONNECT_REQUEST": {
-                return LocaleController.formatString(R.string.PushReactWalletTonConnectRequest, args);
             }
             case "REACT_PROXIMITY": {
                 return LocaleController.formatString(R.string.PushReactProximity, args);

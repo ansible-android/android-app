@@ -24,7 +24,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLRPC;
-import org.ansible.asnet.tl.TL_stars;
+import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.ActionBarMenu;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
@@ -45,7 +45,7 @@ import org.ansible.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.ansible.ui.Components.blur3.BlurredBackgroundWithFadeDrawable;
 import org.ansible.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
 import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceColor;
-import org.ansible.ui.Stars.StarsController;
+import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
     private final long dialogId;
     private final int collectionId;
-    private final StarsController.GiftsList list;
+    private final DiamondsController.GiftsList list;
     private final HashSet<Long> selectedGiftIds = new HashSet<>();
 
     private final ExtendedGridLayoutManager layoutManager;
@@ -77,7 +77,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
             long dialogId,
             int collectionId,
 
-            Utilities.Callback<ArrayList<TL_stars.SavedStarGift>> whenSelected
+            Utilities.Callback<ArrayList<TL_diamonds.SavedStarGift>> whenSelected
     ) {
         super(fragment.getParentActivity(), fragment, new Params.Builder()
             .actionBarType(ActionBarType.SLIDING)
@@ -102,7 +102,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
         this.dialogId = dialogId;
         this.collectionId = collectionId;
-        this.list = new StarsController.GiftsList(currentAccount, dialogId);
+        this.list = new DiamondsController.GiftsList(currentAccount, dialogId);
 
         final ActionBarMenu menu = actionBar.createMenu();
         final ActionBarMenuItem other = menu.addItem(1, R.drawable.ic_ab_other);
@@ -171,13 +171,13 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
                             list.invalidate(true);
                         });
                     }
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unlimited, list, update, StarsController.GiftsList.INCLUDE_TYPE_UNLIMITED_FLAG);
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(limited, list, update, StarsController.GiftsList.INCLUDE_TYPE_LIMITED_FLAG);
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(upgradable, list, update, StarsController.GiftsList.INCLUDE_TYPE_UPGRADABLE_FLAG);
-                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unique, list, update, StarsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unlimited, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_UNLIMITED_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(limited, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_LIMITED_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(upgradable, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_UPGRADABLE_FLAG);
+                    ProfileGiftsContainer.setGiftFilterOptionsClickListeners(unique, list, update, DiamondsController.GiftsList.INCLUDE_TYPE_UNIQUE_FLAG);
                     if (hiddenFilters) {
-                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(displayed, list, update, StarsController.GiftsList.INCLUDE_VISIBILITY_DISPLAYED_FLAG);
-                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(hidden, list, update, StarsController.GiftsList.INCLUDE_VISIBILITY_HIDDEN_FLAG);
+                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(displayed, list, update, DiamondsController.GiftsList.INCLUDE_VISIBILITY_DISPLAYED_FLAG);
+                        ProfileGiftsContainer.setGiftFilterOptionsClickListeners(hidden, list, update, DiamondsController.GiftsList.INCLUDE_VISIBILITY_HIDDEN_FLAG);
                     }
                     o
                             .setOnTopOfScrim()
@@ -204,10 +204,10 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
         buttonContainerInternal.setOnClickListener(v -> {
             if (selectedGiftIds.isEmpty()) return;
 
-            final ArrayList<TL_stars.SavedStarGift> selectedGifts = new ArrayList<>();
+            final ArrayList<TL_diamonds.SavedStarGift> selectedGifts = new ArrayList<>();
             for (long msg_id : selectedGiftIds) {
-                TL_stars.SavedStarGift gift = null;
-                for (TL_stars.SavedStarGift g : list.gifts) {
+                TL_diamonds.SavedStarGift gift = null;
+                for (TL_diamonds.SavedStarGift g : list.gifts) {
                     if (g.msg_id != 0 && g.msg_id == msg_id || g.saved_id == msg_id) {
                         gift = g;
                         break;
@@ -256,8 +256,8 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
             if (adapter == null)
                 return;
             final UItem item = adapter.getItem(position - 1);
-            if (item != null && item.object instanceof TL_stars.SavedStarGift) {
-                TL_stars.SavedStarGift g = (TL_stars.SavedStarGift) item.object;
+            if (item != null && item.object instanceof TL_diamonds.SavedStarGift) {
+                TL_diamonds.SavedStarGift g = (TL_diamonds.SavedStarGift) item.object;
                 final long id = g.msg_id == 0 ? g.saved_id : g.msg_id;
                 if (selectedGiftIds.contains(id)) {
                     selectedGiftIds.remove(id);
@@ -290,7 +290,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
         adapter.update(true);
 
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
 
 
         checkUi_insets();
@@ -298,7 +298,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.starUserGiftsLoaded) {
+        if (id == NotificationCenter.diamondUserGiftsLoaded) {
             if (this.adapter != null) {
                 this.adapter.update(true);
                 if (isLoadingVisible()) {
@@ -320,7 +320,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
     @Override
     public void dismiss() {
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondUserGiftsLoaded);
         super.dismiss();
     }
 
@@ -357,7 +357,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
             items.add(UItem.asFlicker(9, FlickerLoadingView.STAR_GIFT).setSpanCount(1));
         } else {
             int spanCountLeft = 3;
-            for (TL_stars.SavedStarGift g : list.gifts) {
+            for (TL_diamonds.SavedStarGift g : list.gifts) {
                 if (g.collection_id.contains(collectionId))
                     continue;
                 items.add(

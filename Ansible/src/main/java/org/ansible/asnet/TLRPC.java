@@ -44506,10 +44506,10 @@ public class TLRPC {
                 disallowed_stargifts = DisallowedGiftsSettings.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_17)) {
-                stars_rating = TL_stars.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
+                stars_rating = TL_diamonds.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_18)) {
-                stars_my_pending_rating = TL_stars.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
+                stars_my_pending_rating = TL_diamonds.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
                 stars_my_pending_rating_date = stream.readInt32(exception);
             }
             if (hasFlag(flags2, FLAG_20)) {

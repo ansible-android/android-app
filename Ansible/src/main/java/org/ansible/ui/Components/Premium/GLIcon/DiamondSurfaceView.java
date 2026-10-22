@@ -19,7 +19,7 @@ import android.view.animation.OvershootInterpolator;
 import android.view.animation.PathInterpolator;
 
 import org.ansible.messenger.FileLog;
-import org.ansible.ui.Components.Premium.StarParticlesView;
+import org.ansible.ui.Components.Premium.DiamondParticlesView;
 
 import java.util.ArrayList;
 
@@ -30,7 +30,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class DiamondSurfaceView extends GLSurfaceView implements Choreographer.FrameCallback {
     public final GLIconRenderer mRenderer;
     private final GestureDetector gestures;
-    private StarParticlesView particles;
+    private DiamondParticlesView particles;
     private ValueAnimator animation;
     private boolean attached, paused = true, idle, touching;
     private volatile boolean failed;
@@ -297,7 +297,7 @@ public class DiamondSurfaceView extends GLSurfaceView implements Choreographer.F
         if (enabled) startIdle(); else cancelAnimation();
     }
 
-    public void setStarParticlesView(StarParticlesView view) { particles = view; }
+    public void setStarParticlesView(DiamondParticlesView view) { particles = view; }
 
     public void whenReady(Runnable listener) {
         readyListener = listener;
