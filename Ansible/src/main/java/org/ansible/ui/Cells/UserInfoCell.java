@@ -11,15 +11,11 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -28,8 +24,6 @@ import androidx.annotation.NonNull;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ContactsController;
 import org.ansible.messenger.DialogObject;
-import org.ansible.messenger.Emoji;
-import org.ansible.messenger.FileLog;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
@@ -49,11 +43,8 @@ import org.ansible.ui.Components.Text;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.ProfileActivity;
 
-import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 
 public class UserInfoCell extends View implements NotificationCenter.NotificationCenterDelegate {
 
@@ -202,11 +193,11 @@ public class UserInfoCell extends View implements NotificationCenter.Notificatio
         if (user != null && !user.verified && !UserObject.isService(user.id)) {
             if (user.bot_verification_icon != 0) {
                 if (userFull != null && userFull.bot_verification != null) {
-                    final TL_bots.botVerification verification = userFull.bot_verification;
+                    final TL_bots.BotVerification verification = userFull.bot_verification;
                     final SpannableStringBuilder sb = new SpannableStringBuilder("i  ");
                     footer = new Text(sb, 12);
                     sb.setSpan(new AnimatedEmojiSpan(verification.icon, footer.getFontMetricsInt()), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    sb.append(verification.description);
+                    sb.append(MessageObject.formatTextWithEntities(verification.description));
                     footer = new Text(sb, 12).align(Layout.Alignment.ALIGN_CENTER).multiline(5).setMaxWidth(Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y) * .5f).supportAnimatedEmojis(this);
                     height += dp(12) + footer.getHeight() + dp(15.33f);
                 } else {

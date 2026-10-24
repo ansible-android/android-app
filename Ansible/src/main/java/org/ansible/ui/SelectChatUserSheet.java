@@ -8,12 +8,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.Region;
 import android.graphics.Shader;
-import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -32,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.checkerframework.checker.units.qual.A;
 import org.ansible.messenger.AccountInstance;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ChatObject;
@@ -43,8 +39,6 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
-import org.ansible.messenger.Utilities;
-import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
@@ -54,25 +48,21 @@ import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.ProfileSearchCell;
 import org.ansible.ui.Components.AlertsCreator;
-import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.EditTextBoldCursor;
-import org.ansible.ui.Components.EditTextCaption;
 import org.ansible.ui.Components.FlickerLoadingView;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.Premium.LimitReachedBottomSheet;
 import org.ansible.ui.Components.RLottieDrawable;
 import org.ansible.ui.Components.RecyclerListView;
-import org.ansible.ui.Components.TextHelper;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
 
 public class SelectChatUserSheet extends BottomSheetWithRecyclerListView {
 
@@ -195,7 +185,7 @@ public class SelectChatUserSheet extends BottomSheetWithRecyclerListView {
             }
         };
         final BackupImageView emptyImageView = new BackupImageView(context);
-        emptyImageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(130), dp(130)));
+        emptyImageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, dp(130), dp(130)));
         emptySearchView.addView(emptyImageView, LayoutHelper.createFrame(130, 130, Gravity.CENTER));
 
         admins = new ParticipantsList(currentAccount, chat.id, new TLRPC.TL_channelParticipantsAdmins()).listen(this::update);

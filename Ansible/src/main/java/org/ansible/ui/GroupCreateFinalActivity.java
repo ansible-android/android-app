@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -62,7 +61,6 @@ import org.ansible.ui.Cells.TextSettingsCell;
 import org.ansible.ui.Components.AutoDeletePopupWrapper;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
-import org.ansible.ui.Components.CombinedDrawable;
 import org.ansible.ui.Components.EditTextEmoji;
 import org.ansible.ui.Components.FillLastLinearLayoutManager;
 import org.ansible.ui.Components.FragmentFloatingButton;
@@ -546,7 +544,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
             avatarEditor.playAnimation();
         });
 
-        cameraDrawable = new RLottieDrawable(R.raw.camera, "" + R.raw.camera, dp(60), dp(60), false, null);
+        cameraDrawable = new RLottieDrawable(R.raw.camera, dp(60), dp(60), false, null);
 
         avatarEditor = new RLottieImageView(context) {
             @Override

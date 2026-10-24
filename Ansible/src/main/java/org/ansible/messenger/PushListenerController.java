@@ -1417,8 +1417,9 @@ public class PushListenerController {
                                     FileLog.d(tag + " received message notification " + loc_key + " for dialogId = " + dialogId + " mid = " + msg_id);
                                 }
                                 if (messageText != null) {
+                                    boolean isStoryReaction = loc_key.equals("REACT_STORY") || loc_key.equals("REACT_STORY_HIDDEN");
                                     TLRPC.TL_message messageOwner = new TLRPC.TL_message();
-                                    if (loc_key.startsWith("REACT_STORY") && msg_id > 0) {
+                                    if (isStoryReaction && msg_id > 0) {
                                         msg_id = -msg_id;
                                     }
                                     messageOwner.id = msg_id;
@@ -1465,7 +1466,7 @@ public class PushListenerController {
                                         messageObject.messageOwner.reply_to.forum_topic = true;
                                         messageObject.messageOwner.reply_to.reply_to_top_id = topicId;
                                     }
-                                    messageObject.isStoryReactionPush = loc_key.startsWith("REACT_STORY");
+                                    messageObject.isStoryReactionPush = isStoryReaction;
                                     messageObject.isReactionPush = !messageObject.isStoryReactionPush && (loc_key.startsWith("REACT_") || loc_key.startsWith("CHAT_REACT_"));
                                     messageObject.isStoryPush = loc_key.equals("STORY_NOTEXT") || loc_key.equals("STORY_HIDDEN_AUTHOR");
                                     messageObject.isLiveStoryPush = loc_key.equals("STORY_LIVE");
@@ -1631,6 +1632,89 @@ public class PushListenerController {
             }
             case "CHAT_REACT_GIF": {
                 return LocaleController.formatString(R.string.PushChatReactGif, args);
+            }
+            case "REACT_PHOTO_SECRET": {
+                return LocaleController.formatString(R.string.PushReactPhotoSecret, args);
+            }
+            case "REACT_VIDEO_SECRET": {
+                return LocaleController.formatString(R.string.PushReactVideoSecret, args);
+            }
+            case "REACT_TODO_APPEND":
+            case "REACT_TODO_DONE": {
+                return LocaleController.formatString(R.string.PushReactTodoUpdate, args);
+            }
+            case "REACT_GAME_SCORE": {
+                return LocaleController.formatString(R.string.PushReactGameScore, args);
+            }
+            case "REACT_PAID_MEDIA": {
+                return LocaleController.formatString(R.string.PushReactPaidMedia, args);
+            }
+            case "REACT_STORY_MENTION": {
+                return LocaleController.formatString(R.string.PushReactStoryMention, args);
+            }
+            case "REACT_GIVEAWAY_STARS": {
+                return LocaleController.formatString(R.string.NotificationReactGiveaway, args);
+            }
+            case "REACT_GIFTCODE": {
+                return LocaleController.formatString(R.string.PushReactGiftCode, args);
+            }
+            case "REACT_THEME":
+            case "REACT_GIFT_THEME":
+            case "REACT_NOTHEME": {
+                return LocaleController.formatString(R.string.PushReactThemeChange, args);
+            }
+            case "REACT_WALLPAPER": {
+                return LocaleController.formatString(R.string.PushReactWallpaper, args);
+            }
+            case "REACT_SAME_WALLPAPER": {
+                return LocaleController.formatString(R.string.PushReactSameWallpaper, args);
+            }
+            case "REACT_SUGGEST_USERPIC": {
+                return LocaleController.formatString(R.string.PushReactSuggestUserpic, args);
+            }
+            case "REACT_SUGGEST_BIRTHDAY": {
+                return LocaleController.formatString(R.string.PushReactSuggestBirthday, args);
+            }
+            case "REACT_RECURRING_PAY": {
+                return LocaleController.formatString(R.string.PushReactRecurringPay, args);
+            }
+            case "REACT_STARGIFT": {
+                return LocaleController.formatString(R.string.PushReactStarGift, args);
+            }
+            case "REACT_UNIQUE_STARGIFT": {
+                return LocaleController.formatString(R.string.PushReactUniqueStarGift, args);
+            }
+            case "REACT_STARGIFT_UPGRADE": {
+                return LocaleController.formatString(R.string.PushReactStarGiftUpgrade, args);
+            }
+            case "REACT_STARGIFT_PREPAID_UPGRADE": {
+                return LocaleController.formatString(R.string.PushReactStarGiftPrepaidUpgrade, args);
+            }
+            case "REACT_STARGIFT_UNPACK_UPGRADE": {
+                return LocaleController.formatString(R.string.PushReactStarGiftUnpackUpgrade, args);
+            }
+            case "REACT_PROXIMITY": {
+                return LocaleController.formatString(R.string.PushReactProximity, args);
+            }
+            case "REACT_SCREENSHOT": {
+                return LocaleController.formatString(R.string.PushReactScreenshot, args);
+            }
+            case "CHAT_REACT_GAME_SCORE": {
+                return LocaleController.formatString(R.string.PushChatReactGameScore, args);
+            }
+            case "CHAT_REACT_STORY": {
+                return LocaleController.formatString(R.string.PushChatReactStory, args);
+            }
+            case "CHAT_REACT_THEME":
+            case "CHAT_REACT_NOTHEME": {
+                return LocaleController.formatString(R.string.PushChatReactThemeChange, args);
+            }
+            case "CHAT_REACT_POLL_APPEND": {
+                return LocaleController.formatString(R.string.PushChatReactPollUpdate, args);
+            }
+            case "CHAT_REACT_TODO_APPEND":
+            case "CHAT_REACT_TODO_DONE": {
+                return LocaleController.formatString(R.string.PushChatReactTodoUpdate, args);
             }
             /* stories */
             case "REACT_STORY": {

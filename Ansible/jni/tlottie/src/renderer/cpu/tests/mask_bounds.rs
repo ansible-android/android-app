@@ -40,7 +40,6 @@ fn mask(mode: u8, invert: bool, path: PathData, opacity: f32) -> Mask {
 
 fn layer_with_masks(masks: Vec<Mask>) -> Layer {
   Layer {
-    name: String::new(),
     color_override: None,
     kind: LayerKind::Shape,
     index: 0,
@@ -88,7 +87,7 @@ fn build(layer: &Layer, w: usize, h: usize, bound: DirtyBox) -> Vec<u8> {
     curve_tolerance: 0.05,
   };
   let mut scratch = RenderScratch::default();
-  ctx.build_mask(&mut scratch, layer, Mat2x3::IDENTITY, 0.0, w, h, bound)
+  ctx.build_mask(&mut scratch, layer, Mat2x3::IDENTITY, 0.0, w, h, bound).unwrap()
 }
 
 /// Asserts every pixel inside `b` matches the full-canvas reference.

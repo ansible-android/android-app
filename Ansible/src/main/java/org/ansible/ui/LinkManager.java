@@ -79,6 +79,8 @@ public class LinkManager {
     public boolean handle(Uri uri) {
         if (uri == null) return false;
 
+        FileLog.d("link manager handle " + uri);
+
         final String scheme = uri.getScheme();
 
         if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))
@@ -995,8 +997,6 @@ public class LinkManager {
                     scrollTo("useProxyRow");
                 if ("add-proxy".equalsIgnoreCase(third))
                     scrollTo("proxyAddRow");
-                if ("use-for-calls".equalsIgnoreCase(third))
-                    scrollTo("callsRow");
 
                 return true;
             }

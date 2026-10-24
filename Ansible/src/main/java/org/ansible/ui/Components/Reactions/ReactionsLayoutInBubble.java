@@ -914,7 +914,7 @@ public class ReactionsLayoutInBubble {
                         if (reuseFrom != null && reuseFrom.diamondDrawable != null) {
                             diamondDrawable = reuseFrom.diamondDrawable;
                         } else {
-                            diamondDrawable = new RLottieDrawable(R.raw.star_reaction_click, "star_reaction_click", dp(40), dp(40));
+                            diamondDrawable = new RLottieDrawable(R.raw.star_reaction_click, dp(40), dp(40));
                         }
                         imageReceiver.setImageBitmap(diamondDrawable);
                     } else {

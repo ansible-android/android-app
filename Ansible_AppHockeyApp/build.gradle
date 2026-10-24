@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
 }
+apply plugin: 'org.ansible.build-app-plugin'
 
 repositories {
     mavenCentral()
@@ -34,7 +35,6 @@ android {
 
     defaultConfig.applicationId = APP_PACKAGE
 
-    sourceSets.main.jniLibs.srcDirs = ['../Ansible/jni/']
 
     lintOptions {
         disable 'MissingTranslation'
@@ -50,7 +50,8 @@ android {
     }
 
     androidResources {
-        localeFilters += ["en", "ar", "de", "es", "it", "ko", "nl", "pt-rBR", "ru", "uk"]
+        noCompress += "pack"
+        localeFilters += ["zz"]
     }
 
     signingConfigs {
@@ -69,6 +70,12 @@ android {
         }
     }
 
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     buildTypes {
         HA_private {
             matchingFallbacks = ['release']
@@ -78,7 +85,8 @@ android {
             applicationIdSuffix ".beta"
             minifyEnabled true
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../Ansible/proguard-rules.pro', '../Ansible/proguard-rules-beta.pro'
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../Ansible/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
         HA_public {
@@ -89,7 +97,8 @@ android {
             applicationIdSuffix ".beta"
             minifyEnabled true
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../Ansible/proguard-rules.pro', '../Ansible/proguard-rules-beta.pro'
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../Ansible/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
         HA_hardcore {
@@ -100,7 +109,8 @@ android {
             applicationIdSuffix ".beta"
             minifyEnabled true
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../Ansible/proguard-rules.pro', '../Ansible/proguard-rules-beta.pro'
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../Ansible/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
     }
@@ -126,15 +136,6 @@ android {
                 abiVersionCode = 1
             }
         }
-        bundleAfat_SDK23 {
-            ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-            }
-            minSdkVersion 23
-            ext {
-                abiVersionCode = 2
-            }
-        }
         afat {
             ndk {
                 abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
@@ -149,7 +150,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            outputFileName = "Telegram-Beta.apk"
+            outputFileName = "Ansible-Beta.apk"
             output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
         }
     }
@@ -162,7 +163,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 36
         versionName APP_VERSION_NAME
         ndkVersion "27.2.12479018"

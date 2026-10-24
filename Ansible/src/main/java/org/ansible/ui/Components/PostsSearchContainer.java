@@ -14,7 +14,6 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.CharacterStyle;
-import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -26,8 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.DialogObject;
-import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
@@ -35,12 +32,9 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
-import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.Cells.DialogCell;
 import org.ansible.ui.ChatActivity;
-import org.ansible.ui.Components.Premium.PremiumPreviewBottomSheet;
 import org.ansible.ui.LaunchActivity;
 import org.ansible.ui.PhotoViewer;
 import org.ansible.ui.PremiumPreviewFragment;
@@ -50,7 +44,6 @@ import org.ansible.ui.Stories.DarkThemeResourceProvider;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -523,7 +516,7 @@ public class PostsSearchContainer extends FrameLayout {
             emptyUnderButtonTextView.setText(getString(R.string.SearchPostsPremium));
         } else if (!TextUtils.isEmpty(lastQuery) && messages.isEmpty() && endReached) {
             if (emptyImageView.getImageReceiver().getImageDrawable() == null) {
-                emptyImageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(130), dp(130)));
+                emptyImageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, dp(130), dp(130)));
             }
             emptyImageView.setVisibility(View.VISIBLE);
             emptyTitleView.setText(getString(R.string.SearchPostsNotFound));

@@ -2,8 +2,9 @@
 ///
 /// Defaults are sized generously against the Telegram fixture corpus
 /// (17.2k real files: p99 input ~748 KB, max ~1.7 MB) while still bounding
-/// hostile input. Corpus-backed caps are kept at least 4x above the observed
-/// maxima where real files had non-zero examples. Every limit maps to an
+/// hostile input. Authored-data caps leave headroom above observed maxima;
+/// rendering budgets separately bound generated work and scratch storage.
+/// Every limit maps to an
 /// [`crate::error::Limit`] error —
 /// exceeding one is a clean `Err`, never a crash or an OOM spiral.
 #[derive(Debug, Clone, Copy)]
@@ -30,6 +31,8 @@ pub struct Limits {
   pub max_solid_layers: usize,
   /// Maximum keyframes for a single animated property.
   pub max_keyframes: usize,
+  /// Maximum cumulative heap bytes cloned for inherited keyframe values.
+  pub max_inherited_keyframe_bytes: usize,
   /// Maximum authored vertices in a single path or mask.
   pub max_path_points: usize,
   /// Maximum absolute authored coordinate/tangent magnitude in paths.
@@ -52,6 +55,12 @@ pub struct Limits {
   pub max_gradient_stop_values: usize,
   /// Maximum Fitzpatrick metadata entries parsed when requested by options.
   pub max_fitz_entries: usize,
+  /// Maximum cumulative parser allocation capacity, including discarded data.
+  pub max_parse_bytes: usize,
+  /// Maximum cumulative token, scan and object decoding work across cursor forks.
+  pub max_parse_work: usize,
+  /// Maximum authored gradient strokes after expanding referenced precomps.
+  pub max_expanded_gradient_strokes: usize,
   /// Maximum expanded precomp-layer references in the asset graph.
   pub max_precomp_expansion: usize,
   /// Maximum parent-chain depth in one layer list.
@@ -74,6 +83,19 @@ pub struct Limits {
   pub max_assets: usize,
   /// Maximum composition width/height in points, and render size in pixels.
   pub max_dimension: u32,
+  /// Maximum generated geometry points charged cumulatively per frame.
+  pub max_render_points: usize,
+  /// Maximum cumulative dash output allocation estimate per frame, in bytes.
+  pub max_render_dash_bytes: usize,
+  /// Maximum geometry/raster work units charged per frame.
+  pub max_render_work: usize,
+  /// Maximum weighted pixel visits per frame at 64x64 or smaller.
+  /// Larger outputs scale this allowance proportionally to canvas area.
+  /// Solid fills cost 1 per pixel; linear, radial and focal gradients cost
+  /// 8, 16 and 32 respectively, including cached coverage replay.
+  pub max_render_pixels: usize,
+  /// Maximum canvas-dependent scratch allocation estimate, in bytes.
+  pub max_render_bytes: usize,
 }
 
 impl Default for Limits {
@@ -86,10 +108,11 @@ impl Default for Limits {
       max_paints_per_layer: 2560,
       max_paint_source_items_per_layer: 4096,
       max_focal_radial_gradients_per_layer: 160,
-      max_focal_radial_gradient_expansion: 512,
+      max_focal_radial_gradient_expansion: 256,
       max_painted_shape_layers: 2048,
       max_solid_layers: 256,
       max_keyframes: 2048,
+      max_inherited_keyframe_bytes: 8 << 20,
       max_path_points: 4096,
       max_path_coordinate_abs: 140_000.0,
       max_masks_per_layer: 16,
@@ -101,7 +124,10 @@ impl Default for Limits {
       max_dashed_path_segment_span: 5000.0,
       max_gradient_stop_values: 1024,
       max_fitz_entries: 16,
-      max_precomp_expansion: 4096,
+      max_parse_bytes: 13_031_466,
+      max_parse_work: 8_533_990,
+      max_expanded_gradient_strokes: 840,
+      max_precomp_expansion: 6144,
       max_parent_chain_depth: 128,
       max_parent_chain_total_depth: 16_384,
       max_polystar_points: 128.0,
@@ -112,6 +138,11 @@ impl Default for Limits {
       max_repeater_product_per_group: 4096,
       max_assets: 256,
       max_dimension: 8192,
+      max_render_points: 1_048_576,
+      max_render_dash_bytes: 6_330_240,
+      max_render_work: 4_194_304,
+      max_render_pixels: 64 * 1024 * 1024,
+      max_render_bytes: 36 * 1024 * 1024,
     }
   }
 }

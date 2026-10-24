@@ -18,7 +18,6 @@ import android.os.SystemClock;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.util.StateSet;
 import android.view.MotionEvent;
 
@@ -28,7 +27,6 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
-import org.ansible.messenger.AccountInstance;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.BuildVars;
 import org.ansible.messenger.ChatObject;
@@ -39,15 +37,12 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.MessagesStorage;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
-import org.ansible.messenger.TranslateController;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.messenger.utils.DrawableUtils;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.ChatMessageCell;
-import org.ansible.ui.PremiumPreviewFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,7 +87,7 @@ public class TranscribeButton {
         this.pressBounds = new Rect(this.bounds);
         this.pressBounds.inset(dp(8), dp(8));
 
-        outIconDrawable = new RLottieDrawable(R.raw.transcribe_out, "transcribe_out", dp(26), dp(26));
+        outIconDrawable = new RLottieDrawable(R.raw.transcribe_out, dp(26), dp(26));
         outIconDrawable.setCurrentFrame(0);
         outIconDrawable.setCallback(parent);
         outIconDrawable.setOnFinishCallback(() -> {
@@ -103,7 +98,7 @@ public class TranscribeButton {
         }, 19);
         outIconDrawable.setAllowDecodeSingleFrame(true);
 
-        inIconDrawable = new RLottieDrawable(R.raw.transcribe_in, "transcribe_in", dp(26), dp(26));
+        inIconDrawable = new RLottieDrawable(R.raw.transcribe_in, dp(26), dp(26));
         inIconDrawable.setCurrentFrame(0);
         inIconDrawable.setCallback(parent);
         inIconDrawable.setMasterParent(parent);
@@ -594,7 +589,7 @@ public class TranscribeButton {
         public LoadingPointsDrawable(TextPaint textPaint) {
             this.paint = textPaint;
             float fontSize = textPaint.getTextSize() * 0.89f;
-            lottie = new RLottieDrawable(R.raw.dots_loading, "dots_loading", (int) fontSize, (int) (fontSize * 1.25f));
+            lottie = new RLottieDrawable(R.raw.dots_loading, (int) fontSize, (int) (fontSize * 1.25f));
             lottie.setCallback(callback);
             lottie.setAutoRepeat(1);
             lottie.setCurrentFrame((int) (SystemClock.elapsedRealtime() / 16f % 60f));

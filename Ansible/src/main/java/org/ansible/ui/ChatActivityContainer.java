@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 
-import com.google.android.exoplayer2.util.Log;
+
 
 import org.ansible.messenger.Utilities;
 import org.ansible.ui.ActionBar.ActionBar;

@@ -63,7 +63,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.ChatThemeController;
-import org.ansible.messenger.CodeHighlighting;
+import org.ansible.utils.code.highlight.CodeHighlighting;
 import org.ansible.messenger.ContactsController;
 import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.DownloadController;

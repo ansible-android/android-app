@@ -45,14 +45,12 @@ import android.widget.TextView;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.BuildVars;
-import org.ansible.messenger.CodeHighlighting;
+import org.ansible.utils.code.highlight.CodeHighlighting;
 import org.ansible.messenger.Emoji;
 import org.ansible.messenger.FileLog;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.R;
-import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.utils.CopyUtilities;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;

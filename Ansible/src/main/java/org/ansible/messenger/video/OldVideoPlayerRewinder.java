@@ -1,6 +1,6 @@
 package org.ansible.messenger.video;
 
-import com.google.android.exoplayer2.C;
+import androidx.media3.common.C;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.ui.Components.PhotoViewerWebView;

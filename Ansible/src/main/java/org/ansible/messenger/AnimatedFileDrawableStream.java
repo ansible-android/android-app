@@ -1,7 +1,7 @@
 package org.ansible.messenger;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.util.Log;
+import androidx.media3.exoplayer.ExoPlayer;
+
 
 import org.ansible.asnet.TLRPC;
 

@@ -47,7 +47,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.ansible.messenger.AndroidUtilities;
-import org.ansible.messenger.Emoji;
 import org.ansible.messenger.LiteMode;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
@@ -59,7 +58,6 @@ import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.ButtonBounce;
-import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.LinkPath;
 import org.ansible.ui.Components.LinkSpanDrawable;
@@ -304,7 +302,7 @@ public class HintView2 extends View {
     }
 
     public HintView2 setIcon(int resId) {
-        RLottieDrawable icon = new RLottieDrawable(resId, "" + resId, dp(34), dp(34));
+        RLottieDrawable icon = new RLottieDrawable(resId, dp(34), dp(34));
         icon.start();
         return setIcon(icon);
     }

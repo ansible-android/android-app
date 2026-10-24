@@ -354,7 +354,7 @@ public class ChannelMonetizationLayout extends SizeNotifierFrameLayout implement
                 diamondsBalanceButton.setLoading(true);
                 passwordFragment.preload(() -> {
                     diamondsBalanceButton.setLoading(false);
-                    fragment.presentFragment(passwordFragment);;
+                    fragment.presentFragment(passwordFragment);
                 });
                 return true;
             }

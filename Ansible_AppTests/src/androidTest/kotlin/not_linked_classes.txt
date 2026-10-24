@@ -10,7 +10,6 @@ org.ansible.asnet.TLRPC.TL_folders_deleteFolder #1c295881
 org.ansible.asnet.TLRPC.TL_forumTopic_layer147 #5920d6dc
 org.ansible.asnet.TLRPC.TL_help_premiumPromo_layer140 #e0360f1b
 org.ansible.asnet.TLRPC.TL_inputMessagesFilterPhotoVideoDocuments #d95e73bb
-org.ansible.asnet.TLRPC.TL_messageActionChatJoinedViaCommunity #4a8bfe80
 org.ansible.asnet.TLRPC.TL_messageActionCreatedBroadcastList #55555557
 org.ansible.asnet.TLRPC.TL_messageActionLoginUnknownLocation #555555f5
 org.ansible.asnet.TLRPC.TL_messageActionPhoneNumberRequest #01baa035
@@ -42,6 +41,7 @@ org.ansible.asnet.TLRPC.TL_peerNotifySettingsEmpty_layer77 #70a68512
 org.ansible.asnet.TLRPC.TL_poll_toDelete #af746786
 org.ansible.asnet.TLRPC.TL_premiumGiftOption #79c059f7
 org.ansible.asnet.TLRPC.TL_replyInlineMarkup_layer228_old #58f7fcb6
+org.ansible.asnet.TLRPC.TL_userFull #7fe738c4
 org.ansible.asnet.TLRPC.TL_userStatusHidden #cf7d64b1
 org.ansible.asnet.TLRPC.TL_user_layer185 #4fe9cce0
 org.ansible.asnet.TLRPC.TL_videoEncrypted #55555553
@@ -58,4 +58,5 @@ org.ansible.asnet.tl.TL_stories.TL_mediaAreaWeather2 #855f223e
 org.ansible.asnet.tl.TL_stories.TL_mediaAreaWeatherOld #4386f849
 org.ansible.asnet.tl.TL_update.TL_updateBotSubscriptionExpire #a8ae3eb1
 org.ansible.asnet.tl.TL_update.TL_updateTranscribeAudio #88617090
+org.ansible.asnet.tl.TL_wallet.mnemonic_decryptedKeyPart #8b90dd08
 org.ansible.asnet.tl.legacy.TL_legacy_message.TL_message_layer118 #f52e6b7f

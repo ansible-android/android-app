@@ -16,6 +16,7 @@ import androidx.core.graphics.drawable.IconCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
+import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MediaController;
 import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.NotificationCenter;
@@ -70,7 +71,7 @@ public class MusicSongsScreen extends Screen
 
         ArrayList<MessageObject> songs = session.getMusicMessages(dialogId);
         if (songs == null || songs.isEmpty()) {
-            return new MessageTemplate.Builder(getCarContext().getString(R.string.NoCarMusic))
+            return new MessageTemplate.Builder(LocaleController.getString(R.string.NoCarMusic))
                     .setTitle(headerTitle)
                     .setHeaderAction(Action.BACK)
                     .build();

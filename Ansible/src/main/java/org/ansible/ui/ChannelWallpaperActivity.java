@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.ChatThemeController;
-import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
@@ -46,8 +45,6 @@ import org.ansible.ui.Components.Easings;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RLottieDrawable;
 import org.ansible.ui.Components.RecyclerListView;
-
-import java.util.Locale;
 
 public class ChannelWallpaperActivity extends BaseFragment {
 
@@ -126,7 +123,7 @@ public class ChannelWallpaperActivity extends BaseFragment {
             }
         });
 
-        sunDrawable = new RLottieDrawable(R.raw.sun, "" + R.raw.sun, dp(28), dp(28), true, null);
+        sunDrawable = new RLottieDrawable(R.raw.sun, dp(28), dp(28), true, null);
         sunDrawable.setPlayInDirectionOfCustomEndFrame(true);
         if (!isDark()) {
             sunDrawable.setCustomEndFrame(0);

@@ -120,6 +120,11 @@ pub(crate) enum Property<T> {
 
 /// Types that can be interpolated between keyframes.
 pub(crate) trait Lerp: Clone {
+  /// Heap storage allocated by cloning this value (scalar values allocate none).
+  fn clone_heap_bytes(&self) -> usize {
+    0
+  }
+
   fn lerp(&self, other: &Self, t: f32) -> Self;
 
   /// Interpolation honoring spatial tangents; only meaningful for Vec2
@@ -191,6 +196,17 @@ impl Lerp for Color {
 }
 
 impl<T: Lerp> Property<T> {
+  /// Borrows the stored value when this property is static.
+  ///
+  /// Large values such as authored paths otherwise get cloned by [`Self::eval`]
+  /// even though their backing data never changes.
+  pub(crate) fn static_value(&self) -> Option<&T> {
+    match self {
+      Property::Static(value) => Some(value),
+      Property::Animated(_) => None,
+    }
+  }
+
   pub fn eval(&self, frame: f32) -> T {
     match self {
       Property::Static(v) => v.clone(),

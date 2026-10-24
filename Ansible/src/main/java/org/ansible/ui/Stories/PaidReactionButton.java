@@ -3,8 +3,6 @@ package org.ansible.ui.Stories;
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.AndroidUtilities.ilerp;
 import static org.ansible.messenger.AndroidUtilities.lerp;
-import static org.ansible.ui.Stories.HighlightMessageSheet.TIER_COLOR1;
-import static org.ansible.ui.Stories.HighlightMessageSheet.getTierOption;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -17,19 +15,16 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
-import androidx.core.math.MathUtils;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.ImageReceiver;
@@ -38,9 +33,6 @@ import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLObject;
-import org.ansible.asnet.TLRPC;
-import org.ansible.ui.ActionBar.Theme;
-import org.ansible.ui.Components.AnimatedColor;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.AvatarDrawable;
@@ -208,7 +200,7 @@ public class PaidReactionButton extends View {
                 drawable.recycle(true);
             }
             final int asset = effectAssets[Utilities.fastRandom.nextInt(effectAssets.length)];
-            RLottieDrawable drawable = new RLottieDrawable(asset, "" + asset, dp(70), dp(70));
+            RLottieDrawable drawable = new RLottieDrawable(asset, dp(70), dp(70));
             drawable.setMasterParent(this);
             drawable.setAllowDecodeSingleFrame(true);
             drawable.setAutoRepeat(0);
@@ -264,7 +256,7 @@ public class PaidReactionButton extends View {
 
                 if (withEffect) {
                     final int asset = effectAssets[Utilities.fastRandom.nextInt(effectAssets.length)];
-                    effect = new RLottieDrawable(asset, "" + asset, dp(70), dp(70));
+                    effect = new RLottieDrawable(asset, dp(70), dp(70));
                     effect.setMasterParent(view);
                     effect.setAllowDecodeSingleFrame(true);
                     effect.setAutoRepeat(0);

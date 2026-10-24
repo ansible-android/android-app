@@ -9,7 +9,7 @@ import android.view.View;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.android.exoplayer2.Player;
+import androidx.media3.common.Player;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.pip.activity.IPipActivity;

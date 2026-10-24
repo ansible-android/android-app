@@ -97,7 +97,6 @@ import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.AccountFrozenAlert;
 import org.ansible.ui.ActionBar.ActionBar;
-import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.SimpleTextView;
@@ -327,7 +326,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
         diamondBalanceIcon = new SpannableStringBuilder("S");
         final ImageReceiverSpan diamondBalanceIconSpan = new ImageReceiverSpan(diamondBalanceTextView, currentAccount, 42);
-        diamondBalanceIconSpan.imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.star_reaction, "s" + R.raw.star_reaction, dp(42), dp(42)));
+        diamondBalanceIconSpan.imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.star_reaction, dp(42), dp(42)));
         diamondBalanceIconSpan.imageReceiver.setAutoRepeat(2);
         diamondBalanceIconSpan.enableShadow(false);
         diamondBalanceIconSpan.translate(-dp(3), 0);
@@ -2754,7 +2753,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             if (TextUtils.isEmpty(stringRes)) {
                 headerView.subtitleView.setText("");
             } else {
-                String str = LocaleController.nullable(formatString(stringRes, LocaleController.getStringResId(stringRes), botName));
+                String str = LocaleController.nullable(formatString(stringRes, 0, botName));
                 if (str == null) {
                     str = getString(stringRes);
                 }
@@ -5520,7 +5519,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     private static DecimalFormat floatFormat;
     public static CharSequence formatDiamondsAmount(TL_diamonds.StarsAmount starsAmount, float relativeSize, char symbol) {
         if (floatFormat == null)
-            floatFormat = new DecimalFormat("0.################", new DecimalFormatSymbols(Locale.US));
+            floatFormat = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US));
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         final long amount = starsAmount.amount + (starsAmount.nanos < 0 && starsAmount.amount > 0 ? -1 : (starsAmount.nanos > 0 && starsAmount.amount < 0 ? +1 : 0));
         final boolean negative = starsAmount.amount == 0 ? starsAmount.nanos < 0 : starsAmount.amount < 0;

@@ -612,9 +612,7 @@ public class CameraScanActivity extends BaseFragment {
             titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             recognizedMrzView.setTypeface(Typeface.MONOSPACE);
         } else {
-            if (needGalleryButton) {
-                //titleTextView.setText(LocaleController.getString(R.string.WalletScanCode));
-            } else {
+            if (!needGalleryButton) {
                 if (currentType == TYPE_QR || currentType == TYPE_QR_WEB_BOT) {
                     titleTextView.setText(LocaleController.getString(R.string.AuthAnotherClientScan));
                 } else {
@@ -657,9 +655,7 @@ public class CameraScanActivity extends BaseFragment {
             }
             recognizedMrzView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             recognizedMrzView.setPadding(dp(10), 0, dp(10), dp(10));
-            if (needGalleryButton) {
-                //recognizedMrzView.setText(LocaleController.getString(R.string.WalletScanCodeNotFound));
-            } else {
+            if (!needGalleryButton) {
                 recognizedMrzView.setText(LocaleController.getString(R.string.AuthAnotherClientNotFound));
             }
             viewGroup.addView(recognizedMrzView);

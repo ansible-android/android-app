@@ -610,6 +610,8 @@
     <string name="ActionDiamondGift">Gift</string>
     <string name="ActionGiftPremiumTitle2_one">%d Month Premium</string>
     <string name="ActionGiftPremiumTitle2_other">%d Months Premium</string>
+    <string name="ActionGiftPremiumTitle2Days_one">%d Days Premium</string>
+    <string name="ActionGiftPremiumTitle2Days_other">%d Days Premium</string>
     <string name="ActionGiftPremiumText">Subscription for exclusive Ansible features.</string>
     <string name="ActionGiftPremiumView">View</string>
     <string name="ActionDiamondGiveawayPrizeTitle">Congratulations!</string>
@@ -2676,14 +2678,14 @@
     <string name="UseProxyUsername">Username</string>
     <string name="UseProxySocks5">SOCKS5 Proxy</string>
     <string name="UseProxyAnsible">MTProto Proxy</string>
+    <string name="UseProxyWeb">WEB Proxy</string>
     <string name="UseProxyAnsibleError">The proxy you are using is not configured correctly and will be disabled. Please find another one.</string>
     <string name="UseProxySponsor">Proxy sponsor</string>
     <string name="UseProxySponsorInfo">This channel is shown by your proxy server. To remove this channel from your chat list, disable the proxy in Ansible Settings.</string>
     <string name="UseProxyInfo">SOCKS5 proxy settings.</string>
     <string name="UseProxyAnsibleInfo">MTProto proxy settings.</string>
     <string name="UseProxyAnsibleInfo2">This proxy may display a sponsored channel in your chat list. This doesn\'t reveal any of your Ansible traffic.</string>
-    <string name="UseProxyForCalls">Use proxy for calls</string>
-    <string name="UseProxyForCallsInfo">Proxy servers may degrade the quality of your calls.</string>
+    <string name="UseProxyWebInfo">WEB proxy uses an HTTPS page inside a private WebView. Enter a hostname without a scheme or path and a 16-byte MTProxy secret. This proof of concept requires a current Android System WebView and is intended for foreground testing.</string>
     <string name="ConnectingToProxyEnable">Enable</string>
     <string name="LowDiskSpaceTitle">Attention</string>
     <string name="LowDiskSpaceMessage">Your device is almost out of disk space. To free some space, you can set up Ansible to cache only recent media.</string>
@@ -3983,7 +3985,7 @@
     <string name="SendMessagesToText">Do you want to send this message to **%1$s**?</string>
     <string name="SendGameToText">Do you want to share this game to **%1$s**?</string>
     <string name="SendContactToText">Do you want to send this contact to **%1$s**?</string>
-    <string name="AreYouSureLogout">Are you sure you want to log out?\n\nNote that you can seamlessly use Ansible on all your devices at once.\n\nRemember, logging out kills all your Secret Chats.</string>
+    <string name="AreYouSureLogout">Are you sure you want to log out?\n\nThis will cancel all your Secret Chats.\n\nYou can use Ansible on all your devices at once and use several accounts in the same app.</string>
     <string name="DeleteFewChatsTitle">Delete %1$s</string>
     <string name="ClearFewChatsTitle">Clear %1$s</string>
     <string name="ClearCacheFewChatsTitle">Empty cache for %1$s</string>
@@ -5475,6 +5477,31 @@
     <string name="PushChatReactGame">%3$s to your game in %2$s</string>
     <string name="PushChatReactInvoice">%3$s to your invoice in %2$s</string>
     <string name="PushChatReactGif">%3$s to your GIF in %2$s</string>
+    <string name="PushReactPhotoSecret">%2$s to your self-destructing photo</string>
+    <string name="PushReactVideoSecret">%2$s to your self-destructing video</string>
+    <string name="PushReactTodoUpdate">%2$s to your todo update</string>
+    <string name="PushReactGameScore">%2$s to your game score</string>
+    <string name="PushReactPaidMedia">%2$s to your paid post</string>
+    <string name="PushReactStoryMention">%2$s to your story mention</string>
+    <string name="PushReactGiftCode">%2$s to your Gift Code</string>
+    <string name="PushReactThemeChange">%2$s to your theme change</string>
+    <string name="PushReactWallpaper">%2$s to the new background</string>
+    <string name="PushReactSameWallpaper">%2$s to the same background</string>
+    <string name="PushReactSuggestUserpic">%2$s to your photo suggestion</string>
+    <string name="PushReactSuggestBirthday">%2$s to your birthday suggestion</string>
+    <string name="PushReactRecurringPay">%2$s to your payment</string>
+    <string name="PushReactStarGift">%2$s to your Gift worth of %3$s Diamonds</string>
+    <string name="PushReactUniqueStarGift">%2$s to your Gift</string>
+    <string name="PushReactStarGiftUpgrade">%2$s to your upgraded Gift</string>
+    <string name="PushReactStarGiftPrepaidUpgrade">%2$s to your Gift upgrade worth %3$s Diamonds</string>
+    <string name="PushReactStarGiftUnpackUpgrade">%2$s to the Gift you helped upgrade</string>
+    <string name="PushReactProximity">%2$s to your proximity alert</string>
+    <string name="PushReactScreenshot">%2$s to your screenshot</string>
+    <string name="PushChatReactGameScore">%3$s to your game score in %2$s</string>
+    <string name="PushChatReactStory">%3$s to your story in %2$s</string>
+    <string name="PushChatReactThemeChange">%3$s to your theme change in %2$s</string>
+    <string name="PushChatReactPollUpdate">%3$s to your poll update in %2$s</string>
+    <string name="PushChatReactTodoUpdate">%3$s to your todo update in %2$s</string>
     <string name="PushReactStory">%2$s to your story</string>
     <string name="PushReactStoryHidden">New reaction to your story</string>
     <string name="PushReactStoryHiddenSender">Story Reaction</string>
@@ -8387,7 +8414,7 @@
     <string name="DiamondsTransactionFloodskipNumberName">Messages</string>
     <string name="DiamondsTransactionFloodskipNumber_one">%d</string>
     <string name="DiamondsTransactionFloodskipNumber_other">%d</string>
-    <string name="DiamondsTransactionTOS">Review the **Terms of Service** for Stars.</string>
+    <string name="DiamondsTransactionTOS">Review the **Terms of Service** for Diamonds.</string>
     <string name="DiamondsNotAvailableTitle">Not Available</string>
     <string name="DiamondsNotAvailableText">Sorry, no star purchases are available from your country.</string>
     <string name="DiamondsRefunded">Refund</string>
@@ -11051,4 +11078,31 @@
     <string name="UnsupportedMessageTitle">Unsupported Message</string>
     <string name="UnsupportedMessageMessage">Update Ansible to view this message</string>
     <string name="UnsupportedUpdate">Update</string>
+
+    <string name="RoundVideoSettings">Round Video</string>
+    <string name="RoundVideoGeneral">Recorder</string>
+    <string name="RoundVideoUseNewRecorder">Use Camera2 recorder</string>
+    <string name="RoundVideoOutputResolution">Output resolution</string>
+    <string name="RoundVideoCameraResolution">Camera resolution</string>
+    <string name="RoundVideoCameraResolutionHigh">High</string>
+    <string name="RoundVideoCameraResolutionMedium">Medium</string>
+    <string name="RoundVideoCameraResolutionLow">Low</string>
+    <string name="RoundVideoFrameRate">Frame rate</string>
+    <string name="RoundVideoBitrate">Video bitrate</string>
+    <string name="RoundVideoGeneralInfo">60 FPS is used only when both front and rear cameras support it. Otherwise recording falls back to 30 FPS.</string>
+    <string name="RoundVideoComposition">Composition</string>
+    <string name="RoundVideoCompositionEnabled">Round video styling</string>
+    <string name="RoundVideoCompositionInfo">Disable styling to record a plain square without outside-circle blur, dimming or Ansible overlays.</string>
+
+    <!-- Wallet -->
+
+    <string name="CreateManagedBotUsernameSuffixesInfo">Must end in \'bot\' – or %1$s with **Ansible Premium**.</string>
+    <string name="CreateManagedBotUsernameSuffixesOr">%1$s or %2$s</string>
+    <string name="CreateManagedBotUsernameSuffixesComma">%1$s, %2$s</string>
+    <string name="CreateManagedBotUsernamePremiumRequired">Usernames ending in \'%1$s\' require Ansible Premium. **Subscribe ›**</string>
+    <string name="CreateManagedBotUsernamePremiumRequiredGeneric">This username requires Ansible Premium. **Subscribe ›**</string>
+    <string name="CreateManagedBotUsernameOwnerLimit">You can only have %1$d usernames ending in %2$s across all your bots.</string>
+    <string name="CreateManagedBotUsernameBotLimit">This bot already has a Premium username. Remove it before adding another.</string>
+    <string name="CreateManagedBotUsernameSuffixMissing">The username must end in %1$s.</string>
+    <string name="CreateManagedBotUsernameCheckFailed">Couldn\'t check this username. Please try again.</string>
 </resources>
