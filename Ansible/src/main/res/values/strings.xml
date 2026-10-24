@@ -5490,10 +5490,10 @@
     <string name="PushReactSuggestUserpic">%2$s to your photo suggestion</string>
     <string name="PushReactSuggestBirthday">%2$s to your birthday suggestion</string>
     <string name="PushReactRecurringPay">%2$s to your payment</string>
-    <string name="PushReactStarGift">%2$s to your Gift worth of %3$s stars</string>
+    <string name="PushReactStarGift">%2$s to your Gift worth of %3$s Diamonds</string>
     <string name="PushReactUniqueStarGift">%2$s to your Gift</string>
     <string name="PushReactStarGiftUpgrade">%2$s to your upgraded Gift</string>
-    <string name="PushReactStarGiftPrepaidUpgrade">%2$s to your Gift upgrade worth %3$s Stars</string>
+    <string name="PushReactStarGiftPrepaidUpgrade">%2$s to your Gift upgrade worth %3$s Diamonds</string>
     <string name="PushReactStarGiftUnpackUpgrade">%2$s to the Gift you helped upgrade</string>
     <string name="PushReactProximity">%2$s to your proximity alert</string>
     <string name="PushReactScreenshot">%2$s to your screenshot</string>
@@ -11092,15 +11092,15 @@
     <string name="RoundVideoGeneralInfo">60 FPS is used only when both front and rear cameras support it. Otherwise recording falls back to 30 FPS.</string>
     <string name="RoundVideoComposition">Composition</string>
     <string name="RoundVideoCompositionEnabled">Round video styling</string>
-    <string name="RoundVideoCompositionInfo">Disable styling to record a plain square without outside-circle blur, dimming or Telegram overlays.</string>
+    <string name="RoundVideoCompositionInfo">Disable styling to record a plain square without outside-circle blur, dimming or Ansible overlays.</string>
 
     <!-- Wallet -->
 
-    <string name="CreateManagedBotUsernameSuffixesInfo">Must end in \'bot\' – or %1$s with **Telegram Premium**.</string>
+    <string name="CreateManagedBotUsernameSuffixesInfo">Must end in \'bot\' – or %1$s with **Ansible Premium**.</string>
     <string name="CreateManagedBotUsernameSuffixesOr">%1$s or %2$s</string>
     <string name="CreateManagedBotUsernameSuffixesComma">%1$s, %2$s</string>
-    <string name="CreateManagedBotUsernamePremiumRequired">Usernames ending in \'%1$s\' require Telegram Premium. **Subscribe ›**</string>
-    <string name="CreateManagedBotUsernamePremiumRequiredGeneric">This username requires Telegram Premium. **Subscribe ›**</string>
+    <string name="CreateManagedBotUsernamePremiumRequired">Usernames ending in \'%1$s\' require Ansible Premium. **Subscribe ›**</string>
+    <string name="CreateManagedBotUsernamePremiumRequiredGeneric">This username requires Ansible Premium. **Subscribe ›**</string>
     <string name="CreateManagedBotUsernameOwnerLimit">You can only have %1$d usernames ending in %2$s across all your bots.</string>
     <string name="CreateManagedBotUsernameBotLimit">This bot already has a Premium username. Remove it before adding another.</string>
     <string name="CreateManagedBotUsernameSuffixMissing">The username must end in %1$s.</string>

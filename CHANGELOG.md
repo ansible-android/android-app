@@ -10,6 +10,18 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-10-24
+
+### Changed
+- **Rebased onto Telegram for Android 13.0.2.** Ansible is brought up to the
+  13.0.2 upstream base. Ansible's own work — the branding, the Diamonds
+  currency, and the removal of TON — is carried forward on top. As stated
+  above, changes inherited from upstream are not repeated here.
+
+### Fixed
+- Upstream branding and "Stars" wording that reappeared in new 13.0.2 strings
+  now follow Ansible's branding and the Diamonds currency.
+
 ## [0.2.3] - 2026-10-15
 
 ### Changed
