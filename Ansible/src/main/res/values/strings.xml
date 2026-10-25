@@ -1914,6 +1914,8 @@
     <string name="NewContactAlertTitle">New contact</string>
     <string name="NewContactAlertMessage">Phone number **%1$s** is not in your contacts list. Do you want to add it?</string>
     <string name="NewContactAlertButton">Add contact</string>
+    <string name="NewContactPhoneNotRegistered">This phone number is not on Ansible. **Invite >**</string>
+    <string name="NewContactPhoneRegistered">This phone number is on Ansible.</string>
     <string name="Gift2AvailabilitySold_other">%d sold</string>
     <string name="Gift2AvailabilityLeft_other">%d left</string>
     <!--group create view-->
@@ -2771,6 +2773,7 @@
     <string name="HideSenderNames">Hide senders\’ names</string>
     <string name="ShowSendersName">Show sender\’s name</string>
     <string name="HideSendersName">Hide sender\’s name</string>
+    <string name="MessagePreviewForwardPremiumRequired">Subscribe to **Ansible Premium** to forward formatted messages without the sender’s name.</string>
     <string name="ChatListSwipeGesture">Chat list swipe gesture</string>
     <string name="ChatListSwipeGestureInfo">Set up which action you want to perform each time you swipe to left in the chat list.</string>
     <string name="SwipeSettingsPin">Pin</string>
