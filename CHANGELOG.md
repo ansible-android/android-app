@@ -10,6 +10,14 @@ Android Authors.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-10-29
+
+### Fixed
+- **English brand wording brought fully in line with Ansible.** Built-in
+  English strings that still read "Telegram", "Stars" or "Fragment" now use
+  Ansible, the Diamonds currency, and Crystal Piece, matching the rest of the
+  app.
+
 ## [0.3.0] - 2026-10-24
 
 ### Changed
