@@ -1,5 +1,6 @@
 package org.ansible.ui.Components;
 
+import org.ansible.messenger.FileLog;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -31,6 +32,7 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.UserObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.voip.GroupCallMiniTextureView;
 import org.ansible.ui.Components.voip.GroupCallRenderersContainer;
 import org.ansible.ui.Components.voip.GroupCallStatusIcon;
@@ -142,7 +144,7 @@ public class GroupCallFullscreenAdapter extends RecyclerListView.SelectionAdapte
         }
     }
 
-    public class GroupCallUserCell extends FrameLayout implements GroupCallStatusIcon.Callback {
+    public class GroupCallUserCell extends FrameLayout implements Theme.Colorable, GroupCallStatusIcon.Callback {
 
         AvatarDrawable avatarDrawable = new AvatarDrawable();
 
@@ -569,7 +571,18 @@ public class GroupCallFullscreenAdapter extends RecyclerListView.SelectionAdapte
         public boolean isRemoving(RecyclerListView listView) {
             return listView.getChildAdapterPosition(this) == RecyclerView.NO_POSITION;
         }
-    }
+    
+        @Override
+        public void updateColors() {
+            try {
+                backgroundPaint.setColor(Theme.getColor(Theme.key_voipgroup_listViewBackground));
+                invalidate();
+        
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
 
     public void update(boolean animated, RecyclerListView listView) {
         if (groupCall == null) {

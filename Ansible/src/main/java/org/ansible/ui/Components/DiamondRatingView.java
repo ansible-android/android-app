@@ -13,12 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
 import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.Theme;
 
-public class DiamondRatingView extends View {
+public class DiamondRatingView extends View implements Theme.Colorable {
     private final BadgeLevelDrawable drawable;
     private final Colors colors = new Colors();
 
@@ -129,6 +130,16 @@ public class DiamondRatingView extends View {
 
 
     /**/
+
+    @Override
+    public void updateColors() {
+        try {
+            colors.update(colors.peerColor);
+            invalidate();
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
 
     public void updateColors(MessagesController.PeerColor peerColor) {
         colors.update(peerColor);

@@ -44,7 +44,7 @@ import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.ansible.ui.Components.blur3.BlurredBackgroundWithFadeDrawable;
 import org.ansible.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
-import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceColor;
+import org.ansible.utils.glass.source.GlassSourceColor;
 import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
@@ -67,9 +67,9 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
     private ItemOptions lastMenu;
 
-    private final BlurredBackgroundSourceColor iBlur3SourceButtonColor;
+    private final GlassSourceColor iBlur3SourceButtonColor;
     private final BlurredBackgroundDrawableViewFactory iBlur3ButtonFactory;
-    private final BlurredBackgroundSourceColor iBlur3SourceBackgroundColor;
+    private final GlassSourceColor iBlur3SourceBackgroundColor;
     private final BlurredBackgroundDrawableViewFactory iBlur3BackgroundFactory;
 
     public SelectGiftsBottomSheet(
@@ -87,10 +87,10 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
         final Context context = getContext();
 
-        iBlur3SourceButtonColor = new BlurredBackgroundSourceColor();
+        iBlur3SourceButtonColor = new GlassSourceColor();
         iBlur3SourceButtonColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
         iBlur3ButtonFactory = new BlurredBackgroundDrawableViewFactory(iBlur3SourceButtonColor);
-        iBlur3SourceBackgroundColor = new BlurredBackgroundSourceColor();
+        iBlur3SourceBackgroundColor = new GlassSourceColor();
         iBlur3SourceBackgroundColor.setColor(getThemedColor(Theme.key_windowBackgroundGray));
         iBlur3BackgroundFactory = new BlurredBackgroundDrawableViewFactory(iBlur3SourceBackgroundColor);
 
@@ -290,7 +290,7 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
         adapter.update(true);
 
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondUserGiftsLoaded);
 
 
         checkUi_insets();
@@ -398,4 +398,28 @@ public class SelectGiftsBottomSheet extends BottomSheetWithRecyclerListView impl
 
         return WindowInsetsCompat.CONSUMED;
     }
+
+    @Override
+    public void onThemeColorsChanged() {
+        super.onThemeColorsChanged();
+        try {
+            if (iBlur3SourceButtonColor != null) {
+                iBlur3SourceButtonColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            }
+            if (iBlur3SourceBackgroundColor != null) {
+                iBlur3SourceBackgroundColor.setColor(getThemedColor(Theme.key_windowBackgroundGray));
+            }
+            final int color = getThemedColor(Theme.key_windowBackgroundGray);
+            if (!themeBackgroundApplied || color != lastThemeBackgroundColor) {
+                themeBackgroundApplied = true;
+                lastThemeBackgroundColor = color;
+                setBackgroundColor(color);
+            }
+        } catch (Exception e) {
+            org.ansible.messenger.FileLog.e(e);
+        }
+    }
+
+    private boolean themeBackgroundApplied;
+    private int lastThemeBackgroundColor;
 }

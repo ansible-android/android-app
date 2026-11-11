@@ -56,6 +56,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BottomSheetTabs;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.CheckBox2;
 import org.ansible.ui.Components.CombinedDrawable;
@@ -73,6 +74,7 @@ import java.net.URLDecoder;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 public class AddressBarList extends FrameLayout {
 
@@ -713,6 +715,11 @@ public class AddressBarList extends FrameLayout {
             dividerPaint.setColor(Theme.multAlpha(textColor, .1f));
             iconView.invalidate();
         }
+        @Override
+        public void addColorKeys(HashSet<Integer> colors) {
+            colors.add(Theme.key_windowBackgroundWhite);
+            colors.add(Theme.key_windowBackgroundWhiteBlackText);
+        }
 
         private int textColor;
         public void setColors(int backgroundColor, int textColor) {
@@ -1090,8 +1097,8 @@ public class AddressBarList extends FrameLayout {
         public void attach() {
             if (attached) return;
             attached = true;
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.mediaDidLoad);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.bookmarkAdded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.mediaDidLoad);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.bookmarkAdded);
             if (TextUtils.isEmpty(query)) {
                 load();
             }

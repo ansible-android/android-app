@@ -30,6 +30,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.messenger.SvgHelper;
@@ -125,7 +126,7 @@ public class StickerCell extends FrameLayout {
         Drawable background = getBackground();
         if (background != null) {
             background.setAlpha(230);
-            background.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chat_stickersHintPanel), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.drawableColorFilter(this, background, Theme.key_chat_stickersHintPanel, PorterDuff.Mode.MULTIPLY);
         }
         updatePremiumStatus(false);
     }

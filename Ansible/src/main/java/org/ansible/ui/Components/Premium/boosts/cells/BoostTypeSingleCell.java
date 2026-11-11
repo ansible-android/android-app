@@ -11,6 +11,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.Premium.boosts.BoostRepository;
@@ -23,7 +24,7 @@ public class BoostTypeSingleCell extends BoostTypeCell {
     }
 
     public void setGiveaway(TL_stories.PrepaidGiveaway prepaidGiveaway) {
-        subtitleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray3, resourcesProvider));
+        ThemeBind.textColor(subtitleTextView, Theme.key_dialogTextGray3, resourcesProvider);
         if (prepaidGiveaway instanceof TL_stories.TL_prepaidDiamondsGiveaway) {
             TL_stories.TL_prepaidDiamondsGiveaway prepaid = (TL_stories.TL_prepaidDiamondsGiveaway) prepaidGiveaway;
             avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_STARS);

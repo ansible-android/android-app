@@ -35,6 +35,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.EditTextCell;
 import org.ansible.ui.Cells.TextCheckCell;
 import org.ansible.ui.Components.AnimatedTextView;
@@ -91,8 +92,8 @@ public class StoryLinkSheet extends BottomSheetWithRecyclerListView implements N
         pasteTextView.setPadding(dp(10), 0, dp(10), 0);
         pasteTextView.setGravity(Gravity.CENTER);
         int textColor = getThemedColor(Theme.key_windowBackgroundWhiteBlueText2);
-        pasteTextView.setTextColor(textColor);
-        pasteTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(6), Theme.multAlpha(textColor, .12f), Theme.multAlpha(textColor, .15f)));
+        ThemeBind.textColor(pasteTextView, Theme.key_windowBackgroundWhiteBlueText2, resourcesProvider);
+        ThemeBind.selectorBackground(pasteTextView, Theme.createSimpleSelectorRoundRectDrawable(dp(6), Theme.multAlpha(textColor, .12f), Theme.multAlpha(textColor, .15f)), ThemeBind.multAlpha(Theme.key_windowBackgroundWhiteBlueText2, .12f), ThemeBind.multAlpha(Theme.key_windowBackgroundWhiteBlueText2, .15f), resourcesProvider);
         ScaleStateListAnimator.apply(pasteTextView, .1f, 1.5f);
         urlEditText.addView(pasteTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 26, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0, 4, 24, 3));
 
@@ -572,7 +573,7 @@ public class StoryLinkSheet extends BottomSheetWithRecyclerListView implements N
     @Override
     public void show() {
         super.show();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.didReceivedWebpagesInUpdates);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.didReceivedWebpagesInUpdates);
         AndroidUtilities.runOnUIThread(() -> {
             if (!isShowing()) return;
             urlEditText.editText.requestFocus();

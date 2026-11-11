@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.LayoutHelper;
@@ -28,9 +29,9 @@ public class SubtitleWithCounterCell extends org.ansible.ui.Cells.HeaderCell {
         counterTextView.setGravity(LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT);
         counterTextView.setTextSize(dp(15));
         counterTextView.setTypeface(AndroidUtilities.bold());
-        counterTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, resourcesProvider));
+        ThemeBind.textColor(counterTextView, Theme.key_windowBackgroundWhiteBlueHeader, resourcesProvider);
         addView(counterTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 24, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, 24, 0, 24, 0));
-        setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(this, Theme.key_dialogBackground, resourcesProvider);
     }
 
     public void updateCounter(boolean animated, int count) {

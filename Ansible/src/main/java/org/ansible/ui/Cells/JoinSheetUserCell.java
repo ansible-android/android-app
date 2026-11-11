@@ -20,6 +20,7 @@ import org.ansible.messenger.ContactsController;
 import org.ansible.messenger.LocaleController;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.LayoutHelper;
@@ -39,7 +40,7 @@ public class JoinSheetUserCell extends FrameLayout {
         addView(imageView, LayoutHelper.createFrame(54, 54, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 7, 0, 0));
 
         nameTextView = new TextView(context);
-        nameTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        ThemeBind.textColor(nameTextView, Theme.key_dialogTextBlack);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         nameTextView.setMaxLines(1);
         nameTextView.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);

@@ -9,12 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
 import android.util.TypedValue;
@@ -46,6 +51,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.messenger.Utilities;
 import org.ansible.messenger.browser.Browser;
+import org.ansible.messenger.FileLog;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
@@ -53,6 +59,7 @@ import org.ansible.asnet.tl.TL_account;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.TextCell;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.AlertsCreator;
@@ -276,7 +283,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     public UserSelectorBottomSheet(Context context, int currentAccount, long userId, BirthdayController.BirthdayState state, int type, boolean needFocus, Theme.ResourcesProvider resourcesProvider) {
         super(context, null, needFocus, false, false, resourcesProvider);
         this.currentAccount = currentAccount;
-        fixNavigationBar(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        fixNavigationBarKey(Theme.key_dialogBackground);
         drawDoubleNavigationBar = false;
 
         this.type = type;
@@ -330,7 +337,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
                 }
             }
         };
-        searchField.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
+        ThemeBind.backgroundColor(searchField, Theme.key_dialogBackground, resourcesProvider);
         searchField.setOnSearchTextChange(this::onSearch);
         searchField.setHintText(getString(!selectedIds.isEmpty() || type == TYPE_STARS || type == TYPE_STAR_GIFT || type == TYPE_TRANSFER || type == TYPE_CALL ? R.string.Search : R.string.GiftPremiumUsersSearchHint), false);
 
@@ -349,13 +356,13 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         buttonContainer.setClickable(true);
         buttonContainer.setOrientation(LinearLayout.VERTICAL);
         buttonContainer.setPadding(dp(10), dp(10), dp(10), dp(10));
-        buttonContainer.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground, resourcesProvider);
         if (type == TYPE_CALL) {
             LinearLayout videoLayout = new LinearLayout(context);
             videoLayout.setPadding(dp(12), dp(4), dp(12), dp(4));
             videoLayout.setClipToPadding(false);
             videoLayout.setOrientation(LinearLayout.HORIZONTAL);
-            videoLayout.setBackground(Theme.createRadSelectorDrawable(getThemedColor(Theme.key_listSelector), 6, 6));
+            ThemeBind.selectorBackground(videoLayout, Theme.createRadSelectorDrawable(getThemedColor(Theme.key_listSelector), 6, 6), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
             videoCheckbox = new CheckBox2(context, 24, resourcesProvider);
             videoCheckbox.setColor(Theme.key_featuredStickers_addButton, Theme.key_checkboxDisabled, Theme.key_checkboxCheck);
             videoCheckbox.setDrawUnchecked(true);
@@ -363,7 +370,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             videoCheckbox.setDrawBackgroundAsArc(10);
             videoLayout.addView(videoCheckbox, LayoutHelper.createLinear(26, 26, Gravity.CENTER_VERTICAL, 0, 0, 0, 0));
             TextView videoTextView = new TextView(context);
-            videoTextView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
+            ThemeBind.textColor(videoTextView, Theme.key_dialogTextBlack, resourcesProvider);
             videoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             videoTextView.setText(LocaleController.getString(R.string.ConferenceCallWithVideo));
             videoLayout.addView(videoTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 9, 0, 0, 0));
@@ -423,6 +430,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             if (view instanceof SelectorUserCell) {
                 TLRPC.User user = ((SelectorUserCell) view).getUser();
                 TLRPC.Chat chat = ((SelectorUserCell) view).getChat();
+                
                 if (user == null && chat == null) return;
                 long id = user != null ? user.id : -chat.id;
                 if (type == TYPE_TRANSFER) {
@@ -665,10 +673,10 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.giftsToUserSent);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.userInfoDidLoad);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.contactsDidLoad);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.reloadHints);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.giftsToUserSent);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.userInfoDidLoad);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.contactsDidLoad);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.reloadHints);
     }
 
     @Override
@@ -893,6 +901,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
                 }
             }
         } else {
+            
             final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(UserConfig.getInstance(currentAccount).getClientUserId());
             if (userFull == null) {
                 MessagesController.getInstance(currentAccount).loadFullUser(UserConfig.getInstance(currentAccount).getCurrentUser(), 0, true);
@@ -1093,6 +1102,27 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         onUsersSelectedListener = listener;
         return this;
     }
+
+    
+    
+
+    @Override
+    public void onThemeColorsChanged() {
+        super.onThemeColorsChanged();
+        try {
+            
+            if (recyclerListView != null) {
+                for (int i = 0; i < recyclerListView.getChildCount(); ++i) {
+                    recyclerListView.getChildAt(i).invalidate();
+                }
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    
+    
 
 
     @Override

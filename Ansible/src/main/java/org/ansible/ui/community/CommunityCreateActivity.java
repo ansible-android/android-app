@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
@@ -30,6 +31,7 @@ import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.ProfileSearchCell;
 import org.ansible.ui.Components.AlertsCreator;
 import org.ansible.ui.Components.AvatarDrawable;
@@ -42,12 +44,30 @@ import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
 import org.ansible.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.ansible.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
-import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceColor;
+import org.ansible.utils.glass.source.GlassSourceColor;
 import org.ansible.ui.community.sheet.CommunityAddOptionsSheet;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class CommunityCreateActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
+
+    private GlassSourceColor actionBarSourceColor;
+
+    @Override
+    public void onThemeColorsChanged() {
+        super.onThemeColorsChanged();
+        try {
+            if (actionBarSourceColor != null) {
+                actionBarSourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            }
+            if (actionBar != null) {
+                actionBar.invalidate();
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
     private long dialogId;
     private TLRPC.Chat currentChat;
     private TLRPC.User currentUser;
@@ -100,15 +120,16 @@ public class CommunityCreateActivity extends BaseFragment implements Notificatio
                 }
             }
         });
-        BlurredBackgroundSourceColor sourceColor = new BlurredBackgroundSourceColor();
+        GlassSourceColor sourceColor = new GlassSourceColor();
         sourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+        actionBarSourceColor = sourceColor;
         BlurredBackgroundDrawableViewFactory factory = new BlurredBackgroundDrawableViewFactory(sourceColor);
         actionBar.setBackground(null);
         actionBar.setupGlass(factory, BlurredBackgroundProviderImpl.topPanelChatActivity(resourceProvider));
         actionBar.setGlassOnlyBack();
 
         containerView = new FrameLayout(context);
-        containerView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        ThemeBind.backgroundColor(containerView, Theme.key_windowBackgroundGray);
 
 
         communityHeaderView = new CommunityHeaderView(context, resourceProvider);
@@ -128,6 +149,7 @@ public class CommunityCreateActivity extends BaseFragment implements Notificatio
         listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, this::onLongClick);
         listView.setClipToPadding(false);
         listView.adapter.setApplyBackground(false);
+        listView.adapter.setCompactTextCells(true);
         listView.setSections();
         containerView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         containerView.addView(actionBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
@@ -303,6 +325,11 @@ public class CommunityCreateActivity extends BaseFragment implements Notificatio
         public void updateColors() {
             titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
             subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+        }
+        @Override
+        public void addColorKeys(HashSet<Integer> colors) {
+            colors.add(Theme.key_windowBackgroundWhiteBlackText);
+            colors.add(Theme.key_windowBackgroundWhiteGrayText2);
         }
 
         public void setTitle(CharSequence text) {

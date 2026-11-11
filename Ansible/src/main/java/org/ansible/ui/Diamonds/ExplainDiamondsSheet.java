@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkSpanDrawable;
@@ -73,14 +74,14 @@ public class ExplainDiamondsSheet extends BottomSheetWithRecyclerListView {
         TextView titleView = new TextView(context);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setTypeface(AndroidUtilities.bold());
-        titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
         titleView.setGravity(Gravity.CENTER);
         titleView.setText(getString(R.string.ExplainDiamondsTitle));
         headerView.addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 2, 0, 0));
 
         TextView subtitleView = new TextView(context);
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
         subtitleView.setGravity(Gravity.CENTER);
         subtitleView.setText(getString(R.string.ExplainDiamondsTitle2));
         headerView.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT/*(int) Math.ceil(HintView2.cutInFancyHalf(subtitleView.getText(), subtitleView.getPaint()) / AndroidUtilities.density)*/, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 16, 9, 16, 18));
@@ -91,7 +92,7 @@ public class ExplainDiamondsSheet extends BottomSheetWithRecyclerListView {
         button.setOnClickListener(v -> dismiss());
         buttonContainer.addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL, 10, 10, 10, 10));
         buttonContainer.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
-        buttonContainer.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground);
         containerView.addView(buttonContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
 
         adapter.update(false);
@@ -140,7 +141,7 @@ public class ExplainDiamondsSheet extends BottomSheetWithRecyclerListView {
             setPadding(dp(style == STYLE_SHEET ? 11 : 32), 0, dp(style == STYLE_SHEET ? 11 : 32), dp(style == STYLE_SHEET ? 8 : 12));
 
             imageView = new ImageView(context);
-            imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.SRC_IN));
+            ThemeBind.colorFilter(imageView, Theme.key_windowBackgroundWhiteBlackText, PorterDuff.Mode.SRC_IN);
             imageView.setScaleType(ImageView.ScaleType.CENTER);
             addView(imageView, LayoutHelper.createLinear(24, 24, Gravity.TOP | Gravity.LEFT, 0, 6, 16, 0));
 
@@ -150,14 +151,14 @@ public class ExplainDiamondsSheet extends BottomSheetWithRecyclerListView {
             titleView = new LinkSpanDrawable.LinksTextView(context);
             titleView.setTypeface(AndroidUtilities.bold());
             titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
-            titleView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(titleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
+            ThemeBind.linkTextColor(titleView, Theme.key_chat_messageLinkIn, resourcesProvider);
             textLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL, 0, 0, 0, 3));
 
             subtitleView = new LinkSpanDrawable.LinksTextView(context);
             subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-            subtitleView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(subtitleView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+            ThemeBind.linkTextColor(subtitleView, Theme.key_chat_messageLinkIn, resourcesProvider);
             textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL));
 
             addView(textLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1f, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 0, 0, 0));

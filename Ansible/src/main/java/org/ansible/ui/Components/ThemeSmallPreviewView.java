@@ -25,6 +25,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.ChatThemeController;
 import org.ansible.messenger.DocumentObject;
 import org.ansible.messenger.Emoji;
@@ -42,12 +43,13 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.EmojiThemes;
 import org.ansible.ui.ActionBar.MessageDrawable;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.ActionBar.theme.ITheme;
 import org.ansible.ui.ChatBackgroundDrawable;
 
 import java.util.List;
 
-public class ThemeSmallPreviewView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
+public class ThemeSmallPreviewView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, Theme.Colorable {
 
     private final static int PATTERN_BITMAP_MAXWIDTH = 120;
     private final static int PATTERN_BITMAP_MAXHEIGHT = 140;
@@ -99,7 +101,7 @@ public class ThemeSmallPreviewView extends FrameLayout implements NotificationCe
         this.resourcesProvider = resourcesProvider;
         this.avatarImageReceiver = new ImageReceiver(this);
         this.avatarImageReceiver.setRoundRadius(AndroidUtilities.dp(8));
-        setBackgroundColor(getThemedColor(Theme.key_dialogBackgroundGray));
+        ThemeBind.backgroundColor(this, Theme.key_dialogBackgroundGray, resourcesProvider);
         backupImageView = new BackupImageView(context);
         backupImageView.getImageReceiver().setCrossfadeWithOldImage(true);
         backupImageView.getImageReceiver().setAllowStartLottieAnimation(false);
@@ -415,6 +417,19 @@ public class ThemeSmallPreviewView extends FrameLayout implements NotificationCe
             return bitmap;
         }
         return Bitmap.createScaledBitmap(bitmap, w, h, true);
+    }
+
+    @Override
+    public void updateColors() {
+        try {
+            backgroundFillPaint.setColor(getThemedColor(Theme.key_dialogBackgroundGray));
+            if (noThemeTextPaint != null) {
+                noThemeTextPaint.setColor(getThemedColor(Theme.key_chat_emojiPanelTrendingDescription));
+            }
+            invalidate();
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
     }
 
     @Override
@@ -767,7 +782,7 @@ public class ThemeSmallPreviewView extends FrameLayout implements NotificationCe
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
+        NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.emojiLoaded);
         attached = true;
         if (chatBackgroundDrawable != null) {
             chatBackgroundDrawable.onAttachedToWindow(ThemeSmallPreviewView.this);

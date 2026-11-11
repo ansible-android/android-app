@@ -31,9 +31,26 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.ui.ActionBar.Theme;
 
-public class PagerSlidingTabStrip extends HorizontalScrollView {
+public class PagerSlidingTabStrip extends HorizontalScrollView implements Theme.Colorable {
+
+    @Override
+    public void updateColors() {
+        try {
+            if (tabsContainer == null) {
+                return;
+            }
+            for (int i = 0; i < tabsContainer.getChildCount(); ++i) {
+                final View child = tabsContainer.getChildAt(i);
+                // the tabs re-read their (glass) colors in setSelected
+                child.setSelected(child.isSelected());
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
 
     public interface IconTabProvider {
         Drawable getPageIconDrawable(int position);

@@ -15,6 +15,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkSpanDrawable;
 
@@ -33,11 +34,11 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
 
         setOrientation(VERTICAL);
         setPadding(dp(18), dp(9), dp(18), dp(9));
-        setBackground(Theme.createRoundRectDrawable(dp(24), Theme.getColor(Theme.key_undo_background, resourcesProvider)));
+        ThemeBind.fillBackground(this, Theme.createRoundRectDrawable(dp(24), Theme.getColor(Theme.key_undo_background, resourcesProvider)), ThemeBind.of(Theme.key_undo_background), resourcesProvider);
 
         textView1 = new TextView(context);
         textView1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-        textView1.setTextColor(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider));
+        ThemeBind.textColor(textView1, Theme.key_undo_infoColor, resourcesProvider);
         textView1.setGravity(Gravity.CENTER);
         addView(textView1, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.CENTER, 0, 0, 0, 0));
 
@@ -58,8 +59,8 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
 
         textView1.setText(DiamondsIntroActivity.replaceDiamondsWithPlain(LocaleController.formatString(R.string.Gift2MessageDiamondsInfo, LocaleController.formatNumber(balance.asDecimal(), ',')), .60f));
 
-        textView2.setTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
-        textView2.setLinkTextColor(Theme.getColor(Theme.key_undo_cancelColor, resourcesProvider));
+        ThemeBind.textColor(textView2, Theme.key_undo_cancelColor, resourcesProvider);
+        ThemeBind.linkTextColor(textView2, Theme.key_undo_cancelColor, resourcesProvider);
         textView2.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.Gift2MessageDiamondsInfoLink), () -> {
             new DiamondsIntroActivity.DiamondsOptionsSheet(getContext(), resourcesProvider).show();
         }), true, dp(8f / 3f), dp(1)));
@@ -74,8 +75,8 @@ public class BalanceCloud extends LinearLayout implements NotificationCenter.Not
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         updateBalance(false);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botDiamondsUpdated);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.botDiamondsUpdated);
     }
 
     @Override

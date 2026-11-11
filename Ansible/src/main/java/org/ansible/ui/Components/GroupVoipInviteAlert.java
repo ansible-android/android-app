@@ -35,6 +35,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Adapters.SearchAdapterHelper;
 import org.ansible.ui.Cells.GraySectionCell;
 import org.ansible.ui.Cells.ManageChatTextCell;
@@ -660,7 +661,7 @@ public class GroupVoipInviteAlert extends UsersAlertBase {
                     break;
                 case 1:
                     GraySectionCell cell = new GraySectionCell(mContext);
-                    cell.setBackgroundColor(Theme.getColor(Theme.key_voipgroup_actionBarUnscrolled));
+                    ThemeBind.backgroundColor(cell, Theme.key_voipgroup_actionBarUnscrolled);
                     cell.setTextColor(Theme.key_voipgroup_searchPlaceholder);
                     view = cell;
                     break;
@@ -832,7 +833,7 @@ public class GroupVoipInviteAlert extends UsersAlertBase {
                     break;
                 case 2:
                     GraySectionCell cell = new GraySectionCell(mContext);
-                    cell.setBackgroundColor(Theme.getColor(Theme.key_voipgroup_actionBarUnscrolled));
+                    ThemeBind.backgroundColor(cell, Theme.key_voipgroup_actionBarUnscrolled);
                     cell.setTextColor(Theme.key_voipgroup_searchPlaceholder);
                     view = cell;
                     break;

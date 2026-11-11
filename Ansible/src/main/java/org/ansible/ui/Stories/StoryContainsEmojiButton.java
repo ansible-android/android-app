@@ -22,6 +22,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.BotWebViewVibrationEffect;
 import org.ansible.messenger.FileRefController;
 import org.ansible.messenger.LocaleController;
@@ -33,16 +34,30 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.Vector;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.EmojiPacksAlert;
+import org.ansible.ui.Components.ForegroundColorSpanThemable;
 import org.ansible.ui.Components.LoadingDrawable;
 import org.ansible.ui.Components.TypefaceSpan;
 
 import java.util.ArrayList;
 
-public class StoryContainsEmojiButton extends View {
+public class StoryContainsEmojiButton extends View implements Theme.Colorable {
+
+    @Override
+    public void updateColors() {
+        try {
+            if (textPaint != null) {
+                textPaint.setColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider));
+                invalidate();
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
 
     private final Theme.ResourcesProvider resourcesProvider;
 
@@ -73,7 +88,7 @@ public class StoryContainsEmojiButton extends View {
 
         setMinimumWidth(AndroidUtilities.dp(196));
         setPadding(dp(13), dp(8), dp(13), dp(8));
-        setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 0, 8));
+        ThemeBind.selectorBackground(this, Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 0, 8), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
         setClickable(true);
 
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -297,7 +312,7 @@ public class StoryContainsEmojiButton extends View {
             return;
         }
         SpannableString pack = new SpannableString("x " + set.set.title);
-        pack.setSpan(new ForegroundColorSpan(Theme.getColor(Theme.key_chat_messageLinkIn, loadingDrawable.resourcesProvider)), 0, pack.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        pack.setSpan(new ForegroundColorSpanThemable(Theme.key_chat_messageLinkIn, loadingDrawable.resourcesProvider), 0, pack.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         pack.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, pack.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         TLRPC.Document document = null;
         ArrayList<TLRPC.Document> documents = set.documents;
@@ -329,7 +344,7 @@ public class StoryContainsEmojiButton extends View {
 
     private void set(TLRPC.StickerSetCovered set) {
         SpannableString pack = new SpannableString("x " + set.set.title);
-        pack.setSpan(new ForegroundColorSpan(Theme.getColor(Theme.key_chat_messageLinkIn, loadingDrawable.resourcesProvider)), 0, pack.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        pack.setSpan(new ForegroundColorSpanThemable(Theme.key_chat_messageLinkIn, loadingDrawable.resourcesProvider), 0, pack.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         pack.setSpan(new TypefaceSpan(AndroidUtilities.bold()), 0, pack.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         TLRPC.Document document = set.cover;
         if (document == null && set instanceof TLRPC.TL_stickerSetFullCovered) {

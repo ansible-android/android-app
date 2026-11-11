@@ -23,12 +23,14 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.UserObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.LayoutHelper;
@@ -122,7 +124,21 @@ public class PremiumPreviewGiftSentBottomSheet extends PremiumPreviewBottomSheet
     }
 
     @SuppressLint("ViewConstructor")
-    static class AvatarHolderView extends FrameLayout {
+    static class AvatarHolderView extends FrameLayout implements Theme.Colorable {
+
+        @Override
+        public void updateColors() {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    bgPaint.setColor(Theme.getColor(Theme.key_windowBackgroundGray));
+                } else {
+                    bgPaint.setColor(Theme.getColor(Theme.key_dialogBackground));
+                }
+                invalidate();
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
 
         public static View createAvatarsContainer(Context context, List<TLRPC.User> selectedUsers) {
             FrameLayout avatarsContainer = new FrameLayout(context);
@@ -196,7 +212,21 @@ public class PremiumPreviewGiftSentBottomSheet extends PremiumPreviewBottomSheet
         }
     }
 
-    static class AdditionalCounterView extends View {
+    static class AdditionalCounterView extends View implements Theme.Colorable {
+
+        @Override
+        public void updateColors() {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    paint.setColor(Theme.getColor(Theme.key_windowBackgroundGray));
+                } else {
+                    paint.setColor(Theme.getColor(Theme.key_dialogBackground));
+                }
+                invalidate();
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
 
         TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         int count;
@@ -251,7 +281,7 @@ public class PremiumPreviewGiftSentBottomSheet extends PremiumPreviewBottomSheet
                     }
                 });
                 view.setClipToOutline(true);
-                view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider));
+                ThemeBind.backgroundColor(view, Theme.key_windowBackgroundGray, resourcesProvider);
             }
             ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).topMargin = -dp(6);
         }

@@ -15,6 +15,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.WallpaperCell;
 import org.ansible.ui.PhotoViewer;
 import org.ansible.ui.WallpapersListActivity;
@@ -62,7 +63,7 @@ public class ChatAttachAlertColorsLayout extends ChatAttachAlert.AttachAlertLayo
         gridView.setItemAnimator(null);
         gridView.setLayoutAnimation(null);
         gridView.setVerticalScrollBarEnabled(false);
-        gridView.setGlowColor(getThemedColor(Theme.key_dialogScrollGlow));
+        ThemeBind.listGlowColor(gridView, Theme.key_dialogScrollGlow, resourcesProvider);
         addView(gridView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         gridView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 

@@ -26,6 +26,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.ArchivedStickerSetCell;
 import org.ansible.ui.StickersActivity;
 
@@ -60,7 +61,7 @@ public class StickersArchiveAlert extends AlertDialog.Builder {
         setView(container);
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText);
         textView.setGravity(LayoutHelper.getAbsoluteGravityStart());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setPadding(AndroidUtilities.dp(23), AndroidUtilities.dp(10), AndroidUtilities.dp(23), 0);

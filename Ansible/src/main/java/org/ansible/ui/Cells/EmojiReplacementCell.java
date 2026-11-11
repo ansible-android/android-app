@@ -22,6 +22,7 @@ import org.ansible.messenger.Emoji;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -85,7 +86,7 @@ public class EmojiReplacementCell extends FrameLayout {
         Drawable background = getBackground();
         if (background != null) {
             background.setAlpha(230);
-            background.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_stickersHintPanel), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.drawableColorFilter(this, background, Theme.key_chat_stickersHintPanel, resourcesProvider, PorterDuff.Mode.MULTIPLY);
         }
     }
 

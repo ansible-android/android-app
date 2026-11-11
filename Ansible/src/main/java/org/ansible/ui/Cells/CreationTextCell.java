@@ -11,6 +11,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 
 public class CreationTextCell extends FrameLayout {
 
@@ -30,7 +31,7 @@ public class CreationTextCell extends FrameLayout {
         textView = new SimpleTextView(context);
         textView.setTextSize(16);
         textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText2, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlueText2, resourcesProvider);
         textView.setTag(Theme.key_windowBackgroundWhiteBlueText2);
         addView(textView);
 

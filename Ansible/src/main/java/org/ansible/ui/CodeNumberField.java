@@ -29,6 +29,7 @@ import androidx.dynamicanimation.animation.SpringForce;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.EditTextBoldCursor;
 import org.ansible.ui.Components.SimpleFloatPropertyCompat;
 
@@ -81,7 +82,7 @@ public class CodeNumberField extends EditTextBoldCursor {
     public CodeNumberField(Context context) {
         super(context);
         setBackground(null);
-        setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(this, Theme.key_windowBackgroundWhiteBlackText);
         setMovementMethod(null);
         addTextChangedListener(new TextWatcher() {
             @Override

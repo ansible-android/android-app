@@ -8,6 +8,7 @@
 
 package org.ansible.ui.Cells;
 
+import org.ansible.messenger.FileLog;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -39,12 +40,13 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.CheckBox2;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.PhotoViewer;
 
-public class SharedPhotoVideoCell extends FrameLayout {
+public class SharedPhotoVideoCell extends FrameLayout implements Theme.Colorable {
 
     private PhotoVideoView[] photoVideoViews;
     private MessageObject[] messageObjects;
@@ -429,5 +431,16 @@ public class SharedPhotoVideoCell extends FrameLayout {
             itemWidth = (AndroidUtilities.displaySize.x - (itemsCount - 1) * AndroidUtilities.dp(2)) / itemsCount;
         }
         return itemWidth;
+    }
+
+    @Override
+    public void updateColors() {
+        try {
+            backgroundPaint.setColor(Theme.getColor(Theme.key_sharedMedia_photoPlaceholder));
+            invalidate();
+    
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
     }
 }

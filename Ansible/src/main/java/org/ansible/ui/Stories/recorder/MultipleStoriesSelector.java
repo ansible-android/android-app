@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessagesController;
@@ -448,7 +449,19 @@ public class MultipleStoriesSelector extends FrameLayout {
         }
     }
 
-    public static class EntryView extends View {
+    public static class EntryView extends View implements Theme.Colorable {
+
+        private Theme.ResourcesProvider themeResourcesProvider;
+
+        @Override
+        public void updateColors() {
+            try {
+                fillPaint.setColor(Theme.getColor(Theme.key_featuredStickers_addButton, themeResourcesProvider));
+                invalidate();
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
 
         private final ImageReceiver imageReceiver = new ImageReceiver(this);
 
@@ -470,6 +483,7 @@ public class MultipleStoriesSelector extends FrameLayout {
 
             strokePaint.setStyle(Paint.Style.STROKE);
             strokePaint.setColor(0xFFFFFFFF);
+            themeResourcesProvider = resourcesProvider;
             fillPaint.setColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
 
             imageReceiver.setRoundRadius(dp(6));

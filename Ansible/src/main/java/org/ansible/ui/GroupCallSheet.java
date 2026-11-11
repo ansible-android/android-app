@@ -32,6 +32,7 @@ import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.AvatarsImageView;
 import org.ansible.ui.Components.BackupImageView;
@@ -152,7 +153,7 @@ public class GroupCallSheet {
         linearLayout.setPadding(dp(14), 0, dp(14), dp(8));
 
         final FrameLayout imageBackgroundView = new FrameLayout(context);
-        imageBackgroundView.setBackground(Theme.createCircleDrawable(dp(80), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)));
+        ThemeBind.fillBackground(imageBackgroundView, Theme.createCircleDrawable(dp(80), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)), ThemeBind.of(Theme.key_featuredStickers_addButton), resourcesProvider);
         final ImageView imageView = new ImageView(context);
         imageView.setImageResource(R.drawable.filled_calls_users);
         imageBackgroundView.addView(imageView, LayoutHelper.createFrame(56, 56, Gravity.CENTER));
@@ -210,7 +211,7 @@ public class GroupCallSheet {
         checkboxLayout.setPadding(dp(12), dp(8), dp(12), dp(8));
         checkboxLayout.setClipToPadding(false);
         checkboxLayout.setOrientation(LinearLayout.HORIZONTAL);
-        checkboxLayout.setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 20, 20));
+        ThemeBind.selectorBackground(checkboxLayout, Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 20, 20), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
         final CheckBox2 checkbox = new CheckBox2(context, 24, resourcesProvider);
         checkbox.setColor(Theme.key_radioBackgroundChecked, Theme.key_checkboxDisabled, Theme.key_checkboxCheck);
         checkbox.setDrawUnchecked(true);
@@ -218,7 +219,7 @@ public class GroupCallSheet {
         checkbox.setDrawBackgroundAsArc(10);
         checkboxLayout.addView(checkbox, LayoutHelper.createLinear(26, 26, Gravity.CENTER_VERTICAL, 0, 0, 0, 0));
         final TextView checkboxTextView = new TextView(context);
-        checkboxTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(checkboxTextView, Theme.key_dialogTextBlack, resourcesProvider);
         checkboxTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         checkboxTextView.setText(getString(R.string.GroupCallLinkMicrophone));
         checkboxLayout.addView(checkboxTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 9, 0, 0, 0));

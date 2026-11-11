@@ -18,6 +18,7 @@ import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.INavigationLayout;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Business.QuickRepliesController;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.DialogsActivity;
@@ -28,22 +29,30 @@ import java.util.ArrayList;
 public abstract class UniversalFragment extends BaseFragment {
 
     public UniversalRecyclerView listView;
+    protected FrameLayout contentView;
 
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
-        actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(getTitle());
-        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
+        final ActionBar.ActionBarMenuOnItemClick onItemClick = new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
                     finishFragment();
                 }
             }
-        });
+        };
+        if (simpleActionBar != null) {
+            simpleActionBar.setBackButtonDrawable(new BackDrawable(false));
+            simpleActionBar.setTitle(getTitle());
+            simpleActionBar.setActionBarMenuOnItemClick(onItemClick);
+        } else {
+            actionBar.setBackButtonDrawable(new BackDrawable(false));
+            actionBar.setAllowOverlayTitle(true);
+            actionBar.setTitle(getTitle());
+            actionBar.setActionBarMenuOnItemClick(onItemClick);
+        }
 
-        FrameLayout contentView = new SizeNotifierFrameLayout(context) {
+        contentView = new SizeNotifierFrameLayout(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 super.onMeasure(
@@ -52,7 +61,10 @@ public abstract class UniversalFragment extends BaseFragment {
                 );
             }
         };
-        contentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        if (!useSimpleActionBar()) {
+            // simple screens: the sectioned list draws the screen background itself
+            ThemeBind.backgroundColor(contentView, Theme.key_windowBackgroundGray);
+        }
 
         listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, this::onLongClick) {
             @Override

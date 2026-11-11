@@ -3,6 +3,7 @@ package org.ansible.ui.Components;
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
 
+import org.ansible.messenger.FileLog;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -19,6 +20,7 @@ import org.ansible.messenger.R;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.CheckBoxCell;
 import org.ansible.ui.Components.Premium.boosts.cells.selector.SelectorBtnCell;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
@@ -42,7 +44,7 @@ public class AdminLogFilterAlert2 extends BottomSheetWithRecyclerListView {
         super(fragment.getContext(), fragment, false, false, false, true, ActionBarType.SLIDING, fragment.getResourceProvider());
         topPadding = 0.35f;
         fixNavigationBar();
-        setBackgroundColor(Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider));
+        setBackgroundColor(themedBackgroundColor = Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider));
         setSlidingActionBar();
         setShowHandle(true);
 
@@ -103,7 +105,7 @@ public class AdminLogFilterAlert2 extends BottomSheetWithRecyclerListView {
         buttonContainer.setClickable(true);
         buttonContainer.setOrientation(LinearLayout.VERTICAL);
         buttonContainer.setPadding(dp(10), dp(10), dp(10), dp(10));
-        buttonContainer.setBackgroundColor(Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackgroundGray, resourcesProvider);
         actionButton = new ButtonWithCounterView(getContext(), resourcesProvider);
         actionButton.setRound();
         actionButton.setText(getString(R.string.EventLogFilterApply), false);
@@ -408,5 +410,21 @@ public class AdminLogFilterAlert2 extends BottomSheetWithRecyclerListView {
     @Override
     protected boolean canDismissWithSwipe() {
         return !recyclerListView.canScrollVertically(-1);
+    }
+
+    private int themedBackgroundColor;
+
+    @Override
+    public void onThemeColorsChanged() {
+        try {
+            super.onThemeColorsChanged();
+            final int color = Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider);
+            if (color != themedBackgroundColor) {
+                themedBackgroundColor = color;
+                setBackgroundColor(color);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
     }
 }

@@ -36,6 +36,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.BlobDrawable;
@@ -717,7 +718,7 @@ public class CaptionStory extends CaptionContainerView {
                 .show();
         TextView button = (TextView) d.getButton(DialogInterface.BUTTON_POSITIVE);
         if (button != null) {
-            button.setTextColor(Theme.getColor(Theme.key_text_RedBold, resourcesProvider));
+            ThemeBind.textColor(button, Theme.key_text_RedBold, resourcesProvider);
         }
     }
 

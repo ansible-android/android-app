@@ -15,6 +15,7 @@ import androidx.core.graphics.ColorUtils;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.Premium.PremiumButtonView;
@@ -33,7 +34,7 @@ public class UnlockPremiumView extends FrameLayout {
 
 
         TextView descriptionTextView = new TextView(context);
-        descriptionTextView.setTextColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider), 100));
+        ThemeBind.textColor(descriptionTextView, ThemeBind.alpha(Theme.key_windowBackgroundWhiteBlackText, 100), resourcesProvider);
         descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
         descriptionTextView.setGravity(Gravity.CENTER);
         if (type == TYPE_STICKERS) {

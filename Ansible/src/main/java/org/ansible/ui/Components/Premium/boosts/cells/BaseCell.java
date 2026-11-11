@@ -22,6 +22,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.ColoredImageSpan;
@@ -53,7 +54,7 @@ public abstract class BaseCell extends FrameLayout {
 
         backgroundView = new View(context);
         addView(backgroundView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        backgroundView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(backgroundView, Theme.key_dialogBackground, resourcesProvider);
 
         avatarDrawable.setRoundRadius(AndroidUtilities.dp(40));
 
@@ -71,19 +72,19 @@ public abstract class BaseCell extends FrameLayout {
         NotificationCenter.listenEmojiLoading(titleTextView);
         NotificationCenter.listenEmojiLoading(imageView);
         titleTextView.setTextSize(16);
-        titleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(titleTextView, Theme.key_dialogTextBlack, resourcesProvider);
         titleTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         addView(titleTextView);
 
         subtitleTextView = new SimpleTextView(context);
         subtitleTextView.setTextSize(14);
-        subtitleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(subtitleTextView, Theme.key_dialogTextBlack, resourcesProvider);
         subtitleTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         addView(subtitleTextView);
 
         radioButton = new RadioButton(context);
         radioButton.setSize(AndroidUtilities.dp(20));
-        radioButton.setColor(Theme.getColor(Theme.key_checkboxDisabled, resourcesProvider), Theme.getColor(Theme.key_dialogRadioBackgroundChecked, resourcesProvider));
+        ThemeBind.radioColors(radioButton, Theme.key_checkboxDisabled, Theme.key_dialogRadioBackgroundChecked, resourcesProvider);
         addView(radioButton);
 
         updateLayouts();

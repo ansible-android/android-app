@@ -17,6 +17,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Charts.BaseChartView;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -93,11 +94,11 @@ public class ChartHeaderView extends FrameLayout {
 
 
     public void recolor() {
-        title.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-        dates.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-        datesTmp.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
-        back.setTextColor(Theme.getColor(Theme.key_statisticChartBackZoomColor, resourcesProvider));
-        zoomIcon.setColorFilter(Theme.getColor(Theme.key_statisticChartBackZoomColor, resourcesProvider), PorterDuff.Mode.SRC_IN);
+        ThemeBind.textColor(title, Theme.key_dialogTextBlack, resourcesProvider);
+        ThemeBind.textColor(dates, Theme.key_dialogTextBlack, resourcesProvider);
+        ThemeBind.textColor(datesTmp, Theme.key_dialogTextBlack, resourcesProvider);
+        ThemeBind.textColor(back, Theme.key_statisticChartBackZoomColor, resourcesProvider);
+        ThemeBind.drawableColorFilter(this, zoomIcon, Theme.key_statisticChartBackZoomColor, resourcesProvider, PorterDuff.Mode.SRC_IN);
     }
 
     public void setDates(long start, long end) {

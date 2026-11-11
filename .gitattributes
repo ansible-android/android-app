@@ -1,0 +1,4 @@
+
+# Widget bytecode is checked against the exact shipped script bytes.
+Ansible/src/main/assets/WidgetSandbox/WidgetJS/*.js text eol=lf
+Ansible/src/main/assets/WidgetSandbox/WidgetJS/*.qbc binary

@@ -38,6 +38,7 @@ import org.ansible.messenger.MessageObject;
 import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.Premium.PremiumLockIconView;
@@ -775,7 +776,7 @@ public class EmojiTabsStrip extends ScrollableHorizontalScrollView {
         }
     }
 
-    public class EmojiTabButton extends ViewGroup {
+    public class EmojiTabButton extends ViewGroup implements Theme.Colorable {
         public boolean shown = true;
 
         public Long id;
@@ -1369,6 +1370,36 @@ public class EmojiTabsStrip extends ScrollableHorizontalScrollView {
                 selectT = selected ? 1f : 0f;
                 updateColor();
             }
+        }
+
+        private int lastThemeIconColor, lastThemeIconSelectedColor, lastThemeSelectorColor;
+        private float lastThemeSelectT = -1;
+
+        @Override
+        public void updateColors() {
+            try {
+                // updateColor() creates a color filter: only when a theme color it reads actually changed
+                final int iconColor = Theme.getColor(Theme.key_chat_emojiPanelIcon, resourcesProvider);
+                final int iconSelectedColor = Theme.getColor(Theme.key_chat_emojiPanelIconSelected, resourcesProvider);
+                final int selector = selectorColor();
+                if (iconColor == lastThemeIconColor && iconSelectedColor == lastThemeIconSelectedColor && selector == lastThemeSelectorColor && lastThemeSelectT == selectT) {
+                    return;
+                }
+                lastThemeIconColor = iconColor;
+                lastThemeIconSelectedColor = iconSelectedColor;
+                lastThemeSelectorColor = selector;
+                lastThemeSelectT = selectT;
+                updateColor();
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+
+        @Override
+        public void addColorKeys(java.util.HashSet<Integer> colors) {
+            colors.add(Theme.key_chat_emojiPanelIcon);
+            colors.add(Theme.key_chat_emojiPanelIconSelected);
+            colors.add(Theme.key_glass_defaultIcon);
         }
 
         public void updateColor() {

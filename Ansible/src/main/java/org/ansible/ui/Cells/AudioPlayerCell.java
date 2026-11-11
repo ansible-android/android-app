@@ -42,6 +42,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.AnimatedEmojiSpan;
 import org.ansible.ui.Components.DotDividerSpan;
@@ -53,7 +54,19 @@ import org.ansible.ui.GradientClip;
 
 import java.io.File;
 
-public class AudioPlayerCell extends FrameLayout implements DownloadController.FileDownloadProgressListener {
+public class AudioPlayerCell extends FrameLayout implements DownloadController.FileDownloadProgressListener, Theme.Colorable {
+
+    @Override
+    public void updateColors() {
+        try {
+            if (radialProgress != null && currentMessageObject != null && hasMiniProgress != 0) {
+                radialProgress.setMiniProgressBackgroundColor(getThemedColor(currentMessageObject.isOutOwner() ? Theme.key_chat_outLoader : Theme.key_chat_inLoader));
+                invalidate();
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
 
     private boolean buttonPressed;
     private boolean miniButtonPressed;
@@ -97,8 +110,8 @@ public class AudioPlayerCell extends FrameLayout implements DownloadController.F
         optionsButton = new ImageView(context);
         optionsButton.setScaleType(ImageView.ScaleType.CENTER);
         optionsButton.setImageResource(R.drawable.ic_ab_other);
-        optionsButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.SRC_IN));
-        optionsButton.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_20DP));
+        ThemeBind.colorFilter(optionsButton, Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider, PorterDuff.Mode.SRC_IN);
+        ThemeBind.selectorBackground(optionsButton, Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_20DP), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
         addView(optionsButton, LayoutHelper.createFrame(42, 42, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, 5, 0, 5, 0));
         optionsButton.setOnClickListener(v -> {
 

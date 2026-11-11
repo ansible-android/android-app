@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import org.ansible.asnet.TLRPC;
+import org.ansible.utils.twidget.WidgetMedia;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,11 +96,18 @@ public class AppGlobalConfig {
     public final ConfigInt quickReplyMessagesLimit = ofInt("quick_reply_messages_limit", 20);
     public final ConfigInt ephemeralWelcomeMessagesMax = ofInt("ephemeral_welcome_messages_max", 5);
 
-    public final ConfigBoolean roundVideoRecorder2Allowed = ofBoolean("round_video_recorder_2_allowed", true);
+    public final ConfigBoolean audioRecorderV2Disabled = ofBoolean("android_audio_recorder_v2_disabled", false);
+    public final ConfigBoolean roundVideoRecorderV2Disabled = ofBoolean("android_round_video_recorder_v2_disabled", false);
 
     public final ConfigBoolean diamondsSpendTopUpInvoiceDisabled = ofBoolean("stars_spend_topup_invoice_disabled", false);
 
     public final ConfigStringSet botAllowedSuffixes = ofStringSet("bot_allowed_suffixes", Collections.singleton("bot"));
+
+    public final ConfigLongSet agentBotIds = ofLongSet("agent_bot_ids");
+
+    // Kill switch for message widgets (messageMediaWidget): true and the client runs no widget code at all
+    // (WidgetSandboxSession#disabledByConfig). Kept across restarts; turned back on only by an explicit false.
+    public final ConfigBoolean widgetsDisabled = ofBoolean("widgets_disabled", false);
 
     /* * */
 
@@ -114,6 +122,11 @@ public class AppGlobalConfig {
             }
 
             changed |= configHandler.apply(editor, value.value);
+        }
+
+        if (widgetsDisabled.get()) {
+            // The widgets running now stop at once; new ones never start.
+            WidgetMedia.onKillSwitch();
         }
 
         return changed;
@@ -355,6 +368,73 @@ public class AppGlobalConfig {
         }
     }
 
+    public static class ConfigLongSet {
+        private final Internal handler;
+
+        private ConfigLongSet(String name) {
+            this.handler = new Internal(name);
+        }
+
+        public Set<Long> get() {
+            return handler.value;
+        }
+
+        public boolean contains(long id) {
+            return handler.value.contains(id);
+        }
+
+        private static class Internal implements ConfigInternal {
+            private final String name;
+            private Set<Long> value = Collections.emptySet();
+
+            private Internal(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public boolean apply(SharedPreferences.Editor editor, TLRPC.JSONValue tlValue) {
+                if (tlValue instanceof TLRPC.TL_jsonArray) {
+                    TLRPC.TL_jsonArray array = (TLRPC.TL_jsonArray) tlValue;
+                    HashSet<Long> newValue = new HashSet<>();
+                    for (int i = 0, N = array.value.size(); i < N; i++) {
+                        TLRPC.JSONValue item = array.value.get(i);
+                        if (item instanceof TLRPC.TL_jsonNumber) {
+                            newValue.add((long) ((TLRPC.TL_jsonNumber) item).value);
+                        } else if (item instanceof TLRPC.TL_jsonString) {
+                            try {
+                                newValue.add(Long.parseLong(((TLRPC.TL_jsonString) item).value));
+                            } catch (NumberFormatException ignore) {}
+                        }
+                    }
+                    if (!newValue.equals(value)) {
+                        value = newValue;
+                        HashSet<String> stored = new HashSet<>();
+                        for (Long id : value) {
+                            stored.add(Long.toString(id));
+                        }
+                        editor.putStringSet(name, stored);
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void load(SharedPreferences preferences) {
+                Set<String> stored = preferences.getStringSet(name, null);
+                HashSet<Long> newValue = new HashSet<>();
+                if (stored != null) {
+                    for (String s : stored) {
+                        try {
+                            newValue.add(Long.parseLong(s));
+                        } catch (NumberFormatException ignore) {}
+                    }
+                }
+                value = newValue;
+            }
+        }
+    }
+
     public static class ConfigBoolean {
         private final Internal handler;
 
@@ -440,6 +520,13 @@ public class AppGlobalConfig {
 
     private ConfigString ofString(String name, String defaultValue) {
         ConfigString config = new ConfigString(name, defaultValue);
+        map.put(name, config.handler);
+
+        return config;
+    }
+
+    private ConfigLongSet ofLongSet(String name) {
+        ConfigLongSet config = new ConfigLongSet(name);
         map.put(name, config.handler);
 
         return config;

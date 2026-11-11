@@ -20,6 +20,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.SharedPhotoVideoCell2;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
 import org.ansible.ui.Components.ExtendedGridLayoutManager;
@@ -66,12 +67,12 @@ public class SelectStoriesBottomSheet extends BottomSheetWithRecyclerListView im
         setSlidingActionBar();
 
         buttonContainer = new FrameLayout(getContext());
-        buttonContainer.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground, resourcesProvider);
         buttonContainer.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
         containerView.addView(buttonContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 0, 0, 0, 0));
 
         View buttonShadow = new View(getContext());
-        buttonShadow.setBackgroundColor(Theme.getColor(Theme.key_divider, resourcesProvider));
+        ThemeBind.backgroundColor(buttonShadow, Theme.key_divider, resourcesProvider);
         buttonContainer.addView(buttonShadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1.0f / AndroidUtilities.density, Gravity.FILL_HORIZONTAL | Gravity.TOP));
 
         button = new ButtonWithCounterView(getContext(), resourcesProvider);
@@ -119,7 +120,7 @@ public class SelectStoriesBottomSheet extends BottomSheetWithRecyclerListView im
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         id = storiesList.link();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.storiesListUpdated);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.storiesListUpdated);
     }
 
     @Override

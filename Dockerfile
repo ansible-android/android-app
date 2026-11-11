@@ -36,14 +36,20 @@ RUN sdkmanager \
 CMD mkdir -p /home/source/Ansible/build/outputs/apk && \
     mkdir -p /home/gradle/Ansible/build/outputs/bundle && \
     mkdir -p /home/source/Ansible/build/outputs/native-debug-symbols && \
-    cp -R /home/source/. /home/gradle && \
+    mkdir -p /home/source/Ansible/build/outputs/mapping/Ansible_App \
+             /home/source/Ansible/build/outputs/mapping/Ansible_AppHuawei \
+             /home/source/Ansible/build/outputs/mapping/Ansible_AppStandalone && \
+    tar -C /home/source \
+        --exclude=./.git --exclude=.cxx --exclude=build --exclude=.gradle --exclude=./local.properties \
+        -cf - . | tar -C /home/gradle -xf - && \
     cd /home/gradle && \
     gradle --parallel \
         :Ansible_App:bundleBundleAfatRelease \
         :Ansible_AppStandalone:assembleAfatStandalone \
-        :Ansible_App:assembleAfatRelease \
         :Ansible_AppHuawei:assembleAfatRelease --stacktrace && \
-    cp -R /home/gradle/Ansible_App/build/outputs/apk/. /home/source/Ansible/build/outputs/apk && \
     cp -R /home/gradle/Ansible_AppHuawei/build/outputs/apk/. /home/source/Ansible/build/outputs/apk && \
     cp -R /home/gradle/Ansible_AppStandalone/build/outputs/apk/. /home/source/Ansible/build/outputs/apk && \
-    cp -R /home/gradle/Ansible_App/build/outputs/bundle/. /home/source/Ansible/build/outputs/bundle
+    cp -R /home/gradle/Ansible_App/build/outputs/bundle/. /home/source/Ansible/build/outputs/bundle && \
+    cp -R /home/gradle/Ansible_App/build/outputs/mapping/. /home/source/Ansible/build/outputs/mapping/Ansible_App && \
+    cp -R /home/gradle/Ansible_AppHuawei/build/outputs/mapping/. /home/source/Ansible/build/outputs/mapping/Ansible_AppHuawei && \
+    cp -R /home/gradle/Ansible_AppStandalone/build/outputs/mapping/. /home/source/Ansible/build/outputs/mapping/Ansible_AppStandalone

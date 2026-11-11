@@ -22,6 +22,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.GraySectionCell;
 import org.ansible.ui.Cells.TextCell;
 import org.ansible.ui.Components.LayoutHelper;
@@ -202,7 +203,7 @@ public class SelectorAdapter extends AdapterWithDiffUtils {
                 userCell.setUser(item.user);
                 if (item.subtext != null) {
                     userCell.setSubtitle(item.subtext);
-                    userCell.subtitleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray3, resourcesProvider));
+                    ThemeBind.textColor(userCell.subtitleTextView, Theme.key_dialogTextGray3, resourcesProvider);
                 }
             } else if (item.chat != null) {
                 userCell.setChat(item.chat, getParticipantsCount(item.chat));

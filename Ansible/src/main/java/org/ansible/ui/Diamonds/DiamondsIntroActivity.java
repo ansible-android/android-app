@@ -1,6 +1,7 @@
 package org.ansible.ui.Diamonds;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
+import org.ansible.utils.glass.BaseFragmentSimpleGlass;
 import static org.ansible.messenger.LocaleController.formatPluralString;
 import static org.ansible.messenger.LocaleController.formatPluralStringComma;
 import static org.ansible.messenger.LocaleController.formatPluralStringSpaced;
@@ -58,14 +59,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
-import androidx.core.view.NestedScrollingParent3;
-import androidx.core.view.NestedScrollingParentHelper;
 import androidx.core.view.ViewCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.BillingController;
 import org.ansible.messenger.BirthdayController;
 import org.ansible.messenger.ChatObject;
@@ -101,6 +102,7 @@ import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.AvatarSpan;
 import org.ansible.ui.Cells.HeaderCell;
 import org.ansible.ui.Cells.SessionCell;
@@ -142,6 +144,11 @@ import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
 import org.ansible.ui.Components.ViewPagerFixed;
+import org.ansible.ui.Components.SiblingRecyclerPagerLayout;
+import org.ansible.ui.Components.RecyclerPagerView;
+import org.ansible.ui.Components.blur3.utils.Blur3Utils;
+import org.ansible.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
+import org.ansible.utils.glass.GlassEngine;
 import org.ansible.ui.Components.spoilers.SpoilerEffect2;
 import org.ansible.ui.Gifts.GiftSheet;
 import org.ansible.ui.GradientHeaderActivity;
@@ -164,6 +171,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import me.vkryl.android.animator.BoolAnimator;
+
 public class DiamondsIntroActivity extends GradientHeaderActivity implements NotificationCenter.NotificationCenterDelegate {
 
     private DiamondsBalanceView balanceView;
@@ -172,6 +181,23 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     private GLIconTextureView iconTextureView;
 
     private DiamondsTransactionsLayout transactionsLayout;
+    private SiblingRecyclerPagerLayout scrollCoordinator;
+    private View transactionsBoundary;
+    private View listTopOverlay;
+    private BoolAnimator actionBarShownAnimator;
+    private BoolAnimator tabsPinnedAnimator;
+    private BoolAnimator headerVisibleAnimator;
+    private int transactionsRow = RecyclerView.NO_POSITION;
+    private int contentInsetTop;
+    private int contentInsetBottom;
+    private boolean receivedInsets;
+    private boolean savedTransactionsPinned;
+    private final Runnable alignTransactionsBoundary = () -> {
+        if (scrollCoordinator != null && transactionsRow != RecyclerView.NO_POSITION) {
+            traceTransactions("POSTED_ALIGN");
+            scrollCoordinator.alignCommonBoundaryToPin();
+        }
+    };
     private View emptyLayout;
     private FireworksOverlay fireworksOverlay;
 
@@ -193,11 +219,11 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
     @Override
     public boolean onFragmentCreate() {
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondOptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondTransactionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondSubscriptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botDiamondsUpdated);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondOptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondTransactionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondSubscriptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.botDiamondsUpdated);
         DiamondsController.getInstance(currentAccount).invalidateTransactions(true);
         DiamondsController.getInstance(currentAccount).invalidateSubscriptions(true);
         DiamondsController.getInstance(currentAccount).getOptions();
@@ -206,6 +232,9 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
     @Override
     public void onFragmentDestroy() {
+        if (listView != null) {
+            listView.removeCallbacks(alignTransactionsBoundary);
+        }
         super.onFragmentDestroy();
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondOptionsLoaded);
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondBalanceUpdated);
@@ -214,9 +243,27 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botDiamondsUpdated);
     }
 
+    private void traceTransactions(String event) {
+        if (scrollCoordinator == null) {
+            return;
+        }
+        android.util.Log.d("SiblingScroll", "Stars event=" + event
+                + " row=" + transactionsRow + " hasTransactions=" + hadTransactions
+                + " savedPosition=" + savedScrollPosition + " savedOffset=" + savedScrollOffset
+                + " savedPinned=" + savedTransactionsPinned
+                + " boundaryAttached=" + (transactionsBoundary != null && transactionsBoundary.getParent() != null)
+                + " boundaryTop=" + (transactionsBoundary == null ? 0 : transactionsBoundary.getTop())
+                + " boundaryHeight=" + (transactionsBoundary == null ? 0 : transactionsBoundary.getHeight()));
+        scrollCoordinator.traceNextDraws(event, 30);
+    }
+
     private boolean hadTransactions;
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
+        if (id == NotificationCenter.diamondTransactionsLoaded || id == NotificationCenter.diamondSubscriptionsLoaded
+                || id == NotificationCenter.diamondOptionsLoaded) {
+            traceTransactions("NOTIFICATION_" + id);
+        }
         if (
             id == NotificationCenter.diamondOptionsLoaded
 //            || id == NotificationCenter.starTransactionsLoaded
@@ -225,9 +272,6 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             if (adapter != null) {
                 adapter.update(true);
             }
-            if (savedScrollPosition == 0 && savedScrollOffset < 0) {
-                savedScrollOffset = 0;
-            }
             applyScrolledPosition();
         } else if (id == NotificationCenter.diamondTransactionsLoaded) {
             final DiamondsController c = DiamondsController.getInstance(currentAccount);
@@ -235,10 +279,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 hadTransactions = c.hasTransactions();
                 saveScrollPosition();
                 if (adapter != null) {
-                    adapter.update(true);
-                }
-                if (savedScrollPosition == 0 && savedScrollOffset < 0) {
-                    savedScrollOffset = 0;
+                    // Replace the placeholder without animating the fullscreen boundary.
+                    adapter.update(false);
                 }
                 applyScrolledPosition();
             }
@@ -256,16 +298,55 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     }
 
     @Override
+    protected boolean useSimpleActionBar() {
+        return true;
+    }
+
+    @Override
     public View createView(Context context) {
         useFillLastLayoutManager = false;
         particlesViewHeight = dp(32 + 190 + 16);
-        transactionsLayout = new DiamondsTransactionsLayout(context, currentAccount, 0, getClassGuid(), getResourceProvider());
+        scrollCoordinator = new SiblingRecyclerPagerLayout(context);
+        scrollCoordinator.setDebugLoggingEnabled(true);
+        scrollCoordinator.setCommonInsetsManagedExternally(true);
+        if (!receivedInsets) {
+            contentInsetTop = parentLayout != null && parentLayout.isLayersLayout() ? 0 : AndroidUtilities.statusBarHeight;
+            contentInsetBottom = AndroidUtilities.navigationBarHeight;
+        }
+        scrollCoordinator.setGeometry(new SiblingRecyclerPagerLayout.Geometry() {
+            @Override
+            public float tabsPinnedTop(SiblingRecyclerPagerLayout parent) {
+                // the glass of the tabs (inset by 9.66dp) 7dp under the header's buttons
+                return Math.max(0, BaseFragmentSimpleGlass.getPillGlassTop(contentInsetTop) - dp(9.66f));
+            }
+
+            @Override
+            public int pageBottomInset(SiblingRecyclerPagerLayout parent) {
+                return contentInsetBottom;
+            }
+
+            @Override
+            public void onTabsPinnedChanged(boolean pinned) {
+                if (tabsPinnedAnimator != null) {
+                    tabsPinnedAnimator.setValue(pinned, true);
+                }
+                if (contentView != null) {
+                    contentView.invalidate();
+                }
+            }
+        });
+        scrollCoordinator.setVerticalBleed(
+                -Math.min(-dp(8), contentInsetTop - dp(48)),
+                -Math.min(-dp(8), contentInsetBottom - dp(48)));
+        transactionsBoundary = scrollCoordinator.createBoundarySpacer(context);
+        transactionsLayout = new DiamondsTransactionsLayout(context, currentAccount, 0,
+                getClassGuid(), getResourceProvider(), scrollCoordinator);
         emptyLayout = new View(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 int firstViewHeight;
                 if (DiamondsIntroActivity.this.isLandscapeMode) {
-                    firstViewHeight = DiamondsIntroActivity.this.statusBarHeight + actionBar.getMeasuredHeight() - dp(16);
+                    firstViewHeight = DiamondsIntroActivity.this.statusBarHeight + getHeaderView().getMeasuredHeight() - dp(16);
                 } else {
                     int h = dp(140) + statusBarHeight;
                     if (backgroundView.getMeasuredHeight() + dp(24) > h) {
@@ -279,8 +360,9 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         };
 
         super.createView(context);
+        configureTransactionsGlass();
         if (parentLayout != null && parentLayout.isRightLayout()) {
-            actionBar.setBackButtonImage(R.drawable.ic_ab_close);
+            simpleActionBar.setBackButtonImage(R.drawable.ic_ab_close);
         }
 
         aboveTitleView = new FrameLayout(context);
@@ -322,7 +404,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         diamondBalanceTextView.setTypeface(AndroidUtilities.bold());
         diamondBalanceTextView.setTextSize(dp(32));
         diamondBalanceTextView.setGravity(Gravity.CENTER);
-        diamondBalanceTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourceProvider));
+        ThemeBind.textColor(diamondBalanceTextView, Theme.key_windowBackgroundWhiteBlackText, resourceProvider);
 
         diamondBalanceIcon = new SpannableStringBuilder("S");
         final ImageReceiverSpan diamondBalanceIconSpan = new ImageReceiverSpan(diamondBalanceTextView, currentAccount, 42);
@@ -337,7 +419,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         diamondBalanceTitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         diamondBalanceTitleView.setGravity(Gravity.CENTER);
         diamondBalanceTitleView.setText(LocaleController.getString(R.string.YourDiamondsBalance));
-        diamondBalanceTitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourceProvider));
+        ThemeBind.textColor(diamondBalanceTitleView, Theme.key_windowBackgroundWhiteGrayText2, resourceProvider);
         balanceLayout.addView(diamondBalanceTitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 24, 0, 24, 0));
 
         FrameLayout buttonsLayout = new FrameLayout(getContext());
@@ -469,137 +551,174 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     }
 
     @Override
-    protected ContentView createContentView() {
-        return new NestedFrameLayout(getContext());
+    protected LinearLayoutManager createMainLayoutManager(Context context) {
+        return scrollCoordinator.createCommonLayoutManager(context);
     }
 
-    private class NestedFrameLayout extends ContentView implements NestedScrollingParent3 {
+    @Override
+    protected void attachMainList(Context context) {
+        contentView.addView(scrollCoordinator, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        scrollCoordinator.setCommonRecyclerView(listView, () -> transactionsRow);
+        scrollCoordinator.setPager(transactionsLayout, transactionsLayout.viewPager,
+                page -> ((DiamondsTransactionsLayout.Page) page).listView);
+        scrollCoordinator.setTabs(transactionsLayout.tabsContainer, ViewGroup.LayoutParams.WRAP_CONTENT);
+        transactionsLayout.tabsContainer.setLayoutParams(LayoutHelper.createFrame(
+                LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, -4, 0, -4, 0));
+        applyScrollInsets();
+    }
 
-        private NestedScrollingParentHelper nestedScrollingParentHelper;
-
-        public NestedFrameLayout(Context context) {
-            super(context);
-            nestedScrollingParentHelper = new NestedScrollingParentHelper(this);
-        }
-
-        @Override
-        public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, int[] consumed) {
-            try {
-                if (target == listView && transactionsLayout.isAttachedToWindow()) {
-                    RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                    int bottom = ((View) transactionsLayout.getParent()).getBottom();
-                    if (listView.getHeight() - listView.getPaddingBottom() - bottom >= 0) {
-                        consumed[1] = dyUnconsumed;
-                        innerListView.scrollBy(0, dyUnconsumed);
-                    }
-                }
-            } catch (Throwable e) {
-                FileLog.e(e);
-                AndroidUtilities.runOnUIThread(() -> {
-                    try {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        if (innerListView != null && innerListView.getAdapter() != null) {
-                            innerListView.getAdapter().notifyDataSetChanged();
-                        }
-                    } catch (Throwable e2) {
-
-                    }
-                });
+    private void configureTransactionsGlass() {
+        final FrameLayout captureRoot = contentView;
+        getBaseSimpleGlass().setViews(captureRoot, listView, simpleActionBar, resourceProvider);
+        simpleActionBar.setBackground(null);
+        // Keep the header above the coordinator's fade, and ActionBar controls above the header.
+        backgroundView.bringToFront();
+        simpleActionBar.bringToFront();
+        // The common list translates independently; it cannot bound capture of sibling pages.
+        getBaseSimpleGlass().setClipView(scrollCoordinator);
+        listView.setCaptureSectionsDecoratorAllowed(true);
+        transactionsLayout.setGlassEngine(glassEngine);
+        final SiblingRecyclerPagerLayout.ScrollCapture listCapture = (canvas, position, view) -> {
+            RecyclerListView recyclerListView = (RecyclerListView) view;
+            Blur3Utils.captureRelativeParent(recyclerListView, canvas, position,
+                    recyclerListView, captureRoot);
+        };
+        getBaseSimpleGlass().setCapture((canvas, position) ->
+                scrollCoordinator.captureScrollingContent(canvas, position, listCapture));
+        FrameLayout tabs = transactionsLayout.tabsContainer;
+        listTopOverlay = new View(getContext());
+        listTopOverlay.setAlpha(0f);
+        scrollCoordinator.addView(listTopOverlay, scrollCoordinator.indexOfChild(tabs),
+                LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 0, Gravity.TOP));
+        listTopOverlay.setBackground(getBaseSimpleGlass().createActionBarFadeDrawable(listTopOverlay));
+        actionBarShownAnimator = new BoolAnimator(0, (id, factor, fraction, callee) ->
+                updateListTopOverlayTranslation(), CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+        tabsPinnedAnimator = new BoolAnimator(1, (id, factor, fraction, callee) ->
+                updateListTopOverlayTranslation(), CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+        headerVisibleAnimator = new BoolAnimator(2, (id, factor, fraction, callee) ->
+                listTopOverlay.setAlpha(factor), CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+        actionBarShownAnimator.setValue(listView.canScrollVertically(-1) || simpleActionBar.isActionModeShowed(), false);
+        tabsPinnedAnimator.setValue(scrollCoordinator.areTabsPinned(), false);
+        listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                actionBarShownAnimator.setValue(listView.canScrollVertically(-1)
+                        || simpleActionBar.isActionModeShowed(), true);
             }
+        });
+        updateListTopOverlaySize();
+        tabs.setBackground(getBaseSimpleGlass().factory.create(tabs)
+                .setColorProvider(BlurredBackgroundProviderImpl.simpleActionBar(resourceProvider))
+                .setPadding(dp(9.66f))
+                .setRadius(dp(18)));
+    }
+
+    private void updateListTopOverlaySize() {
+        if (listTopOverlay == null) {
+            return;
         }
-
-        @Override
-        public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
-
+        int height = contentInsetTop + ActionBar.getCurrentActionBarHeight() + dp(44);
+        ViewGroup.LayoutParams params = listTopOverlay.getLayoutParams();
+        if (params.height != height) {
+            params.height = height;
+            listTopOverlay.setLayoutParams(params);
         }
+        updateListTopOverlayTranslation();
+    }
 
-        @Override
-        public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
-            return super.onNestedPreFling(target, velocityX, velocityY);
+    private void updateListTopOverlayTranslation() {
+        if (listTopOverlay == null) {
+            return;
         }
+        float actionBarFactor = actionBarShownAnimator == null ? 0f : actionBarShownAnimator.getFloatValue();
+        float tabsFactor = tabsPinnedAnimator == null ? 0f : tabsPinnedAnimator.getFloatValue();
+        listTopOverlay.setTranslationY(-(1f - actionBarFactor) * ActionBar.getCurrentActionBarHeight()
+                - (1f - tabsFactor) * dp(44));
+    }
 
-        @Override
-        public void onNestedPreScroll(View target, int dx, int dy, int[] consumed, int type) {
-            if (target == listView && transactionsLayout.isAttachedToWindow()) {
-                boolean searchVisible = actionBar.isSearchFieldVisible();
-                int t = ((View) transactionsLayout.getParent()).getTop() - AndroidUtilities.statusBarHeight - ActionBar.getCurrentActionBarHeight();
-                int bottom = ((View) transactionsLayout.getParent()).getBottom();
-                if (dy < 0) {
-                    boolean scrolledInner = false;
-                    if (listView.getHeight() - listView.getPaddingBottom() - bottom >= 0) {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) innerListView.getLayoutManager();
-                        int pos = linearLayoutManager.findFirstVisibleItemPosition();
-                        if (pos != RecyclerView.NO_POSITION) {
-                            RecyclerView.ViewHolder holder = innerListView.findViewHolderForAdapterPosition(pos);
-                            int top = holder != null ? holder.itemView.getTop() : -1;
-                            int paddingTop = innerListView.getPaddingTop();
-                            if (top != paddingTop || pos != 0) {
-                                consumed[1] = pos != 0 ? dy : Math.max(dy, (top - paddingTop));
-                                innerListView.scrollBy(0, dy);
-                                scrolledInner = true;
-                            }
-                        }
-                    }
-                    if (searchVisible) {
-                        if (!scrolledInner && t < 0) {
-                            consumed[1] = dy - Math.max(t, dy);
-                        } else {
-                            consumed[1] = dy;
-                        }
-                    }
-                } else {
-                    if (searchVisible) {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        consumed[1] = dy;
-                        if (t > 0) {
-                            consumed[1] -= dy;
-                        }
-                        if (innerListView != null && consumed[1] > 0) {
-                            innerListView.scrollBy(0, consumed[1]);
-                        }
-                    } else if (dy > 0) {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        if (listView.getHeight() - listView.getPaddingBottom() - bottom >= 0 && innerListView != null && !innerListView.canScrollVertically(1)) {
-                            consumed[1] = dy;
-                            listView.stopScroll();
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public boolean onStartNestedScroll(View child, View target, int axes, int type) {
-            return axes == ViewCompat.SCROLL_AXIS_VERTICAL;
-        }
-
-        @Override
-        public void onNestedScrollAccepted(View child, View target, int axes, int type) {
-            nestedScrollingParentHelper.onNestedScrollAccepted(child, target, axes);
-        }
-
-        @Override
-        public void onStopNestedScroll(View target, int type) {
-            nestedScrollingParentHelper.onStopNestedScroll(target);
-        }
-
-        @Override
-        public void onStopNestedScroll(View child) {
-
+    @Override
+    protected void onHeaderBackgroundVisibilityChanged(boolean visible) {
+        if (headerVisibleAnimator != null && headerVisibleAnimator.getValue() != visible) {
+            headerVisibleAnimator.setValue(visible, true);
         }
     }
 
+    @Override
+    protected View getMainScrollLayer() {
+        return scrollCoordinator;
+    }
+
+    @Override
+    protected float getMainListOffsetY() {
+        return listView == null ? 0f : listView.getY();
+    }
+
+    @Override
+    public void onInsets(int left, int top, int right, int bottom) {
+        receivedInsets = true;
+        contentInsetTop = top;
+        contentInsetBottom = bottom;
+        applyScrollInsets();
+    }
+
+    private void applyScrollInsets() {
+        updateListTopOverlaySize();
+        if (listView == null || scrollCoordinator == null || listView.getLayoutParams() == null) {
+            return;
+        }
+        int marginTop = Math.min(-dp(8), contentInsetTop - dp(48));
+        int marginBottom = Math.min(-dp(8), contentInsetBottom - dp(48));
+        AndroidUtilities.setViewLayoutMargins(listView, 0, marginTop, 0, marginBottom);
+        // The gradient header's spacer already includes the top inset. Only compensate bleed.
+        listView.setPadding(listView.getPaddingLeft(), -marginTop,
+                listView.getPaddingRight(), contentInsetBottom - marginBottom);
+        scrollCoordinator.setVerticalBleed(-marginTop, -marginBottom);
+    }
+
+    @Override
+    public void saveScrollPosition() {
+        traceTransactions("SAVE_BEFORE");
+        super.saveScrollPosition();
+        savedTransactionsPinned = scrollCoordinator != null && scrollCoordinator.areTabsPinned();
+        if (listView != null && savedScrollPosition >= 0) {
+            savedScrollOffset -= listView.getPaddingTop();
+        }
+        traceTransactions("SAVE_AFTER");
+    }
+
+    @Override
+    public void applyScrolledPosition(boolean ignorePaddingView) {
+        traceTransactions("RESTORE_BEFORE");
+        super.applyScrolledPosition(ignorePaddingView);
+        if (savedTransactionsPinned && scrollCoordinator != null && transactionsRow != RecyclerView.NO_POSITION) {
+            scrollCoordinator.alignCommonBoundaryToPin();
+        }
+        savedTransactionsPinned = false;
+        traceTransactions("RESTORE_AFTER");
+    }
+
+    @Override
+    public boolean isSwipeBackEnabled(MotionEvent event) {
+        if (scrollCoordinator == null || event == null
+                || scrollCoordinator.isCommonContentAt(event.getX(), event.getY())) {
+            return super.isSwipeBackEnabled(event);
+        }
+        return !scrollCoordinator.canStartPageSwipe() || transactionsLayout.viewPager.isCurrentTabFirst();
+    }
+
+    /** Returns whether transaction tabs are currently pinned under the ActionBar. */
     public boolean attachedTransactionsLayout() {
-        if (transactionsLayout == null || !(transactionsLayout.getParent() instanceof View))
-            return false;
-        int bottom = ((View) transactionsLayout.getParent()).getBottom();
-        return listView.getHeight() - listView.getPaddingBottom() - bottom >= 0;
+        return scrollCoordinator != null && scrollCoordinator.areTabsPinned();
+    }
+
+    @Override
+    protected boolean usesActionBarFadeBackground() {
+        return true;
     }
 
     @Override
     protected boolean drawActionBarShadow() {
-        return !attachedTransactionsLayout();
+        return false;
     }
 
     @Override
@@ -625,15 +744,31 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 if (type == 1) {
                     drawable.centerOffsetY = dp(32 - 8);
                 }
-                paints = new Paint[20];
+                // type 2, gold glitter: 20 warm gold paints (some white-hot) plus 20 deeper, more contrasting amber-gold
+                // ones, so about half the particles read clearly on a light sheet
+                paints = new Paint[type == 2 ? 40 : 20];
                 for (int i = 0; i < paints.length; ++i) {
                     paints[i] = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFF1BA4ED, 0xFF76D7FE, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN)); // Ansible: синие партиклы (были золотые 0xFFFA5416→0xFFFFC837)
+                    final int col = type == 2
+                        ? (i >= 20 ? ColorUtils.blendARGB(0xFF1BA4ED, 0xFF0084E8, (i - 20) / 19f) : i % 5 == 0 ? 0xFFEAF8FF : ColorUtils.blendARGB(0xFF76D7FE, 0xFF1BA4ED, i / 19f))
+                        : ColorUtils.blendARGB(0xFF1BA4ED, 0xFF76D7FE, i / (float) (paints.length - 1));
+                    paints[i].setColorFilter(new PorterDuffColorFilter(col, PorterDuff.Mode.SRC_IN));
                 }
                 drawable.getPaint = i -> paints[i % paints.length];
                 drawable.size1 = 17;
                 drawable.size2 = 18;
                 drawable.size3 = 19;
+                if (type == 2) {
+                    // smaller, varied, livelier, with longer and varied lives
+                    drawable.goldGlitter = true;
+                    drawable.size1 = 9;
+                    drawable.size2 = 11;
+                    drawable.size3 = 13;
+                    drawable.speedScale = 1.6f;
+                    drawable.minLifeTime = 1400;
+                    drawable.randLifeTime = 1600;
+                    drawable.forceMaxAlpha = true;
+                }
                 drawable.colorKey = Theme.key_windowBackgroundWhiteBlackText;
                 drawable.init();
             }
@@ -696,6 +831,9 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
     private final int BUTTON_AFFILIATE = -4;
 
     public void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+        traceTransactions("FILL_BEFORE");
+        boolean wasPinned = scrollCoordinator != null && scrollCoordinator.areTabsPinned();
+        transactionsRow = RecyclerView.NO_POSITION;
         if (getContext() == null) {
             return;
         }
@@ -730,10 +868,16 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         }
 
         if (hadTransactions = c.hasTransactions()) {
-            items.add(UItem.asFullscreenCustom(transactionsLayout, ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight + dp(24) + AndroidUtilities.navigationBarHeight));
+            transactionsRow = items.size();
+            items.add(UItem.asCustomShadow(transactionsBoundary, LayoutHelper.WRAP_CONTENT));
+            if (wasPinned && listView != null) {
+                listView.removeCallbacks(alignTransactionsBoundary);
+                listView.post(alignTransactionsBoundary);
+            }
         } else {
             items.add(UItem.asCustomShadow(emptyLayout));
         }
+        traceTransactions("FILL_AFTER");
     }
 
     public void onItemClick(UItem item, int position) {
@@ -792,7 +936,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
 
             headerTextView = new TextView(context);
-            headerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(headerTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             headerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             headerTextView.setText(getString(R.string.DiamondsBalance));
             headerTextView.setGravity(Gravity.RIGHT);
@@ -812,7 +956,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             amountTextView.adaptWidth = true;
             amountTextView.getDrawable().setHacks(false, true, true);
             amountTextView.setTypeface(AndroidUtilities.bold());
-            amountTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(amountTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             amountTextView.setTextSize(dp(13));
             amountTextView.setGravity(Gravity.RIGHT);
             amountTextView.setPadding(dp(19), 0, 0, 0);
@@ -834,8 +978,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         protected void onAttachedToWindow() {
             super.onAttachedToWindow();
             updateBalance(false);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botDiamondsUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.botDiamondsUpdated);
         }
 
         @Override
@@ -932,19 +1076,19 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             this.resourcesProvider = resourcesProvider;
 
             diamondDrawableOutline = context.getResources().getDrawable(R.drawable.star_small_outline).mutate();
-            diamondDrawableOutline.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+            ThemeBind.drawableColorFilter(this, diamondDrawableOutline, Theme.key_dialogBackground, resourcesProvider, PorterDuff.Mode.SRC_IN);
             diamondDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
             setWillNotDraw(false);
 
             textView = new TextView(context);
             textView.setTypeface(AndroidUtilities.bold());
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             addView(textView, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.START, 48, 0, 0, 0));
 
             textView2 = new AnimatedTextView(context);
             textView2.setTextSize(dp(15));
-            textView2.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(textView2, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             textView2.setGravity(LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT);
             addView(textView2, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, 21, Gravity.CENTER_VERTICAL | Gravity.END, 0, 0, 19, 0));
         }
@@ -1091,8 +1235,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             lastId = item.id;
             textView.setText(item.text, animated);
             final int color = Theme.getColor(item.accent ? Theme.key_windowBackgroundWhiteBlueText2 : Theme.key_windowBackgroundWhiteBlackText);
-            textView.setTextColor(color);
-            arrowView.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+            ThemeBind.textColor(textView, item.accent ? Theme.key_windowBackgroundWhiteBlueText2 : Theme.key_windowBackgroundWhiteBlackText);
+            ThemeBind.colorFilter(arrowView, item.accent ? Theme.key_windowBackgroundWhiteBlueText2 : Theme.key_windowBackgroundWhiteBlackText, PorterDuff.Mode.SRC_IN);
             if (animated) {
                 arrowView.animate().rotation(item.collapsed ? 0 : 180).setDuration(340).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             } else {
@@ -1106,8 +1250,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             lastId = -1;
             textView.setText(text, animated);
             final int color = Theme.getColor(Theme.key_windowBackgroundWhiteBlueText2);
-            textView.setTextColor(color);
-            arrowView.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlueText2);
+            ThemeBind.colorFilter(arrowView, Theme.key_windowBackgroundWhiteBlueText2, PorterDuff.Mode.SRC_IN);
             if (animated) {
                 arrowView.animate().rotation(collapsed ? 0 : 180).setDuration(340).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             } else {
@@ -1167,6 +1311,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         private final ViewPagerFixed viewPager;
         private final PageAdapter adapter;
         private final ViewPagerFixed.TabsView tabsView;
+        private final FrameLayout tabsContainer;
+        private final SiblingRecyclerPagerLayout scrollCoordinator;
         private final long bot_id;
 
         private static class PageAdapter extends ViewPagerFixed.Adapter {
@@ -1176,6 +1322,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             private final int classGuid;
             private final Theme.ResourcesProvider resourcesProvider;
             private final long bot_id;
+            private RecyclerPagerView coordinatedPager;
+            private GlassEngine glassEngine;
 
             public PageAdapter(Context context, int currentAccount, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 this.context = context;
@@ -1216,13 +1364,47 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 return items.size();
             }
 
-            @Override
-            public View createView(int viewType) {
-                return new Page(context, bot_id, viewType, currentAccount, classGuid, resourcesProvider);
+            private int getTypesMask() {
+                int mask = 0;
+                for (int i = 0; i < items.size(); i++) {
+                    mask |= 1 << items.get(i).intValue;
+                }
+                return mask;
+            }
+
+            private int findType(int type) {
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).intValue == type) {
+                        return i;
+                    }
+                }
+                return 0;
             }
 
             @Override
-            public void bindView(View view, int position, int viewType) {}
+            public View createView(int viewType) {
+                Page page = new Page(context, bot_id, viewType, currentAccount, classGuid, resourcesProvider);
+                if (coordinatedPager != null) {
+                    page.setClipChildren(false);
+                    page.setClipToPadding(false);
+                    page.listView.setClipToPadding(false);
+                    page.listView.setSections(dp(12), dp(16), false);
+                    page.listView.adapter.setApplyBackground(false);
+                    page.listView.setCaptureSectionsDecoratorAllowed(true);
+                    page.listView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+                    if (glassEngine != null) {
+                        glassEngine.addScrolledView(page.listView);
+                    }
+                }
+                return page;
+            }
+
+            @Override
+            public void bindView(View view, int position, int viewType) {
+                if (coordinatedPager != null) {
+                    coordinatedPager.onPageBound(view);
+                }
+            }
 
             @Override
             public int getItemViewType(int position) {
@@ -1245,44 +1427,117 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
-            if (id == NotificationCenter.diamondTransactionsLoaded) {
-                adapter.fill();
-                viewPager.fillTabs(true);
+            if (id == NotificationCenter.diamondTransactionsLoaded && bot_id == 0
+                    || id == NotificationCenter.botDiamondsTransactionsLoaded && bot_id != 0 && (long) args[0] == bot_id) {
+                refreshTabs(true);
             }
         }
 
-        public DiamondsTransactionsLayout(Context context, int currentAccount, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+        public DiamondsTransactionsLayout(Context context, int currentAccount, long bot_id, int classGuid,
+                                         Theme.ResourcesProvider resourcesProvider) {
+            this(context, currentAccount, bot_id, classGuid, resourcesProvider, null);
+        }
+
+        private void refreshTabs(boolean animated) {
+            if (scrollCoordinator == null) {
+                adapter.fill();
+                viewPager.fillTabs(animated);
+                return;
+            }
+            int previousTypes = adapter.getTypesMask();
+            View current = viewPager.getCurrentView();
+            int selectedType = current instanceof Page ? ((Page) current).type : DiamondsController.ALL_TRANSACTIONS;
+            adapter.fill();
+            if (previousTypes != adapter.getTypesMask()) {
+                // Preserve the selected transaction category when a preceding tab is inserted.
+                // Finish the old gesture before remapping positions; page types key the cache.
+                viewPager.onTouchEvent(null);
+                viewPager.setPosition(adapter.findType(selectedType));
+                viewPager.updateCurrent();
+                viewPager.fillTabs(false);
+                scrollCoordinator.onPagerChanged();
+            } else if (!animated) {
+                viewPager.fillTabs(false);
+            }
+        }
+
+        /** Creates a fullscreen transaction host; the coordinator owns the detached tabs container. */
+        public DiamondsTransactionsLayout(Context context, int currentAccount, long bot_id, int classGuid,
+                                       Theme.ResourcesProvider resourcesProvider, SiblingRecyclerPagerLayout coordinator) {
             super(context);
+            scrollCoordinator = coordinator;
             this.currentAccount = currentAccount;
             this.bot_id = bot_id;
 
             setOrientation(VERTICAL);
 
-            viewPager = new ViewPagerFixed(context);
-            viewPager.setAdapter(adapter = new PageAdapter(context, currentAccount, bot_id, classGuid, resourcesProvider));
-            tabsView = viewPager.createTabsView(true, 3);
+            viewPager = coordinator == null ? new ViewPagerFixed(context)
+                    : new RecyclerPagerView(context, resourcesProvider, coordinator);
+            adapter = new PageAdapter(context, currentAccount, bot_id, classGuid, resourcesProvider);
+            adapter.coordinatedPager = coordinator == null ? null : (RecyclerPagerView) viewPager;
+            viewPager.setAdapter(adapter);
+            tabsView = viewPager.createTabsView(true, coordinator == null
+                    ? 3 : ViewPagerFixed.SELECTOR_TYPE_BUBBLE_STYLE);
 
             View separatorView = new View(context);
-            separatorView.setBackgroundColor(Theme.getColor(Theme.key_divider, resourcesProvider));
+            ThemeBind.backgroundColor(separatorView, Theme.key_divider, resourcesProvider);
 
-            addView(tabsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-            addView(separatorView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 1f / AndroidUtilities.density));
+            if (coordinator == null) {
+                tabsContainer = null;
+                addView(tabsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+                addView(separatorView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 1f / AndroidUtilities.density));
+                setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            } else {
+                setClipChildren(false);
+                setClipToPadding(false);
+                tabsContainer = new FrameLayout(context);
+                tabsContainer.setPadding(dp(4), dp(4), dp(4), dp(4));
+                tabsContainer.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP));
+            }
             addView(viewPager, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        }
 
-            setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        /** Returns the pager hosted by this transaction layout. */
+        public ViewPagerFixed getViewPager() {
+            return viewPager;
+        }
+
+        /** Returns detached tabs in coordinated mode; null in legacy embedded mode. */
+        public FrameLayout getTabsContainer() {
+            return tabsContainer;
+        }
+
+        /** Resolves the scrolling list inside a page created by this layout's adapter. */
+        public RecyclerListView getPageListView(View page) {
+            return ((Page) page).listView;
+        }
+
+        /** Registers the pager and existing/future page lists with the screen's glass engine. */
+        public void setGlassEngine(GlassEngine engine) {
+            if (engine == null || adapter.glassEngine == engine) {
+                return;
+            }
+            adapter.glassEngine = engine;
+            engine.addScrolledView(viewPager);
+            for (View page : viewPager.getViewPages()) {
+                if (page instanceof Page) {
+                    engine.addScrolledView(((Page) page).listView);
+                }
+            }
         }
 
         @Override
         protected void onAttachedToWindow() {
-            adapter.fill();
-            viewPager.fillTabs(false);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondTransactionsLoaded);
+            refreshTabs(false);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, bot_id == 0
+                    ? NotificationCenter.diamondTransactionsLoaded : NotificationCenter.botDiamondsTransactionsLoaded);
             super.onAttachedToWindow();
         }
 
         @Override
         protected void onDetachedFromWindow() {
-            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.diamondTransactionsLoaded);
+            NotificationCenter.getInstance(currentAccount).removeObserver(this, bot_id == 0
+                    ? NotificationCenter.diamondTransactionsLoaded : NotificationCenter.botDiamondsTransactionsLoaded);
             super.onDetachedFromWindow();
         }
 
@@ -1356,9 +1611,9 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             protected void onAttachedToWindow() {
                 super.onAttachedToWindow();
                 if (bot_id != 0) {
-                    NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botDiamondsTransactionsLoaded);
+                    NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.botDiamondsTransactionsLoaded);
                 } else {
-                    NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondTransactionsLoaded);
+                    NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondTransactionsLoaded);
                 }
                 listView.adapter.update(false);
             }
@@ -1487,21 +1742,21 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
             titleTextView = new TextView(context);
             titleTextView.setTypeface(AndroidUtilities.bold());
-            titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(titleTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             titleTextView.setEllipsize(TextUtils.TruncateAt.END);
             titleTextView.setSingleLine(true);
             textLayout.addView(titleTextView, titleTextViewParams = LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 4.33f));
 
             subtitleTextView = new LinkSpanDrawable.LinksTextView(context);
-            subtitleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(subtitleTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             subtitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             subtitleTextView.setEllipsize(TextUtils.TruncateAt.END);
             subtitleTextView.setSingleLine(true);
             textLayout.addView(subtitleTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, .33f));
 
             dateTextView = new TextView(context);
-            dateTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(dateTextView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             dateTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             dateTextView.setEllipsize(TextUtils.TruncateAt.END);
             dateTextView.setSingleLine(true);
@@ -1750,11 +2005,11 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
             if (transaction.amount.amount > 0 || transaction.amount.amount == 0 && transaction.amount.nanos > 0) {
                 amountTextView.setVisibility(View.VISIBLE);
-                amountTextView.setTextColor(Theme.getColor(Theme.key_color_green));
+                ThemeBind.textColor(amountTextView, Theme.key_color_green);
                 amountTextView.setText(TextUtils.concat("+", formatDiamondsAmount(transaction.amount), " ", star));
             } else if (transaction.amount.amount < 0 || transaction.amount.amount == 0 && transaction.amount.nanos < 0) {
                 amountTextView.setVisibility(View.VISIBLE);
-                amountTextView.setTextColor(Theme.getColor(Theme.key_color_red));
+                ThemeBind.textColor(amountTextView, Theme.key_color_red);
                 amountTextView.setText(TextUtils.concat(formatDiamondsAmount(transaction.amount), " ", star));
             } else {
                 amountTextView.setVisibility(View.GONE);
@@ -1849,20 +2104,20 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             addView(textLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.CENTER_VERTICAL, 0, 0, 0, 0));
 
             titleView = new SimpleTextView(context);
-            titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(titleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             titleView.setTextSize(16);
             titleView.setTypeface(AndroidUtilities.bold());
             NotificationCenter.listenEmojiLoading(titleView);
             textLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 2));
 
             productView = new TextView(context);
-            productView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(productView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             productView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             productView.setVisibility(View.GONE);
             textLayout.addView(productView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 1));
 
             subtitleView = new TextView(context);
-            subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(subtitleView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 0));
 
@@ -1871,14 +2126,14 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             addView(priceLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.CENTER_VERTICAL, 0, 0, 18, 0));
 
             priceTitleView = new TextView(context);
-            priceTitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(priceTitleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             priceTitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             priceTitleView.setTypeface(AndroidUtilities.bold());
             priceTitleView.setGravity(Gravity.RIGHT);
             priceLayout.addView(priceTitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT, 0, 0, 0, 1));
 
             priceSubtitleView = new TextView(context);
-            priceSubtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(priceSubtitleView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             priceSubtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             priceSubtitleView.setGravity(Gravity.RIGHT);
             priceLayout.addView(priceSubtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT, 0, 0, 0, 0));
@@ -1932,18 +2187,18 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             if (subscription.canceled || subscription.bot_canceled) {
                 subtitleView.setText(formatString(subscription.until_date < now ? R.string.DiamondsSubscriptionExpired : R.string.DiamondsSubscriptionExpires, LocaleController.formatDateChat(subscription.until_date)));
                 priceTitleView.setVisibility(View.GONE);
-                priceSubtitleView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                ThemeBind.textColor(priceSubtitleView, Theme.key_color_red, resourcesProvider);
                 priceSubtitleView.setText(LocaleController.getString(subscription.bot_canceled ? (business ? R.string.DiamondsSubscriptionStatusBizCancelled : R.string.DiamondsSubscriptionStatusBotCancelled) : R.string.DiamondsSubscriptionStatusCancelled));
             } else if (subscription.until_date < now) {
                 subtitleView.setText(formatString(R.string.DiamondsSubscriptionExpired, LocaleController.formatDateChat(subscription.until_date)));
                 priceTitleView.setVisibility(View.GONE);
-                priceSubtitleView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                ThemeBind.textColor(priceSubtitleView, Theme.key_color_red, resourcesProvider);
                 priceSubtitleView.setText(LocaleController.getString(R.string.DiamondsSubscriptionStatusExpired));
             } else {
                 subtitleView.setText(formatString(R.string.DiamondsSubscriptionRenews, LocaleController.formatDateChat(subscription.until_date)));
                 priceTitleView.setVisibility(View.VISIBLE);
                 priceTitleView.setText(replaceDiamondsWithPlain("⭐️ " + Long.toString(subscription.pricing.amount), .8f));
-                priceSubtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+                ThemeBind.textColor(priceSubtitleView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
                 if (subscription.pricing.period == DiamondsController.PERIOD_MONTHLY) {
                     priceSubtitleView.setText(getString(R.string.DiamondsParticipantSubscriptionPerMonth));
                 } else if (subscription.pricing.period == DiamondsController.PERIOD_MINUTE) {
@@ -2113,7 +2368,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             priceView.setPadding(dp(5.33f), 0, dp(5.33f), 0);
             priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFF37A7F6)); // Ansible: синий (был золотой 0xFFEEB402)
             FrameLayout backgroundLayout = new FrameLayout(context);
-            backgroundLayout.setBackground(Theme.createRoundRectDrawable(dp(20), Theme.getColor(Theme.key_dialogBackground, resourcesProvider)));
+            ThemeBind.fillBackground(backgroundLayout, Theme.createRoundRectDrawable(dp(20), Theme.getColor(Theme.key_dialogBackground, resourcesProvider)), ThemeBind.of(Theme.key_dialogBackground), resourcesProvider);
             backgroundLayout.setPadding(dp(1.33f), dp(1.33f), dp(1.33f), dp(1.33f));
             backgroundLayout.addView(priceView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 16, Gravity.FILL));
             imageViewLayout.addView(backgroundLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 16+2.66f, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
@@ -2138,7 +2393,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         TextView titleView = new TextView(context);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setTypeface(AndroidUtilities.bold());
-        titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
         if (subscription_period > 0) {
             titleView.setText(Emoji.replaceEmoji(photo != null ? purchase : getString(R.string.DiamondsConfirmSubscriptionTitle), titleView.getPaint().getFontMetricsInt(), false));
         } else {
@@ -2151,7 +2406,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (photo != null) {
             LinearLayout chipLayout = new LinearLayout(context);
             chipLayout.setOrientation(LinearLayout.HORIZONTAL);
-            chipLayout.setBackground(Theme.createRoundRectDrawable(dp(28), Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider)));
+            ThemeBind.fillBackground(chipLayout, Theme.createRoundRectDrawable(dp(28), Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider)), ThemeBind.of(Theme.key_windowBackgroundGray), resourcesProvider);
             BackupImageView imageView = new BackupImageView(context);
             imageView.setRoundRadius(dp(14));
             AvatarDrawable avatarDrawable = new AvatarDrawable();
@@ -2160,7 +2415,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             chipLayout.addView(imageView, LayoutHelper.createLinear(28, 28));
             TextView textView = new TextView(context);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             textView.setText(UserObject.getUserName(user));
             chipLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 6, 0, 10, 0));
             linearLayout.addView(chipLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 28, Gravity.CENTER_HORIZONTAL, 0, 8, 0, 2));
@@ -2168,7 +2423,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
         TextView subtitleView = new TextView(context);
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
         if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaPaidMedia) {
             long did = messageObject.getDialogId();
             if (messageObject.messageOwner != null && messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.from_id != null) {
@@ -2237,8 +2492,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         linearLayout.addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48));
 
         LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
         footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(subscription_period > 0 ? R.string.DiamondsConfirmSubscriptionTOS : R.string.DiamondsConfirmPurchaseTOS), () -> {
             Browser.openUrl(context, getString(R.string.DiamondsTOSLink));
@@ -2310,7 +2565,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         topView.addView(imageView, LayoutHelper.createFrame(80, 80, Gravity.CENTER));
 
         Drawable diamondBg = context.getResources().getDrawable(R.drawable.star_small_outline);
-        diamondBg.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+        ThemeBind.drawableColorFilter(topView, diamondBg, Theme.key_dialogBackground, resourcesProvider, PorterDuff.Mode.SRC_IN);
         Drawable diamondFg = context.getResources().getDrawable(R.drawable.star_small_inner);
 
         ImageView diamondBgView = new ImageView(context);
@@ -2346,14 +2601,14 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         TextView titleView = new TextView(context);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setTypeface(AndroidUtilities.bold());
-        titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
         titleView.setText(getString(R.string.DiamondsSubscribeTitle));
         titleView.setGravity(Gravity.CENTER);
         linearLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 8, 0, 0));
 
         TextView subtitleView = new TextView(context);
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
         if (chatInvite.subscription_pricing.period == DiamondsController.PERIOD_MONTHLY) {
             subtitleView.setText(AndroidUtilities.replaceTags(formatPluralString("DiamondsSubscribeText", (int) chatInvite.subscription_pricing.amount, chatInvite.title)));
         } else {
@@ -2367,7 +2622,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (!TextUtils.isEmpty(chatInvite.about)) {
             TextView aboutView = new TextView(context);
             aboutView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            aboutView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            ThemeBind.textColor(aboutView, Theme.key_dialogTextBlack, resourcesProvider);
             aboutView.setText(Emoji.replaceEmoji(chatInvite.about, aboutView.getPaint().getFontMetricsInt(), false));
             aboutView.setGravity(Gravity.CENTER);
             linearLayout.addView(aboutView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 6, 0, 22));
@@ -2383,8 +2638,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         }));
         infoTextView.setGravity(Gravity.CENTER);
         infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-        infoTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-        infoTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(infoTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+        ThemeBind.linkTextColor(infoTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
         linearLayout.addView(infoTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 14, 14, 14, 6));
 
         b.setCustomView(linearLayout);
@@ -2414,7 +2669,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             }
         });
 
-        sheet.fixNavigationBar(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        sheet.fixNavigationBarKey(Theme.key_dialogBackground);
         BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
         if (!AndroidUtilities.isTablet() && lastFragment != null && !AndroidUtilities.hasDialogOnTop(lastFragment)) {
             sheet.makeAttached(lastFragment);
@@ -2449,8 +2704,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 }
             }
             super.show();
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondBalanceUpdated);
         }
 
         @Override
@@ -2479,8 +2734,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             itemAnimator.setDurations(350);
             recyclerListView.setItemAnimator(itemAnimator);
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
-            fixNavigationBar(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
+            setBackgroundColorKey(Theme.key_windowBackgroundWhite);
+            fixNavigationBarKey(Theme.key_windowBackgroundWhite);
 
             actionBar.setTitle(getTitle());
 
@@ -2488,15 +2743,15 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
             footerView.setPadding(0, dp(11), 0, dp(11));
             footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-            footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-            footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+            ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
             footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTOS), () -> {
                 Browser.openUrl(getContext(), getString(R.string.DiamondsTOSLink));
             }));
             footerTextView.setGravity(Gravity.CENTER);
             footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
             footerView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
-            footerView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            ThemeBind.backgroundColor(footerView, Theme.key_dialogBackground, resourcesProvider);
 
             fireworksOverlay = new FireworksOverlay(getContext());
             containerView.addView(fireworksOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -2641,8 +2896,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 }
             }
             super.show();
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondBalanceUpdated);
         }
 
         @Override
@@ -2702,7 +2957,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             itemAnimator.setDurations(350);
             recyclerListView.setItemAnimator(itemAnimator);
-            setBackgroundColor(Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider));
+            setBackgroundColorKey(Theme.key_dialogBackgroundGray);
 
             this.diamondsNeeded = diamondsNeeded;
             headerView = new HeaderView(context, currentAccount, resourcesProvider);
@@ -2766,8 +3021,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
             footerView.setPadding(0, dp(11), 0, dp(11));
             footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-            footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-            footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+            ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
             if (canBuy) {
                 footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTOS), () -> {
                     Browser.openUrl(getContext(), getString(R.string.DiamondsTOSLink));
@@ -2778,7 +3033,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             footerTextView.setGravity(Gravity.CENTER);
             footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
             footerView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
-            footerView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            ThemeBind.backgroundColor(footerView, Theme.key_dialogBackground, resourcesProvider);
 
             fireworksOverlay = new FireworksOverlay(getContext());
             containerView.addView(fireworksOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -2952,13 +3207,13 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 titleView = new TextView(context);
                 titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                 titleView.setTypeface(AndroidUtilities.bold());
-                titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
                 titleView.setGravity(Gravity.CENTER);
                 addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 2, 0, 0));
 
                 subtitleView = new TextView(context);
                 subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
                 subtitleView.setGravity(Gravity.CENTER);
                 addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 18));
             }
@@ -3013,8 +3268,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             this.whenPurchased = whenPurchased;
             topPadding = .2f;
 
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondGiftOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondGiftOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondBalanceUpdated);
 
             fixNavigationBar();
             recyclerListView.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
@@ -3030,7 +3285,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             itemAnimator.setDurations(350);
             recyclerListView.setItemAnimator(itemAnimator);
-            setBackgroundColor(Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider));
+            setBackgroundColorKey(Theme.key_dialogBackgroundGray);
 
             headerView = new HeaderView(context, currentAccount, resourcesProvider);
 
@@ -3060,15 +3315,15 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
             footerView.setPadding(0, dp(11), 0, dp(11));
             footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-            footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-            footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+            ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
             footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTOS), () -> {
                 Browser.openUrl(getContext(), getString(R.string.DiamondsTOSLink));
             }));
             footerTextView.setGravity(Gravity.CENTER);
             footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
             footerView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
-            footerView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            ThemeBind.backgroundColor(footerView, Theme.key_dialogBackground, resourcesProvider);
 
             fireworksOverlay = new FireworksOverlay(getContext());
             containerView.addView(fireworksOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -3206,14 +3461,14 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 titleView = new TextView(context);
                 titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                 titleView.setTypeface(AndroidUtilities.bold());
-                titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
                 titleView.setGravity(Gravity.CENTER);
                 addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 2, 0, 0));
 
                 subtitleView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                subtitleView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.linkTextColor(subtitleView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
                 subtitleView.setGravity(Gravity.CENTER);
                 addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 18));
             }
@@ -3332,6 +3587,21 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         AndroidUtilities.replaceMultipleCharSequence(DiamondsController.currency, ssb, spacedDiamond);
         return ssb;
     }
+
+    // swaps gram icon to the white gradient one (for gram icons on top of blue/colored backgrounds)
+    public static <T extends CharSequence> T whiteGram(boolean ton, T cs) {
+        if (!ton || !(cs instanceof Spanned)) return cs;
+        for (ColoredImageSpan span : ((Spanned) cs).getSpans(0, cs.length(), ColoredImageSpan.class)) {
+            if (span.drawable == null || span.drawable instanceof VectorDrawableCompat) continue;
+            final Drawable white = VectorDrawableCompat.create(ApplicationLoader.applicationContext.getResources(), R.drawable.mini_gram_72_white, null);
+            if (white == null) continue;
+            white.setBounds(span.drawable.getBounds());
+            span.drawable = white;
+            span.recolorDrawable = false;
+        }
+        return cs;
+    }
+
     public static SpannableStringBuilder replaceDiamondsWithPlain(CharSequence cs, float scale) {
         return replaceDiamondsWithPlain(cs, scale, null);
     }
@@ -3847,7 +4117,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             }
 
             TextView textView = new TextView(context);
-            textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             textView.setTypeface(AndroidUtilities.bold());
             textView.setGravity(Gravity.CENTER);
@@ -3858,16 +4128,16 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             textView.setTypeface(AndroidUtilities.bold());
             textView.setGravity(Gravity.CENTER);
-            textView.setTextColor(Theme.getColor(positive ? Theme.key_color_green : Theme.key_color_red, resourcesProvider));
+            ThemeBind.textColor(textView, positive ? Theme.key_color_green : Theme.key_color_red, resourcesProvider);
             textView.setText(replaceDiamondsWithPlain(TextUtils.concat((positive ? "+" : ""), formatDiamondsAmount(transaction.amount), " ⭐️"), .8f));
             SpannableStringBuilder s = new SpannableStringBuilder(textView.getText());
             if (transaction.refund) {
                 appendStatus(s, textView, getString(R.string.DiamondsRefunded));
             } else if (transaction.failed) {
-                textView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_red, resourcesProvider);
                 appendStatus(s, textView, getString(R.string.DiamondsFailed));
             } else if (transaction.pending) {
-                textView.setTextColor(Theme.getColor(Theme.key_color_yellow, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_yellow, resourcesProvider);
                 appendStatus(s, textView, getString(R.string.DiamondsPending));
             }
             textView.setText(s);
@@ -3875,10 +4145,10 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
             if (transaction.paid_message && transaction.starref_commission_permille > 0 && positive) {
                 textView = new LinkSpanDrawable.LinksTextView(context);
-                textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setGravity(Gravity.CENTER);
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
                 SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append(AndroidUtilities.replaceTags(formatString(R.string.DiamondsTransactionMessageFeeInfo, percents(1000 - transaction.starref_commission_permille))));
@@ -3914,15 +4184,15 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 final boolean self = UserObject.isUserSelf(user);
 
                 if (self) {
-                    textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+                    ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
                     textView.setText(replaceDiamondsWithPlain(TextUtils.concat(formatDiamondsAmount(transaction.amount), " ⭐️"), .8f));
                 }
 
                 textView = new LinkSpanDrawable.LinksTextView(context);
-                textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                 textView.setGravity(Gravity.CENTER);
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
                 textView.setText(TextUtils.concat(
                     AndroidUtilities.replaceTags(self ? formatString(R.string.ActionGiftDiamondsSubtitle, UserObject.getForcedFirstName(received)) : getString(R.string.ActionGiftDiamondsSubtitleYou)),
@@ -3938,7 +4208,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 36, 0, 36, 4));
             } else if (transaction.description != null && transaction.extended_media.isEmpty()) {
                 textView = new TextView(context);
-                textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                 textView.setGravity(Gravity.CENTER);
                 textView.setText(transaction.description);
@@ -4245,8 +4515,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
                 textView.setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
                 textView.setEllipsize(TextUtils.TruncateAt.END);
-                textView.setTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setSingleLine(true);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
@@ -4292,8 +4562,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
                 textView.setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
                 textView.setEllipsize(TextUtils.TruncateAt.END);
-                textView.setTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
                 SpannableStringBuilder ssb = new SpannableStringBuilder("");
@@ -4380,8 +4650,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         linearLayout.addView(tableView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 16, 17, 16, 0));
 
         LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTransactionTOS), () -> {
             Browser.openUrl(context, getString(R.string.DiamondsTOSLink));
@@ -4474,7 +4744,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         topView.addView(imageView, LayoutHelper.createFrame(100, 100, Gravity.CENTER));
 
         Drawable diamondBg = context.getResources().getDrawable(R.drawable.star_small_outline);
-        diamondBg.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+        ThemeBind.drawableColorFilter(topView, diamondBg, Theme.key_dialogBackground, resourcesProvider, PorterDuff.Mode.SRC_IN);
         Drawable diamondFg = context.getResources().getDrawable(R.drawable.star_small_inner);
 
         if (subscription.photo == null) {
@@ -4494,7 +4764,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         }
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
@@ -4508,7 +4778,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         textView = new TextView(context);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
         if (subscription.pricing.period == DiamondsController.PERIOD_MONTHLY) {
             textView.setText(replaceDiamondsWithPlain(formatString(R.string.DiamondsSubscriptionPrice, subscription.pricing.amount), .8f));
         } else {
@@ -4521,8 +4791,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
         textView.setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
         textView.setEllipsize(TextUtils.TruncateAt.END);
-        textView.setTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
+        ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setSingleLine(true);
         ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
@@ -4578,8 +4848,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         linearLayout.addView(tableView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 17, 0, 0));
 
         textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTransactionTOS), () -> {
             Browser.openUrl(context, getString(R.string.DiamondsTOSLink));
@@ -4590,8 +4860,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         if (now < subscription.until_date) {
             if (subscription.can_refulfill) {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(formatString(bot ? R.string.DiamondsSubscriptionBotRefulfillInfo : R.string.DiamondsSubscriptionRefulfillInfo, LocaleController.formatDateChat(subscription.until_date)));
                 textView.setSingleLine(false);
@@ -4630,8 +4900,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 });
             } else if (subscription.bot_canceled) {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_red, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(getString(business ? R.string.DiamondsSubscriptionBusinessCancelledText : R.string.DiamondsSubscriptionBotCancelledText));
                 textView.setSingleLine(false);
@@ -4640,8 +4910,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 26, 7, 26, 15));
             } else if (subscription.canceled) {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_red, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(getString(R.string.DiamondsSubscriptionCancelledText));
                 textView.setSingleLine(false);
@@ -4676,8 +4946,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
                 }
             } else {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(formatString(R.string.DiamondsSubscriptionCancelInfo, LocaleController.formatDateChat(subscription.until_date)));
                 textView.setSingleLine(false);
@@ -4687,7 +4957,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
                 ButtonWithCounterView button = new ButtonWithCounterView(context, false, resourcesProvider);
                 button.setText(getString(R.string.DiamondsSubscriptionCancel), false);
-                button.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                button.setTextColorKey(Theme.key_color_red);
                 linearLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 button.setOnClickListener(v -> {
                     if (button.isLoading()) return;
@@ -4720,8 +4990,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             }
         } else {
             textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-            textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+            ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             textView.setText(formatString(R.string.DiamondsSubscriptionExpiredInfo, LocaleController.formatDateChat(subscription.until_date)));
             textView.setSingleLine(false);
@@ -4828,7 +5098,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         iconView.setPaused(false);
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
@@ -4872,8 +5142,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         linearLayout.addView(tableView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 16, 17, 16, 0));
 
         textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.DiamondsTransactionTOS), () -> {
             Browser.openUrl(context, getString(R.string.DiamondsTOSLink));
@@ -4945,7 +5215,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setText(getString(R.string.PaidContentTitle));
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(titleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         linearLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 4, 0, 4, 18));
 
         final EditTextBoldCursor editText = new EditTextBoldCursor(context);
@@ -4953,7 +5223,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         editTextContainer.setForceForceUseCenter(true);
         editTextContainer.setText(getString(R.string.PaidContentPriceTitle));
         editTextContainer.setLeftPadding(dp(14 + 22));
-        editText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(editText, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         editText.setCursorSize(AndroidUtilities.dp(20));
         editText.setCursorWidth(1.5f);
         editText.setBackground(null);
@@ -4964,8 +5234,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.setTypeface(Typeface.DEFAULT);
         editText.setSelectAllOnFocus(true);
-        editText.setHighlightColor(Theme.getColor(Theme.key_chat_inTextSelectionHighlight, resourcesProvider));
-        editText.setHandlesColor(Theme.getColor(Theme.key_chat_TextSelectionCursor, resourcesProvider));
+        ThemeBind.highlightColor(editText, Theme.key_chat_inTextSelectionHighlight, resourcesProvider);
+        ThemeBind.editHandlesColor(editText, Theme.key_chat_TextSelectionCursor, resourcesProvider);
         editText.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         editText.setOnFocusChangeListener((v, hasFocus) -> editTextContainer.animateSelection(hasFocus, !TextUtils.isEmpty(editText.getText())));
         LinearLayout editTextLayout = new LinearLayout(context);
@@ -4981,7 +5251,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
 
         TextView subPriceView = new TextView(context);
         subPriceView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        subPriceView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
+        ThemeBind.textColor(subPriceView, Theme.key_windowBackgroundWhiteGrayText3);
         editTextContainer.addView(subPriceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 0, 0, 14, 0));
 
         final LinkSpanDrawable.LinksTextView infoView = new LinkSpanDrawable.LinksTextView(context);
@@ -4989,8 +5259,8 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
             Browser.openUrl(context, getString(R.string.PaidContentInfoLink));
         }), true));
         infoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-        infoView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        infoView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(infoView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(infoView, Theme.key_chat_messageLinkIn, resourcesProvider);
         linearLayout.addView(infoView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 14, 3, 14, 24));
 
         ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider).setRound();
@@ -5395,7 +5665,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         linearLayout.addView(imageView, LayoutHelper.createLinear(160, 160, Gravity.CENTER, 0, -8, 0, 10));
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
@@ -5406,7 +5676,7 @@ public class DiamondsIntroActivity extends GradientHeaderActivity implements Not
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Theme.getColor(Theme.key_text_RedBold, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_text_RedBold, resourcesProvider);
         textView.setText(getString(R.string.Gift2SoldOutSheetSubtitle));
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 4));
 

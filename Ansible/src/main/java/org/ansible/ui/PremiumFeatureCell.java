@@ -22,6 +22,7 @@ import org.ansible.messenger.UserObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RecyclerListView;
@@ -55,12 +56,12 @@ public class PremiumFeatureCell extends FrameLayout {
         title = new SimpleTextView(context);
         title.setTypeface(AndroidUtilities.bold());
         title.setTextSize(15);
-        title.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(title, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         linearLayout.addView(title, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
         description = new TextView(context);
         description.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        description.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+        ThemeBind.textColor(description, Theme.key_windowBackgroundWhiteGrayText, resourcesProvider);
         description.setLineSpacing(AndroidUtilities.dp(2), 1f);
         linearLayout.addView(description, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 1, 0, 0));
 
@@ -73,7 +74,7 @@ public class PremiumFeatureCell extends FrameLayout {
         nextIcon = new ImageView(context);
         nextIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         nextIcon.setImageResource(R.drawable.msg_arrowright);
-        nextIcon.setColorFilter(Theme.getColor(Theme.key_switchTrack, resourcesProvider));
+        ThemeBind.colorFilter(nextIcon, Theme.key_switchTrack, resourcesProvider, PorterDuff.Mode.SRC_ATOP);
         addView(nextIcon, LayoutHelper.createFrame(24, 24, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0, 0, 18, 0));
     }
 
@@ -114,7 +115,7 @@ public class PremiumFeatureCell extends FrameLayout {
         if (documentId == 0) {
             if (premiumDiamond == null) {
                 premiumDiamond = getContext().getResources().getDrawable(R.drawable.msg_premium_prolfilestar).mutate();
-                premiumDiamond.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlueIcon), PorterDuff.Mode.SRC_IN));
+                ThemeBind.drawableColorFilter(this, premiumDiamond, Theme.key_windowBackgroundWhiteBlueIcon, PorterDuff.Mode.SRC_IN);
             }
             imageDrawable.set(premiumDiamond, animated);
         } else {

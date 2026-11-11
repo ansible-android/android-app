@@ -22,6 +22,7 @@ import static org.ansible.ui.Diamonds.DiamondsIntroActivity.replaceDiamondsWithP
 import static org.ansible.ui.Diamonds.DiamondsIntroActivity.setGiftImage;
 import static org.ansible.ui.bots.AffiliateProgramFragment.percents;
 
+import org.ansible.messenger.FileLog;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
@@ -30,6 +31,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.graphics.BitmapShader;
 import android.graphics.Camera;
 import android.graphics.Canvas;
@@ -62,6 +64,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -85,6 +88,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONObject;
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.AppGlobalConfig;
 import org.ansible.messenger.ApplicationLoader;
 import org.ansible.messenger.BillingController;
 import org.ansible.messenger.BirthdayController;
@@ -93,6 +97,7 @@ import org.ansible.messenger.ChatObject;
 import org.ansible.messenger.ChatThemeController;
 import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.Emoji;
+import org.ansible.PhoneFormat.PhoneFormat;
 import org.ansible.messenger.GiftAuctionController;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.LocaleController;
@@ -117,6 +122,7 @@ import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.ActionBar.theme.ThemeKey;
 import org.ansible.ui.Cells.SessionCell;
 import org.ansible.ui.Cells.ShareDialogCell;
@@ -130,6 +136,7 @@ import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.BottomSheetLayouted;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
+import org.ansible.ui.Cells.CheckBoxCell;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.Components.BulletinFactory;
 import org.ansible.ui.Components.ButtonSpan;
@@ -174,6 +181,7 @@ import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 import org.ansible.ui.Stories.recorder.HintView2;
 import org.ansible.ui.Stories.recorder.StoryEntry;
 import org.ansible.ui.Stories.recorder.StoryRecorder;
+import org.ansible.ui.ViewPagerActivity;
 import org.ansible.ui.bots.AffiliateProgramFragment;
 import org.ansible.ui.bots.BotWebViewSheet;
 
@@ -184,6 +192,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements NotificationCenter.NotificationCenterDelegate {
@@ -219,6 +228,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
     private final LinearLayout checkboxLayout;
     private final CheckBox2 checkbox;
     private final TextView checkboxTextView;
+    
+    
 
     private boolean onlyWearInfo;
     private final LinearLayout wearLayout;
@@ -337,6 +348,21 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             }
 
             @Override
+            protected float getAvailableTranslationX() {
+                // setTranslationX() pulls the pages together by the side paddings: this is how far they really go
+                return Math.max(1, getMeasuredWidth() - 2 * backgroundPaddingLeft);
+            }
+
+            @Override
+            protected void dispatchDraw(Canvas canvas) {
+                // the neighbours never show past the sheet's sides (in landscape the screen is wider than the sheet)
+                canvas.save();
+                canvas.clipRect(backgroundPaddingLeft, -getHeight(), getWidth() - backgroundPaddingLeft, getHeight() * 2);
+                super.dispatchDraw(canvas);
+                canvas.restore();
+            }
+
+            @Override
             protected boolean canScroll(MotionEvent e) {
                 return currentPage == null || currentPage.is(PAGE_INFO);
             }
@@ -393,11 +419,14 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         });
         updateViewPager();
         bottomView = new View(context);
-        bottomView.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
-        containerView.addView(bottomView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 50, Gravity.BOTTOM));
+        ThemeBind.backgroundColor(bottomView, Theme.key_dialogBackground, resourcesProvider);
+        final FrameLayout.LayoutParams bottomViewLayoutParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 50, Gravity.BOTTOM);
+        // only under the sheet: in landscape it is narrower than the screen
+        bottomViewLayoutParams.leftMargin = bottomViewLayoutParams.rightMargin = backgroundPaddingLeft;
+        containerView.addView(bottomView, bottomViewLayoutParams);
         containerView.addView(viewPager, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
-        fixNavigationBar(getThemedColor(Theme.key_dialogBackground));
+        fixNavigationBarKey(Theme.key_dialogBackground);
 
         AndroidUtilities.removeFromParent(recyclerListView);
         container.addView(recyclerListView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
@@ -414,11 +443,11 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         container.addView(infoLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL_HORIZONTAL | Gravity.TOP));
 
         beforeTableTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        beforeTableTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2, resourcesProvider));
+        ThemeBind.textColor(beforeTableTextView, Theme.key_dialogTextGray2, resourcesProvider);
         beforeTableTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         beforeTableTextView.setGravity(Gravity.CENTER);
         beforeTableTextView.setLineSpacing(dp(2), 1f);
-        beforeTableTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.linkTextColor(beforeTableTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
         beforeTableTextView.setDisablePaddingsOffsetY(true);
         infoLayout.addView(beforeTableTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 4, -2, 4, 16));
         beforeTableTextView.setVisibility(View.GONE);
@@ -428,15 +457,17 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         infoLayout.addView(tableView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 12));
 
         afterTableTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        afterTableTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2, resourcesProvider));
+        ThemeBind.textColor(afterTableTextView, Theme.key_dialogTextGray2, resourcesProvider);
         afterTableTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         afterTableTextView.setGravity(Gravity.CENTER);
         afterTableTextView.setLineSpacing(dp(2), 1f);
-        afterTableTextView.setLinkTextColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
+        ThemeBind.linkTextColor(afterTableTextView, Theme.key_featuredStickers_addButton, resourcesProvider);
         afterTableTextView.setDisablePaddingsOffsetY(true);
         afterTableTextView.setPadding(dp(5), 0, dp(5), 0);
         infoLayout.addView(afterTableTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 4, 2, 4, 8));
         afterTableTextView.setVisibility(View.GONE);
+
+
 
         upgradeLayout = new LinearLayout(context) {
             @Override
@@ -463,13 +494,13 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         upgradeLayout.addView(upgradeFeatureCells[2], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
         checkboxSeparator = new View(context);
-        checkboxSeparator.setBackgroundColor(Theme.getColor(Theme.key_divider, resourcesProvider));
+        ThemeBind.backgroundColor(checkboxSeparator, Theme.key_divider, resourcesProvider);
         upgradeLayout.addView(checkboxSeparator, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 1.0f / AndroidUtilities.density, Gravity.FILL_HORIZONTAL, 17, -4, 17, 6));
 
         checkboxLayout = new LinearLayout(context);
         checkboxLayout.setPadding(dp(12), dp(8), dp(12), dp(8));
         checkboxLayout.setOrientation(LinearLayout.HORIZONTAL);
-        checkboxLayout.setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 6, 6));
+        ThemeBind.selectorBackground(checkboxLayout, Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 6, 6), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
         checkbox = new CheckBox2(context, 24, resourcesProvider);
         checkbox.setColor(Theme.key_radioBackgroundChecked, Theme.key_checkboxDisabled, Theme.key_checkboxCheck);
         checkbox.setDrawUnchecked(true);
@@ -477,7 +508,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         checkbox.setDrawBackgroundAsArc(10);
         checkboxLayout.addView(checkbox, LayoutHelper.createLinear(26, 26, Gravity.CENTER_VERTICAL, 0, 0, 0, 0));
         checkboxTextView = new TextView(context);
-        checkboxTextView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
+        ThemeBind.textColor(checkboxTextView, Theme.key_dialogTextBlack, resourcesProvider);
         checkboxTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         checkboxTextView.setText(LocaleController.getString(R.string.Gift2AddSenderName));
         checkboxLayout.addView(checkboxTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 9, 0, 0, 0));
@@ -497,14 +528,14 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             container.addView(wearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL_HORIZONTAL | Gravity.TOP));
 
             wearTitle = new TextView(context);
-            wearTitle.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            ThemeBind.textColor(wearTitle, Theme.key_dialogTextBlack, resourcesProvider);
             wearTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             wearTitle.setGravity(Gravity.CENTER);
             wearTitle.setTypeface(AndroidUtilities.bold());
             wearLayout.addView(wearTitle, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL, 20, 0, 20, 0));
 
             wearSubtitle = new TextView(context);
-            wearSubtitle.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            ThemeBind.textColor(wearSubtitle, Theme.key_dialogTextBlack, resourcesProvider);
             wearSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             wearSubtitle.setGravity(Gravity.CENTER);
             wearSubtitle.setText(LocaleController.getString(R.string.Gift2WearSubtitle));
@@ -565,10 +596,10 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         layoutManager.setReverseLayout(reverseLayout = true);
 
         buttonContainer = new FrameLayout(context);
-        buttonContainer.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground, resourcesProvider);
 
         buttonShadow = new View(context);
-        buttonShadow.setBackgroundColor(getThemedColor(Theme.key_divider));
+        ThemeBind.backgroundColor(buttonShadow, Theme.key_divider, resourcesProvider);
         buttonShadow.setAlpha(0.0f);
         buttonContainer.addView(buttonShadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1.0f / AndroidUtilities.density, Gravity.FILL_HORIZONTAL | Gravity.TOP));
 
@@ -582,12 +613,12 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         container.addView(buttonContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 12 + 48 + 12, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
 
         underButtonContainer = new FrameLayout(context);
-        underButtonContainer.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
+        ThemeBind.backgroundColor(underButtonContainer, Theme.key_dialogBackground, resourcesProvider);
 
         underButtonLinkTextView = new LinkSpanDrawable.LinksTextView(context);
         underButtonLinkTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-        underButtonLinkTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
-        underButtonLinkTextView.setLinkTextColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
+        ThemeBind.textColor(underButtonLinkTextView, Theme.key_featuredStickers_addButton, resourcesProvider);
+        ThemeBind.linkTextColor(underButtonLinkTextView, Theme.key_featuredStickers_addButton, resourcesProvider);
         underButtonLinkTextView.setGravity(Gravity.CENTER);
         underButtonContainer.addView(underButtonLinkTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 16, 8, 16, 14));
         container.addView(underButtonContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
@@ -619,6 +650,32 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         container.addView(actionView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
         actionView.prepareBlur(parentDecorView);
+    }
+
+    @Override
+    public void onThemeColorsChanged() {
+        super.onThemeColorsChanged();
+        try {
+            fixNavigationBarKey(Theme.key_dialogBackground);
+            if (topView != null) {
+                topView.updateTitleColors();
+            }
+            if (upgradeIconSpan != null && upgradeIconSpan.drawable instanceof UpgradeIcon) {
+                ((UpgradeIcon) upgradeIconSpan.drawable).setStrokeColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
+                if (button != null) {
+                    button.invalidate();
+                }
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    @Override
+    public void setOverlayNavBarColor(int color) {
+        super.setOverlayNavBarColor(color);
+        // the sheet draws this background itself (bottomView), so it is only as wide as the sheet in landscape
+        AndroidUtilities.setNavigationBarColor(this, Color.TRANSPARENT, false);
     }
 
     private final int[] heights = new int[2];
@@ -817,7 +874,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.diamondUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.diamondUserGiftsLoaded);
     }
 
     @Override
@@ -1012,6 +1069,9 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
     private void onMenuPressed(View btn) {
         final String link = getLink();
         final TL_diamonds.TL_starGiftUnique giftUnique = getUniqueGift();
+        // in landscape the sheet is centered: popup is positioned in window coordinates
+        final int[] containerLocation = new int[2];
+        container.getLocationInWindow(containerLocation);
         ItemOptions.makeOptions(container, resourcesProvider, btn)
             .addIf(getUniqueGift() != null && isMineWithActions(currentAccount, DialogObject.getPeerDialogId(getUniqueGift().owner_id)) && giftsList instanceof DiamondsController.GiftsList && savedStarGift != null && getInputDiamondGift() != null, (savedStarGift != null && savedStarGift.pinned_to_top) ? R.drawable.msg_unpin : R.drawable.msg_pin, getString((savedStarGift != null && savedStarGift.pinned_to_top) ? R.string.Gift2Unpin : R.string.Gift2Pin), () -> {
                 if (savedStarGift.unsaved) {
@@ -1058,12 +1118,14 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             })
             .addIf(giftUnique != null && giftUnique.offer_min_stars > 0, R.drawable.input_suggest_paid_24, getString(R.string.GiftOfferToBuyMenu), this::showGiftOfferSheet)
             .addIf(canSetAsTheme(), R.drawable.msg_colors, getString(R.string.GiftThemesSetIn), this::openSetAsTheme)
-            .addIf(canTransfer(), R.drawable.menu_feature_transfer, getString(R.string.Gift2TransferOption), this::openTransfer)
+            .addIf(myProfile && savedStarGift != null && isMine(currentAccount, dialogId), savedStarGift != null && !savedStarGift.unsaved ? R.drawable.menu_hide_from_profile : R.drawable.menu_show_on_profile, getString(savedStarGift != null && !savedStarGift.unsaved ? R.string.Gift2HideFromProfile : R.string.Gift2ShowOnProfile), this::toggleShow)
+            .addIf(canTransfer(), R.drawable.menu_transfer, getString(R.string.Gift2TransferOption), this::openTransfer)
             .addIf(savedStarGift == null && getDialogId() != 0, R.drawable.msg_view_file, getString(R.string.Gift2ViewInProfile), this::openInProfile)
+            .addIf(canDelete(), R.drawable.msg_delete, getString(R.string.Gift2DeleteOption), true, this::deleteGift)
             .setDrawScrim(false)
             .setOnTopOfScrim()
             .setDimAlpha(0)
-            .translate(0, -dp(2))
+            .translate(containerLocation[0] + backgroundPaddingLeft, -dp(2))
             .show();
     }
 
@@ -1563,7 +1625,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         layout.setOrientation(LinearLayout.VERTICAL);
 
         final FrameLayout topView = new FrameLayout(context);
-        topView.setBackground(Theme.createCircleDrawable(dp(64), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)));
+        ThemeBind.fillBackground(topView, Theme.createCircleDrawable(dp(64), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)), ThemeBind.of(Theme.key_featuredStickers_addButton), resourcesProvider);
         layout.addView(topView, LayoutHelper.createLinear(64, 64, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 6, 0, 0));
 
         final RLottieImageView imageView = new RLottieImageView(context);
@@ -1629,6 +1691,11 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             canvas.drawPath(path, backgroundPaint);
 
             super.dispatchDraw(canvas);
+            if (getPaddingBottom() > 0 && buttonContainer.getVisibility() == View.VISIBLE && buttonContainer.getAlpha() > 0) {
+                backgroundPaint.setAlpha((int) (0xFF * buttonContainer.getAlpha()));
+                canvas.drawRect(backgroundPaddingLeft, getHeight() - getPaddingBottom(), getWidth() - backgroundPaddingLeft, getHeight(), backgroundPaint);
+                backgroundPaint.setAlpha(0xFF);
+            }
             if (dimAlpha != 0) {
                 canvas.drawColor(Theme.multAlpha(0xFF000000, dimAlpha));
             }
@@ -1988,6 +2055,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         private TextPaint messageTextPaint;
         private final LinearLayout buttonsLayout;
         public final Button[] buttons;
+        
 
         private FrameLayout userLayout;
         private BackupImageView avatarView;
@@ -1999,6 +2067,13 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         private final ImageView closeView;
         private final ImageView craftView;
         public final ImageView optionsView;
+        private boolean showOptions;
+        private Boolean optionsViewLight;
+
+        public void setShowOptions(boolean show) {
+            showOptions = show;
+            onSwitchPage(currentPage);
+        }
 
         public static class Button extends FrameLayout {
 
@@ -2028,6 +2103,49 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                     imageView.setImageResource(iconResId);
                 }
                 textView.setText(text);
+                requestLayout();
+            }
+
+            @Override
+            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                fitText(MeasureSpec.getSize(widthMeasureSpec) - dp(8));
+                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            }
+
+            // One line at 12sp, else two tighter lines at 11sp, else one line scaled down.
+            private void fitText(int available) {
+                final CharSequence text = textView.getText();
+                if (available <= 0 || TextUtils.isEmpty(text)) return;
+                final LayoutParams lp = (LayoutParams) textView.getLayoutParams();
+                final TextPaint paint = new TextPaint(textView.getPaint());
+                paint.setTextSize(dp(12));
+                final float width = paint.measureText(text, 0, text.length());
+                float size = 12;
+                int lines = 1;
+                if (width > available) {
+                    paint.setTextSize(dp(11));
+                    boolean wordsFit = true;
+                    for (String word : text.toString().split("\\s+")) {
+                        if (paint.measureText(word) > available) {
+                            wordsFit = false;
+                            break;
+                        }
+                    }
+                    final StaticLayout layout = wordsFit ? new StaticLayout(text, paint, available, Layout.Alignment.ALIGN_CENTER, 1f, 0f, false) : null;
+                    if (layout != null && layout.getLineCount() <= 2) {
+                        size = 11;
+                        lines = 2;
+                    } else {
+                        size = Math.max(8, 12f * available / width);
+                    }
+                }
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
+                textView.setMaxLines(lines);
+                textView.setSingleLine(lines == 1);
+                textView.setLineSpacing(0, lines == 2 ? 0.85f : 1f);
+                textView.setIncludeFontPadding(lines != 2);
+                lp.topMargin = dp(lines == 2 ? 29 : 35);
+                ((LayoutParams) imageView.getLayoutParams()).topMargin = dp(lines == 2 ? 4 : 8);
             }
         }
 
@@ -2063,8 +2181,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             releasedView = new LinkSpanDrawable.LinksTextView(context);
             releasedView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
             releasedView.setGravity(Gravity.CENTER);
-            releasedView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
-            releasedView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(releasedView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
+            ThemeBind.linkTextColor(releasedView, Theme.key_chat_messageLinkIn, resourcesProvider);
             releasedView.setPadding(dp(4), 0, dp(4), 0);
 
             collectionReleasedView = new TextView(context);
@@ -2107,7 +2225,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 buttons[i] = new Button(context);
                 switch (i) {
                     case 0:
-                        buttons[i].set(R.drawable.filled_gift_transfer, getString(R.string.Gift2ActionTransfer), false);
+                        buttons[i].set(R.drawable.filled_gift_send, getString(R.string.Gift2ActionTransfer), false);
                         buttons[i].setOnClickListener(onTransferClick);
                         break;
                     case 1:
@@ -2123,6 +2241,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 ScaleStateListAnimator.apply(buttons[i], .075f, 1.5f);
                 buttonsLayout.addView(buttons[i], LayoutHelper.createLinear(0, 56, 1, Gravity.FILL, 0, 0, i != buttons.length - 1 ? 11 : 0, 0));
             }
+
 
             subtitleContainer = new FrameLayout(context);
             for (int i = 0; i < layout.length; ++i) {
@@ -2149,7 +2268,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                     subtitleView[i] = new LinkSpanDrawable.LinksTextView(context);
                     subtitleView[i].setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
                     subtitleView[i].setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                    subtitleView[i].setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                    ThemeBind.linkTextColor(subtitleView[i], Theme.key_chat_messageLinkIn, resourcesProvider);
                     subtitleView[i].setLineSpacing(dp(2), 1f);
                     subtitleView[i].setDisablePaddingsOffsetY(true);
                     subtitleView[i].setSingleLine();
@@ -2164,7 +2283,11 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                     continue;
                 } else {
                     titleView[i] = new LinkSpanDrawable.LinksTextView(context);
-                    titleView[i].setTextColor(i == PAGE_CRAFT ? 0xFFFFFFFF : Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                    if (i == PAGE_CRAFT) {
+                        titleView[i].setTextColor(0xFFFFFFFF);
+                    } else {
+                        titleView[i].setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                    }
                     titleView[i].setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                     titleView[i].setTypeface(AndroidUtilities.bold());
                     titleView[i].setGravity(Gravity.CENTER);
@@ -2177,10 +2300,14 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
                     if (i == PAGE_INFO) {
                         subtitleView[i] = new LinkSpanDrawable.LinksTextView(context);
-                        subtitleView[i].setTextColor(i == PAGE_CRAFT ? Theme.multAlpha(0xFFFFFFFF, .75f) : Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                        if (i == PAGE_CRAFT) {
+                            subtitleView[i].setTextColor(Theme.multAlpha(0xFFFFFFFF, .75f));
+                        } else {
+                            subtitleView[i].setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                        }
                         subtitleView[i].setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                         subtitleView[i].setGravity(Gravity.CENTER);
-                        subtitleView[i].setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                        ThemeBind.linkTextColor(subtitleView[i], Theme.key_chat_messageLinkIn, resourcesProvider);
                         subtitleView[i].setLineSpacing(dp(2), 1f);
                         subtitleView[i].setDisablePaddingsOffsetY(true);
 
@@ -2190,10 +2317,14 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                         layout[i].addView(subtitleContainer, subtitleViewLayoutParams[i] = LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 24, 0, 24, i == PAGE_CRAFT ? 6 : 0));
                     } else {
                         subtitleView[i] = new LinkSpanDrawable.LinksTextView(context);
-                        subtitleView[i].setTextColor(i == PAGE_CRAFT ? Theme.multAlpha(0xFFFFFFFF, .75f) : Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                        if (i == PAGE_CRAFT) {
+                            subtitleView[i].setTextColor(Theme.multAlpha(0xFFFFFFFF, .75f));
+                        } else {
+                            subtitleView[i].setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                        }
                         subtitleView[i].setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                         subtitleView[i].setGravity(Gravity.CENTER);
-                        subtitleView[i].setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                        ThemeBind.linkTextColor(subtitleView[i], Theme.key_chat_messageLinkIn, resourcesProvider);
                         subtitleView[i].setLineSpacing(dp(2), 1f);
                         subtitleView[i].setDisablePaddingsOffsetY(true);
                         layout[i].addView(subtitleView[i], subtitleViewLayoutParams[i] = LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 24, 0, 24, i == PAGE_CRAFT ? 6 : 0));
@@ -2301,6 +2432,22 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         }
 
         private PageTransition currentPage = new PageTransition(PAGE_INFO, PAGE_INFO, 1.0f);
+
+        void updateTitleColors() {
+            if (titleView == null || subtitleView == null || backdrop == null) {
+                return;
+            }
+            final int black = Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider);
+            for (int i = 0; i < 2; ++i) {
+                if (titleView[i] == null || subtitleView[i] == null) continue;
+                titleView[i].setTextColor(backdrop[Math.min(1, i)] == null ? black : 0xFFFFFFFF);
+                subtitleView[i].setTextColor(i == 0 || i == 2 ? (backdrop[i] == null ? black : backdrop[i].text_color | 0xFF000000) : ColorUtils.blendARGB(backdrop[1] == null ? black : backdrop[1].text_color | 0xFF000000, backdrop[2] == null ? black : backdrop[2].text_color | 0xFF000000, toggleBackdrop));
+            }
+            if (subtitleView.length > PAGE_WEAR && subtitleView[PAGE_WEAR] != null) {
+                subtitleView[PAGE_WEAR].setTextColor(backdrop[0] == null ? black : backdrop[0].text_color | 0xFF000000);
+            }
+        }
+
         public void onSwitchPage(PageTransition p) {
             currentPage = p;
             for (int i = 0; i < layout.length; ++i) {
@@ -2310,8 +2457,20 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             }
             closeView.setAlpha(Math.max(backdrop[0] != null ? p.at(PAGE_WEAR) : 0.0f, backdrop[1] != null ? p.at(PAGE_UPGRADE) : 0.0f));
             closeView.setVisibility(backdrop[0] != null && p.to == PAGE_WEAR || backdrop[1] != null && p.to == PAGE_UPGRADE ? View.VISIBLE : View.GONE);
-            optionsView.setAlpha(lerp(false, backdrop[0] != null, p.at(PAGE_INFO)));
-            optionsView.setVisibility(backdrop[0] != null && p.to == PAGE_INFO ? View.VISIBLE : View.GONE);
+            final boolean hasOptions = backdrop[0] != null || showOptions;
+            optionsView.setAlpha(lerp(false, hasOptions, p.at(PAGE_INFO)));
+            optionsView.setVisibility(hasOptions && p.to == PAGE_INFO ? View.VISIBLE : View.GONE);
+            final boolean optionsLight = backdrop[0] != null;
+            if (optionsViewLight == null || optionsViewLight != optionsLight) {
+                optionsViewLight = optionsLight;
+                if (optionsLight) {
+                    optionsView.clearColorFilter();
+                    optionsView.setBackground(Theme.createSelectorDrawable(0x20ffffff, Theme.RIPPLE_MASK_CIRCLE_20DP));
+                } else {
+                    ThemeBind.colorFilter(optionsView, Theme.key_dialogIcon, resourcesProvider, PorterDuff.Mode.SRC_IN);
+                    ThemeBind.selectorBackground(optionsView, Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_20DP), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
+                }
+            }
             if (!resellPriceViewInProgress) {
                 resellPriceView.setAlpha(lerp(false, hasResellPrice, p.at(PAGE_INFO)));
                 resellPriceView.setScaleX(lerp(0.4f, hasResellPrice ? 1.0f : 0.4f, p.at(PAGE_INFO)));
@@ -2396,6 +2555,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 setPattern(page, findAttribute(gift.attributes, TL_diamonds.starGiftAttributePattern.class), false);
                 subtitleView[page].setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
                 buttonsLayout.setVisibility(withButtons ? View.VISIBLE : View.GONE);
+                buttons[2].setVisibility(View.VISIBLE);
                 if (withButtons) {
                     buttons[1].set(worn ? R.drawable.filled_crown_off : R.drawable.filled_crown_on, getString(worn ? R.string.Gift2ActionWearOff : R.string.Gift2ActionWear), false);
                 }
@@ -2426,13 +2586,13 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
                 if (isOwner) {
                     buttons[0].setAlpha(1.0f);
-                    buttons[0].set(R.drawable.filled_gift_transfer, getString(R.string.Gift2ActionTransfer), false);
+                    buttons[0].set(R.drawable.filled_gift_send, getString(R.string.Gift2ActionTransfer), false);
                 } else {
                     buttons[0].setAlpha(0.5f);
                     SpannableStringBuilder sb = new SpannableStringBuilder("L ");
                     sb.setSpan(new ColoredImageSpan(R.drawable.msg_mini_lock2), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     sb.append(getString(R.string.Gift2ActionTransfer));
-                    buttons[0].set(R.drawable.filled_gift_transfer, sb, false);
+                    buttons[0].set(R.drawable.filled_gift_send, sb, false);
                 }
                 buttons[1].setAlpha(isOwner || isHost ? 1.0f : 0.5f);
                 if (isOwner) {
@@ -2470,6 +2630,14 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 //            }
             onSwitchPage(currentPage);
         }
+
+        
+
+        
+
+        
+
+        
 
         public BackupImageView getUpgradeImageView() {
             return toggleBackdrop > 0.5f ? imageView[2] : imageView[1];
@@ -2898,7 +3066,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                     canvas.restore();
                 }
 
-                for (Button btn : buttons) {
+                for (int i = 0; i < buttons.length; ++i) {
+                    final Button btn = buttons[i];
                     final float bcx = btn.getX() + btn.getWidth() / 2.0f;
                     final int color = backgroundColors[Utilities.clamp(Math.round(bcx / getWidth() * (backgroundColors.length - 1)), backgroundColors.length - 1, 0)];
                     if (Theme.setSelectorDrawableColor(btn.getBackground(), color, false)) {
@@ -3907,7 +4076,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             public TextView(Context context, Theme.ResourcesProvider resourcesProvider) {
                 super(context);
                 this.resourcesProvider = resourcesProvider;
-                setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+                ThemeBind.textColor(this, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
                 setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 setPadding(0, dp(4), 0, dp(4));
             }
@@ -4003,6 +4172,37 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
     private ColoredImageSpan upgradeIconSpan;
     private boolean firstSet = true;
 
+    
+    
+
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    private static String normalizeCollectionName(String name) {
+        return name.replaceAll("[^\\p{L}\\p{N}]", "").toLowerCase(Locale.ROOT);
+    }
+
+    
+    
+
     public DiamondGiftSheet set(String slug, TL_diamonds.TL_starGiftUnique gift, DiamondsController.IGiftsList list) {
         this.slug = slug;
         this.slugDiamondGift = gift;
@@ -4022,6 +4222,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         beforeTableTextView.setVisibility(View.GONE);
         afterTableTextView.setVisibility(View.GONE);
 
+        
+
         if (resale) {
             setButtonTextResale(gift);
             button.setOnClickListener(v -> onBuyPressed());
@@ -4036,6 +4238,10 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
         return this;
     }
+
+    
+
+    
 
     private CharSequence releasedByText(TL_diamonds.StarGift gift) {
         if (gift == null || gift instanceof TL_diamonds.TL_starGiftUnique) return null;
@@ -4119,7 +4325,10 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         } else if (rolling && roller == null) {
             roller = new Roller(topView);
         }
-        topView.setGift(gift, isMineWithActions(currentAccount, owner_id), isMineWithActions(currentAccount, host_id), isWorn(currentAccount, getUniqueGift()), getLink() != null, rolling);
+        final boolean withActions = true;
+        topView.setGift(gift, withActions && isMineWithActions(currentAccount, owner_id), withActions && isMineWithActions(currentAccount, host_id), isWorn(currentAccount, getUniqueGift()), getLink() != null, rolling);
+        topView.setShowOptions(false);
+        
 
         final TL_diamonds.starGiftAttributeModel modelAttribute = findAttribute(gift.attributes, TL_diamonds.starGiftAttributeModel.class);
 
@@ -4277,8 +4486,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 layout.setOrientation(LinearLayout.HORIZONTAL);
 
                 final SpoilersTextView textView = new SpoilersTextView(getContext());
-                textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
                 textView.setGravity(Gravity.LEFT);
                 textView.setText(detailsText);
@@ -4286,9 +4495,9 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
                 final ImageView deleteView = new ImageView(getContext());
                 deleteView.setScaleType(ImageView.ScaleType.CENTER);
-                deleteView.setBackground(Theme.createRadSelectorDrawable(Theme.multAlpha(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), .10f), 6, 6));
+                ThemeBind.selectorBackground(deleteView, Theme.createRadSelectorDrawable(Theme.multAlpha(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), .10f), 6, 6), null, ThemeBind.multAlpha(Theme.key_featuredStickers_addButton, .10f), resourcesProvider);
                 deleteView.setImageResource(R.drawable.menu_delete_old);
-                deleteView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), PorterDuff.Mode.SRC_IN));
+                ThemeBind.colorFilter(deleteView, Theme.key_featuredStickers_addButton, resourcesProvider, PorterDuff.Mode.SRC_IN);
                 ScaleStateListAnimator.apply(deleteView);
                 deleteView.setOnClickListener(v -> {
                     showDeleteDescriptionAlert(detailsText);
@@ -4310,6 +4519,8 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 textView.setGravity(Gravity.CENTER);
             }
         }
+
+        
 
         if (!(roller != null && roller.isRolling())) {
             if (!isMine(currentAccount, DialogObject.getPeerDialogId(gift.owner_id)) && gift.resell_amount != null) {
@@ -4577,6 +4788,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             self = myProfile && selfId == fromId && dialogId >= 0;
 
                     topView.setGift(savedStarGift.gift, false, false, isWorn(currentAccount, getUniqueGift()), getLink() != null, false);
+            topView.setShowOptions(canDelete());
             tableView.clear();
             if (self) {
                 title = savedStarGift.gift_num != 0 && savedStarGift.gift != null && savedStarGift.gift.title != null ?
@@ -4700,13 +4912,13 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         if (savedStarGift.refunded) {
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(getString(R.string.Gift2Refunded));
-            beforeTableTextView.setTextColor(Theme.getColor(Theme.key_text_RedBold, resourcesProvider));
+            ThemeBind.textColor(beforeTableTextView, Theme.key_text_RedBold, resourcesProvider);
         } else if (myProfile && savedStarGift.gift instanceof TL_diamonds.TL_starGift && savedStarGift.name_hidden) {
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(getString(
                 (message != null && !TextUtils.isEmpty(message.text)) ? R.string.Gift2InSenderMessageHidden2 : R.string.Gift2InSenderHidden2)
             );
-            beforeTableTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2, resourcesProvider));
+            ThemeBind.textColor(beforeTableTextView, Theme.key_dialogTextGray2, resourcesProvider);
         } else {
             beforeTableTextView.setVisibility(View.GONE);
         }
@@ -4908,6 +5120,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             final boolean isForChannel = peer != null && DialogObject.getPeerDialogId(peer) < 0;
 
             topView.setGift(stargift, false, false, isWorn(currentAccount, getUniqueGift()), getLink() != null, false);
+            topView.setShowOptions(canDelete());
             if (self) {
                 title = giftNum != 0 && stargift != null && stargift.title != null ?
                     stargift.title + " #" + formatNumber(giftNum, ',') : getString(R.string.Gift2TitleSaved);
@@ -5080,7 +5293,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         if (refunded) {
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(getString(R.string.Gift2Refunded));
-            beforeTableTextView.setTextColor(Theme.getColor(Theme.key_text_RedBold, resourcesProvider));
+            ThemeBind.textColor(beforeTableTextView, Theme.key_text_RedBold, resourcesProvider);
         } else if (name_hidden && !self) {
             beforeTableTextView.setVisibility(View.VISIBLE);
             beforeTableTextView.setText(
@@ -5088,7 +5301,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                     formatString((message != null && !TextUtils.isEmpty(message.text)) ? R.string.Gift2OutSenderMessageHidden2 : R.string.Gift2OutSenderHidden2, DialogObject.getShortName(messageObject.getDialogId())) :
                     getString((message != null && !TextUtils.isEmpty(message.text)) ? R.string.Gift2InSenderMessageHidden2 : R.string.Gift2InSenderHidden2)
             );
-            beforeTableTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2, resourcesProvider));
+            ThemeBind.textColor(beforeTableTextView, Theme.key_dialogTextGray2, resourcesProvider);
         } else {
             beforeTableTextView.setVisibility(View.GONE);
         }
@@ -5439,6 +5652,105 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 }));
             })
             .setNegativeButton(getString(R.string.Cancel), null)
+            .show();
+    }
+
+    private static boolean isDeletableGift(TL_diamonds.StarGift gift) {
+        return gift instanceof TL_diamonds.TL_starGift && !gift.limited && gift.availability_total <= 0 && !gift.auction;
+    }
+
+    private boolean canDelete() {
+        if (getInputDiamondGift() == null) return false;
+        if (messageObject != null) {
+            if (messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift) {
+                final TLRPC.TL_messageActionDiamondGift action = (TLRPC.TL_messageActionDiamondGift) messageObject.messageOwner.action;
+                if (!isDeletableGift(action.gift) || action.converted || action.upgraded || action.refunded || action.convert_stars <= 0) {
+                    return false;
+                }
+                final boolean out = messageObject.isOutOwner();
+                final boolean self = messageObject.getDialogId() == UserConfig.getInstance(currentAccount).getClientUserId();
+                return action.peer == null ? (!out || self) : isMineWithActions(currentAccount, DialogObject.getPeerDialogId(action.peer));
+            }
+        } else if (savedStarGift != null) {
+            return isDeletableGift(savedStarGift.gift) && !savedStarGift.refunded && isMineWithActions(currentAccount, dialogId);
+        }
+        return false;
+    }
+
+    private void deleteGift() {
+        final TL_diamonds.InputSavedStarGift inputDiamondGift = getInputDiamondGift();
+        if (inputDiamondGift == null) return;
+        final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
+        final long giftDialogId;
+        if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift) {
+            final TLRPC.TL_messageActionDiamondGift action = (TLRPC.TL_messageActionDiamondGift) messageObject.messageOwner.action;
+            giftDialogId = action.peer != null ? DialogObject.getPeerDialogId(action.peer) : selfId;
+        } else if (savedStarGift != null) {
+            giftDialogId = dialogId;
+        } else {
+            return;
+        }
+        new AlertDialog.Builder(getContext(), resourcesProvider)
+            .setTitle(getString(R.string.Gift2DeleteOption))
+            .setMessage(getString(R.string.Gift2DeleteText))
+            .setPositiveButton(getString(R.string.Delete), (d, w) -> {
+                final Browser.Progress progress = d.makeButtonLoading(AlertDialog.BUTTON_POSITIVE);
+                progress.init();
+                final TL_diamonds.deleteStarGift req = new TL_diamonds.deleteStarGift();
+                req.stargift = inputDiamondGift;
+                ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
+                    progress.end();
+                    if (res instanceof TLRPC.TL_boolTrue) {
+                        // counters first: the list update below makes the profile re-check them (gifts tab hides at 0)
+                        if (giftDialogId >= 0) {
+                            final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(giftDialogId);
+                            if (userFull != null) {
+                                userFull.stargifts_count = Math.max(0, userFull.stargifts_count - 1);
+                                if (userFull.stargifts_count <= 0) {
+                                    userFull.flags2 &= ~256;
+                                }
+                            }
+                        } else {
+                            final TLRPC.ChatFull chatFull = MessagesController.getInstance(currentAccount).getChatFull(-giftDialogId);
+                            if (chatFull != null) {
+                                chatFull.stargifts_count = Math.max(0, chatFull.stargifts_count - 1);
+                                if (chatFull.stargifts_count <= 0) {
+                                    chatFull.flags2 &= ~262144;
+                                }
+                            }
+                        }
+                        if (savedStarGift != null) {
+                            // opened from the profile gifts: remove it in place, reloading would scroll the list back to the top
+                            DiamondsController.getInstance(currentAccount).removeProfileGiftLocally(giftDialogId, savedStarGift);
+                        } else {
+                            // opened from a chat message: the profile list isn't on screen, reload it (collections included)
+                            DiamondsController.getInstance(currentAccount).invalidateProfileGifts(giftDialogId);
+                        }
+                        dismiss();
+                        // attached to the fragment itself (not this sheet being dismissed), after the sheet closes
+                        AndroidUtilities.runOnUIThread(() -> {
+                            BaseFragment fragment = LaunchActivity.getSafeLastFragment();
+                            // profile inside main tabs: use its own bulletin delegate, which lifts above the gifts button
+                            if (fragment instanceof ViewPagerActivity) {
+                                final BaseFragment visibleFragment = ((ViewPagerActivity) fragment).getCurrentVisibleFragment();
+                                if (visibleFragment != null) {
+                                    fragment = visibleFragment;
+                                }
+                            }
+                            (fragment != null ? BulletinFactory.of(fragment) : BulletinFactory.global())
+                                .createSimpleBulletin(R.raw.ic_delete, getString(R.string.Gift2Deleted))
+                                .ignoreDetach()
+                                .show();
+                        });
+                    } else if (err != null) {
+                        getBulletinFactory().showForError(err);
+                    } else {
+                        getBulletinFactory().createErrorBulletin(getString(R.string.UnknownError)).show(false);
+                    }
+                }));
+            })
+            .setNegativeButton(getString(R.string.Cancel), null)
+            .makeRed(AlertDialog.BUTTON_POSITIVE)
             .show();
     }
 
@@ -6397,6 +6709,133 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         sheet[0].show();
     }
 
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    // Attached to the fragment itself (not a sheet that is being dismissed), after the sheets close
+    private static void showGiftMovedBulletin(TLRPC.Document document, CharSequence text, Runnable onView) {
+        AndroidUtilities.runOnUIThread(() -> {
+            final BaseFragment fragment = LaunchActivity.getSafeLastFragment();
+            final BulletinFactory factory = fragment != null ? BulletinFactory.of(fragment) : BulletinFactory.global();
+            final Bulletin bulletin;
+            if (onView == null) {
+                bulletin = document != null ?
+                    factory.createEmojiBulletin(document, text) :
+                    factory.createSimpleBulletin(R.raw.contact_check, text);
+            } else {
+                bulletin = document != null ?
+                    factory.createEmojiBulletin(document, text, getString(R.string.Gift2UniqueView), onView) :
+                    factory.createSimpleBulletin(R.raw.contact_check, text, getString(R.string.Gift2UniqueView), onView);
+            }
+            bulletin.ignoreDetach().show();
+        });
+    }
+
+    private boolean keepOnProfile = true;
+    
+
+    private void addPathCrumb(LinearLayout pathView, int iconResId, int iconSize, int iconColorKey, CharSequence text, boolean separator) {
+        final ImageView iconView = new ImageView(getContext());
+        iconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        iconView.setImageResource(iconResId);
+        ThemeBind.colorFilter(iconView, iconColorKey, resourcesProvider, PorterDuff.Mode.SRC_IN);
+        pathView.addView(iconView, LayoutHelper.createLinear(iconSize, iconSize, Gravity.CENTER_VERTICAL, iconSize < 15 ? 1 : 0, 0, iconSize < 15 ? 1 : 0, 0));
+
+        final TextView textView = new TextView(getContext());
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        ThemeBind.textColor(textView, Theme.key_dialogTextGray3, resourcesProvider);
+        textView.setText(text);
+        pathView.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 4, 0, 0, 0));
+
+        if (separator) {
+            final ImageView arrowView = new ImageView(getContext());
+            arrowView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            arrowView.setImageResource(R.drawable.msg_mini_topicarrow);
+            ThemeBind.colorFilter(arrowView, Theme.key_dialogTextGray3, resourcesProvider, PorterDuff.Mode.SRC_IN);
+            pathView.addView(arrowView, LayoutHelper.createLinear(11, 11, Gravity.CENTER_VERTICAL, 5, 0, 2, 0));
+        }
+    }
+
+    // 3 lines of 4 chunks, chunks colored in a checkerboard pattern
+    private static CharSequence formatAddressGrid(String address, int accentColor, int grayColor) {
+        final SpannableStringBuilder sb = new SpannableStringBuilder();
+        final int chunks = (address.length() + 3) / 4;
+        for (int i = 0; i < chunks; ++i) {
+            if (i > 0) {
+                sb.append(i % 4 == 0 ? "\n" : " ");
+            }
+            final int start = sb.length();
+            sb.append(address, i * 4, Math.min(address.length(), i * 4 + 4));
+            final boolean accent = (i % 4 + i / 4) % 2 == 0;
+            sb.setSpan(new ForegroundColorSpan(accent ? accentColor : grayColor), start, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return sb;
+    }
+
+    private View createMoveToMyGiftsView(View feeView) {
+        final TLRPC.User self = UserConfig.getInstance(currentAccount).getCurrentUser();
+        final LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        final FrameLayout userView = new FrameLayout(getContext());
+        ThemeBind.fillBackground(userView, Theme.createRoundRectDrawable(dp(20), Theme.multAlpha(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider), 0.045f)), ThemeBind.multAlpha(Theme.key_dialogTextBlack, 0.045f), resourcesProvider);
+        final BackupImageView avatarView = new BackupImageView(getContext());
+        avatarView.setRoundRadius(dp(21));
+        final AvatarDrawable avatarDrawable = new AvatarDrawable();
+        avatarDrawable.setInfo(self);
+        avatarView.setForUserOrChat(self, avatarDrawable);
+        userView.addView(avatarView, LayoutHelper.createFrame(42, 42, Gravity.LEFT | Gravity.CENTER_VERTICAL, 12, 0, 0, 0));
+
+        final TextView nameView = new TextView(getContext());
+        nameView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        nameView.setTypeface(AndroidUtilities.bold());
+        ThemeBind.textColor(nameView, Theme.key_dialogTextBlack, resourcesProvider);
+        nameView.setSingleLine();
+        nameView.setEllipsize(TextUtils.TruncateAt.END);
+        nameView.setText(Emoji.replaceEmoji(UserObject.getUserName(self), nameView.getPaint().getFontMetricsInt(), false));
+        userView.addView(nameView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 66, 11, 12, 0));
+
+        final TextView phoneView = new TextView(getContext());
+        phoneView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        ThemeBind.textColor(phoneView, Theme.key_dialogTextGray3, resourcesProvider);
+        phoneView.setSingleLine();
+        phoneView.setEllipsize(TextUtils.TruncateAt.END);
+        if (self != null && !TextUtils.isEmpty(self.phone)) {
+            phoneView.setText(PhoneFormat.getInstance().format("+" + self.phone));
+        } else if (self != null && UserObject.getPublicUsername(self) != null) {
+            phoneView.setText("@" + UserObject.getPublicUsername(self));
+        }
+        userView.addView(phoneView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 66, 33, 12, 0));
+        layout.addView(userView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 62, 20, 0, 20, 16));
+
+        final TextView appearView = new TextView(getContext());
+        appearView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        ThemeBind.textColor(appearView, Theme.key_dialogTextBlack, resourcesProvider);
+        appearView.setGravity(Gravity.CENTER);
+        appearView.setText(getString(R.string.Gift2MoveAppearIn));
+        layout.addView(appearView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 24, 0, 24, 0));
+
+        final LinearLayout pathView = new LinearLayout(getContext());
+        pathView.setOrientation(LinearLayout.HORIZONTAL);
+        pathView.setGravity(Gravity.CENTER_VERTICAL);
+        addPathCrumb(pathView, R.drawable.msg_openprofile, 14, Theme.key_dialogTextGray3, getString(R.string.MyProfile), true);
+        addPathCrumb(pathView, R.drawable.menu_gift, 14, Theme.key_dialogTextGray3, getString(R.string.ProfileGifts), false);
+        layout.addView(pathView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 7, 0, 3));
+
+        layout.addView(feeView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 24, 4, 24, 4));
+
+        return layout;
+    }
+
     public void openTransferAlert(long dialogId, Utilities.Callback<Browser.Progress> confirmed) {
         final long transfer_stars;
         if (savedStarGift != null && savedStarGift.gift instanceof TL_diamonds.TL_starGiftUnique) {
@@ -6414,6 +6853,10 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
     }
 
     private void openTransferAlert(long dialogId, long stars, Utilities.Callback<Browser.Progress> confirmed) {
+        openTransferAlert(dialogId, stars, null, true, confirmed);
+    }
+
+    private void openTransferAlert(long dialogId, long stars, CharSequence text, boolean showBalance, Utilities.Callback<Browser.Progress> confirmed) {
         final TL_diamonds.TL_starGiftUnique gift = getUniqueGift();
         if (gift == null) return;
 
@@ -6432,9 +6875,9 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         topView.setOrientation(LinearLayout.VERTICAL);
         topView.addView(new GiftTransferTopView(getContext(), gift, obj), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
         final TextView textView = new TextView(getContext());
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        textView.setText(AndroidUtilities.replaceTags(stars > 0 ?
+        textView.setText(text != null ? text : AndroidUtilities.replaceTags(stars > 0 ?
             formatPluralStringComma("Gift2TransferPriceText", (int) stars, getGiftName(), DialogObject.getShortName(dialogId)) :
             formatString(R.string.Gift2TransferText, getGiftName(), name)
         ));
@@ -6455,7 +6898,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             })
             .setNegativeButton(getString(R.string.Cancel), null)
             .create()
-            .setShowDiamondsBalance(true)
+            .setShowDiamondsBalance(showBalance)
             .show();
     }
 
@@ -6510,16 +6953,16 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
                 return inputSavedStarGiftSlug;
             }
             return stargift;
-        } else if (messageObject != null && messageObject.getDialogId() < 0 && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift && (messageObject.messageOwner.action.flags & 4096) != 0) {
+        } else if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGift && (messageObject.messageOwner.action.flags & 4096) != 0) {
             final TLRPC.TL_messageActionDiamondGift action = (TLRPC.TL_messageActionDiamondGift) messageObject.messageOwner.action;
             final TL_diamonds.TL_inputSavedDiamondGiftChat stargift = new TL_diamonds.TL_inputSavedDiamondGiftChat();
-            stargift.peer = MessagesController.getInstance(currentAccount).getInputPeer(messageObject.getDialogId());
+            stargift.peer = MessagesController.getInstance(currentAccount).getInputPeer(action.peer != null ? DialogObject.getPeerDialogId(action.peer) : messageObject.getDialogId());
             stargift.saved_id = action.saved_id;
             return stargift;
-        } else if (messageObject != null && messageObject.getDialogId() < 0 && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique && (messageObject.messageOwner.action.flags & 128) != 0) {
+        } else if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionDiamondGiftUnique && (messageObject.messageOwner.action.flags & 128) != 0) {
             final TLRPC.TL_messageActionDiamondGiftUnique action = (TLRPC.TL_messageActionDiamondGiftUnique) messageObject.messageOwner.action;
             final TL_diamonds.TL_inputSavedDiamondGiftChat stargift = new TL_diamonds.TL_inputSavedDiamondGiftChat();
-            stargift.peer = MessagesController.getInstance(currentAccount).getInputPeer(messageObject.getDialogId());
+            stargift.peer = MessagesController.getInstance(currentAccount).getInputPeer(action.peer != null ? DialogObject.getPeerDialogId(action.peer) : messageObject.getDialogId());
             stargift.saved_id = action.saved_id;
             return stargift;
         } else {
@@ -6895,7 +7338,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         currentHintViewTextView = textView;
     }
 
-    public static class GiftTransferTopView extends View {
+    public static class GiftTransferTopView extends View implements Theme.Colorable {
 
         private final DiamondGiftDrawableIcon giftDrawable;
         private final ImageReceiver userImageReceiver;
@@ -6982,9 +7425,23 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             super.onDetachedFromWindow();
             userImageReceiver.onDetachedFromWindow();
         }
-    }
+    
+        private int colorsGeneration = ThemeBind.generation();
 
-    public static class UserToUserTransferTopView extends View {
+        @Override
+        public void updateColors() {
+            try {
+                arrowPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText7));
+                arrowPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText7));
+                invalidate();
+        
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
+
+    public static class UserToUserTransferTopView extends View implements Theme.Colorable {
 
         private final ImageReceiver fromUserImageReceiver;
         private final ImageReceiver toUserImageReceiver;
@@ -7056,7 +7513,20 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             fromUserImageReceiver.onDetachedFromWindow();
             toUserImageReceiver.onDetachedFromWindow();
         }
-    }
+    
+        private int colorsGeneration = ThemeBind.generation();
+
+        @Override
+        public void updateColors() {
+            try {
+                arrowPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText7));
+                invalidate();
+        
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
 
     public static class GiftThemeReuseTopView extends View {
 
@@ -7076,7 +7546,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             userImageReceiver.setForUserOrChat(obj, avatarDrawable);
 
             drawable = context.getDrawable(R.drawable.chats_undo).mutate();
-            drawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.drawableColorFilter(this, drawable, Theme.key_windowBackgroundWhiteGrayText2, PorterDuff.Mode.MULTIPLY);
             drawable.setBounds(dp(-12), dp(-12), dp(12), dp(12));
         }
 
@@ -7379,6 +7849,10 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
         private final Path arrow = new Path();
         private final long start = System.currentTimeMillis();
 
+        public void setStrokeColor(int color) {
+            strokePaint.setColor(color);
+        }
+
         public UpgradeIcon(View view, int color) {
             super(view);
             this.view = view;
@@ -7582,7 +8056,7 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
             topView.addView(new GiftTransferTopView(context, gift, obj), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -4, 0, 0));
 
             textInfoView = new TextView(context);
-            textInfoView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            ThemeBind.textColor(textInfoView, Theme.key_dialogTextBlack, resourcesProvider);
             textInfoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             topView.addView(textInfoView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 24, 4, 24, 4));
 
@@ -7714,17 +8188,17 @@ public class DiamondGiftSheet extends BottomSheetWithRecyclerListView implements
 
                 final TextView priceTextView = new TextView(getContext());
                 priceTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                priceTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
+                ThemeBind.textColor(priceTextView, Theme.key_featuredStickers_buttonText, resourcesProvider);
                 priceTextView.setTypeface(AndroidUtilities.bold());
                 priceTextView.setPadding(dp(20), 0, dp(20), 0);
-                priceTextView.setBackground(Theme.createRoundRectDrawable(dp(21), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)));
+                ThemeBind.fillBackground(priceTextView, Theme.createRoundRectDrawable(dp(21), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)), ThemeBind.of(Theme.key_featuredStickers_addButton), resourcesProvider);
                 priceTextView.setGravity(Gravity.CENTER);
                 linearLayout.addView(priceTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 42, Gravity.CENTER_HORIZONTAL, 0, 12, 0, 15));
                 priceTextView.setText(valuePrice);
 
                 final TextView textView = new TextView(getContext());
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
                 textView.setGravity(Gravity.CENTER);
                 linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 16, 0, 16, 19));
                 if (info.value_is_average) {

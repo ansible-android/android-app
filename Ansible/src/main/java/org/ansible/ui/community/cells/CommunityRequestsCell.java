@@ -15,6 +15,7 @@ import android.widget.TextView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.IconBackgroundColors;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RecyclerListView;
@@ -22,6 +23,7 @@ import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
 import org.ansible.ui.SettingsActivity;
+import java.util.HashSet;
 
 public class CommunityRequestsCell extends LinearLayout implements Theme.Colorable {
 
@@ -86,9 +88,9 @@ public class CommunityRequestsCell extends LinearLayout implements Theme.Colorab
             this.mUnreadMode = unreadMode;
             valueView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, unreadMode ? 13 : 16);
             valueView.setTypeface(unreadMode ? AndroidUtilities.bold() : null);
-            valueView.setTextColor(Theme.getColor(unreadMode ?
+            ThemeBind.textColor(valueView, unreadMode ?
                 Theme.key_chats_unreadCounterText :
-                Theme.key_windowBackgroundWhiteBlueText, resourcesProvider));
+                Theme.key_windowBackgroundWhiteBlueText, resourcesProvider);
 
             valueView.setBackground(unreadMode ? Theme.createRoundRectDrawable(dp(10.33f), Theme.getColor(Theme.key_chats_unreadCounter, resourcesProvider)) : null);
         }
@@ -103,6 +105,11 @@ public class CommunityRequestsCell extends LinearLayout implements Theme.Colorab
         valueView.setBackground(mUnreadMode ? Theme.createRoundRectDrawable(dp(10.33f), Theme.getColor(Theme.key_chats_unreadCounter, resourcesProvider)) : null);
 
         iconBackground.setDrawBorder(resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark());
+    }
+    @Override
+    public void addColorKeys(HashSet<Integer> colors) {
+        colors.add(Theme.key_windowBackgroundWhiteBlackText);
+        colors.add(Theme.key_chats_unreadCounter);
     }
 
     public void set(

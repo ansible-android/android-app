@@ -52,13 +52,13 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
-import org.ansible.messenger.utils.WindowVisibilityManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Cells.ChatMessageCell;
+import org.ansible.ui.Cells.ChatMessageTransitionParams;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.BulletinFactory;
@@ -75,7 +75,7 @@ import org.ansible.ui.Components.SizeNotifierFrameLayout;
 import org.ansible.ui.Components.Text;
 import org.ansible.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.ansible.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
-import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceBitmap;
+import org.ansible.utils.glass.source.GlassSourceBitmap;
 import org.ansible.ui.Components.blur3.utils.Blur3Utils;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 import org.ansible.ui.Components.spoilers.SpoilerEffect2;
@@ -90,7 +90,6 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
     public final Theme.ResourcesProvider resourcesProvider;
     public final int currentAccount = UserConfig.selectedAccount;
 
-    private WindowVisibilityManager.Controller activityVisibilityController;
     private Insets insets = Insets.NONE;
     private Bitmap blurBitmap;
     private BitmapShader blurBitmapShader;
@@ -146,7 +145,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
 
     private SpoilerEffect2 spoilerEffect2;
 
-    private final BlurredBackgroundSourceBitmap iBlur3SourceBitmap;
+    private final GlassSourceBitmap iBlur3SourceBitmap;
     private final BlurredBackgroundDrawableViewFactory iBlur3Factory;
 
     public MessageSendPreview(Context context, Theme.ResourcesProvider resourcesProvider) {
@@ -156,14 +155,9 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
 
         AndroidUtilities.enableEdgeToEdge(getWindow());
 
-        activityVisibilityController = LaunchActivity.obtainActivityVisibilityController();
         windowView = new FrameLayout(context) {
             @Override
             protected void dispatchDraw(@NonNull Canvas canvas) {
-                if (activityVisibilityController != null) {
-                    activityVisibilityController.setHidden(openProgress == 1 && blurBitmapPaint != null);
-                }
-
                 if (openProgress > 0 && blurBitmapPaint != null) {
                     blurMatrix.reset();
                     final float s = (float) getWidth() / blurBitmap.getWidth();
@@ -222,7 +216,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
             }
         });
 
-        iBlur3SourceBitmap = new BlurredBackgroundSourceBitmap();
+        iBlur3SourceBitmap = new GlassSourceBitmap();
         iBlur3Factory = new BlurredBackgroundDrawableViewFactory(iBlur3SourceBitmap);
         iBlur3Factory.setSourceRootView(new ViewPositionWatcher(windowView), windowView);
 
@@ -1412,7 +1406,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
         if (MessagesController.getInstance(currentAccount).hasAvailableEffects()) {
             showEffectSelector();
         } else {
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.availableEffectsUpdate);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.availableEffectsUpdate);
         }
         if (effectSelector != null /*&& SharedConfig.getDevicePerformanceClass() < SharedConfig.PERFORMANCE_CLASS_HIGH*/) {
             effectSelector.setPaused(true, true);
@@ -1652,7 +1646,7 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
             mainMessageCell.isForumGeneral = destCell.isForumGeneral;
             mainMessageCell.setMessageObject(cell.getMessageObject(), null, cell.isPinnedBottom(), cell.isPinnedTop(), cell.isFirstInChat());
 
-            final ChatMessageCell.TransitionParams params = mainMessageCell.getTransitionParams();
+            final ChatMessageTransitionParams params = mainMessageCell.getTransitionParams();
             params.animateChange = mainMessageCell.getTransitionParams().animateChange();
             params.animateChangeProgress = 0f;
 
@@ -1727,10 +1721,6 @@ public class MessageSendPreview extends Dialog implements NotificationCenter.Not
 
     private void afterDismiss() {
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.availableEffectsUpdate);
-        if (activityVisibilityController != null) {
-            activityVisibilityController.destroy();
-            activityVisibilityController = null;
-        }
     }
 
     private ValueAnimator openAnimator;

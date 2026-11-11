@@ -19,12 +19,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.R;
 import org.ansible.messenger.RichMessageLayout;
 import org.ansible.messenger.SharedConfig;
 import org.ansible.asnet.tl.TL_iv;
 import org.ansible.asnet.tl.TL_keyboard;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.UItem;
@@ -32,6 +34,7 @@ import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /** Editable horizontal row of page buttons. Rendering is delegated to RichMessageLayout.RichButton. */
 public class RichButtonRowCell extends RichBlockCell implements Theme.Colorable {
@@ -115,22 +118,57 @@ public class RichButtonRowCell extends RichBlockCell implements Theme.Colorable 
         requestLayout();
     }
 
+    private int lastAccentColor, lastBaseColor;
+    private final Runnable rebuildButtonsRunnable = new Runnable() {
+        @Override
+        public void run() {
+            rebuildButtons();
+        }
+    };
+
     @Override
     public void updateColors() {
         addButton.updateColors();
-        updateAddButtonColors();
-        rebuildButtons();
+        final int accent = Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider);
+        final int base = Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
+        if (accent == lastAccentColor && base == lastBaseColor) {
+            return;
+        }
+        lastAccentColor = accent;
+        lastBaseColor = base;
+        // recolor in place (no per-frame allocations); page buttons are rebuilt once the theme settles
+        final Drawable bg = emptyAddButton.getBackground();
+        Theme.setSelectorDrawableColor(bg, Theme.blendOver(base, Theme.multAlpha(accent, .10f)), false);
+        Theme.setSelectorDrawableColor(bg, Theme.multAlpha(accent, .16f), true);
+        emptyAddButton.invalidate();
+        removeCallbacks(rebuildButtonsRunnable);
+        postDelayed(rebuildButtonsRunnable, 100);
+        updateDraggingBackgroundColor();
+    }
+
+    private void updateDraggingBackgroundColor() {
+        try {
+            if (getBackground() instanceof RichEditor.DraggingDrawable) {
+                ((RichEditor.DraggingDrawable) getBackground()).setColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+    @Override
+    public void addColorKeys(HashSet<Integer> colors) {
+        colors.add(Theme.key_windowBackgroundWhite);
     }
 
     private void updateAddButtonColors() {
         final int accent = Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider);
         final int base = Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
         final int normal = Theme.blendOver(base, Theme.multAlpha(accent, .10f));
-        emptyAddButton.setTextColor(accent);
+        ThemeBind.textColor(emptyAddButton, Theme.key_featuredStickers_addButton, resourcesProvider);
         emptyAddButton.setBackground(Theme.createRadSelectorDrawable(
             normal, Theme.multAlpha(accent, .16f), dp(19), dp(19)));
         final Drawable icon = getContext().getResources().getDrawable(R.drawable.msg_add).mutate();
-        icon.setColorFilter(new PorterDuffColorFilter(accent, PorterDuff.Mode.SRC_IN));
+        ThemeBind.drawableColorFilter(this, icon, Theme.key_featuredStickers_addButton, resourcesProvider, PorterDuff.Mode.SRC_IN);
         emptyAddButton.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
     }
 

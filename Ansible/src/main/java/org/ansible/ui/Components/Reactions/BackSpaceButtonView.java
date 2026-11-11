@@ -19,6 +19,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.messenger.Utilities;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.CombinedDrawable;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Stories.RoundRectOutlineProvider;
@@ -67,7 +68,7 @@ public class BackSpaceButtonView extends FrameLayout {
         };
         backspaceButton.setHapticFeedbackEnabled(true);
         backspaceButton.setImageResource(R.drawable.smiles_tab_clear);
-        backspaceButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelBackspace), PorterDuff.Mode.MULTIPLY));
+        ThemeBind.colorFilter(backspaceButton, Theme.key_chat_emojiPanelBackspace, resourcesProvider, PorterDuff.Mode.MULTIPLY);
         backspaceButton.setScaleType(ImageView.ScaleType.CENTER);
         backspaceButton.setContentDescription(LocaleController.getString(R.string.AccDescrBackspace));
         backspaceButton.setFocusable(true);
@@ -79,7 +80,7 @@ public class BackSpaceButtonView extends FrameLayout {
         int rippleColor = Theme.getColor(Theme.key_listSelector);
         Drawable drawable = Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(36), getThemedColor(Theme.key_windowBackgroundWhite), rippleColor);
         if (Build.VERSION.SDK_INT >= 21) {
-            backspaceButton.setBackground(drawable);
+            ThemeBind.selectorBackground(backspaceButton, drawable, ThemeBind.of(Theme.key_windowBackgroundWhite), null, resourcesProvider);
             backspaceButton.setOutlineProvider(new RoundRectOutlineProvider(18));
             backspaceButton.setElevation(AndroidUtilities.dp(1));
             backspaceButton.setClipToOutline(true);

@@ -21,6 +21,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.Premium.boosts.BoostDialogs;
 import org.ansible.ui.Components.Premium.boosts.BoostRepository;
 import org.ansible.ui.Components.Premium.boosts.cells.ActionBtnCell;
@@ -161,7 +162,7 @@ public abstract class GiftInfoAdapter extends RecyclerListView.SelectionAdapter 
             case HOLDER_TYPE_TEXT: {
                 TextInfoCell cell = (TextInfoCell) holder.itemView;
                 cell.setTextGravity(Gravity.CENTER);
-                cell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                ThemeBind.textColor(cell.getTextView(), Theme.key_windowBackgroundWhiteBlackText);
                 cell.setTopPadding(14);
                 cell.setBottomPadding(15);
 

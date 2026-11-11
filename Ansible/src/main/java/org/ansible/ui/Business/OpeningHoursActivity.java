@@ -13,8 +13,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
@@ -22,16 +24,17 @@ import org.ansible.messenger.UserObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
 import org.ansible.ui.ActionBar.ActionBar;
+import org.ansible.ui.ActionBar.SimpleActionBarDoneButton;
 import org.ansible.ui.ActionBar.ActionBarMenuItem;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.NotificationsCheckCell;
 import org.ansible.ui.Cells.TextCell;
 import org.ansible.ui.Cells.TextCheckCell;
 import org.ansible.ui.Components.BulletinFactory;
-import org.ansible.ui.Components.CircularProgressDrawable;
-import org.ansible.ui.Components.CrossfadeDrawable;
 import org.ansible.ui.Components.LayoutHelper;
+import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.UItem;
 import org.ansible.ui.Components.UniversalAdapter;
 import org.ansible.ui.Components.UniversalRecyclerView;
@@ -49,15 +52,19 @@ public class OpeningHoursActivity extends BaseFragment implements NotificationCe
     private UniversalRecyclerView listView;
 
     private static final int done_button = 1;
-    private CrossfadeDrawable doneButtonDrawable;
-    private ActionBarMenuItem doneButton;
+    private SimpleActionBarDoneButton doneButton;
+
+    @Override
+    protected boolean useSimpleActionBar() {
+        return true;
+    }
 
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(getString(R.string.BusinessHours));
-        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
+        setHasOwnBackground(true);
+        simpleActionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        simpleActionBar.setTitle(getString(R.string.BusinessHours));
+        simpleActionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
@@ -70,20 +77,16 @@ public class OpeningHoursActivity extends BaseFragment implements NotificationCe
             }
         });
 
-        Drawable checkmark = context.getResources().getDrawable(R.drawable.ic_ab_done).mutate();
-        checkmark.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_actionBarDefaultIcon), PorterDuff.Mode.MULTIPLY));
-        doneButtonDrawable = new CrossfadeDrawable(checkmark, new CircularProgressDrawable(Theme.getColor(Theme.key_actionBarDefaultIcon)));
-        doneButton = actionBar.createMenu().addItemWithWidth(done_button, doneButtonDrawable, AndroidUtilities.dp(56), LocaleController.getString(R.string.Done));
+        doneButton = simpleActionBar.createDoneButton(done_button, LocaleController.getString(R.string.Save));
         checkDone(false);
 
         FrameLayout contentView = new FrameLayout(context);
-        contentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
 
         listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, null);
         listView.setSections();
         listView.adapter.setApplyBackground(false);
+        listView.setSectionsDrawBackground(true);
         contentView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        actionBar.setAdaptiveBackground(listView, true);
 
         setValue();
 
@@ -117,21 +120,14 @@ public class OpeningHoursActivity extends BaseFragment implements NotificationCe
     private void checkDone(boolean animated) {
         if (doneButton == null) return;
         final boolean hasChanges = hasChanges();
-        doneButton.setEnabled(hasChanges);
-        if (animated) {
-            doneButton.animate().alpha(hasChanges ? 1.0f : 0.0f).scaleX(hasChanges ? 1.0f : 0.0f).scaleY(hasChanges ? 1.0f : 0.0f).setDuration(180).start();
-        } else {
-            doneButton.setAlpha(hasChanges ? 1.0f : 0.0f);
-            doneButton.setScaleX(hasChanges ? 1.0f : 0.0f);
-            doneButton.setScaleY(hasChanges ? 1.0f : 0.0f);
-        }
+        doneButton.setActive(hasChanges, animated);
     }
 
     @Override
     public boolean onFragmentCreate() {
         TimezonesController.getInstance(currentAccount).load();
         timezoneId = TimezonesController.getInstance(currentAccount).getSystemTimezoneId();
-        getNotificationCenter().addObserver(this, NotificationCenter.userInfoDidLoad);
+        getNotificationCenter().addWeakObserver(this, NotificationCenter.userInfoDidLoad);
         return super.onFragmentCreate();
     }
 
@@ -372,14 +368,14 @@ public class OpeningHoursActivity extends BaseFragment implements NotificationCe
     }
 
     private void processDone() {
-        if (doneButtonDrawable.getProgress() > 0f) return;
+        if (doneButton.isLoading()) return;
 
         if (!hasChanges()) {
             finishFragment();
             return;
         }
 
-        doneButtonDrawable.animateToProgress(1f);
+        doneButton.setLoading(true, true);
         TLRPC.UserFull userFull = getMessagesController().getUserFull(getUserConfig().getClientUserId());
         TL_account.updateBusinessWorkHours req = new TL_account.updateBusinessWorkHours();
         ArrayList<TL_account.TL_businessWeeklyOpen> periods = fromDaysHours(value);
@@ -404,11 +400,11 @@ public class OpeningHoursActivity extends BaseFragment implements NotificationCe
 
         getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
             if (err != null) {
-                doneButtonDrawable.animateToProgress(0f);
+                doneButton.setLoading(false, true);
                 BulletinFactory.showError(err);
             } else if (res instanceof TLRPC.TL_boolFalse) {
                 if (getContext() == null) return;
-                doneButtonDrawable.animateToProgress(0f);
+                doneButton.setLoading(false, true);
                 BulletinFactory.of(this).createErrorBulletin(LocaleController.getString(R.string.UnknownError)).show();
             } else {
                 if (!isFinished && !finishing)
@@ -617,9 +613,10 @@ public class OpeningHoursActivity extends BaseFragment implements NotificationCe
     public boolean isSupportEdgeToEdge() {
         return true;
     }
+
+    @Nullable
     @Override
-    public void onInsets(int left, int top, int right, int bottom) {
-        listView.setPadding(0, 0, 0, bottom);
-        listView.setClipToPadding(false);
+    protected RecyclerListView getListViewForSimpleGlass() {
+        return listView;
     }
 }

@@ -11,14 +11,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.LocaleController;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.Forum.ForumUtilities;
 import org.ansible.ui.Components.LayoutHelper;
 
-public class TopicSearchCell extends FrameLayout {
+public class TopicSearchCell extends FrameLayout implements Theme.Colorable {
 
     BackupImageView backupImageView;
     TextView textView;
@@ -30,7 +32,7 @@ public class TopicSearchCell extends FrameLayout {
         backupImageView = new BackupImageView(context);
 
         textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setTypeface(AndroidUtilities.bold());
 
@@ -59,6 +61,18 @@ public class TopicSearchCell extends FrameLayout {
         ForumUtilities.setTopicIcon(backupImageView, topic);
         if (backupImageView != null && backupImageView.getImageReceiver() != null && backupImageView.getImageReceiver().getDrawable() instanceof ForumUtilities.GeneralTopicDrawable) {
             ((ForumUtilities.GeneralTopicDrawable) backupImageView.getImageReceiver().getDrawable()).setColor(Theme.getColor(Theme.key_chats_archiveBackground));
+        }
+    }
+
+    @Override
+    public void updateColors() {
+        try {
+            if (backupImageView != null && backupImageView.getImageReceiver() != null && backupImageView.getImageReceiver().getDrawable() instanceof ForumUtilities.GeneralTopicDrawable) {
+                ((ForumUtilities.GeneralTopicDrawable) backupImageView.getImageReceiver().getDrawable()).setColor(Theme.getColor(Theme.key_chats_archiveBackground));
+                backupImageView.invalidate();
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
         }
     }
 

@@ -58,6 +58,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.ChatMessageCell;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AudioVisualizerDrawable;
@@ -762,7 +763,7 @@ public class SecretVoicePlayer extends Dialog {
             backDialog.show();
             TextView button = (TextView) backDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
             if (button != null) {
-                button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
+                ThemeBind.textColor(button, Theme.key_text_RedBold);
             }
             return;
         }

@@ -32,6 +32,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ScrollView;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.R;
@@ -40,6 +41,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.EditTextBoldCursor;
@@ -51,7 +53,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @SuppressLint("ViewConstructor")
-public class SelectorSearchCell extends ScrollView {
+public class SelectorSearchCell extends ScrollView implements Theme.Colorable {
 
     private final Theme.ResourcesProvider resourcesProvider;
     private EditTextBoldCursor editText;
@@ -68,13 +70,33 @@ public class SelectorSearchCell extends ScrollView {
         return editText;
     }
 
+    @Override
+    public void updateColors() {
+        // editText hint / cursor / handles: ThemeBind bindings at creation
+        updateEdgeEffectColor();
+    }
+
+    private int edgeEffectColor;
+
+    private void updateEdgeEffectColor() {
+        try {
+            final int color = Theme.getColor(Theme.key_windowBackgroundWhite);
+            if (edgeEffectColor != 0 && color != edgeEffectColor) {
+                edgeEffectColor = color;
+                AndroidUtilities.setScrollViewEdgeEffectColor(this, color);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
     public SelectorSearchCell(Context context, Theme.ResourcesProvider resourcesProvider, Runnable updateHeight) {
         super(context);
         this.resourcesProvider = resourcesProvider;
         this.updateHeight = updateHeight;
 
         setVerticalScrollBarEnabled(false);
-        AndroidUtilities.setScrollViewEdgeEffectColor(this, Theme.getColor(Theme.key_windowBackgroundWhite));
+        AndroidUtilities.setScrollViewEdgeEffectColor(this, edgeEffectColor = Theme.getColor(Theme.key_windowBackgroundWhite));
 
         spansContainer = new SpansContainer(context);
         addView(spansContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
@@ -100,10 +122,10 @@ public class SelectorSearchCell extends ScrollView {
             editText.setRevealOnFocusHint(false);
         }
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        editText.setHintColor(Theme.getColor(Theme.key_groupcreate_hintText, resourcesProvider));
-        editText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
-        editText.setCursorColor(Theme.getColor(Theme.key_groupcreate_cursor, resourcesProvider));
-        editText.setHandlesColor(Theme.getColor(Theme.key_groupcreate_cursor, resourcesProvider));
+        ThemeBind.editHintColor(editText, Theme.key_groupcreate_hintText, resourcesProvider);
+        ThemeBind.textColor(editText, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
+        ThemeBind.cursorColor(editText, Theme.key_groupcreate_cursor, resourcesProvider);
+        ThemeBind.editHandlesColor(editText, Theme.key_groupcreate_cursor, resourcesProvider);
         editText.setCursorWidth(1.5f);
         editText.setInputType(editText.getInputType() | InputType.TYPE_TEXT_VARIATION_FILTER);
         editText.setSingleLine(true);

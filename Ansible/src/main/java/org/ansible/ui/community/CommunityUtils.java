@@ -32,6 +32,7 @@ import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.INavigationLayout;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.DialogCell;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.AlertsCreator;
@@ -394,7 +395,7 @@ public class CommunityUtils {
                 if (!add) {
                     TextView button = (TextView) dialog.getButton(DialogInterface.BUTTON_POSITIVE);
                     if (button != null) {
-                        button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
+                        ThemeBind.textColor(button, Theme.key_text_RedBold);
                     }
                 }
                 return;

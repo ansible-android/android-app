@@ -34,6 +34,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.ChatActionCell;
 import org.ansible.ui.Cells.ChatMessageCell;
 import org.ansible.ui.Cells.GraySectionCell;
@@ -179,7 +180,7 @@ public class CountrySelectBottomSheet extends BottomSheetWithRecyclerListView im
                 super.onDraw(canvas);
             }
         };
-        doneItem.setTextColor(getThemedColor(Theme.key_featuredStickers_buttonText));
+        ThemeBind.textColor(doneItem, Theme.key_featuredStickers_buttonText, resourcesProvider);
         doneItem.setText(getString(R.string.Save));
         doneItem.setTypeface(AndroidUtilities.bold());
         doneItem.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);

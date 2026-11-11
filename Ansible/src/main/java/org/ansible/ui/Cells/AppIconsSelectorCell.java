@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
@@ -35,6 +36,7 @@ import org.ansible.messenger.R;
 import org.ansible.messenger.UserConfig;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.Components.ColoredImageSpan;
 import org.ansible.ui.Components.Easings;
@@ -78,7 +80,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                 IconHolderView holderView = (IconHolderView) holder.itemView;
                 LauncherIconController.LauncherIcon icon = availableIcons.get(position);
                 holderView.bind(icon);
-                holderView.iconView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(ICONS_ROUND_RADIUS), Color.TRANSPARENT, Theme.getColor(Theme.key_listSelector), Color.BLACK));
+                ThemeBind.selectorBackground(holderView.iconView, Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(ICONS_ROUND_RADIUS), Color.TRANSPARENT, Theme.getColor(Theme.key_listSelector), Color.BLACK), null, ThemeBind.of(Theme.key_listSelector));
                 holderView.iconView.setForeground(icon.foreground);
             }
 
@@ -187,7 +189,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.premiumStatusChangedGlobal);
+        NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.premiumStatusChangedGlobal);
     }
 
     @Override
@@ -204,7 +206,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
         }
     }
 
-    private final static class IconHolderView extends LinearLayout {
+    private final static class IconHolderView extends LinearLayout implements Theme.Colorable {
         private Paint outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -246,8 +248,22 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             canvas.drawRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(ICONS_ROUND_RADIUS), AndroidUtilities.dp(ICONS_ROUND_RADIUS), outlinePaint);
         }
 
+        private boolean progressApplied;
+
+        @Override
+        public void updateColors() {
+            try {
+                if (progressApplied && titleView != null) {
+                    setProgress(progress);
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+
         private void setProgress(float progress) {
             this.progress = progress;
+            progressApplied = true;
 
             titleView.setTextColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), Theme.getColor(Theme.key_windowBackgroundWhiteValueText), progress));
             outlinePaint.setColor(ColorUtils.blendARGB(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_switchTrack), 0x3F), Theme.getColor(Theme.key_windowBackgroundWhiteValueText), progress));

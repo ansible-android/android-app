@@ -23,6 +23,7 @@ import android.view.View;
 
 import org.ansible.messenger.AccountInstance;
 import org.ansible.messenger.AndroidUtilities;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.ImageReceiver;
@@ -30,6 +31,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.R;
+import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
@@ -202,6 +204,8 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
                 }
                 animatedEmojiDrawable = null;
                 forumIcon = ForumUtilities.createGeneralTopicDrawable(fragmentView.getContext(), 1f, getThemedColor(Theme.key_chat_inMenu), false, true);
+                generalTopicDrawable = forumIcon instanceof ForumUtilities.GeneralTopicDrawable ? (ForumUtilities.GeneralTopicDrawable) forumIcon : null;
+                generalTopicColor = getThemedColor(Theme.key_chat_inMenu);
                 imageReceiver.setImageBitmap(forumIcon);
             } else if (topic.icon_emoji_id != 0) {
                 if (animatedEmojiDrawable == null || animatedEmojiDrawable.getDocumentId() != topic.icon_emoji_id) {
@@ -209,7 +213,7 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
                         animatedEmojiDrawable.removeView(parentView);
                     }
                     animatedEmojiDrawable = new AnimatedEmojiDrawable(AnimatedEmojiDrawable.CACHE_TYPE_FORUM_TOPIC_PULL_DOWN, currentAccount, topic.icon_emoji_id);
-                    animatedEmojiDrawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_serviceText), PorterDuff.Mode.SRC_IN));
+                    animatedEmojiDrawable.setColorFilter(new PorterDuffColorFilter(animatedEmojiColor = getThemedColor(Theme.key_chat_serviceText), PorterDuff.Mode.SRC_IN));
                 }
                 if (animatedEmojiDrawable != null && parentView != null) {
                     animatedEmojiDrawable.addView(parentView);
@@ -294,6 +298,31 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
 
     }
 
+    private ForumUtilities.GeneralTopicDrawable generalTopicDrawable;
+    private int generalTopicColor, animatedEmojiColor;
+
+    // topic icons colored once on creation: follow theme changes (only a new color filter / color when the color changed)
+    private void updateTopicIconColors() {
+        try {
+            if (generalTopicDrawable != null && nextTopic != null && nextTopic.id == 1) {
+                final int color = getThemedColor(Theme.key_chat_inMenu);
+                if (color != generalTopicColor) {
+                    generalTopicColor = color;
+                    generalTopicDrawable.setColor(color);
+                }
+            }
+            if (animatedEmojiDrawable != null) {
+                final int color = getThemedColor(Theme.key_chat_serviceText);
+                if (color != animatedEmojiColor) {
+                    animatedEmojiColor = color;
+                    animatedEmojiDrawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+                }
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
     public void draw(Canvas canvas, View parent, float progress, float alpha) {
         if (this.parentView != parent) {
             this.parentView = parent;
@@ -313,8 +342,10 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
         }
         Theme.applyServiceShaderMatrix(lastWidth, parent.getMeasuredHeight(), 0, parent.getMeasuredHeight() - offset);
 
-        textPaint.setColor(getThemedColor(Theme.key_chat_serviceText));
-        arrowPaint.setColor(getThemedColor(Theme.key_chat_serviceText));
+        updateTopicIconColors();
+        final int textColor = getThemedColor(Theme.isCompactMode(resourcesProvider) ? Theme.key_chat_compact_pullingDownText : Theme.key_chat_serviceText);
+        textPaint.setColor(textColor);
+        arrowPaint.setColor(textColor);
         textPaint2.setColor(getThemedColor(Theme.key_chat_messagePanelHint));
 
         oldAlpha = getThemedPaint(Theme.key_paint_chatActionBackground).getAlpha();
@@ -615,7 +646,7 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
         if (animatedEmojiDrawable != null && parentView != null) {
             animatedEmojiDrawable.addView(parentView);
         }
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.updateInterfaces);
     }
 
     public void onDetach() {

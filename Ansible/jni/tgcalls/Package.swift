@@ -19,6 +19,8 @@ let package = Package(
             dependencies: [],
             path: ".",
             exclude: ["LICENSE",
+                      "tgcalls/v2/MtProtoDtlsTransportTest.cpp",
+                      "tgcalls/v2/SignalingSctpOptionsTest.cpp",
                       "README.md",
                       "tgcalls/platform/android",
                       "tgcalls/platform/tdesktop",
@@ -37,6 +39,7 @@ let package = Package(
                       "tgcalls/platform/darwin/CustomExternalCapturer.mm",
                       "tgcalls/platform/darwin/CustomExternalCapturer.h",
                       "tgcalls/group/StreamingAudioRendererTest.cpp",
+                      "tgcalls/group/GroupFrameTransformerTest.cpp",
                       "tgcalls/legacy/InstanceImplLegacy.h",
                       "tgcalls/legacy/InstanceImplLegacy.cpp"
                      ],

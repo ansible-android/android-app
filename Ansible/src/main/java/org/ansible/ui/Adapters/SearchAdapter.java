@@ -35,6 +35,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.GraySectionCell;
 import org.ansible.ui.Cells.ProfileSearchCell;
 import org.ansible.ui.Cells.TextCell;
@@ -375,7 +376,7 @@ public class SearchAdapter extends RecyclerListView.SelectionAdapter {
                 final FlickerLoadingView loadingView = new FlickerLoadingView(mContext);
                 loadingView.setIsSingleCell(true);
                 loadingView.setViewType(FlickerLoadingView.PROFILE_SEARCH_CELL);
-                loadingView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                ThemeBind.backgroundColor(loadingView, Theme.key_windowBackgroundWhite);
                 view = loadingView;
                 break;
             case 2:

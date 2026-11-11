@@ -23,7 +23,7 @@
 #include "VideoCaptureInterfaceImpl.h"
 #include "platform/PlatformInterface.h"
 #include "v2/InstanceNetworking.h"
-#include "v2/MtProtoIceTransport.h"
+#include "v2/MtProtoDtlsTransport.h"
 #include "v2/ReflectorRelayPortFactory.h"
 #include "v2/SignalingConnection.h"
 #include "v2/ExternalSignalingConnection.h"
@@ -556,7 +556,8 @@ void CallCoreHost::start() {
             [signalingDataEmitted = _signalingDataEmitted](const std::vector<uint8_t> &data) {
                 signalingDataEmitted(data);
             },
-            _encryptionKey.isOutgoing
+            _encryptionKey.isOutgoing,
+            SignalingSctpConnection::Options::fromCustomParameters(_parsedCustomParameters)
         );
     } else {
         _signalingConnection = std::make_unique<ExternalSignalingConnection>(
@@ -602,11 +603,12 @@ void CallCoreHost::start() {
     _peerConnectionFactory = webrtc::CreateModularPeerConnectionFactory(std::move(peerConnectionFactoryDependencies));
 
     if (getCustomParameterBool(_parsedCustomParameters, "network_use_mtproto")) {
-        // As in InstanceV2ReferenceImpl: selects a plain RtpTransport, matching
-        // 13.0.0. SrtpTransport hard-fails when SRTP is inactive, so this is not
-        // optional. Must precede CreatePeerConnectionOrError.
+        // As in InstanceV2ReferenceImpl: half one of two that travel together
+        // (the MtProtoDtlsTransportFactory in executePcCreate is the other).
+        // Plain RtpTransport, DTLS kept enabled for SDP, mtproto in the DTLS
+        // slot. Must precede CreatePeerConnectionOrError.
         webrtc::PeerConnectionFactoryInterface::Options factoryOptions;
-        factoryOptions.disable_encryption = true;
+        factoryOptions.external_transport_security = true;
         _peerConnectionFactory->SetOptions(factoryOptions);
     }
 
@@ -632,9 +634,17 @@ void CallCoreHost::start() {
             {"isTcp", server.isTcp},
         });
     }
+    // Stock start() applies descriptor.videoCapture before beginSignaling(), so
+    // the camera is part of the first offer; the core reproduces that from this
+    // flag (see the post-create check below).
+    bool hasInitialVideoCapture = false;
+    if (const auto captureImpl = GetVideoCaptureAssumingSameThread(_videoCapture.get())) {
+        hasInitialVideoCapture = !captureImpl->isScreenCapture();
+    }
     const std::string configJson = json11::Json(json11::Json::object{
         {"abiVersion", 1},
         {"isOutgoing", _encryptionKey.isOutgoing},
+        {"hasInitialVideoCapture", hasInitialVideoCapture},
         {"enableP2P", _enableP2P},
         {"customParameters", _customParameters},
         {"rtcServers", std::move(rtcServers)},
@@ -685,10 +695,15 @@ void CallCoreHost::start() {
     }
     processPendingCommands();
 
-    if (_videoCapture) {
-        // Stock start() re-applies descriptor.videoCapture (InstanceV2ReferenceImpl.cpp:726-728).
-        // The core has already set _didBeginNegotiation, so this also triggers the
-        // MediaState + renegotiation it would have folded into initial negotiation.
+    if (_videoCapture && _coreTransceivers.find("video0") == _coreTransceivers.end()) {
+        // A core that honours config.hasInitialVideoCapture has already added
+        // video0 inside its start, before _didBeginNegotiation - where stock
+        // start() applies descriptor.videoCapture (InstanceV2ReferenceImpl.cpp:843,
+        // ahead of beginSignaling() at :872). Re-applying it here landed after
+        // the flag and cost a second offer on the caller plus an unsolicited
+        // one on the callee: the start glare that wedged every 18/19 video
+        // call in an offer/answer loop. Only a core that ignored the key (an
+        // external module) still needs the stock re-apply.
         setVideoCapture(_videoCapture);
     }
 }
@@ -883,7 +898,7 @@ void CallCoreHost::executePcCreate(json11::Json const &command) {
     _networkMonitorFactory = PlatformInterface::SharedInstance()->createNetworkMonitorFactory();
     _socketFactory = std::make_unique<rtc::BasicPacketSocketFactory>(_threads->getNetworkThread()->socketserver());
     _networkManager = std::make_unique<rtc::BasicNetworkManager>(_networkMonitorFactory.get(), _threads->getNetworkThread()->socketserver());
-    _relayPortFactory = std::make_unique<ReflectorRelayPortFactory>(_rtcServers, false, 0, _threads->getNetworkThread()->socketserver(), getCustomParameterBool(_parsedCustomParameters, "network_reflector_resolve_remote_candidate_ip"));
+    _relayPortFactory = std::make_unique<ReflectorRelayPortFactory>(_rtcServers, false, 0, _threads->getNetworkThread()->socketserver(), getCustomParameterBoolDefaultTrue(_parsedCustomParameters, "network_reflector_resolve_remote_candidate_ip"));
 
     webrtc::PeerConnectionDependencies peerConnectionDependencies(nullptr);
     _peerConnectionObserver = std::make_unique<v2wasm_detail::PeerConnectionDelegateAdapter>(std::weak_ptr<CallCoreHost>(shared_from_this()), _threads);
@@ -951,7 +966,8 @@ void CallCoreHost::executePcCreate(json11::Json const &command) {
     if (getCustomParameterBool(_parsedCustomParameters, "network_use_mtproto")) {
         // Host-side by necessity, not preference: EncryptionKey is a secret and
         // must not cross into the wasm module, so the core cannot own this.
-        peerConnectionDependencies.ice_transport_factory = std::make_unique<MtProtoIceTransportFactory>(_encryptionKey);
+        // Half two of the mtproto pair; see start().
+        peerConnectionDependencies.dtls_transport_factory = std::make_unique<MtProtoDtlsTransportFactory>(_encryptionKey);
     }
 
     auto peerConnectionOrError = _peerConnectionFactory->CreatePeerConnectionOrError(peerConnectionConfiguration, std::move(peerConnectionDependencies));

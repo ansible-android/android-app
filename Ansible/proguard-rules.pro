@@ -11,7 +11,24 @@
 -keep class org.webrtc.* { *; }
 -keep class org.webrtc.audio.* { *; }
 -keep class org.webrtc.voiceengine.* { *; }
--keep class org.ansible.messenger.* { *; }
+# org.ansible.messenger: only the names that native code and reflection resolve at runtime.
+# Before changing these rules see Ansible/proguard-checklist.md and run Tools/r8_keep_check.py.
+# Static JNI exports Java_org_ansible_messenger_<Class>_<method> (Utilities, Intro, MediaController, MrzRecognizer).
+-keepclasseswithmembers,includedescriptorclasses class org.ansible.messenger.* {
+    native <methods>;
+}
+# gifvideo.cpp: FindClass + GetMethodID, called from the native reader.
+-keep class org.ansible.messenger.AnimatedFileDrawableStream {
+    int read(int, int);
+    void cancel();
+    boolean isFinishedLoadingFile();
+    boolean isCanceled();
+    java.lang.String getFinishedFilePath();
+}
+# NotificationBadge.BADGERS holds class literals, instances are made with Class.newInstance().
+-keep class org.ansible.messenger.NotificationBadge$* implements org.ansible.messenger.NotificationBadge$Badger {
+    <init>();
+}
 -keep class org.ansible.messenger.camera.* { *; }
 -keep class org.ansible.messenger.secretmedia.* { *; }
 -keep class org.ansible.messenger.support.* { *; }
@@ -36,6 +53,10 @@
 
 # https://developers.google.com/ml-kit/known-issues#android_issues
 -keep class com.google.mlkit.nl.languageid.internal.LanguageIdentificationJni { *; }
+
+# WidgetSandbox: JNI_OnLoad uses RegisterNatives; backend methods are called by native workers.
+-keep class org.ansible.utils.twidget.WidgetSandboxNative { *; }
+-keep class org.ansible.utils.twidget.WidgetSandboxBackend { *; }
 
 # Huawei Services
 -keep class com.huawei.hianalytics.**{ *; }

@@ -26,6 +26,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.RLottieImageView;
@@ -96,7 +97,7 @@ public class AccountFrozenAlert {
         TextView textView = new TextView(context);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         textView.setText(getString(R.string.AccountFrozenTitle));
         textView.setGravity(Gravity.CENTER);
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 0, 0, 23));

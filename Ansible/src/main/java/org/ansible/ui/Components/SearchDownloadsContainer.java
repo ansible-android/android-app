@@ -36,6 +36,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.GraySectionCell;
 import org.ansible.ui.Cells.SharedAudioCell;
 import org.ansible.ui.Cells.SharedDocumentCell;
@@ -574,7 +575,7 @@ public class SearchDownloadsContainer extends FrameLayout implements Notificatio
                     boolean showReorder = uiCallback.actionModeShowing() && position >= downloadingFilesStartRow && position < downloadingFilesEndRow;
                     if (type == 1) {
                         Cell view = (Cell) holder.itemView;
-                        view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                        ThemeBind.backgroundColor(view, Theme.key_windowBackgroundWhite);
                         int oldId = view.sharedDocumentCell.getMessage() == null ? 0 : view.sharedDocumentCell.getMessage().getId();
                         view.sharedDocumentCell.setDocument(messageObject, true);
                         messageHashIdTmp.set(view.sharedDocumentCell.getMessage().getId(), view.sharedDocumentCell.getMessage().getDialogId());
@@ -630,8 +631,8 @@ public class SearchDownloadsContainer extends FrameLayout implements Notificatio
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.onDownloadingFilesChanged);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.premiumFloodWaitReceived);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.onDownloadingFilesChanged);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.premiumFloodWaitReceived);
         if (getVisibility() == View.VISIBLE) {
             DownloadController.getInstance(currentAccount).clearUnviewedDownloads();
         }

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.CheckBoxSquare;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -42,7 +43,7 @@ public class TextCheckBoxCell extends FrameLayout {
         }
 
         textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(dialog ? Theme.key_dialogTextBlack : Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(textView, dialog ? Theme.key_dialogTextBlack : Theme.key_windowBackgroundWhiteBlackText);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setLines(1);
         textView.setMaxLines(1);

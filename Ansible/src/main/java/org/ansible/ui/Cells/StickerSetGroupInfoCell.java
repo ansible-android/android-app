@@ -19,6 +19,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 
 public class StickerSetGroupInfoCell extends LinearLayout {
@@ -31,7 +32,7 @@ public class StickerSetGroupInfoCell extends LinearLayout {
         setOrientation(VERTICAL);
 
         TextView infoTextView = new TextView(context);
-        infoTextView.setTextColor(Theme.getColor(Theme.key_chat_emojiPanelTrendingDescription));
+        ThemeBind.textColor(infoTextView, Theme.key_chat_emojiPanelTrendingDescription);
         infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         infoTextView.setText(LocaleController.getString(R.string.GroupStickersInfo));
         addView(infoTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 17, 4, 17, 0));
@@ -39,7 +40,7 @@ public class StickerSetGroupInfoCell extends LinearLayout {
         addButton = new TextView(context);
         addButton.setPadding(AndroidUtilities.dp(17), 0, AndroidUtilities.dp(17), 0);
         addButton.setGravity(Gravity.CENTER);
-        addButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+        ThemeBind.textColor(addButton, Theme.key_featuredStickers_buttonText);
         addButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         addButton.setTypeface(AndroidUtilities.bold());
         addButton.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 4));

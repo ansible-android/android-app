@@ -17,6 +17,7 @@ import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.UserCell;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.LayoutHelper;
@@ -68,7 +69,7 @@ public class GiftedUserCell extends UserCell {
         counterDrawable = new CounterDrawable(getContext());
         badgeLayout = new FrameLayout(getContext());
         badgeTextView = new TextView(getContext());
-        badgeTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        badgeTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider)); // always overwritten by the fixed badge colors before shown
         badgeTextView.setTypeface(AndroidUtilities.bold());
         badgeTextView.setTextSize(12);
         badgeTextView.setGravity(Gravity.CENTER);

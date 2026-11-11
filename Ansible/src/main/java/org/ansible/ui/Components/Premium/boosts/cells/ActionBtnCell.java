@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
@@ -50,7 +51,7 @@ public class ActionBtnCell extends FrameLayout {
         button.setEnabled(true);
         button.setCount(counter, animated);
         button.setText(LocaleController.getString(R.string.BoostingStartGiveaway), animated);
-        backgroundView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(backgroundView, Theme.key_dialogBackground, resourcesProvider);
     }
 
     public void setGiftPremiumStyle(int counter, boolean animated, boolean isEnabled) {
@@ -60,14 +61,14 @@ public class ActionBtnCell extends FrameLayout {
         button.setEnabled(isEnabled);
         button.setCount(counter, animated);
         button.setText(LocaleController.getString(R.string.GiftPremium), animated);
-        backgroundView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(backgroundView, Theme.key_dialogBackground, resourcesProvider);
     }
 
     public void setActivateForFreeStyle() {
         drawDivider = true;
         button.setEnabled(true);
         button.setText(LocaleController.getString(R.string.GiftPremiumActivateForFree), false);
-        backgroundView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(backgroundView, Theme.key_dialogBackground, resourcesProvider);
     }
 
     @Override

@@ -37,6 +37,7 @@ import org.ansible.messenger.voip.VoIPService;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.MotionBackgroundDrawable;
 import org.ansible.ui.Components.RLottieDrawable;
@@ -138,7 +139,7 @@ public abstract class PrivateVideoPreviewDialog extends FrameLayout implements V
         ActionBar actionBar = new ActionBar(context);
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setBackgroundColor(Color.TRANSPARENT);
-        actionBar.setItemsColor(Theme.getColor(Theme.key_voipgroup_actionBarItems), false);
+        ThemeBind.actionBarItemsColor(actionBar, Theme.key_voipgroup_actionBarItems, false);
         actionBar.setOccupyStatusBar(true);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -205,7 +206,7 @@ public abstract class PrivateVideoPreviewDialog extends FrameLayout implements V
         positiveButton.setMinWidth(AndroidUtilities.dp(64));
         positiveButton.setTag(Dialog.BUTTON_POSITIVE);
         positiveButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        positiveButton.setTextColor(Theme.getColor(Theme.key_voipgroup_nameText));
+        ThemeBind.textColor(positiveButton, Theme.key_voipgroup_nameText);
         positiveButton.setGravity(Gravity.CENTER);
         positiveButton.setTypeface(AndroidUtilities.bold());
         positiveButton.setText(LocaleController.getString(R.string.VoipShareVideo));

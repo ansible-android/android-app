@@ -17,6 +17,7 @@ import org.ansible.messenger.DialogObject;
 import org.ansible.messenger.R;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
@@ -64,7 +65,7 @@ public class CommunityInviteOnlySheet extends BottomSheetWithRecyclerListView {
         cell.setPadding(dp(20), 0, dp(20), dp(17));
         cell.avatarImage.setForUserOrChat(chat, new AvatarDrawable(chat));
         cell.titleView.setText(DialogObject.getName(chat));
-        cell.titleView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(cell.titleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
 
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         ssb.append("* ");
@@ -73,7 +74,7 @@ public class CommunityInviteOnlySheet extends BottomSheetWithRecyclerListView {
             R.string.CommunityInviteOnlyChannelInfo :
             R.string.CommunityInviteOnlyGroupInfo
         ));
-        cell.textView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(cell.textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         cell.textView.setText(ssb);
 
         containerView.addView(messageButton, LayoutHelper.createFrameMarginPx(

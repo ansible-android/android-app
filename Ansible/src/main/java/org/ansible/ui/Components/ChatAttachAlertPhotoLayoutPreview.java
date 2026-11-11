@@ -59,6 +59,7 @@ import org.ansible.ui.ActionBar.ActionBarMenuItem;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.MessageDrawable;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.ChatActionCell;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.spoilers.SpoilerEffect2;
@@ -125,7 +126,7 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
         header.setLines(1);
         header.setMaxLines(1);
         header.setEllipsize(TextUtils.TruncateAt.END);
-        header.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
+        ThemeBind.textColor(header, Theme.key_dialogTextBlack, resourcesProvider);
         header.setText(LocaleController.getString(R.string.AttachMediaPreview));
         header.setTypeface(AndroidUtilities.bold());
         header.setCompoundDrawablePadding(AndroidUtilities.dp(4));

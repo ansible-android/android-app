@@ -23,6 +23,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 
 public class ThemeTypeCell extends FrameLayout {
@@ -37,7 +38,7 @@ public class ThemeTypeCell extends FrameLayout {
         setWillNotDraw(false);
 
         textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setLines(1);
         textView.setMaxLines(1);
@@ -47,7 +48,7 @@ public class ThemeTypeCell extends FrameLayout {
         addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 23 + 48 : 21, 0, LocaleController.isRTL ? 21 : 23, 0));
 
         checkImage = new ImageView(context);
-        checkImage.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_addedIcon), PorterDuff.Mode.MULTIPLY));
+        ThemeBind.colorFilter(checkImage, Theme.key_featuredStickers_addedIcon, PorterDuff.Mode.MULTIPLY);
         checkImage.setImageResource(R.drawable.sticker_added);
         addView(checkImage, LayoutHelper.createFrame(19, 14, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, 23, 0, 23, 0));
     }

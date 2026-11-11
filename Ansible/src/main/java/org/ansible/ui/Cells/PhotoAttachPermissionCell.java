@@ -21,6 +21,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.ChatAttachAlertPhotoLayout;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -38,16 +39,16 @@ public class PhotoAttachPermissionCell extends FrameLayout {
 
         imageView = new ImageView(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
-        imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_attachPermissionImage), PorterDuff.Mode.MULTIPLY));
+        ThemeBind.colorFilter(imageView, Theme.key_chat_attachPermissionImage, resourcesProvider, PorterDuff.Mode.MULTIPLY);
         addView(imageView, LayoutHelper.createFrame(44, 44, Gravity.CENTER, 5, 0, 0, 27));
 
         imageView2 = new ImageView(context);
         imageView2.setScaleType(ImageView.ScaleType.CENTER);
-        imageView2.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_attachPermissionMark), PorterDuff.Mode.MULTIPLY));
+        ThemeBind.colorFilter(imageView2, Theme.key_chat_attachPermissionMark, resourcesProvider, PorterDuff.Mode.MULTIPLY);
         addView(imageView2, LayoutHelper.createFrame(44, 44, Gravity.CENTER, 5, 0, 0, 27));
 
         textView = new TextView(context);
-        textView.setTextColor(getThemedColor(Theme.key_chat_attachPermissionText));
+        ThemeBind.textColor(textView, Theme.key_chat_attachPermissionText, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         textView.setGravity(Gravity.CENTER);
         addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 5, 13, 5, 0));

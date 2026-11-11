@@ -19,6 +19,7 @@ import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.AvatarSpan;
 import org.ansible.ui.Business.QuickRepliesController;
 import org.ansible.ui.Components.LayoutHelper;
@@ -48,7 +49,7 @@ public class BotBiometrySettings extends BaseFragment {
         });
 
         FrameLayout contentView = new FrameLayout(context);
-        contentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray, resourceProvider));
+        ThemeBind.backgroundColor(contentView, Theme.key_windowBackgroundGray, resourceProvider);
 
         listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, this::onLongClick);
         contentView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));

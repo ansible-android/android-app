@@ -8,8 +8,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -37,6 +35,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_stories;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.FixedHeightEmptyCell;
 import org.ansible.ui.Cells.ManageChatTextCell;
 import org.ansible.ui.Cells.ShadowSectionCell;
@@ -44,7 +43,6 @@ import org.ansible.ui.Cells.TextCell;
 import org.ansible.ui.Cells.TextInfoPrivacyCell;
 import org.ansible.ui.Charts.view_data.ChartHeaderView;
 import org.ansible.ui.Components.Bulletin;
-import org.ansible.ui.Components.CombinedDrawable;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.LinkActionView;
 import org.ansible.ui.Components.ListView.AdapterWithDiffUtils;
@@ -56,7 +54,6 @@ import org.ansible.ui.Components.Premium.boosts.cells.statistics.GiveawayCell;
 import org.ansible.ui.Components.RLottieImageView;
 import org.ansible.ui.Components.RecyclerListView;
 import org.ansible.ui.Components.ScrollSlidingTextTabStrip;
-import org.ansible.ui.Components.blur3.capture.IBlur3Capture;
 import org.ansible.ui.Diamonds.DiamondsController;
 import org.ansible.ui.Diamonds.DiamondsIntroActivity;
 
@@ -130,6 +127,7 @@ public class ChannelBoostLayout extends FrameLayout {
                     break;
                 case DIVIDER_VIEW_TYPE:
                     view = new ShadowSectionCell(parent.getContext(), 12, Theme.getColor(Theme.key_windowBackgroundGray));
+                    ThemeBind.backgroundColor(view, Theme.key_windowBackgroundGray);
                     break;
                 case OVERVIEW_TYPE:
                     view = new StatisticActivity.OverviewCell(getContext());
@@ -207,7 +205,7 @@ public class ChannelBoostLayout extends FrameLayout {
                     TextView textView = new TextView(getContext());
                     textView.setText(LocaleController.getString(isChannel() ? R.string.NoBoostersHint : R.string.NoBoostersGroupHint));
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                    textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+                    ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText);
                     textView.setGravity(Gravity.CENTER);
                     frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 16, 0, 0));
                     view = frameLayout;
@@ -319,7 +317,6 @@ public class ChannelBoostLayout extends FrameLayout {
     };
 
     public final RecyclerListView listView;
-    public IBlur3Capture iBlur3Capture;
     boolean usersLoading;
     private LinearLayout progressLayout;
     private TLRPC.Chat currentChat;
@@ -333,7 +330,7 @@ public class ChannelBoostLayout extends FrameLayout {
         this.currentChat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
         listView = new RecyclerListView(context);
         listView.setSections(true);
-        listView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider));
+        listView.setCaptureSectionsDecoratorAllowed(true);
         listView.setLayoutManager(new LinearLayoutManager(context));
         DefaultItemAnimator defaultItemAnimator = new DefaultItemAnimator();
         defaultItemAnimator.setSupportsChangeAnimations(false);
@@ -644,14 +641,14 @@ public class ChannelBoostLayout extends FrameLayout {
         TextView loadingTitle = new TextView(context);
         loadingTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         loadingTitle.setTypeface(AndroidUtilities.bold());
-        loadingTitle.setTextColor(Theme.getColor(Theme.key_player_actionBarTitle));
+        ThemeBind.textColor(loadingTitle, Theme.key_player_actionBarTitle);
         loadingTitle.setTag(Theme.key_player_actionBarTitle);
         loadingTitle.setText(LocaleController.getString(R.string.LoadingStats));
         loadingTitle.setGravity(Gravity.CENTER_HORIZONTAL);
 
         TextView loadingSubtitle = new TextView(context);
         loadingSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        loadingSubtitle.setTextColor(Theme.getColor(Theme.key_player_actionBarSubtitle));
+        ThemeBind.textColor(loadingSubtitle, Theme.key_player_actionBarSubtitle);
         loadingSubtitle.setTag(Theme.key_player_actionBarSubtitle);
         loadingSubtitle.setText(LocaleController.getString(R.string.LoadingStatsDescription));
         loadingSubtitle.setGravity(Gravity.CENTER_HORIZONTAL);

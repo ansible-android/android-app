@@ -22,8 +22,8 @@ import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.ansible.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
 import org.ansible.ui.Components.blur3.drawable.color.BlurredBackgroundColorProviderThemed;
-import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceColor;
-import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
+import org.ansible.utils.glass.source.GlassSourceColor;
+import org.ansible.utils.glass.source.GlassSourceRenderNode;
 
 public class GlassTabsView extends FrameLayout {
 

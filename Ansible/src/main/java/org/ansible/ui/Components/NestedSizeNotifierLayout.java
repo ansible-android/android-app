@@ -1,7 +1,5 @@
 package org.ansible.ui.Components;
 
-import static org.ansible.messenger.AndroidUtilities.dp;
-
 import android.content.Context;
 import android.view.View;
 
@@ -12,8 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.ui.ActionBar.BottomSheet;
-import org.ansible.ui.CachedMediaLayout;
 
+@Deprecated
 public class NestedSizeNotifierLayout extends SizeNotifierFrameLayout implements NestedScrollingParent3, View.OnLayoutChangeListener {
     public NestedSizeNotifierLayout(Context context) {
         super(context);

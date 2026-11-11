@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.SeekBarView;
 
@@ -91,8 +92,8 @@ public class BrightnessControlCell extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        leftImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-        rightImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+        ThemeBind.colorFilter(leftImageView, Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider, PorterDuff.Mode.MULTIPLY);
+        ThemeBind.colorFilter(rightImageView, Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider, PorterDuff.Mode.MULTIPLY);
     }
 
     protected void didChangedValue(float value) {

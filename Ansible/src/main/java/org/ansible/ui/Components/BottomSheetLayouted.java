@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Stories.recorder.ButtonWithCounterView;
 
 public class BottomSheetLayouted extends BottomSheetWithRecyclerListView {
@@ -35,10 +36,10 @@ public class BottomSheetLayouted extends BottomSheetWithRecyclerListView {
         final float pad = (float) backgroundPaddingLeft / AndroidUtilities.density;
 
         buttonContainer = new FrameLayout(getContext());
-        buttonContainer.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground, resourcesProvider);
 
         View buttonShadow = new View(getContext());
-        buttonShadow.setBackgroundColor(Theme.getColor(Theme.key_divider, resourcesProvider));
+        ThemeBind.backgroundColor(buttonShadow, Theme.key_divider, resourcesProvider);
         buttonContainer.addView(buttonShadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1.0f / AndroidUtilities.density, Gravity.FILL_HORIZONTAL | Gravity.TOP));
 
         button = new ButtonWithCounterView(getContext(), resourcesProvider);

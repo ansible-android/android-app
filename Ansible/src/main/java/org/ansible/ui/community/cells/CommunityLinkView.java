@@ -29,6 +29,7 @@ import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.LayoutHelper;
+import java.util.HashSet;
 
 @SuppressLint("ViewConstructor")
 public class CommunityLinkView extends FrameLayout implements Theme.Colorable {
@@ -111,5 +112,10 @@ public class CommunityLinkView extends FrameLayout implements Theme.Colorable {
         arrowView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
         titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+    }
+    @Override
+    public void addColorKeys(HashSet<Integer> colors) {
+        colors.add(Theme.key_windowBackgroundWhiteGrayText2);
+        colors.add(Theme.key_windowBackgroundWhiteBlackText);
     }
 }

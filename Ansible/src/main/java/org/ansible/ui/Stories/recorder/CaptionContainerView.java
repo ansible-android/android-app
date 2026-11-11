@@ -62,6 +62,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.ui.ActionBar.AdjustPanLayoutHelper;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AnimatedTextView;
@@ -398,7 +399,7 @@ public class CaptionContainerView extends FrameLayout {
         applyButton = new BounceableImageView(context);
         ScaleStateListAnimator.apply(applyButton, 0.05f, 1.25f);
         applyButtonCheck = context.getResources().getDrawable(R.drawable.input_done).mutate();
-        applyButtonCheck.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogFloatingIcon), PorterDuff.Mode.SRC_IN));
+        ThemeBind.drawableColorFilter(this, applyButtonCheck, Theme.key_dialogFloatingIcon, PorterDuff.Mode.SRC_IN);
         applyButtonDrawable = new CombinedDrawable(Theme.createCircleDrawable(AndroidUtilities.dp(18), Theme.getColor(Theme.key_chat_editMediaButton, resourcesProvider)), applyButtonCheck, 0, AndroidUtilities.dp(1));
         applyButtonDrawable.setCustomSize(AndroidUtilities.dp(36), AndroidUtilities.dp(36));
         applyButton.setImageDrawable(applyButtonDrawable);

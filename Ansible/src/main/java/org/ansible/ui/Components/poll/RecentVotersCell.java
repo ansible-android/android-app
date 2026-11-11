@@ -28,6 +28,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.CallLogActivity;
 import org.ansible.ui.Components.AvatarsListDrawable;
 import org.ansible.ui.Components.FlickerLoadingView;
@@ -53,7 +54,7 @@ public class RecentVotersCell extends FrameLayout {
         avatarsListDrawable = new AvatarsListDrawable(currentAccount, this, dp(24), dp(10), dpf2(1));
 
         textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_actionBarDefaultSubmenuItem, resourcesProvider);
         textView.setLines(1);
         textView.setSingleLine(true);
         textView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);

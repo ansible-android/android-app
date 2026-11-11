@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -34,6 +35,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.CombinedDrawable;
@@ -149,15 +151,15 @@ public class StatisticPostInfoCell extends FrameLayout {
 
         addView(contentLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.NO_GRAVITY, !LocaleController.isRTL ? 72 : 18, 0, !LocaleController.isRTL ? 18 : 72, 0));
 
-        message.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        views.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        date.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
-        shares.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
-        likes.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
+        ThemeBind.textColor(message, Theme.key_dialogTextBlack);
+        ThemeBind.textColor(views, Theme.key_dialogTextBlack);
+        ThemeBind.textColor(date, Theme.key_windowBackgroundWhiteGrayText3);
+        ThemeBind.textColor(shares, Theme.key_windowBackgroundWhiteGrayText3);
+        ThemeBind.textColor(likes, Theme.key_windowBackgroundWhiteGrayText3);
         Drawable likesDrawable = ContextCompat.getDrawable(context, R.drawable.mini_stats_likes).mutate();
-        DrawableCompat.setTint(likesDrawable, Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
+        ThemeBind.drawableColorFilter(likes, likesDrawable, Theme.key_windowBackgroundWhiteGrayText3, PorterDuff.Mode.SRC_IN);
         Drawable sharesDrawable = ContextCompat.getDrawable(context, R.drawable.mini_stats_shares).mutate();
-        DrawableCompat.setTint(sharesDrawable, Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
+        ThemeBind.drawableColorFilter(shares, sharesDrawable, Theme.key_windowBackgroundWhiteGrayText3, PorterDuff.Mode.SRC_IN);
 
         CombinedDrawable likesCombinedDrawable = new CombinedDrawable(null, likesDrawable, 0, dp(1));
         likesCombinedDrawable.setCustomSize(sharesDrawable.getIntrinsicWidth(), sharesDrawable.getIntrinsicHeight());

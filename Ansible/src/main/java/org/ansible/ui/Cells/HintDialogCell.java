@@ -10,6 +10,7 @@ package org.ansible.ui.Cells;
 
 import static org.ansible.messenger.AndroidUtilities.dp;
 
+import org.ansible.messenger.FileLog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -36,6 +37,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_account;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedFloat;
 import org.ansible.ui.Components.AvatarDrawable;
 import org.ansible.ui.Components.BackupImageView;
@@ -45,7 +47,7 @@ import org.ansible.ui.Components.CubicBezierInterpolator;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.Premium.PremiumGradient;
 
-public class HintDialogCell extends FrameLayout {
+public class HintDialogCell extends FrameLayout implements Theme.Colorable {
 
     private BackupImageView imageView;
     private TextView nameTextView;
@@ -91,7 +93,7 @@ public class HintDialogCell extends FrameLayout {
             }
         };
         NotificationCenter.listenEmojiLoading(nameTextView);
-        nameTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(nameTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
         nameTextView.setMaxLines(1);
         nameTextView.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
@@ -184,7 +186,7 @@ public class HintDialogCell extends FrameLayout {
     }
 
     public void setColors(int textColorKey, int backgroundColorKey) {
-        nameTextView.setTextColor(Theme.getColor(textColorKey, resourcesProvider));
+        ThemeBind.textColor(nameTextView, textColorKey, resourcesProvider);
         this.backgroundColorKey = backgroundColorKey;
         checkBox.setColor(Theme.key_dialogRoundCheckBox, backgroundColorKey, Theme.key_dialogRoundCheckBoxCheck);
     }
@@ -313,5 +315,18 @@ public class HintDialogCell extends FrameLayout {
 
     public long getDialogId() {
         return dialogId;
+    }
+
+    @Override
+    public void updateColors() {
+        try {
+            // counter / avatar colors are read at draw: no update(0) (a counter text rebuild per theme frame)
+            if (counterView != null) {
+                counterView.invalidate();
+            }
+            invalidate();
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
     }
 }

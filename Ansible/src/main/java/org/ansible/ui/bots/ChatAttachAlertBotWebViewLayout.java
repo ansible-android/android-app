@@ -3,6 +3,7 @@ package org.ansible.ui.bots;
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.ui.Components.Bulletin.DURATION_PROLONG;
 
+import org.ansible.messenger.FileLog;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -54,6 +55,7 @@ import org.ansible.ui.ActionBar.ActionBarMenuSubItem;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.Components.BulletinFactory;
@@ -263,7 +265,7 @@ public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlert
             }
         });
 
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.didSetNewTheme);
+        NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.didSetNewTheme);
     }
 
     public void setNeedCloseConfirmation(boolean needCloseConfirmation) {
@@ -295,7 +297,7 @@ public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlert
                     .create();
             dialog.show();
             TextView textView = (TextView) dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            textView.setTextColor(getThemedColor(Theme.key_text_RedBold));
+            ThemeBind.textColor(textView, Theme.key_text_RedBold, resourcesProvider);
             return false;
         } else {
             parentAlert.dismiss();
@@ -559,7 +561,7 @@ public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlert
             }
         }));
 
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.webViewResultSent);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.webViewResultSent);
     }
 
     @Override
@@ -1249,7 +1251,7 @@ public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlert
         }
     }
 
-    public static class WebProgressView extends View {
+    public static class WebProgressView extends View implements Theme.Colorable {
         private final SimpleFloatPropertyCompat<WebProgressView> LOAD_PROGRESS_PROPERTY = new SimpleFloatPropertyCompat<>("loadProgress", obj -> obj.loadProgress, WebProgressView::setLoadProgress).setMultiplier(100f);
 
         private Paint bluePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -1312,5 +1314,16 @@ public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlert
                 canvas.drawLine(0, y, getWidth() * loadProgress, y, bluePaint);
             }
         }
-    }
+    
+        @Override
+        public void updateColors() {
+            try {
+                bluePaint.setColor(getThemedColor(Theme.key_featuredStickers_addButton));
+                invalidate();
+        
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
 }

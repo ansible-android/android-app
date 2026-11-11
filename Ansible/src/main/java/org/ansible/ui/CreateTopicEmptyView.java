@@ -14,10 +14,12 @@ import org.ansible.messenger.ImageLocation;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.MediaDataController;
 import org.ansible.messenger.R;
+import org.ansible.messenger.SharedConfig;
 import org.ansible.messenger.SvgHelper;
 import org.ansible.messenger.UserConfig;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -37,10 +39,12 @@ public class CreateTopicEmptyView extends LinearLayout {
 
         backupImageView = new BackupImageView(context);
 
+        final int textColorKey = Theme.isCompactMode(resourcesProvider) ? Theme.key_chat_compact_topicEmptyText : Theme.key_chat_serviceText;
+
         TextView headerTextView = new TextView(context);
         headerTextView.setTypeface(AndroidUtilities.bold());
         headerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        headerTextView.setTextColor(getThemedColor(Theme.key_chat_serviceText));
+        ThemeBind.textColor(headerTextView, textColorKey, resourcesProvider);
         headerTextView.setGravity(Gravity.CENTER_HORIZONTAL);
         headerTextView.setMaxWidth(AndroidUtilities.dp(210));
 
@@ -49,7 +53,7 @@ public class CreateTopicEmptyView extends LinearLayout {
 
         TextView description = new TextView(context);
         description.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-        description.setTextColor(getThemedColor(Theme.key_chat_serviceText));
+        ThemeBind.textColor(description, textColorKey, resourcesProvider);
         description.setGravity(Gravity.CENTER_HORIZONTAL);
         description.setMaxWidth(AndroidUtilities.dp(160));
 

@@ -16,6 +16,7 @@ import org.ansible.messenger.browser.Browser;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.CheckBoxCell;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -37,7 +38,7 @@ public class WebAppDisclaimerAlert {
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         TextView textView = new TextView(context);
         textView.setLetterSpacing(0.025f);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 24, 0, 24, 0));
 

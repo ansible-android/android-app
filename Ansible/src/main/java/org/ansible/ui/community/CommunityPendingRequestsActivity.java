@@ -3,6 +3,7 @@ package org.ansible.ui.community;
 import static org.ansible.messenger.AndroidUtilities.dp;
 import static org.ansible.messenger.LocaleController.getString;
 
+import org.ansible.messenger.FileLog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -25,6 +26,7 @@ import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.BackDrawable;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.Bulletin;
 import org.ansible.ui.Components.BulletinFactory;
@@ -119,7 +121,7 @@ public class CommunityPendingRequestsActivity extends BaseFragment implements Fa
         actionBar.setTitle(getString(R.string.CommunityPendingRequests));
 
         containerView = new FrameLayout(context);
-        containerView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        ThemeBind.backgroundColor(containerView, Theme.key_windowBackgroundGray);
 
         listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, this::onLongClick);
         listView.setClipToPadding(false);
@@ -148,7 +150,7 @@ public class CommunityPendingRequestsActivity extends BaseFragment implements Fa
 
         buttonDeclineAllView = new ButtonWithCounterView(context, resourceProvider);
         buttonDeclineAllView.setNeutral();
-        buttonDeclineAllView.setColor(ColorUtils.blendARGB(getThemedColor(Theme.key_windowBackgroundWhite), getThemedColor(Theme.key_windowBackgroundWhiteBlackText), 0.125f));
+        buttonDeclineAllView.setColor(declineAllColor = ColorUtils.blendARGB(getThemedColor(Theme.key_windowBackgroundWhite), getThemedColor(Theme.key_windowBackgroundWhiteBlackText), 0.125f));
         buttonDeclineAllView.setText(getString(R.string.CommunityPendingRequestDeclineAll));
         buttonDeclineAllView.setRound();
         buttonDeclineAllView.setOnClickListener(v -> pendingRequestsList.onResolveAllJoinRequests(false));
@@ -245,5 +247,21 @@ public class CommunityPendingRequestsActivity extends BaseFragment implements Fa
         buttonsLayout.setVisibility(1f - factor > 0 ? View.VISIBLE : View.GONE);
         emptyView.setAlpha(factor);
         emptyView.setVisibility(factor > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    private int declineAllColor;
+
+    @Override
+    public void onThemeColorsChanged() {
+        try {
+            super.onThemeColorsChanged();
+            final int color = ColorUtils.blendARGB(getThemedColor(Theme.key_windowBackgroundWhite), getThemedColor(Theme.key_windowBackgroundWhiteBlackText), 0.125f);
+            if (buttonDeclineAllView != null && color != declineAllColor) {
+                declineAllColor = color;
+                buttonDeclineAllView.setColor(color);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
     }
 }

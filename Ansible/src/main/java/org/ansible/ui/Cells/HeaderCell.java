@@ -26,6 +26,7 @@ import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -85,7 +86,7 @@ public class HeaderCell extends FrameLayout {
             animatedTextView.setTextSize(AndroidUtilities.dp(14));
             animatedTextView.setTypeface(AndroidUtilities.bold());
             animatedTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
-            animatedTextView.setTextColor(getThemedColor(textColorKey));
+            ThemeBind.textColor(animatedTextView, textColorKey, resourcesProvider);
             animatedTextView.setTag(textColorKey);
             animatedTextView.getDrawable().setHacks(true, true, false);
             addView(animatedTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, height - topMargin, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, padding, topMargin, padding, text2 ? 0 : bottomMargin));
@@ -96,7 +97,7 @@ public class HeaderCell extends FrameLayout {
             textView.setEllipsize(TextUtils.TruncateAt.END);
             textView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
             textView.setMinHeight(AndroidUtilities.dp(height - topMargin));
-            textView.setTextColor(getThemedColor(textColorKey));
+            ThemeBind.textColor(textView, textColorKey, resourcesProvider);
             textView.setTag(textColorKey);
             addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, padding, topMargin, padding, text2 ? 0 : bottomMargin));
         }

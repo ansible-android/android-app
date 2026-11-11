@@ -34,6 +34,7 @@ import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
 import org.ansible.ui.Components.BulletinFactory;
 import org.ansible.ui.Components.CubicBezierInterpolator;
@@ -211,7 +212,7 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
                 }
             }
         };
-        searchField.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
+        ThemeBind.backgroundColor(searchField, Theme.key_dialogBackground, resourcesProvider);
         searchField.setOnSearchTextChange(this::onSearch);
         searchField.setHintText(LocaleController.getString(R.string.Search), false);
 
@@ -230,7 +231,7 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
         buttonContainer.setClickable(true);
         buttonContainer.setOrientation(LinearLayout.VERTICAL);
         buttonContainer.setPadding(dp(10), dp(10), dp(10), dp(10));
-        buttonContainer.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground, resourcesProvider);
         actionButton = new ButtonWithCounterView(getContext(), resourcesProvider) {
             @Override
             protected float calculateCounterWidth(float width, float percent) {

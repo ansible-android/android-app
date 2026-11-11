@@ -24,6 +24,7 @@ import org.ansible.messenger.ImageLoader;
 import org.ansible.messenger.MediaController;
 import org.ansible.messenger.MessagesController;
 import org.ansible.messenger.FileLoader;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.MessageObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
@@ -31,7 +32,19 @@ import org.ansible.ui.Cells.BaseCell;
 
 import java.io.File;
 
-public class PopupAudioView extends BaseCell implements SeekBar.SeekBarDelegate, DownloadController.FileDownloadProgressListener {
+public class PopupAudioView extends BaseCell implements SeekBar.SeekBarDelegate, DownloadController.FileDownloadProgressListener, Theme.Colorable {
+
+    @Override
+    public void updateColors() {
+        try {
+            if (seekBar != null && currentMessageObject != null) {
+                seekBar.setColors(Theme.getColor(Theme.key_chat_inAudioSeekbar), Theme.getColor(Theme.key_chat_inAudioSeekbar), Theme.getColor(Theme.key_chat_inAudioSeekbarFill), Theme.getColor(Theme.key_chat_inAudioSeekbarFill), Theme.getColor(Theme.key_chat_inAudioSeekbarSelected));
+                invalidate();
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
 
     private boolean wasLayout = false;
     protected MessageObject currentMessageObject;

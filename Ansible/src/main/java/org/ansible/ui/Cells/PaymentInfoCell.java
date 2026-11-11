@@ -24,6 +24,7 @@ import org.ansible.messenger.NotificationCenter;
 import org.ansible.messenger.WebFile;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.BackupImageView;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -44,7 +45,7 @@ public class PaymentInfoCell extends FrameLayout {
         addView(imageView, LayoutHelper.createFrame(100, 100, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), 10, 10, 10, 0));
 
         nameTextView = new TextView(context);
-        nameTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(nameTextView, Theme.key_windowBackgroundWhiteBlackText);
         nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         nameTextView.setLines(1);
         nameTextView.setTypeface(AndroidUtilities.bold());
@@ -55,7 +56,7 @@ public class PaymentInfoCell extends FrameLayout {
         addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 10 : 123, 9, LocaleController.isRTL ? 123 : 10, 0));
 
         detailTextView = new TextView(context);
-        detailTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(detailTextView, Theme.key_windowBackgroundWhiteBlackText);
         detailTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         detailTextView.setMaxLines(3);
         detailTextView.setEllipsize(TextUtils.TruncateAt.END);
@@ -63,7 +64,7 @@ public class PaymentInfoCell extends FrameLayout {
         addView(detailTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 10 : 123, 33, LocaleController.isRTL ? 123 : 10, 0));
 
         detailExTextView = new TextView(context);
-        detailExTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2));
+        ThemeBind.textColor(detailExTextView, Theme.key_windowBackgroundWhiteGrayText2);
         detailExTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         detailExTextView.setLines(1);
         detailExTextView.setMaxLines(1);

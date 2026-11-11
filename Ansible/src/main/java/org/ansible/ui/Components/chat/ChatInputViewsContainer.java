@@ -17,13 +17,14 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.blur3.BlurredBackgroundWithFadeDrawable;
 import org.ansible.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
 import org.ansible.ui.Components.inset.InAppKeyboardInsetView;
 import org.ansible.ui.Components.inset.WindowInsetsProvider;
 
-public class ChatInputViewsContainer extends FrameLayout {
+public class ChatInputViewsContainer extends FrameLayout implements Theme.Colorable {
     public static final int INPUT_BUBBLE_RADIUS = 22;
     public static final int INPUT_KEYBOARD_RADIUS = 29;
 
@@ -90,9 +91,15 @@ public class ChatInputViewsContainer extends FrameLayout {
         underKeyboardBackgroundDrawable.setIntensity(0.4f);
     }
 
+    /** also called on every theme update (Theme.Colorable) */
+    @Override
     public void updateColors() {
-        blurredBackgroundDrawable.updateColors();
-        underKeyboardBackgroundDrawable.updateColors();
+        if (blurredBackgroundDrawable != null) {
+            blurredBackgroundDrawable.updateColors();
+        }
+        if (underKeyboardBackgroundDrawable != null) {
+            underKeyboardBackgroundDrawable.updateColors();
+        }
         invalidate();
     }
 

@@ -7,7 +7,7 @@ import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.NotificationCenter;
 import org.ansible.asnet.ConnectionsManager;
 import org.ansible.asnet.TLRPC;
-import org.ansible.utils.camera.roundvideo.RoundVideoSession;
+import org.ansible.utils.recorder.round.RoundVideoSession;
 
 import java.io.File;
 import java.util.HashMap;

@@ -38,6 +38,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.INavigationLayout;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.TextInfoPrivacyCell;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.AlertsCreator;
@@ -232,7 +233,7 @@ public class GiftPremiumBottomSheet extends BottomSheetWithRecyclerListView impl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.billingProductDetailsUpdated);
+        NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.billingProductDetailsUpdated);
     }
 
     @Override
@@ -348,7 +349,7 @@ public class GiftPremiumBottomSheet extends BottomSheetWithRecyclerListView impl
 
         FrameLayout buttonContainer = new FrameLayout(getContext());
         buttonContainer.addView(premiumButtonView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER_VERTICAL, 16, 0, 16, 0));
-        buttonContainer.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground, resourcesProvider);
         containerView.addView(buttonContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 68, Gravity.BOTTOM));
     }
 

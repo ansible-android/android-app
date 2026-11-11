@@ -17,6 +17,7 @@ import org.ansible.messenger.UserConfig;
 import org.ansible.messenger.Utilities;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 
 import java.util.ArrayList;
 
@@ -142,7 +143,7 @@ public class AvatarConstructorPreviewCell extends FrameLayout {
 
         textView = new TextView(context);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-        textView.setTextColor(Theme.getColor(Theme.key_avatar_text));
+        ThemeBind.textColor(textView, Theme.key_avatar_text);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
         textView.setText(LocaleController.getString(R.string.UseEmoji));

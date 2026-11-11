@@ -30,6 +30,7 @@ import org.ansible.asnet.TLObject;
 import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.GraySectionCell;
 import org.ansible.ui.Cells.TextCell;
 import org.ansible.ui.Components.AnimatedFloat;
@@ -131,7 +132,7 @@ public class SelectorBottomSheet extends BottomSheetWithRecyclerListView {
                 selectorAdapter.notifyChangedLast();
             }
         };
-        searchField.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
+        ThemeBind.backgroundColor(searchField, Theme.key_dialogBackground, resourcesProvider);
         searchField.setOnSearchTextChange(this::onSearch);
 
         sectionCell = new GraySectionCell(getContext(), resourcesProvider);
@@ -145,7 +146,7 @@ public class SelectorBottomSheet extends BottomSheetWithRecyclerListView {
         buttonContainer.setClickable(true);
         buttonContainer.setOrientation(LinearLayout.VERTICAL);
         buttonContainer.setPadding(dp(10), dp(10), dp(10), dp(10));
-        buttonContainer.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        ThemeBind.backgroundColor(buttonContainer, Theme.key_dialogBackground, resourcesProvider);
         actionButton = new ButtonWithCounterView(getContext(), resourcesProvider);
         actionButton.setOnClickListener(v -> save(false));
         buttonContainer.addView(actionButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));

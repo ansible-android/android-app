@@ -24,6 +24,7 @@ import org.ansible.messenger.FileLoader;
 import org.ansible.messenger.LocaleController;
 import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 import org.ansible.ui.Components.SeekBarView;
 
@@ -43,7 +44,7 @@ public class MaxFileSizeCell extends FrameLayout {
         setWillNotDraw(false);
 
         textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setLines(1);
         textView.setMaxLines(1);
@@ -54,7 +55,7 @@ public class MaxFileSizeCell extends FrameLayout {
         addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 21, 13, 21, 0));
 
         sizeTextView = new TextView(context);
-        sizeTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlue2));
+        ThemeBind.textColor(sizeTextView, Theme.key_dialogTextBlue2);
         sizeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         sizeTextView.setLines(1);
         sizeTextView.setMaxLines(1);

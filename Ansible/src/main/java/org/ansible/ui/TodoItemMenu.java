@@ -60,6 +60,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.ui.ActionBar.ActionBarMenuSubItem;
 import org.ansible.ui.ActionBar.ActionBarPopupWindow;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.BaseCell;
 import org.ansible.ui.Cells.ChatActionCell;
 import org.ansible.ui.Cells.ChatMessageCell;
@@ -78,7 +79,7 @@ import org.ansible.ui.Components.ScrimOptions;
 import org.ansible.ui.Components.ViewPagerFixed;
 import org.ansible.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.ansible.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
-import org.ansible.ui.Components.blur3.source.BlurredBackgroundSourceBitmap;
+import org.ansible.utils.glass.source.GlassSourceBitmap;
 import org.ansible.ui.Components.blur3.utils.Blur3Utils;
 import org.ansible.ui.Components.chat.ViewPositionWatcher;
 
@@ -107,7 +108,7 @@ public class TodoItemMenu extends Dialog {
     private float openProgress;
     private float openProgress2;
 
-    private final BlurredBackgroundSourceBitmap iBlur3SourceBitmap;
+    private final GlassSourceBitmap iBlur3SourceBitmap;
     private final BlurredBackgroundDrawableViewFactory iBlur3Factory;
 
     public TodoItemMenu(Context context, Theme.ResourcesProvider resourcesProvider) {
@@ -164,7 +165,7 @@ public class TodoItemMenu extends Dialog {
             dismiss();
         });
 
-        iBlur3SourceBitmap = new BlurredBackgroundSourceBitmap();
+        iBlur3SourceBitmap = new GlassSourceBitmap();
         iBlur3Factory = new BlurredBackgroundDrawableViewFactory(iBlur3SourceBitmap);
         iBlur3Factory.setSourceRootView(new ViewPositionWatcher(windowView), windowView);
 
@@ -602,7 +603,7 @@ public class TodoItemMenu extends Dialog {
             FrameLayout backContainer = new FrameLayout(getContext());
 
             LinearLayout linearLayout = new LinearLayout(getContext());
-            linearLayout.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground, resourcesProvider));
+            ThemeBind.backgroundColor(linearLayout, Theme.key_actionBarDefaultSubmenuBackground, resourcesProvider);
             linearLayout.setOrientation(LinearLayout.VERTICAL);
             RecyclerListView listView2 = finalMessageSeenView.createListView();
             backContainer.addView(cell);

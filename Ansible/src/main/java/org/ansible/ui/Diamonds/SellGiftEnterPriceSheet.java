@@ -28,6 +28,7 @@ import org.ansible.messenger.Utilities;
 import org.ansible.messenger.utils.tlutils.AmountUtils;
 import org.ansible.ui.ActionBar.BottomSheet;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.AnimatedTextView;
 import org.ansible.ui.Components.EditTextBoldCursor;
 import org.ansible.ui.Components.LayoutHelper;
@@ -71,7 +72,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         inputAmountMinDiamonds = AmountUtils.Amount.fromDecimal(config.diamondsDiamondGiftResaleAmountMin.get(), AmountUtils.Currency.STARS);
         inputAmountMaxDiamonds = AmountUtils.Amount.fromDecimal(config.diamondsDiamondGiftResaleAmountMax.get(), AmountUtils.Currency.STARS);
 
-        fixNavigationBar(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        fixNavigationBarKey(Theme.key_dialogBackground);
 
 
 
@@ -85,7 +86,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
         layout.addView(headerLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 56, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 0, 0, 0));
 
         titleView = new AnimatedTextView(context);
-        titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        ThemeBind.textColor(titleView, Theme.key_windowBackgroundWhiteBlackText);
         titleView.setTextSize(dp(20));
         titleView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
         titleView.setTypeface(AndroidUtilities.bold());
@@ -108,7 +109,7 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
             diamondsCountEditField.setMaxLines(1);
             diamondsCountEditField.setBackground(null);
             diamondsCountEditField.setPadding(dp(42), dp(16), dp(16), dp(16));
-            diamondsCountEditField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            ThemeBind.textColor(diamondsCountEditField, Theme.key_windowBackgroundWhiteBlackText);
             diamondsCountEditField.requestFocus();
 
             diamondsCountEditOutline.setLeftPadding(dp(28));
@@ -127,13 +128,13 @@ public class SellGiftEnterPriceSheet extends BottomSheet {
             diamondsCountEditOutline.addView(iconDiamonds, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
             dollarsEqView = new AnimatedTextView(context);
-            dollarsEqView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+            ThemeBind.textColor(dollarsEqView, Theme.key_windowBackgroundWhiteGrayText);
             dollarsEqView.setTextSize(dp(13));
             dollarsEqView.setGravity(Gravity.RIGHT);
             diamondsCountEditOutline.addView(dollarsEqView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 0, 0, 16, 0));
 
             diamondsCountEditHint = new TextView(context);
-            diamondsCountEditHint.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+            ThemeBind.textColor(diamondsCountEditHint, Theme.key_windowBackgroundWhiteGrayText);
             diamondsCountEditHint.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             bodyLayout.addView(diamondsCountEditHint, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 33, 4, 33, 0));
         }

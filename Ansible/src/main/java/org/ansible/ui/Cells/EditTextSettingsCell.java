@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.EditTextBoldCursor;
 import org.ansible.ui.Components.LayoutHelper;
 
@@ -35,8 +36,8 @@ public class EditTextSettingsCell extends FrameLayout {
         super(context);
 
         textView = new EditTextBoldCursor(context);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        textView.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText);
+        ThemeBind.hintTextColor(textView, Theme.key_windowBackgroundWhiteHintText);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setLines(1);
         textView.setMaxLines(1);

@@ -1,6 +1,7 @@
 package org.ansible.ui;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.View;
@@ -17,6 +18,7 @@ import org.ansible.messenger.R;
 import org.ansible.ui.ActionBar.ActionBar;
 import org.ansible.ui.ActionBar.AlertDialog;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Cells.CheckBoxCell;
 import org.ansible.ui.Cells.TextInfoPrivacyCell;
 import org.ansible.ui.Components.BottomSheetWithRecyclerListView;
@@ -70,8 +72,10 @@ public class DialogCacheBottomSheet extends BottomSheetWithRecyclerListView {
                 } else {
                     TextInfoPrivacyCell textInfoPrivacyCell = new TextInfoPrivacyCell(parent.getContext());
                     textInfoPrivacyCell.setFixedSize(12);
+                    final ColorDrawable backgroundDrawable = new ColorDrawable(Theme.getColor(Theme.key_windowBackgroundGray));
+                    ThemeBind.drawableColorFilter(textInfoPrivacyCell, backgroundDrawable, Theme.key_windowBackgroundGray, PorterDuff.Mode.SRC_IN);
                     CombinedDrawable combinedDrawable = new CombinedDrawable(
-                            new ColorDrawable(Theme.getColor(Theme.key_windowBackgroundGray)),
+                            backgroundDrawable,
                             Theme.getThemedDrawableByKey(parent.getContext(), R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow)
                     );
                     combinedDrawable.setFullsize(true);
@@ -179,7 +183,11 @@ public class DialogCacheBottomSheet extends BottomSheetWithRecyclerListView {
                 checkBoxCell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                 linearLayout.addView(checkBoxCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 50));
                 checkBoxCell.setText(name, AndroidUtilities.formatFileSize(size), true, true);
-                checkBoxCell.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+                if (checkBoxCell.getTextView() != null) {
+                    ThemeBind.textColor(checkBoxCell.getTextView(), Theme.key_dialogTextBlack);
+                } else {
+                    checkBoxCell.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+                }
                 checkBoxCell.setCheckBoxColor(color, Theme.key_windowBackgroundWhiteGrayIcon, Theme.key_checkboxCheck);
                 checkBoxCell.setOnClickListener(v -> {
                     int enabledCount = 0;
@@ -214,13 +222,13 @@ public class DialogCacheBottomSheet extends BottomSheetWithRecyclerListView {
             lastCreatedCheckbox.setNeedDivider(false);
         }
         circleDiagramView.setData(cacheModel, clearViewData);
-        cachedMediaLayout = new CachedMediaLayout(getContext(), baseFragment) {
+        cachedMediaLayout = new CachedMediaLayout(getContext(), baseFragment, null) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(contentHeight - ActionBar.getCurrentActionBarHeight() - AndroidUtilities.statusBarHeight, MeasureSpec.EXACTLY));
             }
         };
-        cachedMediaLayout.setBottomPadding(AndroidUtilities.dp(80));
+        cachedMediaLayout.setListPadding(0, AndroidUtilities.dp(80));
         cachedMediaLayout.setCacheModel(cacheModel);
         cachedMediaLayout.setDelegate(new CachedMediaLayout.Delegate() {
             @Override

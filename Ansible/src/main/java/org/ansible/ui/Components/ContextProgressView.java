@@ -17,7 +17,7 @@ import android.view.View;
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.ui.ActionBar.Theme;
 
-public class ContextProgressView extends View {
+public class ContextProgressView extends View implements Theme.Colorable {
 
     private Paint innerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint outerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -61,6 +61,7 @@ public class ContextProgressView extends View {
         updateColors();
     }
 
+    @Override
     public void updateColors() {
         if (innerKey >= 0) {
             innerPaint.setColor(Theme.getColor(innerKey));

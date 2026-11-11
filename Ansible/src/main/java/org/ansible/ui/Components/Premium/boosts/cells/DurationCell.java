@@ -8,6 +8,7 @@ import org.ansible.messenger.BillingController;
 import org.ansible.messenger.LocaleController;
 import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.Components.LayoutHelper;
 
 @SuppressLint("ViewConstructor")
@@ -20,10 +21,10 @@ public class DurationCell extends BaseCell {
         super(context, resourcesProvider);
         imageView.setVisibility(GONE);
 
-        subtitleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
+        ThemeBind.textColor(subtitleTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
         totalTextView = new SimpleTextView(context);
         totalTextView.setTextSize(16);
-        totalTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
+        ThemeBind.textColor(totalTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
         totalTextView.setGravity(LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT);
         addView(totalTextView);
 

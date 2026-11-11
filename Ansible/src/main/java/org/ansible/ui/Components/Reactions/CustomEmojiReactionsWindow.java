@@ -41,6 +41,7 @@ import androidx.core.graphics.ColorUtils;
 
 import org.ansible.messenger.AndroidUtilities;
 import org.ansible.messenger.AnimationNotificationsLocker;
+import org.ansible.messenger.FileLog;
 import org.ansible.messenger.ImageReceiver;
 import org.ansible.messenger.LiteMode;
 import org.ansible.messenger.LocaleController;
@@ -53,6 +54,7 @@ import org.ansible.asnet.TLRPC;
 import org.ansible.asnet.tl.TL_diamonds;
 import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.Theme;
+import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.ChatActivity;
 import org.ansible.ui.Components.AnimatedEmojiDrawable;
 import org.ansible.ui.Components.Bulletin;
@@ -782,7 +784,19 @@ public class CustomEmojiReactionsWindow {
         }
     }
 
-    public class ContainerView extends FrameLayout {
+    public class ContainerView extends FrameLayout implements Theme.Colorable {
+
+        @Override
+        public void updateColors() {
+            try {
+                if (type != TYPE_STORY_LIKES && backgroundPaint != null) {
+                    backgroundPaint.setColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground, resourcesProvider));
+                    invalidate();
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
 
         Drawable shadow;
         Rect shadowPad = new Rect();
@@ -794,7 +808,7 @@ public class CustomEmojiReactionsWindow {
             super(context);
             shadow = ContextCompat.getDrawable(context, R.drawable.reactions_bubble_shadow).mutate();
             shadowPad.left = shadowPad.top = shadowPad.right = shadowPad.bottom = dp(7);
-            shadow.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chat_messagePanelShadow, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.drawableColorFilter(this, shadow, Theme.key_chat_messagePanelShadow, resourcesProvider, PorterDuff.Mode.MULTIPLY);
             if (type == TYPE_STORY_LIKES) {
                 backgroundPaint.setColor(ColorUtils.blendARGB(Color.BLACK, Color.WHITE, 0.13f));
             } else {
