@@ -47,9 +47,16 @@ def main():
         publish(repo, source, run)
         return
     OUT.mkdir(exist_ok=False)
-    info = gh(f'repos/{repo}/actions/runs/{run}')
-    assert info['status'] == 'completed' and info['conclusion'] == 'success'
-    assert info['head_sha'] == source and info['head_repository']['full_name'] == repo
+    deadline = time.monotonic() + 20 * 60
+    while True:
+        info = gh(f'repos/{repo}/actions/runs/{run}')
+        assert info['head_sha'] == source and info['head_repository']['full_name'] == repo
+        if info['status'] == 'completed':
+            break
+        if time.monotonic() >= deadline:
+            raise RuntimeError('Exact native APK build has not completed within the qualification wait')
+        time.sleep(15)
+    assert info['conclusion'] == 'success'
     assert info['path'] == '.github/workflows/build-debug.yml'
     artifacts = gh(f'repos/{repo}/actions/runs/{run}/artifacts')['artifacts']
     assert len(artifacts) == 1 and not artifacts[0]['expired']
