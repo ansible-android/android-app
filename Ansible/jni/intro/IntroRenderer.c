@@ -2639,6 +2639,10 @@ JNIEXPORT void Java_org_ansible_messenger_Intro_setTelegramTextures(JNIEnv *env,
     telegram_mask_texture = a_telegram_mask;
 }
 
+JNIEXPORT void Java_org_ansible_messenger_Intro_setAnsibleTextures(JNIEnv *env, jclass class, GLuint sphere, GLuint plane, GLuint mask) {
+    Java_org_ansible_messenger_Intro_setTelegramTextures(env, class, sphere, plane, mask);
+}
+
 JNIEXPORT void Java_org_ansible_messenger_Intro_setFastTextures(JNIEnv *env, jclass class, GLuint a_fast_body, GLuint a_fast_spiral, GLuint a_fast_arrow, GLuint a_fast_arrow_shadow) {
     fast_spiral_texture = a_fast_spiral;
     fast_body_texture = a_fast_body;
