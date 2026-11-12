@@ -394,11 +394,6 @@ public class RichEditorToolbar extends FrameLayout implements Theme.Colorable {
         mathButton.setOnClickListener(v -> delegate.onMath());
         formattingLayout3.addView(mathButton, LayoutHelper.createLinear(38, 38, Gravity.CENTER_VERTICAL));
 
-        formattingLayout1 = new LinearLayout(context);
-        formattingLayout1.setOrientation(LinearLayout.HORIZONTAL);
-        formattingLayout1.setPadding(dp(2), 0, dp(2), 0);
-        formattingLayout1.setBackground(RichEditor.withShadow(trackFill(formattingLayout1, Theme.key_glass_targetMainTabs, Theme.createRoundRectDrawable(dp(22), color(Theme.key_glass_targetMainTabs)))));
-
         aiStyleButton = new RichEditor.Button(context, R.drawable.input_ai, resourcesProvider);
         aiStyleButton.setImageDrawable(new AiButtonDrawable(context));
         aiStyleButton.setBackgroundColorKey(Theme.key_glass_targetMainTabs);

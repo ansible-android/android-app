@@ -973,11 +973,6 @@ public class RichEditor extends BaseFragment implements NotificationCenter.Notif
         mathButton.setOnClickListener(v -> listView.onMathClicked());
         formattingLayout3.addView(mathButton, LayoutHelper.createLinear(38, 38, Gravity.CENTER_VERTICAL));
 
-        formattingLayout1 = new LinearLayout(context);
-        formattingLayout1.setOrientation(LinearLayout.HORIZONTAL);
-        formattingLayout1.setPadding(dp(2), 0, dp(2), 0);
-        formattingLayout1.setBackground(withShadow(Theme.createRoundRectDrawable(dp(22), getThemedColor(Theme.key_windowBackgroundWhite))));
-
         aiStyleButton = new Button(context, 0, getResourceProvider());
         aiStyleButton.setImageDrawable(new AiButtonDrawable(context));
         aiStyleButton.setContentDescription(getString(R.string.AIEditor));
