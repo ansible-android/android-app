@@ -1015,7 +1015,6 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
         premiumFeatures.add(new PremiumFeatureData(PREMIUM_FEATURE_MESSAGE_EFFECTS, R.drawable.menu_premium_effects, getString(R.string.PremiumPreviewEffects), getString(R.string.PremiumPreviewEffectsDescription)));
         premiumFeatures.add(new PremiumFeatureData(PREMIUM_FEATURE_TODO, R.drawable.msg_premium_icons, getString(R.string.PremiumPreviewTodo), getString(R.string.PremiumPreviewTodoDescription)));
         premiumFeatures.add(new PremiumFeatureData(PREMIUM_FEATURE_SHARING_DISABLE, R.drawable.filled_sharing_off2_24, getString(R.string.PremiumPreviewSharingDisable), getString(R.string.PremiumPreviewSharingDisableDescription)));
-        premiumFeatures.add(new PremiumFeatureData(PREMIUM_FEATURE_AI_EDITOR, R.drawable.premium_ai_editor, getString(R.string.PremiumPreviewAIEditor), getString(R.string.PremiumPreviewAIEditorDescription)));
         premiumFeatures.add(new PremiumFeatureData(PREMIUM_FEATURE_RICH_EDITOR, R.drawable.premium_rich_editor, getString(R.string.PremiumPreviewRichEditor), getString(R.string.PremiumPreviewRichEditorDescription)));
 
         if (messagesController.premiumFeaturesTypesToPosition.size() > 0) {

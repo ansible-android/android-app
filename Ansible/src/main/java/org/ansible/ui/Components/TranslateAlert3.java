@@ -166,13 +166,10 @@ public class TranslateAlert3 extends BottomSheetWithRecyclerListView {
 
     private String from_lang;
     private String to_lang;
-    private int tone = 1;
     private boolean summarized;
     private boolean noforwards;
     private Utilities.CallbackReturn<URLSpan, Boolean> onLinkPress;
 
-    private String[] tones = new String[] { "formal", "neutral", "casual" };
-    private String[] tonesText = new String[] { "Formal", "Neutral", "Casual" };
 
     public TranslateAlert3 setText(String from_lang, CharSequence text) {
         this.text = text;
@@ -203,7 +200,7 @@ public class TranslateAlert3 extends BottomSheetWithRecyclerListView {
     public TranslateAlert3 setMessage(long dialogId, int messageId, boolean summarized) {
         this.dialogId = dialogId;
         this.messageId = messageId;
-        this.summarized = summarized;
+        this.summarized = org.ansible.messenger.BuiltInAi.isEnabled() && summarized;
         return this;
     }
     public TranslateAlert3 setOnUse(Utilities.Callback<CharSequence> onUse) {
@@ -244,20 +241,6 @@ public class TranslateAlert3 extends BottomSheetWithRecyclerListView {
 
         scrollView.addView(list);
         o.addView(scrollView);
-
-        for (int i = 0; i < tones.length; ++i) {
-            final int newTone = i;
-            addChecked(o, list, tone == newTone, tonesText[i], () -> {
-                cancelRequest();
-                tone = newTone;
-                TranslateAlert2.setToLanguage(to_lang);
-                requestTranslate();
-            });
-        }
-
-        ActionBarPopupWindow.GapView gap = new ActionBarPopupWindow.GapView(getContext(), resourcesProvider);
-        gap.setTag(R.id.fit_width_tag, 1);
-        list.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
 
         final ArrayList<TranslateController.Language> suggestedLanguages = TranslateController.getSuggestedLanguages(null);
         final ArrayList<TranslateController.Language> allLanguages = TranslateController.getLanguages();
@@ -335,7 +318,7 @@ public class TranslateAlert3 extends BottomSheetWithRecyclerListView {
             adapter.update(true);
             applyScrolledPosition(true);
         }, this::onLinkPressed, null));
-        items.add(Header.Factory.of(5, "", capitalFirst(languageName(to_lang) + (tone != 1 && tonesText != null ? " (" + tonesText[tone] + ")" : "")), null, this::onToLangMenu));
+        items.add(Header.Factory.of(5, "", capitalFirst(languageName(to_lang)), null, this::onToLangMenu));
         items.add(Text.Factory.of(6, translated, false, noforwards, null, this::onLinkPressed, null));
         adapter.whiteSectionEnd();
 
@@ -394,11 +377,6 @@ public class TranslateAlert3 extends BottomSheetWithRecyclerListView {
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             req.id = messageId;
 
-            if (tone != 1) {
-                req.flags |= TLObject.FLAG_2;
-                req.tone = tones[tone];
-            }
-
             requestId = ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
                 requestId = -1;
 
@@ -428,11 +406,6 @@ public class TranslateAlert3 extends BottomSheetWithRecyclerListView {
             } else {
                 req.flags |= TLObject.FLAG_1;
                 req.text.add(fromText);
-            }
-
-            if (tone != 1) {
-                req.flags |= TLObject.FLAG_2;
-                req.tone = tones[tone];
             }
 
             requestId = ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {

@@ -184,7 +184,6 @@ public class RichEditorToolbar extends FrameLayout implements Theme.Colorable {
         aiButton.setScaleType(ImageView.ScaleType.CENTER);
         ThemeBind.colorFilter(aiButton, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider, PorterDuff.Mode.SRC_IN);
         aiButton.setBackground(RichEditor.withShadow(trackFill(aiButton, Theme.key_glass_targetMainTabs, Theme.createRadSelectorDrawable(color(Theme.key_glass_targetMainTabs), Theme.blendOver(color(Theme.key_glass_targetMainTabs), color(Theme.key_listSelector)), dp(22), dp(22)))));
-        bottomPanel.addView(aiButton, LayoutHelper.createLinear(44, 44, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 0, 0, 8, 0));
         ScaleStateListAnimator.apply(aiButton);
         aiButton.setContentDescription("AI");
         aiButton.setOnClickListener(v -> delegate.onAi());
@@ -399,14 +398,12 @@ public class RichEditorToolbar extends FrameLayout implements Theme.Colorable {
         formattingLayout1.setOrientation(LinearLayout.HORIZONTAL);
         formattingLayout1.setPadding(dp(2), 0, dp(2), 0);
         formattingLayout1.setBackground(RichEditor.withShadow(trackFill(formattingLayout1, Theme.key_glass_targetMainTabs, Theme.createRoundRectDrawable(dp(22), color(Theme.key_glass_targetMainTabs)))));
-        formattingPanel.addView(formattingLayout1, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 44, Gravity.BOTTOM, 0, 0, 8, 0));
 
         aiStyleButton = new RichEditor.Button(context, R.drawable.input_ai, resourcesProvider);
         aiStyleButton.setImageDrawable(new AiButtonDrawable(context));
         aiStyleButton.setBackgroundColorKey(Theme.key_glass_targetMainTabs);
         aiStyleButton.setContentDescription(getString(R.string.AIEditor));
         aiStyleButton.setOnClickListener(v -> delegate.onAiStyle());
-        formattingLayout1.addView(aiStyleButton, LayoutHelper.createLinear(38, 38, Gravity.CENTER_VERTICAL));
 
         sendButton = new ChatActivityEnterView.SendButton(context, R.drawable.send_plane_24, resourcesProvider, true) {
             @Override

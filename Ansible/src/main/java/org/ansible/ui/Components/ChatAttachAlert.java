@@ -3059,6 +3059,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         captionContainer.addView(captionLimitView, LayoutHelper.createFrame(56, 20, Gravity.BOTTOM | Gravity.RIGHT, 3, 0, 3, 50));
 
         aiButton = new ImageView(context);
+        aiButton.setVisibility(View.GONE);
         aiButton.setImageDrawable(aiButtonIcon = new AiButtonDrawable(context));
         aiButton.setScaleType(ImageView.ScaleType.CENTER);
         ThemeBind.colorFilter(aiButton, Theme.key_glass_defaultIcon, resourcesProvider, PorterDuff.Mode.MULTIPLY);
@@ -6522,7 +6523,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     private boolean shownAiButton;
     private void showAiButton(boolean show_) {
-        final boolean show = show_ && (baseFragment instanceof ChatActivity && !((ChatActivity) baseFragment).isSecretChat());
+        final boolean show = org.ansible.messenger.BuiltInAi.isEnabled() && show_ && (baseFragment instanceof ChatActivity && !((ChatActivity) baseFragment).isSecretChat());
 
         if (shownAiButton == show) return;
         if (show) {

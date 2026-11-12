@@ -1103,6 +1103,7 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
 
     @Override
     public void show() {
+        if (!org.ansible.messenger.BuiltInAi.isEnabled()) return;
         super.show();
         if (actionBar != null) {
             actionBar.setTitle(getTitle());
@@ -1235,6 +1236,7 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
     private TLRPC.TL_messages_composeMessageWithAI[] lastRequest = new TLRPC.TL_messages_composeMessageWithAI[3];
     private TLRPC.TL_messages_composeRichMessageWithAI[] lastRequestRich = new TLRPC.TL_messages_composeRichMessageWithAI[3];
     private void request() {
+        if (!org.ansible.messenger.BuiltInAi.isEnabled()) return;
         if (isRich()) {
             requestRich();
             return;
@@ -1369,6 +1371,7 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
         adapter.update(true);
     }
     private void requestRich() {
+        if (!org.ansible.messenger.BuiltInAi.isEnabled()) return;
         final int tab = tabs.getSelectedTab();
 
         final TLRPC.TL_messages_composeRichMessageWithAI req = new TLRPC.TL_messages_composeRichMessageWithAI();
@@ -2492,6 +2495,7 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
 
         @Override
         public void show() {
+            if (!org.ansible.messenger.BuiltInAi.isEnabled()) return;
             super.show();
             NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.loadedAiComposeTones);
         }

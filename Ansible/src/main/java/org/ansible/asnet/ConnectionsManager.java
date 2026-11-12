@@ -420,6 +420,20 @@ public class ConnectionsManager extends BaseController {
     }
 
     private void sendRequestInternal(TLObject object, RequestDelegate onComplete, RequestDelegateTimestamp onCompleteTimestamp, QuickAckDelegate onQuickAck, WriteToSocketDelegate onWriteToSocket, int flags, int datacenterId, int connectionType, boolean immediate, int requestToken) {
+        if (org.ansible.messenger.BuiltInAi.rejectsRequest(object)) {
+            object.freeResources();
+            Utilities.stageQueue.postRunnable(() -> {
+                TLRPC.TL_error error = new TLRPC.TL_error();
+                error.code = 400;
+                error.text = "AI_DISABLED";
+                if (onComplete != null) {
+                    onComplete.run(null, error);
+                } else if (onCompleteTimestamp != null) {
+                    onCompleteTimestamp.run(null, error, 0);
+                }
+            });
+            return;
+        }
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("send request " + object + " with token = " + requestToken);
         }

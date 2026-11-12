@@ -622,7 +622,6 @@ public class RichEditor extends BaseFragment implements NotificationCenter.Notif
         aiButton.setScaleType(ImageView.ScaleType.CENTER);
         ThemeBind.colorFilter(aiButton, Theme.key_windowBackgroundWhiteBlackText, getResourceProvider(), PorterDuff.Mode.SRC_IN);
         aiButton.setBackground(withShadow(Theme.createRadSelectorDrawable(getThemedColor(Theme.key_windowBackgroundWhite), Theme.blendOver(getThemedColor(Theme.key_windowBackgroundWhite), getThemedColor(Theme.key_listSelector)), dp(22), dp(22))));
-        bottomPanel.addView(aiButton, LayoutHelper.createLinear(44, 44, 0, Gravity.LEFT | Gravity.CENTER_VERTICAL, 0, 0, 8, 0));
         ScaleStateListAnimator.apply(aiButton);
         aiButton.setContentDescription(getString(R.string.AIEditor));
         aiButton.setOnClickListener(v -> {
@@ -978,13 +977,11 @@ public class RichEditor extends BaseFragment implements NotificationCenter.Notif
         formattingLayout1.setOrientation(LinearLayout.HORIZONTAL);
         formattingLayout1.setPadding(dp(2), 0, dp(2), 0);
         formattingLayout1.setBackground(withShadow(Theme.createRoundRectDrawable(dp(22), getThemedColor(Theme.key_windowBackgroundWhite))));
-        formattingPanel.addView(formattingLayout1, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 44, Gravity.BOTTOM, 0, 0, 8, 0));
 
         aiStyleButton = new Button(context, 0, getResourceProvider());
         aiStyleButton.setImageDrawable(new AiButtonDrawable(context));
         aiStyleButton.setContentDescription(getString(R.string.AIEditor));
         aiStyleButton.setOnClickListener(v -> onAiStyleSelection());
-        formattingLayout1.addView(aiStyleButton, LayoutHelper.createLinear(38, 38, Gravity.CENTER_VERTICAL));
 
         final int sendIcon = editingMessageObject != null ? R.drawable.input_done : (isInScheduleMode() ? R.drawable.input_schedule : R.drawable.send_plane_24);
         sendButton = new ChatActivityEnterView.SendButton(context, sendIcon, getResourceProvider(), true) {

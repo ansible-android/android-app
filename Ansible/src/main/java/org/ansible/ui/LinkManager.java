@@ -1389,6 +1389,7 @@ public class LinkManager {
     }
 
     private boolean handleAiStyle(String slug) {
+        if (!org.ansible.messenger.BuiltInAi.isEnabled()) return true;
         if (TextUtils.isEmpty(slug)) return false;
         final TL_aicompose.getTone req = new TL_aicompose.getTone();
         final TL_aicompose.inputAiComposeToneSlug input = new TL_aicompose.inputAiComposeToneSlug();

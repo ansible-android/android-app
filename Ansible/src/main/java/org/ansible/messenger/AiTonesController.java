@@ -33,6 +33,7 @@ public final class AiTonesController {
     private int requestId = -1;
     private long requestedTime = 0;
     public void request() {
+        if (!BuiltInAi.isEnabled()) return;
         if (requestId >= 0) return;
         if (System.currentTimeMillis() - requestedTime < 30 * 60 * 1000) return;
         final TL_aicompose.getTones req = new TL_aicompose.getTones();
@@ -71,6 +72,12 @@ public final class AiTonesController {
     }
 
     public void load() {
+        if (!BuiltInAi.isEnabled()) {
+            tones.clear();
+            hash = 0;
+            loadedLocal = true;
+            return;
+        }
         if (!loadedLocal) {
             loadedLocal = true;
             try {

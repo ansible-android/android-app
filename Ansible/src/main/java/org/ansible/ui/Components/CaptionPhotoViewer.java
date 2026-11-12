@@ -529,7 +529,7 @@ public class CaptionPhotoViewer extends CaptionContainerView {
 
     private boolean shownAiButton;
     private void showAiButton(boolean show_) {
-        final boolean show = show_;
+        final boolean show = org.ansible.messenger.BuiltInAi.isEnabled() && show_;
 
         if (shownAiButton == show) return;
         if (show) {

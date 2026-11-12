@@ -138,6 +138,7 @@ public class RichAIComposeSheet extends BottomSheetWithRecyclerListView {
 
     @Override
     public void show() {
+        if (!org.ansible.messenger.BuiltInAi.isEnabled()) return;
         super.show();
         AndroidUtilities.runOnUIThread(() -> {
             AndroidUtilities.showKeyboard(promptCell.editText);

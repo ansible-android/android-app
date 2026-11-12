@@ -137,7 +137,7 @@ public class TranslateController extends BaseController {
     }
 
     public static boolean isSummarizable(MessageObject messageObject) {
-        return (
+        return BuiltInAi.isEnabled() && (
             messageObject != null &&
             messageObject.messageOwner != null &&
             messageObject.messageOwner.summary_from_language != null &&
