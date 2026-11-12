@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -75,6 +76,20 @@ def main():
         for abi in ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64']:
             assert f'lib/{abi}/libtwidget.so' in names
             assert any(n.startswith(f'lib/{abi}/libansible.') for n in names)
+        # Verify real ELF exports for every shipped ABI, not just C declarations.
+        intro = ['onDrawFrame', 'setScrollOffset', 'setPage', 'setDate', 'setIcTextures',
+                 'setAnsibleTextures', 'setTelegramTextures', 'setFastTextures', 'setFreeTextures',
+                 'setPowerfulTextures', 'setPrivateTextures', 'onSurfaceCreated',
+                 'onSurfaceChanged', 'setBackgroundColor']
+        with tempfile.TemporaryDirectory(prefix='ansible043-jni-') as native_dir:
+            for abi in ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64']:
+                libraries = [n for n in names if n.startswith(f'lib/{abi}/libansible.')]
+                assert len(libraries) == 1
+                library = Path(native_dir)/'libansible.so'
+                library.write_bytes(z.read(libraries[0]))
+                symbols = command(['readelf', '--dyn-syms', '--wide', str(library)]).decode()
+                for method in intro:
+                    assert re.search(r'\bJava_org_ansible_messenger_Intro_'+method+r'\b', symbols), abi+' missing Intro JNI export '+method
     previous = OUT/'previous.apk'
     with urllib.request.urlopen(f'https://github.com/{repo}/releases/download/v0.3.1/ansible-0.3.1.apk', timeout=180) as response:
         previous.write_bytes(response.read())
@@ -106,7 +121,9 @@ def main():
         command(['adb', 'shell', 'svc', 'wifi', 'disable'])
         command(['adb', 'shell', 'svc', 'data', 'disable'])
         command(['adb', 'install', str(previous)])
-        launch('previous')
+        # The published 0.3.1 baseline has the now-fixed Intro JNI mismatch.
+        # Record only that exact known failure; never accept it in the new APK.
+        previous_started = launch('previous', allow_previous_intro_failure=True)
         command(['adb', 'shell', 'am', 'force-stop', PACKAGE])
         base = f'/data/user/0/{PACKAGE}'
         prefs = base+'/shared_prefs/mainconfig.xml'
@@ -138,6 +155,8 @@ def main():
                      artifact_sha256=artifact['digest'], apk_sha256=sha(apk), certificate_sha256=CERTIFICATE,
                      version='0.4.3', version_code=30040039, base_version_code=3004003, four_native_abis=True,
                      fresh_launch=True, upgrade_launch=True, previous_version='0.3.1',
+                     previous_first_launch=previous_started, previous_intro_jni_failure=not previous_started,
+                     intro_jni_exports_verified_all_abis=True,
                      upgrade_file_retained=True, configured_font_size_retained=True,
                      online_authentication_tested=False, published=False)
         (OUT/'qualification.json').write_text(json.dumps(proof, indent=2)+'\n')
@@ -152,7 +171,7 @@ def main():
         emulator_log.close()
 
 
-def launch(label):
+def launch(label, allow_previous_intro_failure=False):
     command(['adb', 'logcat', '-b', 'crash', '-c'])
     launchers = command(['adb', 'shell', 'cmd', 'package', 'resolve-activity', '--brief',
                          '-a', 'android.intent.action.MAIN', '-c', 'android.intent.category.LAUNCHER',
@@ -169,12 +188,16 @@ def launch(label):
             if not re.search(r'auth_key|token|secret|password|api_hash', line, re.I):
                 safe.append(re.sub(r'[a-f0-9]{32,}', '[redacted]', line, flags=re.I)[:500])
     (OUT/(label+'-crash-summary.txt')).write_text('\n'.join(safe))
+    if allow_previous_intro_failure and 'java.lang.UnsatisfiedLinkError' in crashes and 'org.ansible.messenger.Intro.setAnsibleTextures' in crashes:
+        assert label == 'previous'
+        return False
     process = subprocess.run(['adb', 'shell', 'pidof', PACKAGE], capture_output=True, timeout=30)
     assert process.returncode == 0 and process.stdout.strip(), label+' process did not survive; inspect the bounded crash summary'
 
     assert PACKAGE not in crashes and 'org.ansible' not in crashes, label+' application crashed'
     activities = command(['adb', 'shell', 'dumpsys', 'activity', 'activities']).decode(errors='replace')
     assert PACKAGE in activities and 'LaunchActivity' in activities
+    return True
 
 
 def publish(repo, source, run):
