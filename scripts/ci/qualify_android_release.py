@@ -81,8 +81,13 @@ def main():
     assert sha(previous) == PREVIOUS_SHA
     old_cert = command([str(tools/'apksigner'), 'verify', '--print-certs', str(previous)]).decode()
     assert re.search(r'Signer #1 certificate SHA-256 digest: (\w+)', old_cert).group(1).lower() == CERTIFICATE
+    avd_home = Path(os.environ['RUNNER_TEMP'])/'ansible043-avd'
+    avd_home.mkdir(exist_ok=False)
+    os.environ['ANDROID_AVD_HOME'] = str(avd_home)
     command(['avdmanager', 'create', 'avd', '--force', '--name', 'ansible043', '--package',
-             'system-images;android-36;google_apis;x86_64', '--device', 'pixel_2'], input=b'no\n')
+             'system-images;android-36;google_apis;x86_64', '--device', 'pixel_2',
+             '--path', str(avd_home/'ansible043.avd')], input=b'no\n')
+    assert (avd_home/'ansible043.ini').is_file(), 'AVD descriptor was not created in the explicit emulator directory'
     emulator_log = (OUT/'emulator.log').open('wb')
     emulator = subprocess.Popen([str(sdk/'emulator/emulator'), '-avd', 'ansible043', '-no-window', '-no-audio',
                                  '-no-snapshot', '-no-boot-anim', '-gpu', 'swiftshader_indirect'],
@@ -111,11 +116,9 @@ def main():
             if child.get('name') == 'fons_size':
                 tree.remove(child)
         ET.SubElement(tree, 'int', name='fons_size', value='19')
-        local_prefs = OUT/'upgrade-mainconfig.xml'
-        local_prefs.write_bytes(ET.tostring(tree, encoding='utf-8', xml_declaration=True))
         owner = command(['adb', 'shell', 'stat', '-c', '%u:%g', prefs]).decode().strip()
         assert re.fullmatch(r'\d+:\d+', owner)
-        command(['adb', 'push', str(local_prefs), prefs])
+        command(['adb', 'shell', 'cat > '+prefs], input=ET.tostring(tree, encoding='utf-8', xml_declaration=True))
         command(['adb', 'shell', 'chown', owner, prefs])
         marker = base+'/files/release043-upgrade-marker'
         command(['adb', 'shell', 'sh', '-c', f'"echo preserved-043 > {marker}"'])
@@ -139,7 +142,6 @@ def main():
                      online_authentication_tested=False, published=False)
         (OUT/'qualification.json').write_text(json.dumps(proof, indent=2)+'\n')
         previous.unlink()
-        local_prefs.unlink()
         print(json.dumps(proof), flush=True)
     finally:
         subprocess.run(['adb', 'emu', 'kill'], capture_output=True, timeout=30)
