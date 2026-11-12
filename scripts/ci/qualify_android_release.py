@@ -69,7 +69,7 @@ def main():
     cert = command([str(tools/'apksigner'), 'verify', '--verbose', '--print-certs', str(apk)]).decode()
     assert re.search(r'Signer #1 certificate SHA-256 digest: (\w+)', cert).group(1).lower() == CERTIFICATE
     badging = command([str(tools/'aapt'), 'dump', 'badging', str(apk)]).decode()
-    assert f"package: name='{PACKAGE}' versionCode='3004003' versionName='0.4.3'" in badging
+    assert f"package: name='{PACKAGE}' versionCode='30040039' versionName='0.4.3'" in badging
     with zipfile.ZipFile(apk) as z:
         names = set(z.namelist())
         for abi in ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64']:
@@ -133,7 +133,7 @@ def main():
         (OUT/'fresh.png').write_bytes(command(['adb', 'exec-out', 'screencap', '-p']))
         proof = dict(source=source, build_run=run, artifact_id=artifact['id'],
                      artifact_sha256=artifact['digest'], apk_sha256=sha(apk), certificate_sha256=CERTIFICATE,
-                     version='0.4.3', version_code=3004003, four_native_abis=True,
+                     version='0.4.3', version_code=30040039, base_version_code=3004003, four_native_abis=True,
                      fresh_launch=True, upgrade_launch=True, previous_version='0.3.1',
                      upgrade_file_retained=True, configured_font_size_retained=True,
                      online_authentication_tested=False, published=False)
