@@ -15,7 +15,7 @@ import zipfile
 OUT = Path('release-qualification')
 PACKAGE = 'su.ansible.messenger.web'
 CERTIFICATE = 'a08d7dc323ddf71ef3201944397e0d3cce7d40847263e11f328b68bbe19229ab'
-PREVIOUS_SHA = '19e874f3879d34f475626b602085ff2e4e744d6c95eae13ee13907f5fa5790e1'
+PREVIOUS_SHA = 'b1e461c8533438c772613083563d6e2e2ed56a60e273c801b53228c27f4e74df'
 
 
 def command(args, **kwargs):
@@ -91,9 +91,11 @@ def main():
                 for method in intro:
                     assert re.search(r'\bJava_org_ansible_messenger_Intro_'+method+r'\b', symbols), abi+' missing Intro JNI export '+method
     previous = OUT/'previous.apk'
-    with urllib.request.urlopen(f'https://github.com/{repo}/releases/download/v0.3.1/ansible-0.3.1.apk', timeout=180) as response:
+    with urllib.request.urlopen(f'https://github.com/{repo}/releases/download/v0.4.3/ansible-0.4.3.apk', timeout=180) as response:
         previous.write_bytes(response.read())
     assert sha(previous) == PREVIOUS_SHA
+    previous_badging = command([str(tools/'aapt'), 'dump', 'badging', str(previous)]).decode()
+    assert f"package: name='{PACKAGE}' versionCode='30040039' versionName='0.4.3'" in previous_badging
     old_cert = command([str(tools/'apksigner'), 'verify', '--print-certs', str(previous)]).decode()
     assert re.search(r'Signer #1 certificate SHA-256 digest: (\w+)', old_cert).group(1).lower() == CERTIFICATE
     avd_home = Path(os.environ['RUNNER_TEMP'])/'ansible043-avd'
@@ -121,9 +123,9 @@ def main():
         command(['adb', 'shell', 'svc', 'wifi', 'disable'])
         command(['adb', 'shell', 'svc', 'data', 'disable'])
         command(['adb', 'install', str(previous)])
-        # The published 0.3.1 baseline has the now-fixed Intro JNI mismatch.
-        # Record only that exact known failure; never accept it in the new APK.
-        previous_started = launch('previous', allow_previous_intro_failure=True)
+        # Reinstall the fixed APK over the currently published SAME version.
+        # No account/session material is placed in this disposable emulator.
+        previous_started = launch('previous')
         command(['adb', 'shell', 'am', 'force-stop', PACKAGE])
         base = f'/data/user/0/{PACKAGE}'
         prefs = base+'/shared_prefs/mainconfig.xml'
@@ -154,7 +156,7 @@ def main():
         proof = dict(source=source, build_run=run, artifact_id=artifact['id'],
                      artifact_sha256=artifact['digest'], apk_sha256=sha(apk), certificate_sha256=CERTIFICATE,
                      version='0.4.3', version_code=30040039, base_version_code=3004003, four_native_abis=True,
-                     fresh_launch=True, upgrade_launch=True, previous_version='0.3.1',
+                     fresh_launch=True, upgrade_launch=True, previous_version='0.4.3', same_version_reinstall=True,
                      previous_first_launch=previous_started, previous_intro_jni_failure=not previous_started,
                      intro_jni_exports_verified_all_abis=True,
                      upgrade_file_retained=True, configured_font_size_retained=True,
