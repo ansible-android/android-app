@@ -154,10 +154,24 @@ def main():
 
 def launch(label):
     command(['adb', 'logcat', '-b', 'crash', '-c'])
-    command(['adb', 'shell', 'am', 'start', '-W', '-n', PACKAGE+'/org.ansible.ui.LaunchActivity'])
+    launchers = command(['adb', 'shell', 'cmd', 'package', 'resolve-activity', '--brief',
+                         '-a', 'android.intent.action.MAIN', '-c', 'android.intent.category.LAUNCHER',
+                         '-p', PACKAGE]).decode().splitlines()
+    component = next((x.strip() for x in launchers if re.fullmatch(re.escape(PACKAGE)+r'/[A-Za-z0-9._]+', x.strip())), None)
+    assert component, label+' has no enabled launcher activity'
+    started = command(['adb', 'shell', 'am', 'start', '-W', '-n', component]).decode(errors='replace')
+    assert 'Error' not in started and 'Exception' not in started, label+' launcher rejected the start request'
     time.sleep(30)
-    assert command(['adb', 'shell', 'pidof', PACKAGE]).strip(), label+' process did not survive'
     crashes = command(['adb', 'logcat', '-b', 'crash', '-d']).decode(errors='replace')
+    safe = []
+    for line in crashes.splitlines():
+        if re.search(r'FATAL EXCEPTION|Process:|java\.|Caused by:|UnsatisfiedLinkError|Fatal signal|Abort message|#\d+ pc', line):
+            if not re.search(r'auth_key|token|secret|password|api_hash', line, re.I):
+                safe.append(re.sub(r'[a-f0-9]{32,}', '[redacted]', line, flags=re.I)[:500])
+    (OUT/(label+'-crash-summary.txt')).write_text('\n'.join(safe))
+    process = subprocess.run(['adb', 'shell', 'pidof', PACKAGE], capture_output=True, timeout=30)
+    assert process.returncode == 0 and process.stdout.strip(), label+' process did not survive; inspect the bounded crash summary'
+
     assert PACKAGE not in crashes and 'org.ansible' not in crashes, label+' application crashed'
     activities = command(['adb', 'shell', 'dumpsys', 'activity', 'activities']).decode(errors='replace')
     assert PACKAGE in activities and 'LaunchActivity' in activities
