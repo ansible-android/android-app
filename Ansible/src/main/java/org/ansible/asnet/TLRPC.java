@@ -31414,6 +31414,8 @@ public class TLRPC {
                     return new TL_update.TL_updateSavedRingtones();
                 case TL_stories.TL_updateStoriesStealthMode.constructor:
                     return new TL_stories.TL_updateStoriesStealthMode();
+                case TL_update.TL_updateTranscribedAudioFile.constructor:
+                    return new TL_update.TL_updateTranscribedAudioFile();
                 case TL_update.TL_updateTranscribedAudio.constructor:
                     return new TL_update.TL_updateTranscribedAudio();
                 case TL_update.TL_updatePeerLocated.constructor:

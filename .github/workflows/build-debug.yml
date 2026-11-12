@@ -25,6 +25,9 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Verify file transcription update wire compatibility
+        run: python3 scripts/test_transcribed_audio_file.py
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:

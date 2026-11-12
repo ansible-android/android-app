@@ -2395,6 +2395,30 @@ public class TL_update {
         }
     }
 
+    public static class TL_updateTranscribedAudioFile extends TLRPC.Update {
+        public static final int constructor = 0x734c2e7b;
+
+        public int flags;
+        public boolean pending;
+        public long transcription_id;
+        public String text;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            pending = hasFlag(flags, FLAG_0);
+            transcription_id = stream.readInt64(exception);
+            text = stream.readString(exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, pending);
+            stream.writeInt32(flags);
+            stream.writeInt64(transcription_id);
+            stream.writeString(text);
+        }
+    }
+
     public static class TL_updateTranscribedAudio extends TLRPC.Update {
         public static final int constructor = 0x84cd5a;
 
