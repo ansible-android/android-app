@@ -45425,7 +45425,7 @@ public class TLRPC {
             flags2 = setFlag(flags2, FLAG_16, display_gifts_button);
             flags2 = setFlag(flags2, FLAG_17, stars_rating != null);
             flags2 = setFlag(flags2, FLAG_18, stars_my_pending_rating != null);
-            flags2 = setFlag(flags2, FLAG_19, wallet_card != null);
+            flags2 = setFlag(flags2, FLAG_19, false);
             flags2 = setFlag(flags2, FLAG_20,  main_tab != null);
             flags2 = setFlag(flags2, FLAG_23, noforwards_my_enabled);
             flags2 = setFlag(flags2, FLAG_24, noforwards_peer_enabled);
@@ -45533,9 +45533,6 @@ public class TLRPC {
             }
             if (hasFlag(flags2, FLAG_25)) {
                 stream.writeInt64(bot_manager_id);
-            }
-            if (hasFlag(flags2, FLAG_19)) {
-                wallet_card.serializeToStream(stream);
             }
             if (hasFlag(flags2, FLAG_27)) {
                 share_theme.serializeToStream(stream);
@@ -45699,7 +45696,7 @@ public class TLRPC {
             flags2 = setFlag(flags2, FLAG_16, display_gifts_button);
             flags2 = setFlag(flags2, FLAG_17, stars_rating != null);
             flags2 = setFlag(flags2, FLAG_18, stars_my_pending_rating != null);
-            flags2 = setFlag(flags2, FLAG_19, wallet_card != null);
+            flags2 = setFlag(flags2, FLAG_19, false);
             flags2 = setFlag(flags2, FLAG_20,  main_tab != null);
             flags2 = setFlag(flags2, FLAG_23, noforwards_my_enabled);
             flags2 = setFlag(flags2, FLAG_24, noforwards_peer_enabled);
@@ -45806,9 +45803,6 @@ public class TLRPC {
             }
             if (hasFlag(flags2, FLAG_25)) {
                 stream.writeInt64(bot_manager_id);
-            }
-            if (hasFlag(flags2, FLAG_19)) {
-                wallet_card.serializeToStream(stream);
             }
         }
     }
@@ -72168,6 +72162,8 @@ public class TLRPC {
 
     public static class TL_userFull_7fe738c4 extends UserFull {
         public static final int constructor = 0x7fe738c4;
+        // Preserve the opaque field when reading or rewriting a legacy cached profile.
+        private String gram_address;
 
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);

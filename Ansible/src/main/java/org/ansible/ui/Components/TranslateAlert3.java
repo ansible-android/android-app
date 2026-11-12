@@ -259,7 +259,7 @@ public class TranslateAlert3 extends BottomSheetWithRecyclerListView {
             }
         }
 
-        gap = new ActionBarPopupWindow.GapView(getContext(), resourcesProvider);
+        ActionBarPopupWindow.GapView gap = new ActionBarPopupWindow.GapView(getContext(), resourcesProvider);
         gap.setTag(R.id.fit_width_tag, 1);
         list.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
 
