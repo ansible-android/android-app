@@ -6,12 +6,26 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      qualify_run_id:
+        description: 'Qualify an existing private APK without rebuilding (empty builds sources).'
+        type: string
+        default: ''
+      source_sha:
+        description: 'Exact source SHA of the existing APK.'
+        type: string
+        default: ''
+      publish:
+        description: 'Publish the exact qualified APK after Desktop 0.4.3.'
+        type: boolean
+        default: false
 
 permissions:
   contents: write   # для прикрепления APK к Release при tag push
 
 jobs:
   build:
+    if: ${{ inputs.qualify_run_id == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -100,3 +114,38 @@ jobs:
         with:
           files: ${{ steps.apk.outputs.release_apk }}
           fail_on_unmatched_files: true
+
+  qualify:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.qualify_run_id != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      APK_BUILD_RUN: ${{ inputs.qualify_run_id }}
+      APK_SOURCE_SHA: ${{ inputs.source_sha }}
+      APK_PUBLISH: ${{ inputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools emulator platforms;android-36 build-tools;36.0.0 system-images;android-36;google_apis;x86_64'
+      - name: Qualify the exact APK and in-place data upgrade
+        run: |
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          python3 scripts/ci/qualify_android_release.py
+      - name: Preserve private qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-0.4.3-qualified-${{ inputs.source_sha }}
+          path: release-qualification/
+          if-no-files-found: warn
+      - name: Publish the qualified artifact after Desktop
+        if: inputs.publish
+        run: python3 scripts/ci/qualify_android_release.py --publish
