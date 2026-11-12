@@ -1,0 +1,11 @@
+{
+  "androidUpstream": "21f7d109da6ab3506c9e9577f98c6a38771ab335",
+  "pins": {
+    "sdk": "1cde0068daba8437f53eac0b61c395d29b8f89e3",
+    "quickjs": "b526a817f188ef861eea7666d68361c7851673a0",
+    "twidget": "1ade0d4726addb9c32665e23bde21b9ec2e12f99"
+  },
+  "representation": "vendored",
+  "host": "asme.su",
+  "walletSupported": false
+}

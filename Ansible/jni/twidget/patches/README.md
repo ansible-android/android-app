@@ -1,44 +1,97 @@
 # The widget projects and the changes made to them here
 
-The widget renderer is built from copies of two Telegram repositories, kept as plain files (no
-submodules) in `jni/twidget/`, next to the Android bridge (`twidget-bridge.cpp/.h`, `twidget.cmake`).
-Every change made to the copies here is listed below, with a patch file next to this one, so that each
-update can start from the repository's state and re-apply only these.
+The widget renderer is built from two public Telegram repositories, reviewed vendored sources in `jni/twidget/`, next to the Android bridge (`twidget-bridge.cpp/.h`, `twidget.cmake`).
+The versions below identify the source snapshots; the Ansible host adaptation is documented below. Telegram changes to them go into the repositories themselves,
+and this file lists what earlier patches became there.
 
-| Copy (`jni/twidget/…`) | Repository | Version |
+| Submodule (`jni/twidget/…`) | Repository | Version |
 |---|---|---|
-| `widget-sandbox/` | github.com/TelegramMessenger/widget-sandbox | `a74626d6768b5d14e0dc0b8435a7df44a980a8e7` (`v0.6.3`), compiled with the QuickJS pin below |
-| `widget-sandbox/packages/ios/Sources/CQuickJS/quickjs/` | its submodule, github.com/TelegramMessenger/quickjs | `8f0d3b6193a01bda29d69b0cab4f03320bcaa027` (memory-safety hardening for parser, Map/WeakRef and closure variables): top-level `.c`/`.h`, `LICENSE`, `README.md` only (no tests, docs, examples) |
-| `twidget/` | github.com/TelegramMessenger/twidget | compiled core/litehtml from `1ade0d4726addb9c32665e23bde21b9ec2e12f99`, retaining Android directory layout |
+| `widget-sandbox/` | github.com/TelegramMessenger/widget-sandbox | `1cde0068daba8437f53eac0b61c395d29b8f89e3` (`v0.6.5`), including the 1024-node nesting-depth limit |
+| `widget-sandbox/packages/ios/Sources/CQuickJS/quickjs/` | github.com/TelegramMessenger/quickjs | `b526a817f188ef861eea7666d68361c7851673a0`, merges the prior Map/WeakRef/closure hardening and the normal-frame `await using` fix; top-level C/headers only |
+| `twidget/` | github.com/TelegramMessenger/twidget | `1ade0d4726addb9c32665e23bde21b9ec2e12f99`, canonical `core/` and `litehtml/` layout; includes the official Android pin and subsequent SVG fixes |
 
-What the Android build compiles (`jni/twidget/twidget.cmake`): widget-sandbox's C++ core
-(`packages/desktop/sandbox`, without `icu_intl.cpp`, Windows' ICU: Android answers Intl from Java) and QuickJS, twidget's `Sources/TwidgetCore/src` and its litehtml fork
-(`Sources/LiteHTML/litehtml`); `twidget.cmake` generates `tw_ua_stylesheet.h` from widget-sandbox's `profile.json`, as twidget's CMake does. The renderer and validator assets in `assets/WidgetSandbox/WidgetJS` match the pinned SDK.
-The sandbox uses Ansible's `asme.su` link profile and is compiled with that SDK's matching QuickJS;
-`manifest.txt` contains the SHA-256 of every shipped asset.
+What the Android build compiles (`jni/twidget/twidget.cmake`, into `libtwidget.so` alone, not the client library, but for the client's share below): widget-sandbox's C++ core
+(`packages/desktop/sandbox`, without `icu_intl.cpp`, Windows' ICU: Android answers Intl from Java) and QuickJS, twidget's `core/src` and its litehtml fork
+(`litehtml`); `twidget.cmake` generates `tw_ua_stylesheet.h` from widget-sandbox's `profile.json`, as twidget's CMake does. The renderer and validator bundles match the pinned SDK; the sandbox is adapted to the Ansible host profile with the matching engine; `manifest.txt` is their SHA-256.
 
 The Java side is in `org.ansible.utils.twidget` (the bridge's `WidgetSandboxNative` and `WidgetSandboxBackend`,
 the session and the message, painting, the chat's widget messages in `WidgetMedia`, the debug runners), except what
 draws a widget into a View, which stays in `org.ansible.ui.Components`: `RichWidgetBlock` (the chat bubble),
 `WidgetInlinePreview` (an inline result) and `WidgetSandboxPlayer` (frames and touches between the two).
 
+## Processes (since 2026-11-07)
+
+A widget's code (its JavaScript in QuickJS, the validator, the TwidgetCore renderer) runs in an isolated process,
+`WidgetEngineService` (`android:isolatedProcess`, `:widgets`): no permissions, no network (no `inet` group), no access
+to the app's files, SELinux `isolated_app`; on every Android widgets run on (6+). One process holds every widget,
+each session on threads of its own with a QuickJS runtime of its own: it keeps the app's accounts, messages and keys
+from widget code, not one widget from another (a process per bot was tried and dropped on 2026-11-08 for the memory,
+about 25 MB PSS a process). It is bound with `BIND_IMPORTANT`, so it runs in the client's scheduling group (top-app
+with the chat on screen; in `foreground` a weak phone kept it on slow cores). The process loads only `libtwidget.so`
+and the bundles from the APK's assets (`WidgetSandboxNative#registerResources`); `ApplicationLoader` starts nothing of
+the client there. When it dies every shown widget restarts (`RichWidgetBlock#restartWidget`, twice a minute at most).
+
+- Start: the app binds the engine 3 s after `postInitApplication` and keeps it for its lifetime
+  (`WidgetRemoteEngine#prewarm`, `IWidgetEngine#warmup` loads the bundles), so a widget's first frame does not wait for
+  the process: on the Fold emulator a first session took 356 ms cold (206 ms to bind, 69 ms bundles) and ~40 ms warm.
+  An idle engine takes no CPU. Low-RAM devices and the kill switch keep the lazy start (first widget, 30 s idle unbind).
+- Death: the client gives the binding up (`WidgetRemoteEngine#drop`) and binds afresh for the next session, or on the
+  next return to the foreground (prewarm), instead of waiting for the system to bring the service back: on One UI and
+  MIUI 14 it never did for an isolated process, so after the engine was killed in the background no widget started
+  ("Widget engine did not start") until the app restarted (a Galaxy A24 on 7297, reproduced with `am crash`).
+- seccomp (`twidget-seccomp.cpp`, `WidgetEngineService#onCreate`, before any session): exec, process creation,
+  ptrace, perf events, eBPF, io_uring, keyrings, module and mount calls, non-`AF_UNIX` sockets, kernel-mode
+  `userfaultfd`. Audit for now (`SECCOMP_ENFORCE`): the calls trap, are logged as `TwidgetSeccomp` and redone through
+  an escape hatch the filter lets through, so nothing changes; exec and process creation get EPERM even then. Enforce
+  kills the process on them. Not filtered: `ioctl` (ART's GC makes userfaultfd ioctls with SIGSYS blocked, where any
+  trap kills the process) and user-mode `userfaultfd` (ART's GC on Android 14+). Calls the system's own app filter
+  refuses as well come back ENOSYS in audit (stacked filters report our trap data). Needs `SECCOMP_FILTER_FLAG_TSYNC`;
+  without it the engine runs unfiltered and logs so.
+
+- The client (`WidgetRemoteEngine`) creates sessions over `IWidgetEngine` (AIDL, oneway after `create`) and gets each
+  session's calls back over `IWidgetEngineCallback`, synchronously, so frames keep their order and the engine waits for
+  the painter as it did in-process. The engine's backend (`WidgetEngineBackend`) answers layout itself (text widths,
+  decoded images, Intl) and sends the client what it paints with: fonts by their parameters, images as pixels (a
+  parcelled `Bitmap`), canvas batches, display lists (in 256 KB parts above that; only those large calls share a lock,
+  so the host thread's signals never wait for the recorder's frame, which serialised every tick behind the client's
+  draw). Font metrics come back from the
+  client's `defineFont`, so layout and painting use one font. MIUI's `Typeface.create` reads a font setting from
+  `Settings`, which an isolated process is refused: there the engine makes no fonts and asks the client for each
+  width (`textWidth`, cached per font). Painting (RenderNodes,
+  canvases, filters, layers) stays in the client, as do requests, actions, storage and the gesture arbiter.
+- What comes back is untrusted: `WidgetGate` keeps the user- and bot-facing part of the engine's policy in the client,
+  never stricter than it (links and `copyText` one per delivered press, requests with `can_query` one in flight, as a
+  press's or under `background_query`, wallet calls by a press or the grant, haptics at 10 a second, the engine's sizes
+  and link rules); `WidgetSandboxBackend` caps fonts, layers, display ops, canvas batches and frames per second.
+- A process that dies (a crash, the system) ends its sessions (`WidgetSandboxSession#onEngineDied`); a shown widget
+  starts again through its block, twice a minute at most (`WidgetSandboxMessage#onEngineDied`). The client process
+  lives on. A process is unbound 30 s after its last session.
+- The client never loads `libtwidget.so` (since 2026-11-09): QuickJS, the validator and the renderer are mapped only
+  into the engine process. What the client runs of the same code, widget-sandbox's gesture policy
+  (`gesture_policy.cpp`) and twidget's CPU filter pass (`core/src/filters.cpp`), neither of which reads widget code, is
+  compiled into the client library as an object library (`twidget_client_sources` in `twidget.cmake`, JNI in
+  `jni/twidget/twidget-client.cpp`, Java `WidgetClientNative`). Private builds can run the engine in-process for
+  comparisons (`WidgetConformanceActivity --ez inProcess true`), which loads `libtwidget.so` into the client at that
+  session's create; every other build always isolates.
+
 ## Updating
 
-1. Replace the copy with the repository's new state (`git archive <tag> | tar -x`; for widget-sandbox, add the
-   QuickJS subset from its submodule at the commit the tag pins). Copy it in without the archive's times
-   (`rsync -rlpD --checksum --delete`, not `rsync -a`): `git archive` dates every file at its commit, older
-   than the objects already built, so ninja would keep stale objects and link old and new code together
-   (heap corruption at the first `~WidgetHost`, seen on 2026-10-21 and 2026-10-23).
-2. `patch -p1 < ../patches/<name>.patch` inside its copy (not `git apply`: inside the Telegram repository it skips the paths silently), resolve, regenerate the patch with `git diff --no-index` against the repository's tree.
+1. Check out the new commit in the submodule and stage it: `git -C Ansible/jni/twidget/widget-sandbox checkout
+   <tag>`, then `git submodule update --init --recursive Ansible/jni/twidget/widget-sandbox` for the QuickJS
+   commit it pins (a fresh clone needs the same command). Ninja rebuilds by the checked-out files' times, which are
+   the checkout's own, so no objects go stale (the copies dated by `git archive` once linked old and new code
+   together: heap corruption at the first `~WidgetHost`, 2026-10-21 and 2026-10-23).
+2. A change Telegram needs goes into the repository first (a branch or `main`, as its owners take it), then step 1.
 3. Copy the bundles, regenerate `assets/WidgetSandbox/manifest.txt` (`<sha256> <name>` with one space, which
    `WidgetSandboxResources` splits on: `shasum` writes two), update the table above and the versions in `WidgetStressRunner`.
-   The copies' new sources are compiled by name in `twidget.cmake` for TwidgetCore (widget-sandbox's by a glob).
+   New TwidgetCore sources are compiled by name in `twidget.cmake` (widget-sandbox's by a glob). A new or renamed JNI
+   callback goes into both backends, `WidgetSandboxBackend` and `WidgetEngineBackend`, and `IWidgetEngineCallback`.
 
 ## twidget: no changes
 
 The layout the conformance set (`auto/28-grid-percent-fill`, `29-grid-svg-marks`, `30-svg-fill-box`) and the bot demos'
 poll, duel and ticker drew wrong, and a canvas sized by its CSS width alone, were `twidget-layout.patch` here from
-2026-10-31 and are in twidget itself since `a22eff2` (2026-11-02):
+2026-10-31 and are in twidget itself since `db9afca` (2026-11-02):
 - `render_grid.cpp`: an item across a flexible track has no automatic minimum and grows only the flexible tracks; a
   replaced item with a % width has no minimum; a % height of an item needs this grid's own height, not an ancestor's;
   flexible rows take a share per `fr`, as the columns do.
@@ -60,6 +113,13 @@ fork's half-CSS-px widths are what the conformance set measures.
 What the bridge implements for `9f68fbc`'s `Backend` (`twidget-bridge.cpp`, `WidgetSandboxBackend`):
 - `canvas_run` hands a batch to `WidgetCanvas` as int words (`encodeCanvasOp`), not as `twlite::to_json`: on the Redmi Note 8T
   JSON took most of `receive` on a canvas-drawn widget.
+- Display lists (the frame's and layer contents) go to Java in the bridge's binary form (`encodeDisplayList`, read
+  by `WidgetDisplayList` as untrusted input: bounds-checked, counts checked before allocating), not as
+  `twlite::to_json` (since 2026-11-08). On the Redmi Note 11 `dom-tick/1000` went from 22 to 10.5 ms per frame and
+  `svg-path/4000` from 14 to 6 (parse 6 ms → 0.1, serialise 1–2 ms → 0.1). The stress kit's `parse` now covers the
+  header only; decoding happens while painting, in `canvas`. Points keep full float precision (JSON rounded to
+  hundredths). The composition stays JSON (small), as does the selectable text; `WidgetSandboxSession#dump`
+  converts the list back to to_json's keys (`WidgetDisplayList#toJson`).
 - `create_font` takes the OpenType features (`tnum=1,zero=1`, from `font-variant-numeric` and
   `font-feature-settings`); `WidgetSandboxBackend#featureSettings` turns them into
   `Paint#setFontFeatureSettings` syntax (`"tnum" 1, "zero" 1`).
@@ -165,7 +225,7 @@ What the bridge implements for `9f68fbc`'s `Backend` (`twidget-bridge.cpp`, `Wid
 
 `FilterPush`/`FilterPop` and `Backdrop` (`filter`, `backdrop-filter`) are drawn by the Java painter
 (`WidgetSandboxPainter`): on API 31+ on a hardware canvas through `RenderEffect`; otherwise `filter` goes
-through twidget's shared CPU pass (`src/filters.cpp`, `WidgetSandboxNative#filterPixels` in the bridge) on
+through twidget's shared CPU pass (`core/src/filters.cpp`, `WidgetClientNative#filterPixels` in the client library) on
 a bitmap of the content, as twidget's own Android painter does. `backdrop-filter` needs the pixels under
 it and stays API 31+ only.
 
@@ -174,7 +234,7 @@ it and stays API 31+ only.
 `v0.1.2` has the hidden timers' order in every glue copy, which Telegram carried as
 `widget-sandbox-telegram.patch` until `b66576f` (a hidden widget's timers wait at least a second plus a tenth
 of their own delay, so `setTimeout` 20, 10, 0 run 0, 10, 20; conformance `auto/15-js-runtime-a`), and the
-gesture policy (below). The JS bundles are `v0.6.3`'s, stamped `version=0.6.3 protocol=1 profile=1 sdk=1`: with
+gesture policy (below). The JS bundles are `v0.6.5`'s, stamped `version=0.6.5 protocol=1 profile=1 sdk=1`: with
 bundles of another protocol, profile or sdk the engine refuses to boot (`bundle-mismatch`).
 
 Telegram's earlier change (`holdScripts` / `releaseScripts` in the C++ `SandboxEngine` and `WidgetHost`: a
@@ -189,11 +249,14 @@ height or the message's size anchors instead. The Android-only `getrandom` shim
 The compiled SDK policy admits `asme.su` as the internal messenger host. The public
 JavaScript name stays `TelegramWidget`. Wallet availability is false and wallet
 requests return the unsupported-request result; the host exposes no Wallet UI.
-Unused platform snapshots remain the Android upstream snapshot; compiled renderer
-core/litehtml and QuickJS use the exact pins above.
+The vendored source uses the exact pins above; unrelated platform snapshots are not compiled.
 
 Use `build_ansible_widget_assets.py` with explicit `--sdk-root`, `--qjsc` and
 `--output` paths to regenerate the adapted sandbox with the pinned native qjsc.
 Copy the matching renderer/validator assets and regenerate the five manifest hashes
 afterward. A new SDK pin requires reviewing the one-host policy and reproducing the
 source/bytecode header with its matching engine before publishing.
+
+The three unused SDK platform sandbox snapshots preserve the original SDK host policy.
+Their multiline CSS template encodes its literal space as `\x20`, with matching
+bytecode rebuilt by the pinned engine; this preserves the runtime template string.

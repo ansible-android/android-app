@@ -56,7 +56,13 @@
 
 # WidgetSandbox: JNI_OnLoad uses RegisterNatives; backend methods are called by native workers.
 -keep class org.ansible.utils.twidget.WidgetSandboxNative { *; }
+# The client's share (filters, gesture arbiter) in the client library: static Java_* exports, resolved by name.
+-keepclasseswithmembers,includedescriptorclasses class org.ansible.utils.twidget.WidgetClientNative {
+    native <methods>;
+}
 -keep class org.ansible.utils.twidget.WidgetSandboxBackend { *; }
+# The isolated engine process's backend (WidgetEngineService): the same JNI callbacks.
+-keep class org.ansible.utils.twidget.WidgetEngineBackend { *; }
 
 # Huawei Services
 -keep class com.huawei.hianalytics.**{ *; }

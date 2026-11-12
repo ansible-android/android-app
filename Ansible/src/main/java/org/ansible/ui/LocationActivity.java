@@ -96,6 +96,7 @@ import org.ansible.ui.ActionBar.BaseFragment;
 import org.ansible.ui.ActionBar.MenuOverlayHost;
 import org.ansible.ui.ActionBar.SimpleActionBarMenu;
 import org.ansible.ui.ActionBar.SimpleActionBarMenuOverlay;
+import org.ansible.ui.ActionBar.SimpleTextView;
 import org.ansible.ui.ActionBar.Theme;
 import org.ansible.ui.ActionBar.ThemeBind;
 import org.ansible.ui.ActionBar.ThemeDescription;
@@ -584,6 +585,17 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                     FileLog.e(e);
                 }
             });
+        }
+
+        // the header has no background over the map: the title on a glass pill of the buttons' height
+        final SimpleTextView titleView = simpleActionBar.getTitleTextView();
+        if (titleView != null) {
+            titleView.setBackground(getBaseSimpleGlass().factory.create(titleView)
+                .setColorProvider(BlurredBackgroundProviderImpl.simpleActionBar(getResourceProvider()))
+                .setRadius(dp(MAP_BUTTON_DP / 2f)));
+            final Paint.FontMetricsInt metrics = titleView.getTextPaint().getFontMetricsInt();
+            final int vertical = Math.max(0, (dp(MAP_BUTTON_DP) - (metrics.descent - metrics.ascent)) / 2);
+            titleView.setPadding(dp(18), vertical, dp(18), vertical);
         }
 
         locationButton = new ImageView(context);
