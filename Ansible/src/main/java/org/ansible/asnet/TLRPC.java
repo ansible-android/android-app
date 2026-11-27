@@ -51828,6 +51828,7 @@ public class TLRPC {
     public static class TL_auth_signUp extends TLMethod<auth_Authorization> {
         public static final int constructor = 0xaac7b717;
 
+        public byte[] registrationProof;
         public int flags;
         public boolean no_joined_notifications;
         public String phone_number;
@@ -51840,13 +51841,14 @@ public class TLRPC {
         }
 
         public void serializeToStream(OutputSerializedData stream) {
-            stream.writeInt32(constructor);
+            stream.writeInt32(registrationProof == null ? constructor : 0x3d269f6c);
             flags = setFlag(flags, FLAG_0, no_joined_notifications);
             stream.writeInt32(flags);
             stream.writeString(phone_number);
             stream.writeString(phone_code_hash);
             stream.writeString(first_name);
             stream.writeString(last_name);
+            if (registrationProof != null) stream.writeByteArray(registrationProof);
         }
     }
 

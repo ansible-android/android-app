@@ -11217,4 +11217,5 @@
     <string name="FpnvConsentSimSlot">SIM Slot</string>
     <string name="FpnvConsentSimSlotValue">SIM %1$d</string>
     <string name="FpnvConsentPhoneNumber">Phone Number</string>
+    <string name="SignupIntegrityUnavailable">An official Google Play installation is required to create an account on this device.</string>
 </resources>

@@ -10,6 +10,9 @@ on:
 permissions:
   contents: write   # для прикрепления APK к Release при tag push
 
+env:
+  ANSIBLE_PLAY_PROJECT_NUMBER: ${{ vars.ANSIBLE_PLAY_PROJECT_NUMBER || '0' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest

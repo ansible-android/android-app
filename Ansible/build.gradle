@@ -154,6 +154,8 @@ android {
     }
 
     defaultConfig {
+        def integrityProject = providers.environmentVariable("ANSIBLE_PLAY_PROJECT_NUMBER").orElse("0").get().toLong()
+        buildConfigField "long", "SIGNUP_INTEGRITY_PROJECT", integrityProject.toString() + "L"
         minSdkVersion 23
         targetSdkVersion 36
 

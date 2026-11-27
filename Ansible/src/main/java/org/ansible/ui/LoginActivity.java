@@ -8532,21 +8532,44 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
             nextPressed = true;
 
-            final TLMethod<TLRPC.auth_Authorization> request;
-            if (fromFirebasePhoneNumberVerification) {
-                TLRPC.TL_auth_firebasePnvSignUp req = new TLRPC.TL_auth_firebasePnvSignUp();
-                req.first_name = firstNameField.getText().toString();
-                req.last_name = lastNameField.getText().toString();
-                request = req;
-            } else {
-                TLRPC.TL_auth_signUp req = new TLRPC.TL_auth_signUp();
-                req.phone_code_hash = phoneHash;
-                req.phone_number = requestPhone;
-                req.first_name = firstNameField.getText().toString();
-                req.last_name = lastNameField.getText().toString();
-                request = req;
-            }
             needShowProgress(0);
+            if (fromFirebasePhoneNumberVerification || phoneHash == null || BuildConfig.SIGNUP_INTEGRITY_PROJECT <= 0) {
+                registrationProofFailed();
+                return;
+            }
+            final String hash = phoneHash;
+            try {
+                final byte[] challenge = java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(("ansible.signup.v1\n" + hash).getBytes(StandardCharsets.UTF_8));
+                final String nonce = Base64.encodeToString(challenge, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+                IntegrityManagerFactory.create(getContext()).requestIntegrityToken(IntegrityTokenRequest.builder()
+                    .setCloudProjectNumber(BuildConfig.SIGNUP_INTEGRITY_PROJECT).setNonce(nonce).build())
+                    .addOnSuccessListener(result -> {
+                        if (!hash.equals(phoneHash) || result.token() == null) {
+                            registrationProofFailed();
+                            return;
+                        }
+                        submitAttestedSignup(result.token());
+                    })
+                    .addOnFailureListener(error -> registrationProofFailed());
+            } catch (Exception e) {
+                registrationProofFailed();
+            }
+        }
+
+        private void registrationProofFailed() {
+            nextPressed = false;
+            needHideProgress(false, false);
+            needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString(R.string.SignupIntegrityUnavailable));
+        }
+
+        private void submitAttestedSignup(String proof) {
+            TLRPC.TL_auth_signUp request = new TLRPC.TL_auth_signUp();
+            request.phone_code_hash = phoneHash;
+            request.phone_number = requestPhone;
+            request.first_name = firstNameField.getText().toString();
+            request.last_name = lastNameField.getText().toString();
+            request.registrationProof = proof.getBytes(StandardCharsets.UTF_8);
             ConnectionsManager.getInstance(currentAccount).sendRequestTyped(request, AndroidUtilities::runOnUIThread, (response, error) -> {
                 nextPressed = false;
                 if (response instanceof TLRPC.TL_auth_authorization) {
